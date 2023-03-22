@@ -1,0 +1,57 @@
+path                : root
+                    | implicit-root
+
+root                : ROOT { dot-selector }
+
+implicit-root       : selector { dot-selector }
+
+dot-selector        : dot-notation
+                    | bracket-notation
+                    | descend
+
+selector            : selection
+                    | descend
+
+
+selection           : IDENTIFIER
+                    | "*"
+                    | INT
+                    | dot-notation
+                    | bracket-notation
+
+descend             : ".." selection
+
+dot-notation        : dot-property
+                    | dot-int
+                    | ".*"
+
+dot-property        : "." IDENTIFIER
+
+dot-int             : "." INT
+
+bracket-notation    : [ "." ] "[" bracketed "]"
+
+bracketed           : IDENTIFIER
+                    | STRING_LITERAL
+                    | "*"
+                    | list
+                    | filter
+
+list                : list-item { "," list-item }
+
+list-item           : slice
+                    | IDENTIFIER
+                    | STRING_LITERAL
+
+slice               : INT
+                    | range
+
+range               : [ INT ] ":" [ INT ] [ step ]
+
+step                : ":" [ INT ]
+
+filter              : "?(" FILTER_EXPRESSION ")"
+
+
+
+

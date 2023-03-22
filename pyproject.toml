@@ -1,0 +1,85 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "python-jsonpath"
+description = 'Another JSONPath implementation for Python.'
+readme = "README.md"
+requires-python = ">=3.7"
+license = "MIT"
+keywords = []
+authors = [{ name = "James Prior", email = "jamesgr.prior@gmail.com" }]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = []
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://github.com/unknown/python-jsonpath#readme"
+Issues = "https://github.com/unknown/python-jsonpath/issues"
+Source = "https://github.com/unknown/python-jsonpath"
+
+[tool.hatch.version]
+path = "python_jsonpath/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pytest",
+  "pytest-cov",
+  "black",
+  "flake8",
+  "pylint",
+  "mypy",
+  "flake8-bugbear",
+  "ipython",
+]
+
+[tool.hatch.envs.default.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=python_json_path --cov=tests {args}"
+no-cov = "cov --no-cov {args}"
+test = "pytest {args}"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["37", "38", "39", "310", "311", "pypy38", "pypy39"]
+
+[tool.hatch.envs.test.scripts]
+test = "pytest {args}"
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = ["python_jsonpath/__about__.py"]
+
+[tool.coverage.report]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+
+[tool.mypy]
+files = "liquid_at_scale"
+python_version = "3.10"
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+local_partial_types = true
+no_implicit_reexport = true
+strict = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unused_ignores = false
+warn_return_any = true
+warn_unreachable = true
+
+
+[tool.pylint.format]
+max-line-length = "88"
