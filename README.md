@@ -7,26 +7,19 @@
 
 **Table of Contents**
 
+- [About](#about)
 - [Syntax](#syntax)
 - [License](#license)
 
-## Notice
+## About
 
-This project is in the early stages of development. If you stubble across it, don't try and use it yet.
+Another JSONPath implementation for Python. Specifically one that is strictly read-only, has no external dependencies, is fully type-checked and has an async interface compatible with [Python Liquid's async protocol](https://jg-rp.github.io/liquid/introduction/async-support).
+
+This project is in the early stages of development. If you stubble across it, don't try and use it yet. More to follow.
 
 ## Syntax
 
-### BNF
-
-`jsonpath.bnf` is a bnf-like description of the JSONPath syntax accepted by this package.
-
-The BNF syntax used here is the one preferred by the [SLY project](https://sly.readthedocs.io/en/latest/sly.html#writing-a-parser). Note that this project does not use SLY. We've chosen to write our own lexer and parser.
-
-- `[ thing ]` means zero or one
-- `{ thing }` means zero or more
-- Upper case names are symbols defined elsewhere.
-
-The specifics of `ROOT`, `IDENTIFIER` and `FILTER_EXPRESSION` are configurable options. Hence the reason for excluding their definitions from `jsonpath.bnf`.
+TODO:
 
 ### Array indexing and slicing
 
@@ -48,6 +41,18 @@ Note the following differences between this JSONPath implementation and some oth
 - `|` is a union operator, where matches from two or more JSONPaths are combined.
 - `&` is an intersection operator, where matches must exist in a left and right path.
 - Our "lists" are sometimes called "unions". Lists can contain one or more "slices", separated by commas. No properties.
+
+### BNF
+
+`jsonpath.bnf` is a bnf-like description of the JSONPath syntax accepted by this package.
+
+The BNF syntax used here is the one preferred by the [SLY project](https://sly.readthedocs.io/en/latest/sly.html#writing-a-parser). Note that this project does not use SLY. We've chosen to write our own lexer and parser.
+
+- `[ thing ]` means zero or one
+- `{ thing }` means zero or more
+- Upper case names are symbols defined elsewhere.
+
+The specifics of `ROOT`, `IDENTIFIER` and `FILTER_EXPRESSION` are configurable options. Hence the reason for excluding their definitions from `jsonpath.bnf`.
 
 ## License
 
