@@ -119,7 +119,8 @@ class JSONPathEnvironment:
 
     def is_truthy(self, obj: object) -> bool:
         """Test for truthiness when evaluating JSONPath filters."""
-        # TODO: undefined
+        if obj is UNDEFINED:
+            return False
         return bool(obj)
 
     # pylint: disable=too-many-return-statements

@@ -12,6 +12,7 @@ from typing import AsyncIterable
 from typing import Iterable
 from typing import List
 from typing import Optional
+from typing import TypeVar
 from typing import TYPE_CHECKING
 from typing import Union
 
@@ -290,30 +291,37 @@ class RecursiveDescentSelector(JSONPathSelector):
         return f'["{key}"]'
 
     def _expand(self, match: JSONPathMatch) -> Iterable[JSONPathMatch]:
-        # pre-order, depth-first traversal
         if isinstance(match.obj, str):
-            yield match
+            # strings are sequences too
+            pass
         elif isinstance(match.obj, Mapping):
             for key, val in match.obj.items():
-                _match = JSONPathMatch(
-                    path=match.path + self._path(key),
-                    obj=val,
-                    root=match.root,
-                )
-                yield _match
-                yield from self._expand(_match)
+                if isinstance(val, str):
+                    pass
+                elif isinstance(val, (Mapping, Sequence)):
+                    _match = JSONPathMatch(
+                        path=match.path + self._path(key),
+                        obj=val,
+                        root=match.root,
+                    )
+                    yield _match
+                    yield from self._expand(_match)
         elif isinstance(match.obj, Sequence):
             for i, val in enumerate(match.obj):
-                _match = JSONPathMatch(
-                    path=f"{match.path}[{i}]",
-                    obj=val,
-                    root=match.root,
-                )
-                yield _match
-                yield from self._expand(_match)
+                if isinstance(val, str):
+                    pass
+                elif isinstance(val, (Mapping, Sequence)):
+                    _match = JSONPathMatch(
+                        path=f"{match.path}[{i}]",
+                        obj=val,
+                        root=match.root,
+                    )
+                    yield _match
+                    yield from self._expand(_match)
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
+            yield match
             yield from self._expand(match)
 
     # pylint: disable=invalid-overridden-method
@@ -325,8 +333,16 @@ class RecursiveDescentSelector(JSONPathSelector):
                 yield _match
 
 
+T = TypeVar("T")
+
+
+async def _alist(it: List[T]) -> AsyncIterable[T]:
+    for item in it:
+        yield item
+
+
 class ListSelector(JSONPathSelector):
-    """A JSONPath selector representing a list of properties, slices or indexes."""
+    """A JSONPath selector representing a list of properties, slices or indices."""
 
     __slots__ = ("items",)
 
@@ -355,15 +371,17 @@ class ListSelector(JSONPathSelector):
         return f"[{', '.join(buf)}]"
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
+        _matches = list(matches)
         for item in self.items:
-            yield from item.resolve(matches)
+            yield from item.resolve(_matches)
 
     # pylint: disable=invalid-overridden-method
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
+        _matches = [m async for m in matches]
         for item in self.items:
-            async for match in item.resolve_async(matches):
+            async for match in item.resolve_async(_alist(_matches)):
                 yield match
 
 
@@ -387,9 +405,23 @@ class Filter(JSONPathSelector):
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
-            context = FilterContext(env=self.env, current=match.obj, root=match.root)
-            if self.expression.evaluate(context):
-                yield match
+            if isinstance(match.obj, Mapping):
+                context = FilterContext(
+                    env=self.env, current=match.obj, root=match.root
+                )
+                if self.expression.evaluate(context):
+                    yield match
+
+            # TODO: consider strings
+            elif isinstance(match.obj, Sequence):
+                for i, obj in enumerate(match.obj):
+                    context = FilterContext(env=self.env, current=obj, root=match.root)
+                    if self.expression.evaluate(context):
+                        yield JSONPathMatch(
+                            path=f"{match.path}[{i}]",
+                            obj=obj,
+                            root=match.root,
+                        )
 
     # pylint: disable=invalid-overridden-method
     async def resolve_async(
