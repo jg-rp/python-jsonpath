@@ -12,7 +12,7 @@ from typing import Union
 
 import pytest
 
-from python_jsonpath import JSONPathEnvironment
+from jsonpath import JSONPathEnvironment
 
 
 @dataclasses.dataclass

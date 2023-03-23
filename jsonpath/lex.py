@@ -181,6 +181,7 @@ class Lexer:
             re.DOTALL,
         )
 
+    # pylint: disable=too-many-branches
     def tokenize(self, path: str) -> Iterator[Token]:
         """Generate a sequence of tokens from a JSONPath string."""
         _token = partial(Token, path=path)

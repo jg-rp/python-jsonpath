@@ -29,9 +29,7 @@ TODO:
 
 `a[:]` or `a[1:-1]` or `a[1:]` or `a[:2]`
 
-### Notable differences
-
-Note the following differences between this JSONPath implementation and some others.
+### Things worthy of note
 
 - We don't support arbitrary extension functions, only filters.
 - Whitespace is mostly insignificant unless inside quotes.
@@ -40,7 +38,7 @@ Note the following differences between this JSONPath implementation and some oth
 - Any bracket notation elements can be preceded with a dot (`.`). `$.thing.["other"]` is equivalent to `$.thing["other"]`.
 - `|` is a union operator, where matches from two or more JSONPaths are combined.
 - `&` is an intersection operator, where matches must exist in a left and right path.
-- Our "lists" are sometimes called "unions". Lists can contain one or more "slices", separated by commas. No properties.
+- Our "lists" are sometimes called "unions". Lists can contain slices, indexes and/or properties.
 
 ### BNF
 

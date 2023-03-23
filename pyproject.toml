@@ -30,7 +30,7 @@ Issues = "https://github.com/unknown/python-jsonpath/issues"
 Source = "https://github.com/unknown/python-jsonpath"
 
 [tool.hatch.version]
-path = "python_jsonpath/__about__.py"
+path = "jsonpath/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
@@ -45,7 +45,7 @@ dependencies = [
 ]
 
 [tool.hatch.envs.default.scripts]
-cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=python_jsonpath --cov=tests {args}"
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=jsonpath --cov=tests {args}"
 no-cov = "cov --no-cov {args}"
 test = "pytest {args}"
 
@@ -58,7 +58,7 @@ test = "pytest {args}"
 [tool.coverage.run]
 branch = true
 parallel = true
-omit = ["python_jsonpath/__about__.py"]
+omit = ["jsonpath/__about__.py"]
 
 [tool.coverage.report]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
