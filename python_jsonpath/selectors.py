@@ -329,6 +329,7 @@ class RecursiveDescentSelector(JSONPathSelector):
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
         async for match in matches:
+            yield match
             for _match in self._expand(match):
                 yield _match
 
@@ -428,9 +429,22 @@ class Filter(JSONPathSelector):
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
         async for match in matches:
-            context = FilterContext(env=self.env, current=match.obj, root=match.root)
-            if await self.expression.evaluate_async(context):
-                yield match
+            if isinstance(match.obj, Mapping):
+                context = FilterContext(
+                    env=self.env, current=match.obj, root=match.root
+                )
+                if await self.expression.evaluate_async(context):
+                    yield match
+
+            elif isinstance(match.obj, Sequence):
+                for i, obj in enumerate(match.obj):
+                    context = FilterContext(env=self.env, current=obj, root=match.root)
+                    if await self.expression.evaluate_async(context):
+                        yield JSONPathMatch(
+                            path=f"{match.path}[{i}]",
+                            obj=obj,
+                            root=match.root,
+                        )
 
 
 class FilterContext:

@@ -1,9 +1,11 @@
 # pylint: disable=missing-class-docstring, missing-function-docstring
 # pylint: disable=missing-module-docstring
+import asyncio
 import dataclasses
 import operator
 
 from typing import Any
+from typing import List
 from typing import Mapping
 from typing import Sequence
 from typing import Union
@@ -471,3 +473,13 @@ def env() -> JSONPathEnvironment:
 def test_find(env: JSONPathEnvironment, case: Case) -> None:
     path = env.compile(case.path)
     assert path.findall(case.data) == case.want
+
+
+@pytest.mark.parametrize("case", TEST_CASES, ids=operator.attrgetter("description"))
+def test_find_async(env: JSONPathEnvironment, case: Case) -> None:
+    path = env.compile(case.path)
+
+    async def coro() -> List[object]:
+        return await path.findall_async(case.data)
+
+    assert asyncio.run(coro()) == case.want
