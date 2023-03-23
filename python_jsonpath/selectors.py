@@ -291,22 +291,26 @@ class RecursiveDescentSelector(JSONPathSelector):
 
     def _expand(self, match: JSONPathMatch) -> Iterable[JSONPathMatch]:
         # pre-order, depth-first traversal
-        if isinstance(match, Mapping):
-            for key, val in match.items():
-                yield JSONPathMatch(
+        if isinstance(match.obj, str):
+            yield match
+        elif isinstance(match.obj, Mapping):
+            for key, val in match.obj.items():
+                _match = JSONPathMatch(
                     path=match.path + self._path(key),
                     obj=val,
                     root=match.root,
                 )
-                self._expand(val)
-        elif isinstance(match, Sequence):
-            for i, val in enumerate(match):
-                yield JSONPathMatch(
+                yield _match
+                yield from self._expand(_match)
+        elif isinstance(match.obj, Sequence):
+            for i, val in enumerate(match.obj):
+                _match = JSONPathMatch(
                     path=f"{match.path}[{i}]",
                     obj=val,
                     root=match.root,
                 )
-                self._expand(val)
+                yield _match
+                yield from self._expand(_match)
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:

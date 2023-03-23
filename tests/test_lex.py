@@ -26,7 +26,7 @@ from python_jsonpath.token import TOKEN_INTERSECTION
 from python_jsonpath.token import TOKEN_LE
 from python_jsonpath.token import TOKEN_LG
 from python_jsonpath.token import TOKEN_LIST_END
-from python_jsonpath.token import TOKEN_LIST_PROPERTY
+from python_jsonpath.token import TOKEN_BARE_PROPERTY
 from python_jsonpath.token import TOKEN_LIST_START
 from python_jsonpath.token import TOKEN_LPAREN
 from python_jsonpath.token import TOKEN_LT
@@ -222,6 +222,24 @@ TEST_CASES = [
         ],
     ),
     Case(
+        description="root descend property",
+        path="$..thing",
+        want=[
+            Token(kind=TOKEN_ROOT, value="$", index=0, path="$..thing"),
+            Token(kind=TOKEN_DDOT, value="..", index=1, path="$..thing"),
+            Token(kind=TOKEN_BARE_PROPERTY, value="thing", index=3, path="$..thing"),
+        ],
+    ),
+    Case(
+        description="root descend dot property",
+        path="$...thing",
+        want=[
+            Token(kind=TOKEN_ROOT, value="$", index=0, path="$...thing"),
+            Token(kind=TOKEN_DDOT, value="..", index=1, path="$...thing"),
+            Token(kind=TOKEN_PROPERTY, value="thing", index=4, path="$...thing"),
+        ],
+    ),
+    Case(
         description="root selector list of indices",
         path="$[1,4,5]",
         want=[
@@ -256,11 +274,11 @@ TEST_CASES = [
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$[some,thing]"),
             Token(kind=TOKEN_LIST_START, value="[", index=1, path="$[some,thing]"),
             Token(
-                kind=TOKEN_LIST_PROPERTY, value="some", index=2, path="$[some,thing]"
+                kind=TOKEN_BARE_PROPERTY, value="some", index=2, path="$[some,thing]"
             ),
             Token(kind=TOKEN_COMMA, value=",", index=6, path="$[some,thing]"),
             Token(
-                kind=TOKEN_LIST_PROPERTY, value="thing", index=7, path="$[some,thing]"
+                kind=TOKEN_BARE_PROPERTY, value="thing", index=7, path="$[some,thing]"
             ),
             Token(kind=TOKEN_LIST_END, value="]", index=12, path="$[some,thing]"),
         ],

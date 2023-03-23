@@ -32,7 +32,7 @@ from .token import TOKEN_INTERSECTION
 from .token import TOKEN_LE
 from .token import TOKEN_LG
 from .token import TOKEN_LIST_END
-from .token import TOKEN_LIST_PROPERTY
+from .token import TOKEN_BARE_PROPERTY
 from .token import TOKEN_LIST_SLICE
 from .token import TOKEN_LIST_START
 from .token import TOKEN_LPAREN
@@ -158,7 +158,7 @@ class Lexer:
             (TOKEN_NONE, r"[Nn]one"),
             (TOKEN_UNDEFINED, r"[Uu]ndefined"),
             (TOKEN_MISSING, r"[Mm]issing"),
-            (TOKEN_LIST_PROPERTY, self.key_pattern),
+            (TOKEN_BARE_PROPERTY, self.key_pattern),
             (TOKEN_LIST_START, r"\["),
             (TOKEN_LIST_END, r"]"),
             (TOKEN_COMMA, r","),
@@ -207,9 +207,9 @@ class Lexer:
                     value=match.group("G_BPROP"),
                     index=match.start("G_BPROP"),
                 )
-            elif kind == TOKEN_LIST_PROPERTY:
+            elif kind == TOKEN_BARE_PROPERTY:
                 yield _token(
-                    kind=TOKEN_LIST_PROPERTY,
+                    kind=TOKEN_BARE_PROPERTY,
                     value=match.group(),
                     index=match.start(),
                 )

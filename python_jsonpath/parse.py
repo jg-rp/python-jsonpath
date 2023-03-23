@@ -61,7 +61,7 @@ from .token import TOKEN_INTERSECTION
 from .token import TOKEN_LE
 from .token import TOKEN_LG
 from .token import TOKEN_LIST_END
-from .token import TOKEN_LIST_PROPERTY
+from .token import TOKEN_BARE_PROPERTY
 from .token import TOKEN_LIST_START
 from .token import TOKEN_LPAREN
 from .token import TOKEN_LT
@@ -200,7 +200,7 @@ class Parser:
     ) -> Iterable[JSONPathSelector]:
         """Parse a top-level JSONPath, or one that is nested in a filter."""
         while True:
-            if stream.current.kind == TOKEN_PROPERTY:
+            if stream.current.kind in (TOKEN_PROPERTY, TOKEN_BARE_PROPERTY):
                 yield PropertySelector(
                     env=self.env,
                     token=stream.current,
@@ -280,7 +280,7 @@ class Parser:
                         index=int(stream.current.value),
                     )
                 )
-            elif stream.current.kind in (TOKEN_LIST_PROPERTY, TOKEN_STRING):
+            elif stream.current.kind in (TOKEN_BARE_PROPERTY, TOKEN_STRING):
                 list_items.append(
                     PropertySelector(
                         env=self.env,
