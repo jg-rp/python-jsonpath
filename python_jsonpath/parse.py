@@ -28,6 +28,7 @@ from .filter import RootPath
 from .filter import SelfPath
 from .filter import StringLiteral
 from .filter import TRUE
+from .filter import UNDEFINED_LITERAL
 
 from .path import JSONPath
 from .stream import TokenStream
@@ -64,8 +65,10 @@ from .token import TOKEN_LIST_PROPERTY
 from .token import TOKEN_LIST_START
 from .token import TOKEN_LPAREN
 from .token import TOKEN_LT
+from .token import TOKEN_MISSING
 from .token import TOKEN_NE
 from .token import TOKEN_NIL
+from .token import TOKEN_NONE
 from .token import TOKEN_NOT
 from .token import TOKEN_NULL
 from .token import TOKEN_OR
@@ -83,6 +86,7 @@ from .token import TOKEN_STRING
 from .token import TOKEN_TRUE
 from .token import TOKEN_UNION
 from .token import TOKEN_WILD
+from .token import TOKEN_UNDEFINED
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
@@ -99,7 +103,7 @@ class Parser:
     PRECEDENCE_PREFIX = 7
 
     PRECEDENCES = {
-        TOKEN_AND: PRECEDENCE_LOGICALRIGHT,
+        TOKEN_AND: PRECEDENCE_LOGICAL,
         TOKEN_CONTAINS: PRECEDENCE_MEMBERSHIP,
         TOKEN_EQ: PRECEDENCE_RELATIONAL,
         TOKEN_GE: PRECEDENCE_RELATIONAL,
@@ -110,7 +114,7 @@ class Parser:
         TOKEN_LT: PRECEDENCE_RELATIONAL,
         TOKEN_NE: PRECEDENCE_RELATIONAL,
         TOKEN_NOT: PRECEDENCE_LOGICALRIGHT,
-        TOKEN_OR: PRECEDENCE_LOGICALRIGHT,
+        TOKEN_OR: PRECEDENCE_LOGICAL,
         TOKEN_RE: PRECEDENCE_RELATIONAL,
         TOKEN_RPAREN: PRECEDENCE_LOWEST,
     }
@@ -152,8 +156,11 @@ class Parser:
             TOKEN_FALSE: self.parse_boolean,
             TOKEN_FLOAT: self.parse_float_literal,
             TOKEN_INT: self.parse_integer_literal,
+            TOKEN_LIST_START: self.parse_list_literal,
             TOKEN_LPAREN: self.parse_grouped_expression,
+            TOKEN_MISSING: self.parse_undefined,
             TOKEN_NIL: self.parse_nil,
+            TOKEN_NONE: self.parse_nil,
             TOKEN_NOT: self.parse_prefix_expression,
             TOKEN_NULL: self.parse_nil,
             TOKEN_RE_PATTERN: self.parse_regex,
@@ -161,6 +168,7 @@ class Parser:
             TOKEN_SELF: self.parse_self_path,
             TOKEN_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
+            TOKEN_UNDEFINED: self.parse_undefined,
         }
 
         self.list_item_map: Dict[str, Callable[[TokenStream], FilterExpression]] = {
@@ -168,6 +176,7 @@ class Parser:
             TOKEN_FLOAT: self.parse_float_literal,
             TOKEN_INT: self.parse_integer_literal,
             TOKEN_NIL: self.parse_nil,
+            TOKEN_NONE: self.parse_nil,
             TOKEN_NULL: self.parse_nil,
             TOKEN_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
@@ -300,7 +309,7 @@ class Parser:
             raise JSONPathSyntaxError("unmatched ')'")
 
         stream.next_token()
-        assert stream.current.kind == TOKEN_FILTER_END
+        stream.expect(TOKEN_FILTER_END)
         return Filter(env=self.env, token=tok, expression=expr)
 
     def parse_boolean(self, stream: TokenStream) -> FilterExpression:
@@ -310,6 +319,9 @@ class Parser:
 
     def parse_nil(self, _: TokenStream) -> FilterExpression:
         return NIL
+
+    def parse_undefined(self, _: TokenStream) -> FilterExpression:
+        return UNDEFINED_LITERAL
 
     def parse_string_literal(self, stream: TokenStream) -> FilterExpression:
         return StringLiteral(value=stream.current.value)
@@ -380,10 +392,11 @@ class Parser:
                 # TODO: line number etc.
                 raise JSONPathSyntaxError(f"unexpected {stream.current}") from err
 
-            stream.next_token()
             if stream.peek.kind != TOKEN_LIST_END:
                 stream.expect_peek(TOKEN_COMMA)
                 stream.next_token()
+
+            stream.next_token()
 
         return ListLiteral(list_items)
 

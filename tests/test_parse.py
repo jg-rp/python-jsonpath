@@ -63,11 +63,106 @@ TEST_CASES = [
         path='$["some",thing, 1, 2:-2:2]',
         want="$[some, thing, 1, 2:-2:2]",
     ),
-    # Case(
-    #     description="filter self dot property",
-    #     path="[?(@.thing)]",
-    #     want="[?(@.thing)]",
-    # ),
+    Case(
+        description="filter self dot property",
+        path="[?(@.thing)]",
+        want="$[?(@.thing)]",
+    ),
+    Case(
+        description="filter root dot property",
+        path="$.some[?($.thing)]",
+        want="$.some[?($.thing)]",
+    ),
+    Case(
+        description="filter with equality test",
+        path="$.some[?(@.thing == 7)]",
+        want="$.some[?(@.thing == 7)]",
+    ),
+    Case(
+        description="filter with >=",
+        path="$.some[?(@.thing >= 7)]",
+        want="$.some[?(@.thing >= 7)]",
+    ),
+    Case(
+        description="filter with >=",
+        path="$.some[?(@.thing >= 7)]",
+        want="$.some[?(@.thing >= 7)]",
+    ),
+    Case(
+        description="filter with !=",
+        path="$.some[?(@.thing != 7)]",
+        want="$.some[?(@.thing != 7)]",
+    ),
+    Case(
+        description="filter with <>",
+        path="$.some[?(@.thing != 7)]",
+        want="$.some[?(@.thing != 7)]",
+    ),
+    Case(
+        description="filter with regex",
+        path="$.some[?(@.thing =~ /(foo|bar)/i)]",
+        want="$.some[?(@.thing =~ /(foo|bar)/i)]",
+    ),
+    Case(
+        description="filter with list membership test",
+        path="$.some[?(@.thing in ['foo', 'bar', 42])]",
+        want="$.some[?(@.thing in ['foo', 'bar', 42])]",
+    ),
+    Case(
+        description="filter with boolean literals",
+        path="$.some[?(true == false)]",
+        want="$.some[?(True == False)]",
+    ),
+    Case(
+        description="filter with nil literal",
+        path="$.some[?(@.thing == nil)]",
+        want="$.some[?(@.thing == nil)]",
+    ),
+    Case(
+        description="null is the same as nil",
+        path="$.some[?(@.thing == null)]",
+        want="$.some[?(@.thing == nil)]",
+    ),
+    Case(
+        description="none is the same as nil",
+        path="$.some[?(@.thing == none)]",
+        want="$.some[?(@.thing == nil)]",
+    ),
+    Case(
+        description="filter with test for undefined",
+        path="$.some[?(@.thing == undefined)]",
+        want="$.some[?(@.thing == undefined)]",
+    ),
+    Case(
+        description="missing is the same as undefined",
+        path="$.some[?(@.thing == missing)]",
+        want="$.some[?(@.thing == undefined)]",
+    ),
+    Case(
+        description="filter with string literal",
+        path="$.some[?(@.thing == 'foo')]",
+        want="$.some[?(@.thing == 'foo')]",
+    ),
+    Case(
+        description="filter with integer literal",
+        path="$.some[?(@.thing == 1)]",
+        want="$.some[?(@.thing == 1)]",
+    ),
+    Case(
+        description="filter with float literal",
+        path="$.some[?(@.thing == 1.1)]",
+        want="$.some[?(@.thing == 1.1)]",
+    ),
+    Case(
+        description="filter with logical not",
+        path="$.some[?(@.thing > 1 and not $.other)]",
+        want="$.some[?(@.thing > 1 and not $.other)]",
+    ),
+    Case(
+        description="filter with grouped expression",
+        path="$.some[?(@.thing > 1 and ($.foo or $.bar))]",
+        want="$.some[?(@.thing > 1 and $.foo or $.bar)]",
+    ),
 ]
 
 

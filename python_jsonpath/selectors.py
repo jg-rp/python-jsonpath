@@ -378,6 +378,9 @@ class Filter(JSONPathSelector):
         super().__init__(env=env, token=token)
         self.expression = expression
 
+    def __str__(self) -> str:
+        return f"[?({self.expression})]"
+
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
             context = FilterContext(env=self.env, current=match.obj, root=match.root)

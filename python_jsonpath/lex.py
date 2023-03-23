@@ -37,6 +37,7 @@ from .token import TOKEN_LIST_SLICE
 from .token import TOKEN_LIST_START
 from .token import TOKEN_LPAREN
 from .token import TOKEN_LT
+from .token import TOKEN_MISSING
 from .token import TOKEN_NE
 from .token import TOKEN_NIL
 from .token import TOKEN_NONE
@@ -59,6 +60,7 @@ from .token import TOKEN_SLICE_STOP
 from .token import TOKEN_STRING
 from .token import TOKEN_TRUE
 from .token import TOKEN_UNION
+from .token import TOKEN_UNDEFINED
 from .token import TOKEN_WILD
 
 if TYPE_CHECKING:
@@ -154,6 +156,8 @@ class Lexer:
             (TOKEN_NIL, r"[Nn]il"),
             (TOKEN_NULL, r"[Nn]ull"),
             (TOKEN_NONE, r"[Nn]one"),
+            (TOKEN_UNDEFINED, r"[Uu]ndefined"),
+            (TOKEN_MISSING, r"[Mm]issing"),
             (TOKEN_LIST_PROPERTY, self.key_pattern),
             (TOKEN_LIST_START, r"\["),
             (TOKEN_LIST_END, r"]"),
@@ -161,11 +165,11 @@ class Lexer:
             (TOKEN_EQ, r"=="),
             (TOKEN_NE, r"!="),
             (TOKEN_LG, r"<>"),
-            (TOKEN_LT, r"<"),
-            (TOKEN_GT, r">"),
             (TOKEN_LE, r"<="),
             (TOKEN_GE, r">="),
             (TOKEN_RE, r"=~"),
+            (TOKEN_LT, r"<"),
+            (TOKEN_GT, r">"),
             (TOKEN_LPAREN, r"\("),
             (TOKEN_RPAREN, r"\)"),
             (TOKEN_SKIP, r"[ \n\t\r\.]+"),

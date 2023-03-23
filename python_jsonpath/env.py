@@ -16,6 +16,8 @@ from typing import Union
 from .exceptions import JSONPathSyntaxError
 from .exceptions import JSONPathTypeError
 
+from .filter import UNDEFINED
+
 from .lex import Lexer
 from .parse import Parser
 
@@ -32,17 +34,20 @@ from .token import TOKEN_INTERSECTION
 class JSONPathEnvironment:
     """JSONPath configuration."""
 
+    # TODO: Make these chars/tokens/operator not patterns
     root_pattern = r"\$"
     self_pattern = r"@"
     union_pattern = r"\|"
     intersection_pattern = r"&"
 
+    # TODO: Interfaces and move to the constructor?
     lexer_class = Lexer
     parser_class = Parser
 
     def __init__(self) -> None:
         self.lexer = self.lexer_class(env=self)
         self.parser = self.parser_class(env=self)
+        # TODO: don't reference lexer for this
         self.re_key = re.compile(self.lexer.key_pattern)
 
     def compile(self, path: str) -> Union[JSONPath, CompoundJSONPath]:
@@ -73,12 +78,13 @@ class JSONPathEnvironment:
         data: Union[str, Sequence[Any], Mapping[str, Any]],
     ) -> List[object]:
         """Find all objects in `data` matching the given JSONPath. Return a
-        list of matches, or an empty list of no matches.
+        list of matches, or an empty list if no matches.
 
         If `data` is a string, it will be loaded using :meth:`json.loads`.
 
         Raises a :class:`JSONPathSyntaxError` if the path is invalid.
         """
+        # TODO: cache in convenience methods, not on .compile()
         _path = self.compile(path)
         if isinstance(data, str):
             data = json.loads(data)
@@ -113,6 +119,7 @@ class JSONPathEnvironment:
 
     def is_truthy(self, obj: object) -> bool:
         """Test for truthiness when evaluating JSONPath filters."""
+        # TODO: undefined
         return bool(obj)
 
     # pylint: disable=too-many-return-statements

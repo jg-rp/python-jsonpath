@@ -62,6 +62,8 @@ TOKEN_RPAREN = sys.intern("RPAREN")
 TOKEN_SELF = sys.intern("SELF")
 TOKEN_STRING = sys.intern("STRING")
 TOKEN_TRUE = sys.intern("TRUE")
+TOKEN_UNDEFINED = sys.intern("UNDEFINED")
+TOKEN_MISSING = sys.intern("MISSING")
 
 # Extension tokens
 TOKEN_UNION = sys.intern("UNION")
