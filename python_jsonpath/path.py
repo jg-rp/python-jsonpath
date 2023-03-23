@@ -12,12 +12,9 @@ from typing import Sequence
 from typing import Tuple
 from typing import TypeVar
 from typing import Union
-from typing import TYPE_CHECKING
 
 from .match import JSONPathMatch
-
-if TYPE_CHECKING:
-    from .selectors import JSONPathSelector
+from .selectors import JSONPathSelector
 
 
 class JSONPath:
@@ -25,8 +22,18 @@ class JSONPath:
 
     __slots__ = ("_selectors",)
 
+    # TODO: pass env?
+
+    # TODO: Store these on env
+    root_token = "$"
+    union_token = "|"
+    intersection_token = "&"
+
     def __init__(self, *, selectors: Iterable[JSONPathSelector]) -> None:
         self._selectors = list(selectors)
+
+    def __str__(self) -> str:
+        return self.root_token + "".join(str(selector) for selector in self._selectors)
 
     def findall(
         self, data: Union[str, Sequence[Any], Mapping[str, Any]]
@@ -47,7 +54,7 @@ class JSONPath:
             data = json.loads(data)
 
         matches: Iterable[JSONPathMatch] = [
-            JSONPathMatch(path="$", obj=data, root=data)
+            JSONPathMatch(path=self.root_token, obj=data, root=data)
         ]
 
         for selector in self._selectors:
@@ -73,7 +80,7 @@ class JSONPath:
             data = json.loads(data)
 
         async def root_iter() -> AsyncIterable[JSONPathMatch]:
-            yield JSONPathMatch(path="$", obj=data, root=data)
+            yield JSONPathMatch(path=self.root_token, obj=data, root=data)
 
         matches: AsyncIterable[JSONPathMatch] = root_iter()
 
@@ -88,9 +95,20 @@ class CompoundJSONPath:
 
     __slots__ = ("path", "paths")
 
+    root_token = "$"
+    union_token = "|"
+    intersection_token = "&"
+
     def __init__(self, path: Union[JSONPath, CompoundJSONPath]) -> None:
         self.path = path
         self.paths: List[Tuple[(str, JSONPath)]] = []
+
+    def __str__(self) -> str:
+        buf: List[str] = [str(self.path)]
+        for op, path in self.paths:
+            buf.append(f" {op} ")
+            buf.append(str(path))
+        return "".join(buf)
 
     def findall(
         self, data: Union[str, Sequence[Any], Mapping[str, Any]]
@@ -99,11 +117,10 @@ class CompoundJSONPath:
         objs = self.path.findall(data)
 
         for op, path in self.paths:
-            assert op in ("|", "&")
             _objs = path.findall(data)
-            if op == "|":
+            if op == self.union_token:
                 objs.extend(_objs)
-            elif op == "&":
+            elif op == self.intersection_token:
                 objs = [obj for obj in objs if obj in _objs]
 
         return objs
@@ -116,11 +133,10 @@ class CompoundJSONPath:
         matches = self.path.finditer(data)
 
         for op, path in self.paths:
-            assert op in ("|", "&")
             _matches = path.finditer(data)
-            if op == "|":
+            if op == self.union_token:
                 matches = itertools.chain(matches, _matches)
-            elif op == "&":
+            elif op == self.intersection_token:
                 _objs = [match.obj for match in _matches]
                 _matches = (match for match in matches if match.obj in _objs)
 
@@ -133,11 +149,10 @@ class CompoundJSONPath:
         objs = await self.path.findall_async(data)
 
         for op, path in self.paths:
-            assert op in ("|", "&")
             _objs = await path.findall_async(data)
-            if op == "|":
+            if op == self.union_token:
                 objs.extend(_objs)
-            elif op == "&":
+            elif op == self.intersection_token:
                 objs = [obj for obj in objs if obj in _objs]
 
         return objs
@@ -150,11 +165,10 @@ class CompoundJSONPath:
         matches = await self.path.finditer_async(data)
 
         for op, path in self.paths:
-            assert op in ("|", "&")
             _matches = await path.finditer_async(data)
-            if op == "|":
+            if op == self.union_token:
                 matches = _achain(matches, _matches)
-            elif op == "&":
+            elif op == self.intersection_token:
                 _objs = [match.obj async for match in _matches]
                 _matches = (match async for match in matches if match.obj in _objs)
 
@@ -162,12 +176,12 @@ class CompoundJSONPath:
 
     def union(self, path: JSONPath) -> CompoundJSONPath:
         """In-place union of this path and another path."""
-        self.paths.append(("|", path))
+        self.paths.append((self.union_token, path))
         return self
 
     def intersection(self, path: JSONPath) -> CompoundJSONPath:
         """In-place intersection of this path and another path."""
-        self.paths.append(("&", path))
+        self.paths.append((self.intersection_token, path))
         return self
 
 

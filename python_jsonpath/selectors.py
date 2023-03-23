@@ -60,8 +60,7 @@ class PropertySelector(JSONPathSelector):
         self.path = str(self)
 
     def __str__(self) -> str:
-        """Return a string representation of an object property key."""
-        if self.env.re_key.match(self.name):
+        if self.env.re_key.fullmatch(self.name):
             return f".{self.name}"
         return f'["{self.name}"]'
 
@@ -183,7 +182,7 @@ class SliceSelector(JSONPathSelector):
     def __str__(self) -> str:
         stop = self.slice.stop if self.slice.stop is not None else ""
         start = self.slice.start if self.slice.start is not None else ""
-        step = self.slice.step if self.slice.step is not None else ""
+        step = self.slice.step if self.slice.step is not None else "1"
         return f"[{start}:{stop}:{step}]"
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
@@ -343,7 +342,8 @@ class ListSelector(JSONPathSelector):
             if isinstance(item, SliceSelector):
                 stop = item.slice.stop if item.slice.stop is not None else ""
                 start = item.slice.start if item.slice.start is not None else ""
-                buf.append(f"{start}:{stop}")
+                step = item.slice.step if item.slice.step is not None else "1"
+                buf.append(f"{start}:{stop}:{step}")
             elif isinstance(item, PropertySelector):
                 buf.append(item.name)
             else:

@@ -282,11 +282,13 @@ class Parser:
             elif stream.current.kind == TOKEN_SLICE_START:
                 list_items.append(self.parse_slice(stream))
             elif stream.current.kind == TOKEN_EOF:
-                raise JSONPathSyntaxError("unexpected end of list")
-            stream.next_token()
+                raise JSONPathSyntaxError("unexpected end of selector list")
+
             if stream.peek.kind != TOKEN_LIST_END:
                 stream.expect_peek(TOKEN_COMMA)
                 stream.next_token()
+
+            stream.next_token()
 
         return ListSelector(env=self.env, token=tok, items=list_items)
 
