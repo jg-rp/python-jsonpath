@@ -79,9 +79,15 @@ class TokenStream:
     def expect(self, typ: str) -> None:
         """"""
         if self.current.kind != typ:
-            raise JSONPathSyntaxError(f"expected {typ!r}, found {self.current.kind!r}")
+            raise JSONPathSyntaxError(
+                f"expected {typ!r}, found {self.current.kind!r}",
+                token=self.current,
+            )
 
     def expect_peek(self, typ: str) -> None:
         """"""
         if self.peek.kind != typ:
-            raise JSONPathSyntaxError(f"expected {typ!r}, found {self.current.kind!r}")
+            raise JSONPathSyntaxError(
+                f"expected {typ!r}, found {self.current.kind!r}",
+                token=self.peek,
+            )

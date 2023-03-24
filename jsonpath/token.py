@@ -1,5 +1,6 @@
 """"""
 import sys
+from typing import Tuple
 
 # Utility tokens
 TOKEN_EOF = sys.intern("EOF")
@@ -102,3 +103,9 @@ class Token:
             and self.index == other.index
             and self.path == other.path
         )
+
+    def position(self) -> Tuple[int, int]:
+        """Return the line and column number for the start of this token."""
+        line_number = self.value.count("\n", 0, self.index) + 1
+        column_number = self.index - self.value.rfind("\n", 0, self.index)
+        return (line_number, column_number)

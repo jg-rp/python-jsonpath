@@ -68,7 +68,10 @@ class JSONPathEnvironment:
                     stream.next_token()
                     _path.intersection(JSONPath(selectors=self.parser.parse(stream)))
                 else:
-                    raise JSONPathSyntaxError(f"unexpected {stream.current}")
+                    raise JSONPathSyntaxError(
+                        f"unexpected token {stream.current.value!r}",
+                        token=stream.current,
+                    )
 
         return _path
 

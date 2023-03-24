@@ -190,7 +190,8 @@ class Parser:
 
         if stream.current.kind not in (TOKEN_EOF, TOKEN_INTERSECTION, TOKEN_UNION):
             raise JSONPathSyntaxError(
-                f"unexpected token {stream.current!r}",
+                f"unexpected token {stream.current.value!r}",
+                token=stream.current,
             )
 
     def parse_path(
@@ -291,7 +292,10 @@ class Parser:
             elif stream.current.kind == TOKEN_SLICE_START:
                 list_items.append(self.parse_slice(stream))
             elif stream.current.kind == TOKEN_EOF:
-                raise JSONPathSyntaxError("unexpected end of selector list")
+                raise JSONPathSyntaxError(
+                    "unexpected end of selector list",
+                    token=stream.current,
+                )
 
             if stream.peek.kind != TOKEN_LIST_END:
                 stream.expect_peek(TOKEN_COMMA)
@@ -306,7 +310,7 @@ class Parser:
         expr = BooleanExpression(self.parse_filter_selector(stream))
 
         if stream.peek.kind == TOKEN_RPAREN:
-            raise JSONPathSyntaxError("unmatched ')'")
+            raise JSONPathSyntaxError("unbalanced ')'", token=stream.current)
 
         stream.next_token()
         stream.expect(TOKEN_FILTER_END)
@@ -358,7 +362,9 @@ class Parser:
 
         while stream.current.kind != TOKEN_RPAREN:
             if stream.current.kind in (TOKEN_EOF, TOKEN_FILTER_END):
-                raise JSONPathSyntaxError("unbalanced parentheses")
+                raise JSONPathSyntaxError(
+                    "unbalanced parentheses", token=stream.current
+                )
             expr = self.parse_infix_expression(stream, expr)
 
         stream.expect(TOKEN_RPAREN)
@@ -389,8 +395,10 @@ class Parser:
             try:
                 list_items.append(self.list_item_map[stream.current.kind](stream))
             except KeyError as err:
-                # TODO: line number etc.
-                raise JSONPathSyntaxError(f"unexpected {stream.current}") from err
+                raise JSONPathSyntaxError(
+                    f"unexpected {stream.current.value!r}",
+                    token=stream.current,
+                ) from err
 
             if stream.peek.kind != TOKEN_LIST_END:
                 stream.expect_peek(TOKEN_COMMA)
@@ -410,7 +418,9 @@ class Parser:
                 msg = "end of expression"
             else:
                 msg = repr(stream.current.value)
-            raise JSONPathSyntaxError(f"unexpected {msg}") from err
+            raise JSONPathSyntaxError(
+                f"unexpected {msg}", token=stream.current
+            ) from err
 
         while True:
             peek_kind = stream.peek.kind

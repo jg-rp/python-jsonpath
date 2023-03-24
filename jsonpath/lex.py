@@ -278,9 +278,13 @@ class Lexer:
             elif kind == TOKEN_SKIP:
                 continue
             elif kind == TOKEN_ILLEGAL:
-                # TODO: line and column number
                 raise JSONPathSyntaxError(
-                    f"unexpected token {kind!r}: {match.group()!r}"
+                    f"unexpected token {match.group()!r}",
+                    token=_token(
+                        TOKEN_ILLEGAL,
+                        value=match.group(),
+                        index=match.start(),
+                    ),
                 )
             else:
                 yield _token(
