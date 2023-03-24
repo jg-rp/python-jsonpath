@@ -1,4 +1,4 @@
-"""Core JSONPath objects."""
+"""Core JSONPath configuration object."""
 from __future__ import annotations
 
 import json
@@ -10,6 +10,7 @@ from typing import Any
 from typing import Iterable
 from typing import List
 from typing import Mapping
+from typing import Optional
 from typing import Sequence
 from typing import Union
 
@@ -19,10 +20,11 @@ from .exceptions import JSONPathTypeError
 from .filter import UNDEFINED
 
 from .lex import Lexer
+from .match import FilterContextVars
 from .parse import Parser
 
-from .path import JSONPath
 from .path import CompoundJSONPath
+from .path import JSONPath
 
 from .stream import TokenStream
 
@@ -40,7 +42,7 @@ class JSONPathEnvironment:
     root_token = "$"
     self_token = "@"
     union_token = "|"
-    context_vars_token = "#"
+    filter_context_token = "#"
 
     # Unquoted mapping keys (JSON object properties) should match this
     # pattern. It should be raw/escaped.
@@ -93,6 +95,8 @@ class JSONPathEnvironment:
         self,
         path: str,
         data: Union[str, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """Find all objects in `data` matching the given JSONPath. Return a
         list of matches, or an empty list if no matches.
@@ -105,12 +109,14 @@ class JSONPathEnvironment:
         _path = self.compile(path)
         if isinstance(data, str):
             data = json.loads(data)
-        return _path.findall(data)
+        return _path.findall(data, filter_context=filter_context)
 
     def finditer(
         self,
         path: str,
         data: Union[str, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
     ) -> Iterable[object]:
         """Return an iterator yielding :class:`JSONPathMatch` objects for each
         match of the path in the given `data`.
@@ -122,7 +128,9 @@ class JSONPathEnvironment:
         _path = self.compile(path)
         if isinstance(data, str):
             data = json.loads(data)
-        return _path.finditer(data)
+        return _path.finditer(data, filter_context=filter_context)
+
+    # TODO: async findall and finditer
 
     def getitem(self, obj: Any, key: Any) -> Any:
         """Sequence and mapping item getter used throughout JSONPath resolution."""

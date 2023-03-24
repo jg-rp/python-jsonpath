@@ -15,7 +15,7 @@ from .token import TOKEN_AND
 from .token import TOKEN_BRACKET_PROPERTY
 from .token import TOKEN_COMMA
 from .token import TOKEN_CONTAINS
-from .token import TOKEN_GLOBAL
+from .token import TOKEN_FILTER_CONTEXT
 from .token import TOKEN_DDOT
 from .token import TOKEN_DOT_INDEX
 from .token import TOKEN_DOT_PROPERTY
@@ -67,8 +67,6 @@ from .token import TOKEN_WILD
 
 if TYPE_CHECKING:
     from . import JSONPathEnvironment
-
-# TODO: A "scope" operator (like `$` and `@`, but for arbitrary scope lookup)
 
 
 class Lexer:
@@ -147,7 +145,7 @@ class Lexer:
             (TOKEN_SELF, re.escape(self.env.self_token)),
             (TOKEN_UNION, re.escape(self.env.union_token)),
             (TOKEN_INTERSECTION, re.escape(self.env.intersection_token)),
-            (TOKEN_GLOBAL, re.escape(self.env.context_vars_token)),
+            (TOKEN_FILTER_CONTEXT, re.escape(self.env.filter_context_token)),
             (TOKEN_AND, self.bool_and_pattern),
             (TOKEN_OR, self.bool_or_pattern),
             (TOKEN_IN, r"in"),

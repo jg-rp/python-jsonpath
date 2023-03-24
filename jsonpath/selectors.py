@@ -75,6 +75,7 @@ class PropertySelector(JSONPathSelector):
                     path=match.path + self.path,
                     obj=self.env.getitem(match.obj, self.name),
                     root=match.root,
+                    filter_context=match.filter_context(),
                 )
             except KeyError:
                 pass
@@ -91,6 +92,7 @@ class PropertySelector(JSONPathSelector):
                     path=match.path + self.path,
                     obj=await self.env.getitem_async(match.obj, self.name),
                     root=match.root,
+                    filter_context=match.filter_context(),
                 )
             except KeyError:
                 pass
@@ -125,6 +127,7 @@ class IndexSelector(JSONPathSelector):
                         path=f'{match.path}["{self.index}"]',
                         obj=self.env.getitem(match.obj, self._as_key),
                         root=match.root,
+                        filter_context=match.filter_context(),
                     )
                 except KeyError:
                     pass
@@ -134,6 +137,7 @@ class IndexSelector(JSONPathSelector):
                         path=match.path + self.path,
                         obj=self.env.getitem(match.obj, self.index),
                         root=match.root,
+                        filter_context=match.filter_context(),
                     )
                 except IndexError:
                     pass
@@ -150,6 +154,7 @@ class IndexSelector(JSONPathSelector):
                         path=f'{match.path}["{self.index}"]',
                         obj=await self.env.getitem_async(match.obj, self._as_key),
                         root=match.root,
+                        filter_context=match.filter_context(),
                     )
                 except KeyError:
                     pass
@@ -159,6 +164,7 @@ class IndexSelector(JSONPathSelector):
                         path=match.path + self.path,
                         obj=await self.env.getitem_async(match.obj, self.index),
                         root=match.root,
+                        filter_context=match.filter_context(),
                     )
                 except IndexError:
                     pass
@@ -199,6 +205,7 @@ class SliceSelector(JSONPathSelector):
                     path=f"{match.path}[{idx}]",
                     obj=obj,
                     root=match.root,
+                    filter_context=match.filter_context(),
                 )
                 idx += step
 
@@ -217,6 +224,7 @@ class SliceSelector(JSONPathSelector):
                     path=f"{match.path}[{idx}]",
                     obj=obj,
                     root=match.root,
+                    filter_context=match.filter_context(),
                 )
                 idx += step
 
@@ -246,6 +254,7 @@ class WildSelector(JSONPathSelector):
                         path=match.path + self._path(key),
                         obj=val,
                         root=match.root,
+                        filter_context=match.filter_context(),
                     )
             elif isinstance(match.obj, Sequence):
                 for i, val in enumerate(match.obj):
@@ -253,6 +262,7 @@ class WildSelector(JSONPathSelector):
                         path=f"{match.path}[{i}]",
                         obj=val,
                         root=match.root,
+                        filter_context=match.filter_context(),
                     )
 
     # pylint: disable=invalid-overridden-method
@@ -266,6 +276,7 @@ class WildSelector(JSONPathSelector):
                         path=match.path + self._path(key),
                         obj=val,
                         root=match.root,
+                        filter_context=match.filter_context(),
                     )
             elif isinstance(match.obj, Sequence):
                 for i, val in enumerate(match.obj):
@@ -273,6 +284,7 @@ class WildSelector(JSONPathSelector):
                         path=f"{match.path}[{i}]",
                         obj=val,
                         root=match.root,
+                        filter_context=match.filter_context(),
                     )
 
 
@@ -301,6 +313,7 @@ class RecursiveDescentSelector(JSONPathSelector):
                         path=match.path + self._path(key),
                         obj=val,
                         root=match.root,
+                        filter_context=match.filter_context(),
                     )
                     yield _match
                     yield from self._expand(_match)
@@ -313,6 +326,7 @@ class RecursiveDescentSelector(JSONPathSelector):
                         path=f"{match.path}[{i}]",
                         obj=val,
                         root=match.root,
+                        filter_context=match.filter_context(),
                     )
                     yield _match
                     yield from self._expand(_match)
@@ -387,7 +401,7 @@ class ListSelector(JSONPathSelector):
 class Filter(JSONPathSelector):
     """"""
 
-    __slots__ = ("context_vars", "expression")
+    __slots__ = ("expression",)
 
     def __init__(
         self,
@@ -395,12 +409,9 @@ class Filter(JSONPathSelector):
         env: JSONPathEnvironment,
         token: Token,
         expression: BooleanExpression,
-        context_vars: Optional[Mapping[str, Any]] = None,
     ) -> None:
         super().__init__(env=env, token=token)
         self.expression = expression
-        self.context_vars = context_vars
-        print("!!", self.context_vars)
 
     def __str__(self) -> str:
         return f"[?({self.expression})]"
@@ -412,7 +423,7 @@ class Filter(JSONPathSelector):
                     env=self.env,
                     current=match.obj,
                     root=match.root,
-                    global_vars=self.context_vars,
+                    extra_context=match.filter_context(),
                 )
                 try:
                     if self.expression.evaluate(context):
@@ -428,7 +439,7 @@ class Filter(JSONPathSelector):
                         env=self.env,
                         current=obj,
                         root=match.root,
-                        global_vars=self.context_vars,
+                        extra_context=match.filter_context(),
                     )
                     try:
                         if self.expression.evaluate(context):
@@ -436,6 +447,7 @@ class Filter(JSONPathSelector):
                                 path=f"{match.path}[{i}]",
                                 obj=obj,
                                 root=match.root,
+                                filter_context=match.filter_context(),
                             )
                     except JSONPathTypeError as err:
                         if not err.token:
@@ -452,7 +464,7 @@ class Filter(JSONPathSelector):
                     env=self.env,
                     current=match.obj,
                     root=match.root,
-                    global_vars=self.context_vars,
+                    extra_context=match.filter_context(),
                 )
 
                 try:
@@ -469,7 +481,7 @@ class Filter(JSONPathSelector):
                         env=self.env,
                         current=obj,
                         root=match.root,
-                        global_vars=self.context_vars,
+                        extra_context=match.filter_context(),
                     )
                     try:
                         if await self.expression.evaluate_async(context):
@@ -477,6 +489,7 @@ class Filter(JSONPathSelector):
                                 path=f"{match.path}[{i}]",
                                 obj=obj,
                                 root=match.root,
+                                filter_context=match.filter_context(),
                             )
                     except JSONPathTypeError as err:
                         if not err.token:
@@ -487,7 +500,7 @@ class Filter(JSONPathSelector):
 class FilterContext:
     """"""
 
-    __slots__ = ("current", "env", "root", "globals")
+    __slots__ = ("current", "env", "root", "extra_context")
 
     def __init__(
         self,
@@ -495,12 +508,12 @@ class FilterContext:
         env: JSONPathEnvironment,
         current: object,
         root: Union[Sequence[Any], Mapping[str, Any]],
-        global_vars: Optional[Mapping[str, Any]] = None,
+        extra_context: Optional[Mapping[str, Any]] = None,
     ) -> None:
         self.env = env
         self.current = current
         self.root = root
-        self.globals = global_vars or {}
+        self.extra_context = extra_context or {}
 
     def __str__(self) -> str:
-        return f"FilterContext(global_vars={self.globals!r})"
+        return f"FilterContext(extra_context={self.extra_context!r})"

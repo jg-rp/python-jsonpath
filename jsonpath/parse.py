@@ -26,6 +26,7 @@ from .filter import PrefixExpression
 from .filter import RegexLiteral
 from .filter import RootPath
 from .filter import SelfPath
+from .filter import FilterContextPath
 from .filter import StringLiteral
 from .filter import TRUE
 from .filter import UNDEFINED_LITERAL
@@ -49,6 +50,7 @@ from .token import TOKEN_DDOT
 from .token import TOKEN_EOF
 from .token import TOKEN_EQ
 from .token import TOKEN_FALSE
+from .token import TOKEN_FILTER_CONTEXT
 from .token import TOKEN_FILTER_END
 from .token import TOKEN_FILTER_START
 from .token import TOKEN_FLOAT
@@ -166,6 +168,7 @@ class Parser:
             TOKEN_RE_PATTERN: self.parse_regex,
             TOKEN_ROOT: self.parse_root_path,
             TOKEN_SELF: self.parse_self_path,
+            TOKEN_FILTER_CONTEXT: self.parse_filter_context_path,
             TOKEN_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
             TOKEN_UNDEFINED: self.parse_undefined,
@@ -379,6 +382,12 @@ class Parser:
     def parse_self_path(self, stream: TokenStream) -> FilterExpression:
         stream.next_token()
         return SelfPath(
+            JSONPath(env=self.env, selectors=self.parse_path(stream, in_filter=True))
+        )
+
+    def parse_filter_context_path(self, stream: TokenStream) -> FilterExpression:
+        stream.next_token()
+        return FilterContextPath(
             JSONPath(env=self.env, selectors=self.parse_path(stream, in_filter=True))
         )
 

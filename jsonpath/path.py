@@ -8,12 +8,14 @@ from typing import AsyncIterable
 from typing import Iterable
 from typing import List
 from typing import Mapping
+from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import TypeVar
 from typing import TYPE_CHECKING
 from typing import Union
 
+from .match import FilterContextVars
 from .match import JSONPathMatch
 from .selectors import JSONPathSelector
 
@@ -41,17 +43,29 @@ class JSONPath:
         )
 
     def findall(
-        self, data: Union[str, Sequence[Any], Mapping[str, Any]]
+        self,
+        data: Union[str, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """Return a list of objects matching this path in the given data."""
         if isinstance(data, str):
             data = json.loads(data)
         # pylint bug?
         # pylint: disable=not-an-iterable
-        return [match.obj for match in self.finditer(data)]
+        return [
+            match.obj
+            for match in self.finditer(
+                data,
+                filter_context=filter_context,
+            )
+        ]
 
     def finditer(
-        self, data: Union[str, Sequence[Any], Mapping[str, Any]]
+        self,
+        data: Union[str, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
     ) -> Iterable[JSONPathMatch]:
         """Generate :class:`JSONPathMatch` objects for each match of
         this path in the given data."""
@@ -59,7 +73,12 @@ class JSONPath:
             data = json.loads(data)
 
         matches: Iterable[JSONPathMatch] = [
-            JSONPathMatch(path=self.env.root_token, obj=data, root=data)
+            JSONPathMatch(
+                path=self.env.root_token,
+                obj=data,
+                root=data,
+                filter_context=filter_context or {},
+            )
         ]
 
         for selector in self._selectors:
@@ -68,16 +87,27 @@ class JSONPath:
         return matches
 
     async def findall_async(
-        self, data: Union[str, Sequence[Any], Mapping[str, Any]]
+        self,
+        data: Union[str, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """An async version of :meth:`findall`."""
         if isinstance(data, str):
             data = json.loads(data)
         # pylint: disable=not-an-iterable
-        return [match.obj async for match in await self.finditer_async(data)]
+        return [
+            match.obj
+            async for match in await self.finditer_async(
+                data, filter_context=filter_context
+            )
+        ]
 
     async def finditer_async(
-        self, data: Union[str, Sequence[Any], Mapping[str, Any]]
+        self,
+        data: Union[str, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:
         """Generate :class:`JSONPathMatch` objects for each match of
         this path in the given data."""
@@ -85,7 +115,12 @@ class JSONPath:
             data = json.loads(data)
 
         async def root_iter() -> AsyncIterable[JSONPathMatch]:
-            yield JSONPathMatch(path=self.env.root_token, obj=data, root=data)
+            yield JSONPathMatch(
+                path=self.env.root_token,
+                obj=data,
+                root=data,
+                filter_context=filter_context or {},
+            )
 
         matches: AsyncIterable[JSONPathMatch] = root_iter()
 
@@ -116,13 +151,15 @@ class CompoundJSONPath:
         return "".join(buf)
 
     def findall(
-        self, data: Union[str, Sequence[Any], Mapping[str, Any]]
+        self,
+        data: Union[str, Sequence[Any], Mapping[str, Any]],
+        filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """Return a list of objects matching this path in the given data."""
-        objs = self.path.findall(data)
+        objs = self.path.findall(data, filter_context=filter_context)
 
         for op, path in self.paths:
-            _objs = path.findall(data)
+            _objs = path.findall(data, filter_context=filter_context)
             if op == self.union_token:
                 objs.extend(_objs)
             elif op == self.intersection_token:
@@ -131,14 +168,16 @@ class CompoundJSONPath:
         return objs
 
     def finditer(
-        self, data: Union[str, Sequence[Any], Mapping[str, Any]]
+        self,
+        data: Union[str, Sequence[Any], Mapping[str, Any]],
+        filter_context: Optional[FilterContextVars] = None,
     ) -> Iterable[JSONPathMatch]:
         """Generate :class:`JSONPathMatch` objects for each match of
         this path in the given data."""
-        matches = self.path.finditer(data)
+        matches = self.path.finditer(data, filter_context=filter_context)
 
         for op, path in self.paths:
-            _matches = path.finditer(data)
+            _matches = path.finditer(data, filter_context=filter_context)
             if op == self.union_token:
                 matches = itertools.chain(matches, _matches)
             elif op == self.intersection_token:
@@ -148,13 +187,15 @@ class CompoundJSONPath:
         return matches
 
     async def findall_async(
-        self, data: Union[str, Sequence[Any], Mapping[str, Any]]
+        self,
+        data: Union[str, Sequence[Any], Mapping[str, Any]],
+        filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """An async version of :meth:`findall`."""
-        objs = await self.path.findall_async(data)
+        objs = await self.path.findall_async(data, filter_context=filter_context)
 
         for op, path in self.paths:
-            _objs = await path.findall_async(data)
+            _objs = await path.findall_async(data, filter_context=filter_context)
             if op == self.union_token:
                 objs.extend(_objs)
             elif op == self.intersection_token:
@@ -163,14 +204,16 @@ class CompoundJSONPath:
         return objs
 
     async def finditer_async(
-        self, data: Union[str, Sequence[Any], Mapping[str, Any]]
+        self,
+        data: Union[str, Sequence[Any], Mapping[str, Any]],
+        filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:
         """Generate :class:`JSONPathMatch` objects for each match of
         this path in the given data."""
-        matches = await self.path.finditer_async(data)
+        matches = await self.path.finditer_async(data, filter_context=filter_context)
 
         for op, path in self.paths:
-            _matches = await path.finditer_async(data)
+            _matches = await path.finditer_async(data, filter_context=filter_context)
             if op == self.union_token:
                 matches = _achain(matches, _matches)
             elif op == self.intersection_token:
