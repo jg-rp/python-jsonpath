@@ -16,6 +16,7 @@ from typing import TypeVar
 from typing import TYPE_CHECKING
 from typing import Union
 
+from .exceptions import JSONPathTypeError
 from .match import JSONPathMatch
 
 if TYPE_CHECKING:
@@ -291,10 +292,7 @@ class RecursiveDescentSelector(JSONPathSelector):
         return f'["{key}"]'
 
     def _expand(self, match: JSONPathMatch) -> Iterable[JSONPathMatch]:
-        if isinstance(match.obj, str):
-            # strings are sequences too
-            pass
-        elif isinstance(match.obj, Mapping):
+        if isinstance(match.obj, Mapping):
             for key, val in match.obj.items():
                 if isinstance(val, str):
                     pass
@@ -306,7 +304,7 @@ class RecursiveDescentSelector(JSONPathSelector):
                     )
                     yield _match
                     yield from self._expand(_match)
-        elif isinstance(match.obj, Sequence):
+        elif isinstance(match.obj, Sequence) and not isinstance(match.obj, str):
             for i, val in enumerate(match.obj):
                 if isinstance(val, str):
                     pass
@@ -410,19 +408,28 @@ class Filter(JSONPathSelector):
                 context = FilterContext(
                     env=self.env, current=match.obj, root=match.root
                 )
-                if self.expression.evaluate(context):
-                    yield match
+                try:
+                    if self.expression.evaluate(context):
+                        yield match
+                except JSONPathTypeError as err:
+                    if not err.token:
+                        err.token = self.token
+                    raise
 
-            # TODO: consider strings
-            elif isinstance(match.obj, Sequence):
+            elif isinstance(match.obj, Sequence) and not isinstance(match.obj, str):
                 for i, obj in enumerate(match.obj):
                     context = FilterContext(env=self.env, current=obj, root=match.root)
-                    if self.expression.evaluate(context):
-                        yield JSONPathMatch(
-                            path=f"{match.path}[{i}]",
-                            obj=obj,
-                            root=match.root,
-                        )
+                    try:
+                        if self.expression.evaluate(context):
+                            yield JSONPathMatch(
+                                path=f"{match.path}[{i}]",
+                                obj=obj,
+                                root=match.root,
+                            )
+                    except JSONPathTypeError as err:
+                        if not err.token:
+                            err.token = self.token
+                        raise
 
     # pylint: disable=invalid-overridden-method
     async def resolve_async(
@@ -433,18 +440,29 @@ class Filter(JSONPathSelector):
                 context = FilterContext(
                     env=self.env, current=match.obj, root=match.root
                 )
-                if await self.expression.evaluate_async(context):
-                    yield match
 
-            elif isinstance(match.obj, Sequence):
+                try:
+                    if await self.expression.evaluate_async(context):
+                        yield match
+                except JSONPathTypeError as err:
+                    if not err.token:
+                        err.token = self.token
+                    raise
+
+            elif isinstance(match.obj, Sequence) and not isinstance(match.obj, str):
                 for i, obj in enumerate(match.obj):
                     context = FilterContext(env=self.env, current=obj, root=match.root)
-                    if await self.expression.evaluate_async(context):
-                        yield JSONPathMatch(
-                            path=f"{match.path}[{i}]",
-                            obj=obj,
-                            root=match.root,
-                        )
+                    try:
+                        if await self.expression.evaluate_async(context):
+                            yield JSONPathMatch(
+                                path=f"{match.path}[{i}]",
+                                obj=obj,
+                                root=match.root,
+                            )
+                    except JSONPathTypeError as err:
+                        if not err.token:
+                            err.token = self.token
+                        raise
 
 
 class FilterContext:

@@ -1,5 +1,7 @@
-# TODO: Base exception with token/index/lineno handling
+"""JSONPath exceptions."""
 from __future__ import annotations
+
+from typing import Optional
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -9,6 +11,20 @@ if TYPE_CHECKING:
 class JSONPathError(Exception):
     """Base exception for all JSONPath syntax and type errors."""
 
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+        self.token: Optional[Token] = None
+
+    def __str__(self) -> str:
+        msg = super().__str__()
+
+        if not self.token:
+            return msg
+
+        line, column = self.token.position()
+        # TODO: give context from source path string
+        return f"{msg}, line {line}, column {column}"
+
 
 class JSONPathSyntaxError(JSONPathError):
     """An exception raised when parsing a JSONPath string."""
@@ -17,18 +33,21 @@ class JSONPathSyntaxError(JSONPathError):
         super().__init__(*args)
         self.token = token
 
-    def __str__(self) -> str:
-        msg = super().__str__()
-        line, column = self.token.position()
-        # TODO: give context from source path string
-        return f"{msg}, line {line}, column {column}"
 
-
-class JSONPathTypeError(Exception):
-    """"""
+class JSONPathTypeError(JSONPathError):
+    """An exception raised at filter evaluation time when a filter
+    expression can not be evaluated due to type errors."""
 
 
 def _truncate_message(value: str, num: int, end: str = "...") -> str:
     if len(value) < num:
         return value
     return f"{value[:num-len(end)]}{end}"
+
+
+def _truncate_words(val: str, num: int, end: str = "...") -> str:
+    # Replaces consecutive whitespace with a single newline.
+    words = val.split()
+    if len(words) < num:
+        return " ".join(words)
+    return " ".join(words[:num]) + end

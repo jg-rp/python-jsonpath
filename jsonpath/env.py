@@ -158,5 +158,6 @@ class JSONPathEnvironment:
                 return left > right
 
         raise JSONPathTypeError(
-            f"unknown operator: {type(left)} {operator} {type(right)}"
+            "unknown operator: "
+            f"{left.__class__.__name__} {operator} {right.__class__.__name__}"
         )
