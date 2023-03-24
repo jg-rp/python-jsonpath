@@ -24,5 +24,13 @@ class JSONPathMatch:
         self.root = root
 
     def __str__(self) -> str:
-        # TODO: truncate str(obj)
-        return f"{self.obj} @ {self.path}"
+        return f"{_truncate(str(self.obj), 5)} @ {_truncate(self.path, 5)}"
+
+
+def _truncate(val: str, num: int, end: str = "...") -> str:
+    # Replaces consecutive whitespace with a single newline.
+    # Treats quoted whitespace the same as unquoted whitespace.
+    words = val.split()
+    if len(words) < num:
+        return " ".join(words)
+    return " ".join(words[:num]) + end
