@@ -372,11 +372,15 @@ class Parser:
 
     def parse_root_path(self, stream: TokenStream) -> FilterExpression:
         stream.next_token()
-        return RootPath(JSONPath(selectors=self.parse_path(stream, in_filter=True)))
+        return RootPath(
+            JSONPath(env=self.env, selectors=self.parse_path(stream, in_filter=True))
+        )
 
     def parse_self_path(self, stream: TokenStream) -> FilterExpression:
         stream.next_token()
-        return SelfPath(JSONPath(selectors=self.parse_path(stream, in_filter=True)))
+        return SelfPath(
+            JSONPath(env=self.env, selectors=self.parse_path(stream, in_filter=True))
+        )
 
     def parse_regex(self, stream: TokenStream) -> FilterExpression:
         pattern = re.escape(stream.current.value)

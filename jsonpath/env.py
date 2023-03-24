@@ -8,8 +8,8 @@ from operator import getitem
 
 from typing import Any
 from typing import Iterable
-from typing import Mapping
 from typing import List
+from typing import Mapping
 from typing import Sequence
 from typing import Union
 
@@ -34,28 +34,32 @@ from .token import TOKEN_INTERSECTION
 class JSONPathEnvironment:
     """JSONPath configuration."""
 
-    # TODO: Make these chars/tokens/operator not patterns
-    root_pattern = r"\$"
-    self_pattern = r"@"
-    union_pattern = r"\|"
-    intersection_pattern = r"&"
+    # These should be unescaped strings. `re.escape` will be called
+    # on them automatically when compiling lexer rules.
+    intersection_token = "&"
+    root_token = "$"
+    self_token = "@"
+    union_token = "|"
+    context_vars_token = "#"
 
-    # TODO: Interfaces and move to the constructor?
+    # Unquoted mapping keys (JSON object properties) should match this
+    # pattern. It should be raw/escaped.
+    key_pattern = r"[a-zA-Z_][a-zA-Z0-9_-]*"
+
     lexer_class = Lexer
     parser_class = Parser
 
     def __init__(self) -> None:
         self.lexer = self.lexer_class(env=self)
         self.parser = self.parser_class(env=self)
-        # TODO: don't reference lexer for this
-        self.re_key = re.compile(self.lexer.key_pattern)
+        self.re_key = re.compile(self.key_pattern)
 
     def compile(self, path: str) -> Union[JSONPath, CompoundJSONPath]:
         """Prepare an internal representation of a JSONPath string."""
         tokens = self.lexer.tokenize(path)
         stream = TokenStream(tokens)
         _path: Union[JSONPath, CompoundJSONPath] = JSONPath(
-            selectors=self.parser.parse(stream)
+            env=self, selectors=self.parser.parse(stream)
         )
 
         if stream.current.kind != TOKEN_EOF:
@@ -63,10 +67,20 @@ class JSONPathEnvironment:
             while stream.current.kind != TOKEN_EOF:
                 if stream.current.kind == TOKEN_UNION:
                     stream.next_token()
-                    _path.union(JSONPath(selectors=self.parser.parse(stream)))
+                    _path.union(
+                        JSONPath(
+                            env=self,
+                            selectors=self.parser.parse(stream),
+                        )
+                    )
                 elif stream.current.kind == TOKEN_INTERSECTION:
                     stream.next_token()
-                    _path.intersection(JSONPath(selectors=self.parser.parse(stream)))
+                    _path.intersection(
+                        JSONPath(
+                            env=self,
+                            selectors=self.parser.parse(stream),
+                        )
+                    )
                 else:
                     raise JSONPathSyntaxError(
                         f"unexpected token {stream.current.value!r}",
@@ -143,6 +157,10 @@ class JSONPathEnvironment:
         if isinstance(right, Sequence):
             if operator == "in":
                 return left in right
+
+        # TODO: undefined
+        if left is UNDEFINED or right is UNDEFINED:
+            return False
 
         # TODO: =~
 

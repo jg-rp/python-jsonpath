@@ -14,6 +14,8 @@ from .token import Token
 from .token import TOKEN_AND
 from .token import TOKEN_BRACKET_PROPERTY
 from .token import TOKEN_COMMA
+from .token import TOKEN_CONTAINS
+from .token import TOKEN_GLOBAL
 from .token import TOKEN_DDOT
 from .token import TOKEN_DOT_INDEX
 from .token import TOKEN_DOT_PROPERTY
@@ -72,56 +74,55 @@ if TYPE_CHECKING:
 class Lexer:
     """Tokenize a JSONPath string."""
 
-    key_pattern = r"[a-zA-Z_][a-zA-Z0-9_-]*"
-
-    # 'thing' or "thing" in the right hand side of a filter expression or in a list
-    string_pattern = r"(?P<G_QUOTE>[\"'])(?P<G_QUOTED>.*?)(?P=G_QUOTE)"
-
-    # .thing
-    dot_property_pattern = rf"\.(?P<G_PROP>{key_pattern})"
-
-    # [thing]
-    bracketed_property_pattern = rf"\[\s*(?P<G_BPROP>{key_pattern})\s*]"
-
-    # ["thing"] or ['thing']
-    quoted_property_pattern = (
-        r"\[\s*(?P<G_PQUOTE>[\"'])(?P<G_PQUOTED>.*?)(?P=G_PQUOTE)\s*]"
-    )
-
-    # .1
-    # NOTE: `.1` can be a dot property where the key is "1".
-    dot_index_pattern = r"\.\s*(?P<G_DINDEX>\d+)\b"
-
-    # [1] or [-1]
-    index_pattern = r"\[\s*(?P<G_INDEX>\-?\s*\d+)\s*]"
-
-    # [:] or [1:-1] or [1:] or [:1] or [-1:] or [:-1] or [::] or [-1:0:-1]
-    slice_pattern = (
-        r"\[\s*(?P<G_SLICE_START>\-?\d*)\s*"
-        r":\s*(?P<G_SLICE_STOP>\-?\d*)\s*"
-        r"(?::\s*(?P<G_SLICE_STEP>\-?\d*))?\s*]"
-    )
-
-    slice_list_pattern = (
-        r"(?P<G_LSLICE_START>\-?\d*)\s*"
-        r":\s*(?P<G_LSLICE_STOP>\-?\d*)\s*"
-        r"(?::\s*(?P<G_LSLICE_STEP>\-?\d*))?"
-    )
-
-    # .* or [*] or .[*]
-    wild_pattern = r"\.?(?:\[\s*\*\s*]|\*)"
-
-    # && or and
-    bool_and_pattern = r"(?:&&|and)"
-
-    # || or `or`
-    bool_or_pattern = r"(?:\|\||or)"
-
-    # /pattern/ or /pattern/flags
-    re_pattern = r"/(?P<G_RE>.+?)/(?P<G_RE_FLAGS>[aims]*)"
-
     def __init__(self, *, env: JSONPathEnvironment) -> None:
         self.env = env
+
+        # 'thing' or "thing" in the right hand side of a filter expression or in a list
+        self.string_pattern = r"(?P<G_QUOTE>[\"'])(?P<G_QUOTED>.*?)(?P=G_QUOTE)"
+
+        # .thing
+        self.dot_property_pattern = rf"\.(?P<G_PROP>{env.key_pattern})"
+
+        # [thing]
+        self.bracketed_property_pattern = rf"\[\s*(?P<G_BPROP>{env.key_pattern})\s*]"
+
+        # ["thing"] or ['thing']
+        self.quoted_property_pattern = (
+            r"\[\s*(?P<G_PQUOTE>[\"'])(?P<G_PQUOTED>.*?)(?P=G_PQUOTE)\s*]"
+        )
+
+        # .1
+        # NOTE: `.1` can be a dot property where the key is "1".
+        self.dot_index_pattern = r"\.\s*(?P<G_DINDEX>\d+)\b"
+
+        # [1] or [-1]
+        self.index_pattern = r"\[\s*(?P<G_INDEX>\-?\s*\d+)\s*]"
+
+        # [:] or [1:-1] or [1:] or [:1] or [-1:] or [:-1] or [::] or [-1:0:-1]
+        self.slice_pattern = (
+            r"\[\s*(?P<G_SLICE_START>\-?\d*)\s*"
+            r":\s*(?P<G_SLICE_STOP>\-?\d*)\s*"
+            r"(?::\s*(?P<G_SLICE_STEP>\-?\d*))?\s*]"
+        )
+
+        self.slice_list_pattern = (
+            r"(?P<G_LSLICE_START>\-?\d*)\s*"
+            r":\s*(?P<G_LSLICE_STOP>\-?\d*)\s*"
+            r"(?::\s*(?P<G_LSLICE_STEP>\-?\d*))?"
+        )
+
+        # .* or [*] or .[*]
+        self.wild_pattern = r"\.?(?:\[\s*\*\s*]|\*)"
+
+        # && or and
+        self.bool_and_pattern = r"(?:&&|and)"
+
+        # || or `or`
+        self.bool_or_pattern = r"(?:\|\||or)"
+
+        # /pattern/ or /pattern/flags
+        self.re_pattern = r"/(?P<G_RE>.+?)/(?P<G_RE_FLAGS>[aims]*)"
+
         self.rules = self.compile_rules()
 
     def compile_rules(self) -> Pattern[str]:
@@ -142,11 +143,11 @@ class Lexer:
             (TOKEN_FLOAT, r"-?\d+\.\d*"),
             (TOKEN_INT, r"-?\d+\b"),
             (TOKEN_DDOT, r"\.\."),
-            # (TOKEN_DOT, r"\."),
-            (TOKEN_ROOT, self.env.root_pattern),
-            (TOKEN_SELF, self.env.self_pattern),
-            (TOKEN_UNION, self.env.union_pattern),
-            (TOKEN_INTERSECTION, self.env.intersection_pattern),
+            (TOKEN_ROOT, re.escape(self.env.root_token)),
+            (TOKEN_SELF, re.escape(self.env.self_token)),
+            (TOKEN_UNION, re.escape(self.env.union_token)),
+            (TOKEN_INTERSECTION, re.escape(self.env.intersection_token)),
+            (TOKEN_GLOBAL, re.escape(self.env.context_vars_token)),
             (TOKEN_AND, self.bool_and_pattern),
             (TOKEN_OR, self.bool_or_pattern),
             (TOKEN_IN, r"in"),
@@ -156,9 +157,10 @@ class Lexer:
             (TOKEN_NIL, r"[Nn]il"),
             (TOKEN_NULL, r"[Nn]ull"),
             (TOKEN_NONE, r"[Nn]one"),
-            (TOKEN_UNDEFINED, r"[Uu]ndefined"),
-            (TOKEN_MISSING, r"[Mm]issing"),
-            (TOKEN_BARE_PROPERTY, self.key_pattern),
+            (TOKEN_CONTAINS, r"contains"),
+            (TOKEN_UNDEFINED, r"undefined"),
+            (TOKEN_MISSING, r"missing"),
+            (TOKEN_BARE_PROPERTY, self.env.key_pattern),
             (TOKEN_LIST_START, r"\["),
             (TOKEN_LIST_END, r"]"),
             (TOKEN_COMMA, r","),

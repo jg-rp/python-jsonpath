@@ -11,29 +11,34 @@ from typing import Mapping
 from typing import Sequence
 from typing import Tuple
 from typing import TypeVar
+from typing import TYPE_CHECKING
 from typing import Union
 
 from .match import JSONPathMatch
 from .selectors import JSONPathSelector
 
+if TYPE_CHECKING:
+    from .env import JSONPathEnvironment
+
 
 class JSONPath:
     """A compiled JSONPath ready to be applied to a JSON string or Python object."""
 
-    __slots__ = ("_selectors",)
+    __slots__ = ("env", "_selectors")
 
-    # TODO: pass env?
-
-    # TODO: Store these on env
-    root_token = "$"
-    union_token = "|"
-    intersection_token = "&"
-
-    def __init__(self, *, selectors: Iterable[JSONPathSelector]) -> None:
+    def __init__(
+        self,
+        *,
+        env: JSONPathEnvironment,
+        selectors: Iterable[JSONPathSelector],
+    ) -> None:
+        self.env = env
         self._selectors = list(selectors)
 
     def __str__(self) -> str:
-        return self.root_token + "".join(str(selector) for selector in self._selectors)
+        return self.env.root_token + "".join(
+            str(selector) for selector in self._selectors
+        )
 
     def findall(
         self, data: Union[str, Sequence[Any], Mapping[str, Any]]
@@ -54,7 +59,7 @@ class JSONPath:
             data = json.loads(data)
 
         matches: Iterable[JSONPathMatch] = [
-            JSONPathMatch(path=self.root_token, obj=data, root=data)
+            JSONPathMatch(path=self.env.root_token, obj=data, root=data)
         ]
 
         for selector in self._selectors:
@@ -80,7 +85,7 @@ class JSONPath:
             data = json.loads(data)
 
         async def root_iter() -> AsyncIterable[JSONPathMatch]:
-            yield JSONPathMatch(path=self.root_token, obj=data, root=data)
+            yield JSONPathMatch(path=self.env.root_token, obj=data, root=data)
 
         matches: AsyncIterable[JSONPathMatch] = root_iter()
 

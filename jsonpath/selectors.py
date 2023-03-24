@@ -387,7 +387,7 @@ class ListSelector(JSONPathSelector):
 class Filter(JSONPathSelector):
     """"""
 
-    __slots__ = ("expression",)
+    __slots__ = ("context_vars", "expression")
 
     def __init__(
         self,
@@ -395,9 +395,12 @@ class Filter(JSONPathSelector):
         env: JSONPathEnvironment,
         token: Token,
         expression: BooleanExpression,
+        context_vars: Optional[Mapping[str, Any]] = None,
     ) -> None:
         super().__init__(env=env, token=token)
         self.expression = expression
+        self.context_vars = context_vars
+        print("!!", self.context_vars)
 
     def __str__(self) -> str:
         return f"[?({self.expression})]"
@@ -406,7 +409,10 @@ class Filter(JSONPathSelector):
         for match in matches:
             if isinstance(match.obj, Mapping):
                 context = FilterContext(
-                    env=self.env, current=match.obj, root=match.root
+                    env=self.env,
+                    current=match.obj,
+                    root=match.root,
+                    global_vars=self.context_vars,
                 )
                 try:
                     if self.expression.evaluate(context):
@@ -418,7 +424,12 @@ class Filter(JSONPathSelector):
 
             elif isinstance(match.obj, Sequence) and not isinstance(match.obj, str):
                 for i, obj in enumerate(match.obj):
-                    context = FilterContext(env=self.env, current=obj, root=match.root)
+                    context = FilterContext(
+                        env=self.env,
+                        current=obj,
+                        root=match.root,
+                        global_vars=self.context_vars,
+                    )
                     try:
                         if self.expression.evaluate(context):
                             yield JSONPathMatch(
@@ -438,7 +449,10 @@ class Filter(JSONPathSelector):
         async for match in matches:
             if isinstance(match.obj, Mapping):
                 context = FilterContext(
-                    env=self.env, current=match.obj, root=match.root
+                    env=self.env,
+                    current=match.obj,
+                    root=match.root,
+                    global_vars=self.context_vars,
                 )
 
                 try:
@@ -451,7 +465,12 @@ class Filter(JSONPathSelector):
 
             elif isinstance(match.obj, Sequence) and not isinstance(match.obj, str):
                 for i, obj in enumerate(match.obj):
-                    context = FilterContext(env=self.env, current=obj, root=match.root)
+                    context = FilterContext(
+                        env=self.env,
+                        current=obj,
+                        root=match.root,
+                        global_vars=self.context_vars,
+                    )
                     try:
                         if await self.expression.evaluate_async(context):
                             yield JSONPathMatch(
@@ -468,7 +487,7 @@ class Filter(JSONPathSelector):
 class FilterContext:
     """"""
 
-    __slots__ = ("current", "env", "root", "scope")
+    __slots__ = ("current", "env", "root", "globals")
 
     def __init__(
         self,
@@ -476,9 +495,12 @@ class FilterContext:
         env: JSONPathEnvironment,
         current: object,
         root: Union[Sequence[Any], Mapping[str, Any]],
-        scope: Optional[Mapping[str, Any]] = None,
+        global_vars: Optional[Mapping[str, Any]] = None,
     ) -> None:
         self.env = env
         self.current = current
         self.root = root
-        self.scope = scope or {}
+        self.globals = global_vars or {}
+
+    def __str__(self) -> str:
+        return f"FilterContext(global_vars={self.globals!r})"

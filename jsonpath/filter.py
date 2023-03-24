@@ -312,3 +312,16 @@ class RootPath(Path):
 
     async def evaluate_async(self, context: FilterContext) -> object:
         return await self.path.findall_async(context.root) or UNDEFINED
+
+
+class GlobalPath(Path):
+    def __str__(self) -> str:
+        path_repr = str(self.path)
+        return "#" + path_repr[1:]
+
+    def evaluate(self, context: FilterContext) -> object:
+        print(context)
+        return self.path.findall(context.globals) or UNDEFINED
+
+    async def evaluate_async(self, context: FilterContext) -> object:
+        return await self.path.findall_async(context.globals) or UNDEFINED
