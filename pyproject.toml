@@ -81,5 +81,8 @@ warn_return_any = true
 warn_unreachable = true
 
 
+[tool.pylint.basic]
+good-names = ["op", "it"]
+
 [tool.pylint.format]
 max-line-length = "88"

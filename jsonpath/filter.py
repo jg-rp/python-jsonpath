@@ -53,7 +53,16 @@ class Nil(FilterExpression):
 
 NIL = Nil()
 
-UNDEFINED = object()
+
+class _Undefined:
+    def __str__(self) -> str:
+        return "<UNDEFINED>"
+
+    def __repr__(self) -> str:
+        return "<UNDEFINED>"
+
+
+UNDEFINED = _Undefined()
 
 
 class Undefined(FilterExpression):

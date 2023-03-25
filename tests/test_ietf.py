@@ -99,7 +99,7 @@ TEST_CASES = [
     #     want=[1, 2, 1, 2],
     # ),
     Case(
-        description="wildcard selector - double wild",
+        description="wildcard selector - dot property wild",
         path="$.a[*]",
         data={"o": {"j": 1, "k": 2}, "a": [5, 3]},
         want=[5, 3],

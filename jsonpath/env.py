@@ -15,10 +15,7 @@ from typing import Sequence
 from typing import Union
 
 from .exceptions import JSONPathSyntaxError
-from .exceptions import JSONPathTypeError
-
 from .filter import UNDEFINED
-
 from .lex import Lexer
 from .match import FilterContextVars
 from .parse import Parser
@@ -151,7 +148,7 @@ class JSONPathEnvironment:
     # pylint: disable=too-many-return-statements
     def compare(self, left: object, operator: str, right: object) -> bool:
         """Object comparison within JSONPath filters."""
-        # TODO: better - this is temporary
+        # TODO: better - this (whole method) is temporary
         if operator == "and":
             return self.is_truthy(left) and self.is_truthy(right)
         if operator == "or":
@@ -162,15 +159,23 @@ class JSONPathEnvironment:
         if operator in ("!=", "<>"):
             return bool(left != right)
 
-        if isinstance(right, Sequence):
-            if operator == "in":
-                return left in right
+        if isinstance(right, Sequence) and operator == "in":
+            return left in right
 
-        # TODO: undefined
         if left is UNDEFINED or right is UNDEFINED:
-            return False
+            return operator == "<="
 
         # TODO: =~
+
+        if isinstance(left, str) and isinstance(right, str):
+            if operator == "<=":
+                return left <= right
+            if operator == ">=":
+                return left >= right
+            if operator == "<":
+                return left < right
+            if operator == ">":
+                return left > right
 
         # This will catch booleans too.
         if isinstance(left, (int, float)) and isinstance(right, (int, float)):
@@ -183,7 +188,18 @@ class JSONPathEnvironment:
             if operator == ">":
                 return left > right
 
-        raise JSONPathTypeError(
-            "unknown operator: "
-            f"{left.__class__.__name__} {operator} {right.__class__.__name__}"
-        )
+        if (
+            isinstance(left, Mapping)
+            and isinstance(right, Mapping)
+            and operator == "<="
+        ):
+            return left == right
+
+        if (
+            isinstance(left, Sequence)
+            and isinstance(right, Sequence)
+            and operator == "<="
+        ):
+            return left == right
+
+        return False
