@@ -6,6 +6,7 @@ import re
 
 from operator import getitem
 
+from typing import AsyncIterable
 from typing import Any
 from typing import Iterable
 from typing import List
@@ -127,7 +128,31 @@ class JSONPathEnvironment:
             data = json.loads(data)
         return _path.finditer(data, filter_context=filter_context)
 
-    # TODO: async findall and finditer
+    async def findall_async(
+        self,
+        path: str,
+        data: Union[str, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
+    ) -> List[object]:
+        """An async version of :meth:`findall`."""
+        _path = self.compile(path)
+        if isinstance(data, str):
+            data = json.loads(data)
+        return await _path.findall_async(data, filter_context=filter_context)
+
+    async def finditer_async(
+        self,
+        path: str,
+        data: Union[str, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
+    ) -> AsyncIterable[object]:
+        """An async version of :meth:`finditer`."""
+        _path = self.compile(path)
+        if isinstance(data, str):
+            data = json.loads(data)
+        return await _path.finditer_async(data, filter_context=filter_context)
 
     def getitem(self, obj: Any, key: Any) -> Any:
         """Sequence and mapping item getter used throughout JSONPath resolution."""

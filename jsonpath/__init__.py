@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2023-present James Prior <jamesgr.prior@gmail.com>
 #
 # SPDX-License-Identifier: MIT
+
 from .path import CompoundJSONPath
 from .path import JSONPath
 from .env import JSONPathEnvironment
@@ -9,8 +10,20 @@ from .parse import Parser
 
 __all__ = (
     "CompoundJSONPath",
+    "findall_async",
+    "findall",
+    "finditer_async",
+    "finditer",
     "JSONPath",
     "JSONPathEnvironment",
     "Lexer",
     "Parser",
 )
+
+
+# For convenience
+DEFAULT_ENV = JSONPathEnvironment()
+findall = DEFAULT_ENV.findall
+finditer = DEFAULT_ENV.finditer
+findall_async = DEFAULT_ENV.findall_async
+finditer_async = DEFAULT_ENV.finditer_async
