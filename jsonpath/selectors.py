@@ -48,7 +48,7 @@ class JSONPathSelector(ABC):
 class PropertySelector(JSONPathSelector):
     """A JSONPath property."""
 
-    __slots__ = ("name", "path")
+    __slots__ = ("name",)
 
     def __init__(
         self,
@@ -59,12 +59,9 @@ class PropertySelector(JSONPathSelector):
     ) -> None:
         super().__init__(env=env, token=token)
         self.name = name
-        self.path = str(self)
 
     def __str__(self) -> str:
-        if self.env.re_key.fullmatch(self.name):
-            return f".{self.name}"
-        return f'["{self.name}"]'
+        return f"['{self.name}']"
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
@@ -72,7 +69,7 @@ class PropertySelector(JSONPathSelector):
                 continue
             try:
                 yield JSONPathMatch(
-                    path=match.path + self.path,
+                    path=match.path + f"['{self.name}']",
                     obj=self.env.getitem(match.obj, self.name),
                     root=match.root,
                     filter_context=match.filter_context(),
@@ -89,7 +86,7 @@ class PropertySelector(JSONPathSelector):
                 continue
             try:
                 yield JSONPathMatch(
-                    path=match.path + self.path,
+                    path=match.path + f"['{self.name}']",
                     obj=await self.env.getitem_async(match.obj, self.name),
                     root=match.root,
                     filter_context=match.filter_context(),
@@ -101,7 +98,7 @@ class PropertySelector(JSONPathSelector):
 class IndexSelector(JSONPathSelector):
     """Dotted and bracketed sequence access by index."""
 
-    __slots__ = ("index", "path", "_as_key")
+    __slots__ = ("index", "_as_key")
 
     def __init__(
         self,
@@ -112,7 +109,6 @@ class IndexSelector(JSONPathSelector):
     ) -> None:
         super().__init__(env=env, token=token)
         self.index = index
-        self.path = str(self)
         self._as_key = str(self.index)
 
     def __str__(self) -> str:
@@ -124,7 +120,7 @@ class IndexSelector(JSONPathSelector):
                 # Try the string representation of the index as a key.
                 try:
                     yield JSONPathMatch(
-                        path=f'{match.path}["{self.index}"]',
+                        path=f"{match.path}['{self.index}']",
                         obj=self.env.getitem(match.obj, self._as_key),
                         root=match.root,
                         filter_context=match.filter_context(),
@@ -133,8 +129,10 @@ class IndexSelector(JSONPathSelector):
                     pass
             elif isinstance(match.obj, Sequence):
                 try:
+                    # TODO: canonical concrete path normalizes negative index
+                    # to positive.
                     yield JSONPathMatch(
-                        path=match.path + self.path,
+                        path=match.path + f"[{self.index}]",
                         obj=self.env.getitem(match.obj, self.index),
                         root=match.root,
                         filter_context=match.filter_context(),
@@ -151,7 +149,7 @@ class IndexSelector(JSONPathSelector):
                 # Try the string representation of the index as a key.
                 try:
                     yield JSONPathMatch(
-                        path=f'{match.path}["{self.index}"]',
+                        path=f"{match.path}['{self.index}']",
                         obj=await self.env.getitem_async(match.obj, self._as_key),
                         root=match.root,
                         filter_context=match.filter_context(),
@@ -161,7 +159,7 @@ class IndexSelector(JSONPathSelector):
             elif isinstance(match.obj, Sequence):
                 try:
                     yield JSONPathMatch(
-                        path=match.path + self.path,
+                        path=match.path + f"[{self.index}]",
                         obj=await self.env.getitem_async(match.obj, self.index),
                         root=match.root,
                         filter_context=match.filter_context(),
@@ -201,6 +199,7 @@ class SliceSelector(JSONPathSelector):
             idx = self.slice.start or 0
             step = self.slice.step or 1
             for obj in self.env.getitem(match.obj, self.slice):
+                # TODO: canonical concrete index
                 yield JSONPathMatch(
                     path=f"{match.path}[{idx}]",
                     obj=obj,
@@ -233,16 +232,7 @@ class WildSelector(JSONPathSelector):
     """Wildcard expansion selector."""
 
     def __str__(self) -> str:
-        return ".*"
-
-    def _path(self, key: object) -> str:
-        """Return a string representation of an object property key."""
-        if not isinstance(key, str):
-            key = str(key)
-
-        if self.env.re_key.match(key):
-            return f".{key}"
-        return f'["{key}"]'
+        return "[*]"
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
@@ -251,7 +241,7 @@ class WildSelector(JSONPathSelector):
             if isinstance(match.obj, Mapping):
                 for key, val in match.obj.items():
                     yield JSONPathMatch(
-                        path=match.path + self._path(key),
+                        path=match.path + f"['{key}']",
                         obj=val,
                         root=match.root,
                         filter_context=match.filter_context(),
@@ -273,7 +263,7 @@ class WildSelector(JSONPathSelector):
             if isinstance(match.obj, Mapping):
                 for key, val in match.obj.items():
                     yield JSONPathMatch(
-                        path=match.path + self._path(key),
+                        path=match.path + f"['{key}']",
                         obj=val,
                         root=match.root,
                         filter_context=match.filter_context(),
@@ -294,15 +284,6 @@ class RecursiveDescentSelector(JSONPathSelector):
     def __str__(self) -> str:
         return ".."
 
-    def _path(self, key: object) -> str:
-        """Return a string representation of an object property key."""
-        if not isinstance(key, str):
-            key = str(key)
-
-        if self.env.re_key.match(key):
-            return f".{key}"
-        return f'["{key}"]'
-
     def _expand(self, match: JSONPathMatch) -> Iterable[JSONPathMatch]:
         if isinstance(match.obj, Mapping):
             for key, val in match.obj.items():
@@ -310,7 +291,7 @@ class RecursiveDescentSelector(JSONPathSelector):
                     pass
                 elif isinstance(val, (Mapping, Sequence)):
                     _match = JSONPathMatch(
-                        path=match.path + self._path(key),
+                        path=match.path + f"['{key}']",
                         obj=val,
                         root=match.root,
                         filter_context=match.filter_context(),
@@ -378,7 +359,7 @@ class ListSelector(JSONPathSelector):
                 step = item.slice.step if item.slice.step is not None else "1"
                 buf.append(f"{start}:{stop}:{step}")
             elif isinstance(item, PropertySelector):
-                buf.append(item.name)
+                buf.append(f"'{item.name}'")
             else:
                 buf.append(str(item.index))
         return f"[{', '.join(buf)}]"

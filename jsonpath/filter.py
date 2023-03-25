@@ -95,7 +95,7 @@ class Literal(FilterExpression, Generic[LITERAL_EXPRESSION_T]):
         self.value = value
 
     def __str__(self) -> str:
-        return repr(self.value)
+        return repr(self.value).lower()
 
     def __eq__(self, other: object) -> bool:
         return self.value == other

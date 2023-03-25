@@ -141,6 +141,7 @@ class Lexer:
             (TOKEN_FILTER_END, r"\)\s*]"),
             (TOKEN_BRACKET_PROPERTY, self.bracketed_property_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
+            # TODO: Scientific notation 1e2 1e+2 1e-2 1.2e3
             (TOKEN_FLOAT, r"-?\d+\.\d*"),
             (TOKEN_INT, r"-?\d+\b"),
             (TOKEN_DDOT, r"\.\."),
