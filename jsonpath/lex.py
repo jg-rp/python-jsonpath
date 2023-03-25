@@ -112,7 +112,10 @@ class Lexer:
         # .* or [*] or .[*]
         self.wild_pattern = r"\.?(?:\[\s*\*\s*]|\*)"
 
-        # && or and
+        # `not` or !
+        self.logical_not_pattern = r"(?:not|!)"
+
+        # && or `and`
         self.bool_and_pattern = r"(?:&&|and)"
 
         # || or `or`
@@ -149,7 +152,6 @@ class Lexer:
             (TOKEN_AND, self.bool_and_pattern),
             (TOKEN_OR, self.bool_or_pattern),
             (TOKEN_IN, r"in"),
-            (TOKEN_NOT, r"not"),
             (TOKEN_TRUE, r"[Tt]rue"),
             (TOKEN_FALSE, r"[Ff]alse"),
             (TOKEN_NIL, r"[Nn]il"),
@@ -158,7 +160,6 @@ class Lexer:
             (TOKEN_CONTAINS, r"contains"),
             (TOKEN_UNDEFINED, r"undefined"),
             (TOKEN_MISSING, r"missing"),
-            (TOKEN_BARE_PROPERTY, self.env.key_pattern),
             (TOKEN_LIST_START, r"\["),
             (TOKEN_LIST_END, r"]"),
             (TOKEN_COMMA, r","),
@@ -170,6 +171,8 @@ class Lexer:
             (TOKEN_RE, r"=~"),
             (TOKEN_LT, r"<"),
             (TOKEN_GT, r">"),
+            (TOKEN_NOT, self.logical_not_pattern),
+            (TOKEN_BARE_PROPERTY, self.env.key_pattern),
             (TOKEN_LPAREN, r"\("),
             (TOKEN_RPAREN, r"\)"),
             (TOKEN_SKIP, r"[ \n\t\r\.]+"),

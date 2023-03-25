@@ -717,6 +717,84 @@ TEST_CASES = [
             ),
         ],
     ),
+    Case(
+        description="filter expression with logical not using '!'",
+        path="[?(@.some == 1 or !@.some < 5)]",
+        want=[
+            Token(
+                kind=TOKEN_FILTER_START,
+                value="[?(",
+                index=0,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_SELF,
+                value="@",
+                index=3,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_PROPERTY,
+                value="some",
+                index=5,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_EQ,
+                value="==",
+                index=10,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_INT,
+                value="1",
+                index=13,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_OR,
+                value="or",
+                index=15,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_NOT,
+                value="!",
+                index=18,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_SELF,
+                value="@",
+                index=19,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_PROPERTY,
+                value="some",
+                index=21,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_LT,
+                value="<",
+                index=26,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_INT,
+                value="5",
+                index=28,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_FILTER_END,
+                value=")]",
+                index=29,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+        ],
+    ),
 ]
 
 
