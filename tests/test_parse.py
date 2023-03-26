@@ -160,12 +160,12 @@ TEST_CASES = [
     Case(
         description="filter with logical not",
         path="$.some[?(@.thing > 1 and not $.other)]",
-        want="$['some'][?(@['thing'] > 1 and not $['other'])]",
+        want="$['some'][?(@['thing'] > 1 && !$['other'])]",
     ),
     Case(
         description="filter with grouped expression",
         path="$.some[?(@.thing > 1 and ($.foo or $.bar))]",
-        want="$['some'][?(@['thing'] > 1 and $['foo'] or $['bar'])]",
+        want="$['some'][?(@['thing'] > 1 && $['foo'] || $['bar'])]",
     ),
 ]
 

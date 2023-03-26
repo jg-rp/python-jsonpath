@@ -177,9 +177,9 @@ class JSONPathEnvironment:
     def compare(self, left: object, operator: str, right: object) -> bool:
         """Object comparison within JSONPath filters."""
         # TODO: better - this (whole method) is temporary
-        if operator == "and":
+        if operator == "&&":
             return self.is_truthy(left) and self.is_truthy(right)
-        if operator == "or":
+        if operator == "||":
             return self.is_truthy(left) or self.is_truthy(right)
 
         if operator == "==":

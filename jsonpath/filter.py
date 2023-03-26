@@ -184,7 +184,7 @@ class PrefixExpression(FilterExpression):
         self.right = right
 
     def __str__(self) -> str:
-        return f"{self.operator} {self.right}"
+        return f"{self.operator}{self.right}"
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -194,7 +194,7 @@ class PrefixExpression(FilterExpression):
         )
 
     def _evaluate(self, context: FilterContext, right: object) -> object:
-        if self.operator == "not":
+        if self.operator == "!":
             return not context.env.is_truthy(right)
         raise JSONPathTypeError(f"unknown operator {self.operator} {self.right}")
 

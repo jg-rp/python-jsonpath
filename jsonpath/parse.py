@@ -121,22 +121,21 @@ class Parser:
         TOKEN_RPAREN: PRECEDENCE_LOWEST,
     }
 
-    BINARY_OPERATORS = frozenset(
-        (
-            TOKEN_AND,
-            TOKEN_CONTAINS,
-            TOKEN_EQ,
-            TOKEN_GE,
-            TOKEN_GT,
-            TOKEN_IN,
-            TOKEN_LE,
-            TOKEN_LG,
-            TOKEN_LT,
-            TOKEN_NE,
-            TOKEN_OR,
-            TOKEN_RE,
-        )
-    )
+    # Mapping of operator token to canonical string.
+    BINARY_OPERATORS = {
+        TOKEN_AND: "&&",
+        TOKEN_CONTAINS: "contains",
+        TOKEN_EQ: "==",
+        TOKEN_GE: ">=",
+        TOKEN_GT: ">",
+        TOKEN_IN: "in",
+        TOKEN_LE: "<",
+        TOKEN_LG: "<>",
+        TOKEN_LT: "<",
+        TOKEN_NE: "!=",
+        TOKEN_OR: "||",
+        TOKEN_RE: "=~",
+    }
 
     PREFIX_OPERATORS = frozenset(
         [
@@ -343,7 +342,7 @@ class Parser:
         tok = stream.next_token()
         assert tok.kind == TOKEN_NOT
         return PrefixExpression(
-            operator="not",
+            operator="!",
             right=self.parse_filter_selector(
                 stream, precedence=self.PRECEDENCE_LOGICALRIGHT
             ),
@@ -355,7 +354,9 @@ class Parser:
         tok = stream.next_token()
         precedence = self.PRECEDENCES.get(tok.kind, self.PRECEDENCE_LOWEST)
         return InfixExpression(
-            left, tok.value, self.parse_filter_selector(stream, precedence)
+            left,
+            self.BINARY_OPERATORS[tok.kind],
+            self.parse_filter_selector(stream, precedence),
         )
 
     def parse_grouped_expression(self, stream: TokenStream) -> FilterExpression:
