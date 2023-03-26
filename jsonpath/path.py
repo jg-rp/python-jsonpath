@@ -35,7 +35,7 @@ class JSONPath:
         selectors: Iterable[JSONPathSelector],
     ) -> None:
         self.env = env
-        self._selectors = list(selectors)
+        self._selectors = tuple(selectors)
 
     def __str__(self) -> str:
         return self.env.root_token + "".join(

@@ -393,7 +393,7 @@ class Parser:
         )
 
     def parse_regex(self, stream: TokenStream) -> FilterExpression:
-        pattern = re.escape(stream.current.value)
+        pattern = stream.current.value
         if stream.peek.kind == TOKEN_RE_FLAGS:
             stream.next_token()
             flags = 0

@@ -82,7 +82,7 @@ warn_unreachable = true
 
 
 [tool.pylint.basic]
-good-names = ["op", "it"]
+good-names = ["op", "it", "rv"]
 
 [tool.pylint.format]
 max-line-length = "88"

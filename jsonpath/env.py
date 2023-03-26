@@ -43,8 +43,6 @@ class JSONPathEnvironment:
     union_token = "|"
     filter_context_token = "#"
 
-    # Unquoted mapping keys (JSON object properties) should match this
-    # pattern. It should be raw/escaped.
     key_pattern = r"[a-zA-Z_][a-zA-Z0-9_-]*"
 
     lexer_class = Lexer
@@ -104,7 +102,6 @@ class JSONPathEnvironment:
 
         Raises a :class:`JSONPathSyntaxError` if the path is invalid.
         """
-        # TODO: cache in convenience methods, not on .compile()
         _path = self.compile(path)
         if isinstance(data, str):
             data = json.loads(data)
@@ -192,10 +189,15 @@ class JSONPathEnvironment:
         if isinstance(right, Sequence) and operator == "in":
             return left in right
 
+        if isinstance(left, Sequence) and operator == "contains":
+            return right in left
+
         if left is UNDEFINED or right is UNDEFINED:
             return operator == "<="
 
-        # TODO: =~
+        print("!!", left, operator, right)
+        if operator == "=~" and isinstance(right, re.Pattern) and isinstance(left, str):
+            return bool(right.match(left))
 
         if isinstance(left, str) and isinstance(right, str):
             if operator == "<=":
