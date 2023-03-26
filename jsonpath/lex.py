@@ -279,6 +279,12 @@ class Lexer:
                     value=match.group("G_RE_FLAGS"),
                     index=match.start("G_RE_FLAGS"),
                 )
+            elif kind in (TOKEN_NONE, TOKEN_NULL):
+                yield _token(
+                    kind=TOKEN_NIL,
+                    value=match.group(),
+                    index=match.start(),
+                )
             elif kind == TOKEN_SKIP:
                 continue
             elif kind == TOKEN_ILLEGAL:

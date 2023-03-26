@@ -17,32 +17,23 @@ from jsonpath.token import TOKEN_FALSE
 from jsonpath.token import TOKEN_FILTER_END
 from jsonpath.token import TOKEN_FILTER_START
 from jsonpath.token import TOKEN_FLOAT
-from jsonpath.token import TOKEN_GE
 from jsonpath.token import TOKEN_GT
 from jsonpath.token import TOKEN_IN
 from jsonpath.token import TOKEN_INDEX
 from jsonpath.token import TOKEN_INT
 from jsonpath.token import TOKEN_INTERSECTION
-from jsonpath.token import TOKEN_LE
-from jsonpath.token import TOKEN_LG
 from jsonpath.token import TOKEN_LIST_END
 from jsonpath.token import TOKEN_BARE_PROPERTY
 from jsonpath.token import TOKEN_LIST_START
-from jsonpath.token import TOKEN_LPAREN
 from jsonpath.token import TOKEN_LT
-from jsonpath.token import TOKEN_NE
 from jsonpath.token import TOKEN_NIL
-from jsonpath.token import TOKEN_NONE
 from jsonpath.token import TOKEN_NOT
-from jsonpath.token import TOKEN_NULL
 from jsonpath.token import TOKEN_OR
 from jsonpath.token import TOKEN_PROPERTY
 from jsonpath.token import TOKEN_RE
 from jsonpath.token import TOKEN_RE_FLAGS
 from jsonpath.token import TOKEN_RE_PATTERN
 from jsonpath.token import TOKEN_ROOT
-from jsonpath.token import TOKEN_ROOT
-from jsonpath.token import TOKEN_RPAREN
 from jsonpath.token import TOKEN_SELF
 from jsonpath.token import TOKEN_SLICE_START
 from jsonpath.token import TOKEN_SLICE_STEP
@@ -913,6 +904,84 @@ TEST_CASES = [
                 value=")]",
                 index=29,
                 path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+        ],
+    ),
+    Case(
+        description="filter true and false",
+        path="[?(true == false)]",
+        want=[
+            Token(
+                kind=TOKEN_FILTER_START,
+                value="[?(",
+                index=0,
+                path="[?(true == false)]",
+            ),
+            Token(kind=TOKEN_TRUE, value="true", index=3, path="[?(true == false)]"),
+            Token(kind=TOKEN_EQ, value="==", index=8, path="[?(true == false)]"),
+            Token(kind=TOKEN_FALSE, value="false", index=11, path="[?(true == false)]"),
+            Token(
+                kind=TOKEN_FILTER_END, value=")]", index=16, path="[?(true == false)]"
+            ),
+        ],
+    ),
+    Case(
+        description="filter true and false",
+        path="[?(nil == none && nil == null)]",
+        want=[
+            Token(
+                kind=TOKEN_FILTER_START,
+                value="[?(",
+                index=0,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_NIL,
+                value="nil",
+                index=3,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_EQ,
+                value="==",
+                index=7,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_NIL,
+                value="none",
+                index=10,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_AND,
+                value="&&",
+                index=15,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_NIL,
+                value="nil",
+                index=18,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_EQ,
+                value="==",
+                index=22,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_NIL,
+                value="null",
+                index=25,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_FILTER_END,
+                value=")]",
+                index=29,
+                path="[?(nil == none && nil == null)]",
             ),
         ],
     ),
