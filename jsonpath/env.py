@@ -195,7 +195,6 @@ class JSONPathEnvironment:
         if left is UNDEFINED or right is UNDEFINED:
             return operator == "<="
 
-        print("!!", left, operator, right)
         if operator == "=~" and isinstance(right, re.Pattern) and isinstance(left, str):
             return bool(right.match(left))
 
