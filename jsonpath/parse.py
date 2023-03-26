@@ -232,7 +232,8 @@ class Parser:
             elif stream.current.kind == TOKEN_FILTER_START and not in_filter:
                 yield self.parse_filter(stream)
             else:
-                stream.push(stream.current)
+                if in_filter:
+                    stream.push(stream.current)
                 break
 
             stream.next_token()

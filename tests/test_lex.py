@@ -478,6 +478,45 @@ TEST_CASES = [
         ],
     ),
     Case(
+        description="union of three paths",
+        path="$.some | $.thing | $.other",
+        want=[
+            Token(
+                kind=TOKEN_ROOT, value="$", index=0, path="$.some | $.thing | $.other"
+            ),
+            Token(
+                kind=TOKEN_PROPERTY,
+                value="some",
+                index=2,
+                path="$.some | $.thing | $.other",
+            ),
+            Token(
+                kind=TOKEN_UNION, value="|", index=7, path="$.some | $.thing | $.other"
+            ),
+            Token(
+                kind=TOKEN_ROOT, value="$", index=9, path="$.some | $.thing | $.other"
+            ),
+            Token(
+                kind=TOKEN_PROPERTY,
+                value="thing",
+                index=11,
+                path="$.some | $.thing | $.other",
+            ),
+            Token(
+                kind=TOKEN_UNION, value="|", index=17, path="$.some | $.thing | $.other"
+            ),
+            Token(
+                kind=TOKEN_ROOT, value="$", index=19, path="$.some | $.thing | $.other"
+            ),
+            Token(
+                kind=TOKEN_PROPERTY,
+                value="other",
+                index=21,
+                path="$.some | $.thing | $.other",
+            ),
+        ],
+    ),
+    Case(
         description="intersection two paths",
         path="$.some & $.thing",
         want=[

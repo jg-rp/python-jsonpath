@@ -175,7 +175,6 @@ class JSONPathEnvironment:
     # pylint: disable=too-many-return-statements, too-many-branches
     def compare(self, left: object, operator: str, right: object) -> bool:
         """Object comparison within JSONPath filters."""
-        # TODO: better - this (whole method) is temporary
         if operator == "&&":
             return self.is_truthy(left) and self.is_truthy(right)
         if operator == "||":
