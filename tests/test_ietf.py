@@ -60,6 +60,12 @@ class Case:
     want: Union[Sequence[Any], Mapping[str, Any]]
 
 
+FILTER_SELECTOR_DATA = {
+    "a": [3, 5, 1, 2, 4, 6, {"b": "j"}, {"b": "k"}, {"b": {}}, {"b": "kilo"}],
+    "o": {"p": 1, "q": 2, "r": 3, "s": 5, "t": {"u": 6}},
+    "e": "f",
+}
+
 TEST_CASES = [
     Case(description="root", path="$", data={"k": "v"}, want=[{"k": "v"}]),
     Case(
@@ -134,7 +140,48 @@ TEST_CASES = [
         data=["a", "b", "c", "d", "e", "f", "g"],
         want=["g", "f", "e", "d", "c", "b", "a"],
     ),
-    # TODO: Filter selector examples
+    Case(
+        description="filter selector - Member value comparison",
+        path="$.a[?(@.b == 'kilo')]",
+        data=FILTER_SELECTOR_DATA,
+        want=[{"b": "kilo"}],
+    ),
+    Case(
+        description="filter selector - Array value comparison",
+        path="$.a[?(@>3.5)]",
+        data=FILTER_SELECTOR_DATA,
+        want=[5, 4, 6],
+    ),
+    Case(
+        description="filter selector - Array value existence",
+        path="$.a[?(@.b)]",
+        data=FILTER_SELECTOR_DATA,
+        want=[{"b": "j"}, {"b": "k"}, {"b": {}}, {"b": "kilo"}],
+    ),
+    # Case(
+    #     description="filter selector - ",
+    #     path="",
+    #     data=FILTER_SELECTOR_DATA,
+    #     want=[],
+    # ),
+    # Case(
+    #     description="filter selector - ",
+    #     path="",
+    #     data=FILTER_SELECTOR_DATA,
+    #     want=[],
+    # ),
+    # Case(
+    #     description="filter selector - ",
+    #     path="",
+    #     data=FILTER_SELECTOR_DATA,
+    #     want=[],
+    # ),
+    # Case(
+    #     description="filter selector - ",
+    #     path="",
+    #     data=FILTER_SELECTOR_DATA,
+    #     want=[],
+    # ),
     # TODO: child segment examples
 ]
 

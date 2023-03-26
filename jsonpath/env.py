@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import re
 
+from collections.abc import Collection
 from operator import getitem
 
 from typing import AsyncIterable
@@ -168,6 +169,8 @@ class JSONPathEnvironment:
         """Test for truthiness when evaluating JSONPath filters."""
         if obj is UNDEFINED:
             return False
+        if isinstance(obj, Collection):
+            return True
         return bool(obj)
 
     # pylint: disable=too-many-return-statements

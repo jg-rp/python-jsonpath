@@ -286,12 +286,13 @@ class Path(FilterExpression, ABC):
 
 class SelfPath(Path):
     def __str__(self) -> str:
-        path_repr = str(self.path)
-        return "@" + path_repr[1:]
+        return "@" + str(self.path)[1:]
 
     def evaluate(self, context: FilterContext) -> object:
         if not isinstance(context.current, (Sequence, Mapping)):
-            return None
+            if self.path.empty():
+                return UNDEFINED
+            return context.current
 
         matches = self.path.findall(context.current)
         if not matches:
@@ -302,7 +303,9 @@ class SelfPath(Path):
 
     async def evaluate_async(self, context: FilterContext) -> object:
         if not isinstance(context.current, (Sequence, Mapping)):
-            return None
+            if self.path.empty():
+                return UNDEFINED
+            return context.current
 
         matches = await self.path.findall_async(context.current)
         if not matches:

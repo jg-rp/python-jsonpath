@@ -497,4 +497,7 @@ class FilterContext:
         self.extra_context = extra_context or {}
 
     def __str__(self) -> str:
-        return f"FilterContext(extra_context={self.extra_context!r})"
+        return (
+            f"FilterContext(current={self.current}, "
+            f"extra_context={self.extra_context!r})"
+        )

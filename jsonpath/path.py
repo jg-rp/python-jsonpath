@@ -129,6 +129,10 @@ class JSONPath:
 
         return matches
 
+    def empty(self) -> bool:
+        """Return `True` if this path has no selectors."""
+        return bool(self._selectors)
+
 
 class CompoundJSONPath:
     """Multiple :class:`JSONPath`s combined."""
