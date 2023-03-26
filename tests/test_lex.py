@@ -335,6 +335,34 @@ TEST_CASES = [
         ],
     ),
     Case(
+        description=(
+            "filter self dot property equality with float in scientific notation"
+        ),
+        path="[?(@.some == 1.1e10)]",
+        want=[
+            Token(
+                kind=TOKEN_FILTER_START,
+                value="[?(",
+                index=0,
+                path="[?(@.some == 1.1e10)]",
+            ),
+            Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@.some == 1.1e10)]"),
+            Token(
+                kind=TOKEN_PROPERTY, value="some", index=5, path="[?(@.some == 1.1e10)]"
+            ),
+            Token(kind=TOKEN_EQ, value="==", index=10, path="[?(@.some == 1.1e10)]"),
+            Token(
+                kind=TOKEN_FLOAT, value="1.1e10", index=13, path="[?(@.some == 1.1e10)]"
+            ),
+            Token(
+                kind=TOKEN_FILTER_END,
+                value=")]",
+                index=19,
+                path="[?(@.some == 1.1e10)]",
+            ),
+        ],
+    ),
+    Case(
         description="filter self dot index equality with float",
         path="[?(@.1 == 1.1)]",
         want=[
@@ -377,6 +405,27 @@ TEST_CASES = [
             Token(kind=TOKEN_EQ, value="==", index=10, path="[?(@.some == 1)]"),
             Token(kind=TOKEN_INT, value="1", index=13, path="[?(@.some == 1)]"),
             Token(kind=TOKEN_FILTER_END, value=")]", index=14, path="[?(@.some == 1)]"),
+        ],
+    ),
+    Case(
+        description="filter self dot property equality with int in scientific notation",
+        path="[?(@.some == 1e10)]",
+        want=[
+            Token(
+                kind=TOKEN_FILTER_START,
+                value="[?(",
+                index=0,
+                path="[?(@.some == 1e10)]",
+            ),
+            Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@.some == 1e10)]"),
+            Token(
+                kind=TOKEN_PROPERTY, value="some", index=5, path="[?(@.some == 1e10)]"
+            ),
+            Token(kind=TOKEN_EQ, value="==", index=10, path="[?(@.some == 1e10)]"),
+            Token(kind=TOKEN_INT, value="1e10", index=13, path="[?(@.some == 1e10)]"),
+            Token(
+                kind=TOKEN_FILTER_END, value=")]", index=17, path="[?(@.some == 1e10)]"
+            ),
         ],
     ),
     Case(

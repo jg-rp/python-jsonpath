@@ -137,13 +137,13 @@ class Lexer:
             (TOKEN_SLICE, self.slice_pattern),
             (TOKEN_WILD, self.wild_pattern),
             (TOKEN_LIST_SLICE, self.slice_list_pattern),
+            # TODO: IETF parentheses are optional (or not allowed?)
             (TOKEN_FILTER_START, r"\[\s*\?\s*\("),
             (TOKEN_FILTER_END, r"\)\s*]"),
             (TOKEN_BRACKET_PROPERTY, self.bracketed_property_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
-            # TODO: Scientific notation 1e2 1e+2 1e-2 1.2e3
-            (TOKEN_FLOAT, r"-?\d+\.\d*"),
-            (TOKEN_INT, r"-?\d+\b"),
+            (TOKEN_FLOAT, r"-?\d+\.\d*(?:e[+-]?\d+)?"),
+            (TOKEN_INT, r"-?\d+(?:e[+\-]?\d+)?\b"),
             (TOKEN_DDOT, r"\.\."),
             (TOKEN_ROOT, re.escape(self.env.root_token)),
             (TOKEN_SELF, re.escape(self.env.self_token)),
