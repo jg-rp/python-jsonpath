@@ -180,12 +180,104 @@ TEST_CASES = [
         want=[1, {"b": "k"}],
     ),
     # Case(
-    #     description="filter selector - ",
-    #     path="",
+    #     description="filter selector - Array value regular expression match",
+    #     path='$.a[?match(@.b, "[jk]")]',
     #     data=FILTER_SELECTOR_DATA,
-    #     want=[],
+    #     want=[{"b": "j"}, {"b": "k"}],
     # ),
-    # TODO: child segment examples
+    # Case(
+    #     description="filter selector - Array value regular expression search",
+    #     path='$.a[?search(@.b, "[jk]")]',
+    #     data=FILTER_SELECTOR_DATA,
+    #     want=[{"b": "j"}, {"b": "k"}, {"b": "kilo"}],
+    # ),
+    # Case(
+    #     description="filter selector - Object value logical AND",
+    #     path="$.o[?(@>1 && @<4)]",
+    #     data=FILTER_SELECTOR_DATA,
+    #     want=[2, 3],
+    # ),
+    # Case(
+    #     description="filter selector - Object value logical OR",
+    #     path="$.o[?(@.u || @.x)]",
+    #     data=FILTER_SELECTOR_DATA,
+    #     want=[{"u": 6}],
+    # ),
+    # Case(
+    #     description="filter selector - Comparison of queries with no values",
+    #     path="$.a[?(@.b == $.x)]",
+    #     data=FILTER_SELECTOR_DATA,
+    #     want=[3, 5, 1, 2, 4, 6],
+    # ),
+    Case(
+        description=(
+            "filter selector - Comparisons of primitive and of structured values"
+        ),
+        path="$.a[?(@ == @)]",
+        data=FILTER_SELECTOR_DATA,
+        want=[3, 5, 1, 2, 4, 6, {"b": "j"}, {"b": "k"}, {"b": {}}, {"b": "kilo"}],
+    ),
+    Case(
+        description=("child segment - Indices"),
+        path="$[0, 3]",
+        data=["a", "b", "c", "d", "e", "f", "g"],
+        want=["a", "d"],
+    ),
+    Case(
+        description=("child segment - Slice and index"),
+        path="$[0:2, 5]",
+        data=["a", "b", "c", "d", "e", "f", "g"],
+        want=["a", "b", "f"],
+    ),
+    Case(
+        description=("child segment - Duplicated entries"),
+        path="$[0, 0]",
+        data=["a", "b", "c", "d", "e", "f", "g"],
+        want=["a", "a"],
+    ),
+    Case(
+        description=("descendant segment - Object values"),
+        path="$..j",
+        data={"o": {"j": 1, "k": 2}, "a": [5, 3, [{"j": 4}, {"k": 6}]]},
+        want=[1, 4],
+    ),
+    Case(
+        description=("descendant segment - Array values"),
+        path="$..[0]",
+        data={"o": {"j": 1, "k": 2}, "a": [5, 3, [{"j": 4}, {"k": 6}]]},
+        want=[5, {"j": 4}],
+    ),
+    Case(
+        description=("descendant segment - All values"),
+        path="$..[*]",
+        data={"o": {"j": 1, "k": 2}, "a": [5, 3, [{"j": 4}, {"k": 6}]]},
+        want=[
+            {"j": 1, "k": 2},
+            [5, 3, [{"j": 4}, {"k": 6}]],
+            1,
+            2,
+            5,
+            3,
+            [{"j": 4}, {"k": 6}],
+            {"j": 4},
+            {"k": 6},
+            4,
+            6,
+        ],
+    ),
+    Case(
+        description=("descendant segment - Input value is visited"),
+        path="$..o",
+        data={"o": {"j": 1, "k": 2}, "a": [5, 3, [{"j": 4}, {"k": 6}]]},
+        want=[{"j": 1, "k": 2}],
+    ),
+    Case(
+        description=("descendant segment - Multiple segments"),
+        path="$.a..[0, 1]",
+        data={"o": {"j": 1, "k": 2}, "a": [5, 3, [{"j": 4}, {"k": 6}]]},
+        want=[5, {"j": 4}, 3, {"k": 6}],
+    ),
+    # TODO: semantics of null
 ]
 
 
