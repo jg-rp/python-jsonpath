@@ -171,6 +171,8 @@ class JSONPathEnvironment:
             return False
         if isinstance(obj, Collection):
             return True
+        if obj is None:
+            return True
         return bool(obj)
 
     # pylint: disable=too-many-return-statements

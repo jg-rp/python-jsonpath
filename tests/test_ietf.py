@@ -277,7 +277,62 @@ TEST_CASES = [
         data={"o": {"j": 1, "k": 2}, "a": [5, 3, [{"j": 4}, {"k": 6}]]},
         want=[5, {"j": 4}, 3, {"k": 6}],
     ),
-    # TODO: semantics of null
+    Case(
+        description=("null semantics - Object value"),
+        path="$.a",
+        data={"a": None, "b": [None], "c": [{}], "null": 1},
+        want=[None],
+    ),
+    Case(
+        description=("null semantics - null used as array"),
+        path="$.a[0]",
+        data={"a": None, "b": [None], "c": [{}], "null": 1},
+        want=[],
+    ),
+    Case(
+        description=("null semantics - null used as object"),
+        path="$.a.d",
+        data={"a": None, "b": [None], "c": [{}], "null": 1},
+        want=[],
+    ),
+    Case(
+        description=("null semantics - Array value"),
+        path="$.b[0]",
+        data={"a": None, "b": [None], "c": [{}], "null": 1},
+        want=[None],
+    ),
+    Case(
+        description=("null semantics - Array value wild"),
+        path="$.b[*]",
+        data={"a": None, "b": [None], "c": [{}], "null": 1},
+        want=[None],
+    ),
+    Case(
+        description=("null semantics - Existence"),
+        path="$.b[?(@)]",
+        data={"a": None, "b": [None], "c": [{}], "null": 1},
+        want=[None],
+    ),
+    Case(
+        description=("null semantics - Comparison"),
+        path="$.b[?(@==null)]",
+        data={"a": None, "b": [None], "c": [{}], "null": 1},
+        want=[None],
+    ),
+    Case(
+        description=("null semantics - Comparison with 'missing' value"),
+        path="$.c[?(@.d==null)]",
+        data={"a": None, "b": [None], "c": [{}], "null": 1},
+        want=[],
+    ),
+    Case(
+        description=(
+            "null semantics - Not JSON null at all, just a member name string"
+        ),
+        path="$.null",
+        data={"a": None, "b": [None], "c": [{}], "null": 1},
+        want=[1],
+    ),
 ]
 
 
