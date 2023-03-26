@@ -5,6 +5,7 @@
 from .path import CompoundJSONPath
 from .path import JSONPath
 from .env import JSONPathEnvironment
+from .match import JSONPathMatch
 from .lex import Lexer
 from .parse import Parser
 
@@ -16,6 +17,7 @@ __all__ = (
     "finditer",
     "JSONPath",
     "JSONPathEnvironment",
+    "JSONPathMatch",
     "Lexer",
     "Parser",
 )

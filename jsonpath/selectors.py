@@ -114,6 +114,11 @@ class IndexSelector(JSONPathSelector):
     def __str__(self) -> str:
         return f"[{self.index}]"
 
+    def _normalized_index(self, obj: Sequence[object]) -> int:
+        if self.index < 0 and len(obj) >= abs(self.index):
+            return len(obj) + self.index
+        return self.index
+
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
             if isinstance(match.obj, Mapping):
@@ -129,10 +134,8 @@ class IndexSelector(JSONPathSelector):
                     pass
             elif isinstance(match.obj, Sequence):
                 try:
-                    # TODO: canonical concrete path normalizes negative index
-                    # to positive.
                     yield JSONPathMatch(
-                        path=match.path + f"[{self.index}]",
+                        path=match.path + f"[{self._normalized_index(match.obj)}]",
                         obj=self.env.getitem(match.obj, self.index),
                         root=match.root,
                         filter_context=match.filter_context(),
@@ -159,7 +162,7 @@ class IndexSelector(JSONPathSelector):
             elif isinstance(match.obj, Sequence):
                 try:
                     yield JSONPathMatch(
-                        path=match.path + f"[{self.index}]",
+                        path=match.path + f"[{self._normalized_index(match.obj)}]",
                         obj=await self.env.getitem_async(match.obj, self.index),
                         root=match.root,
                         filter_context=match.filter_context(),
@@ -191,6 +194,11 @@ class SliceSelector(JSONPathSelector):
         step = self.slice.step if self.slice.step is not None else "1"
         return f"[{start}:{stop}:{step}]"
 
+    def _normalized_index(self, obj: Sequence[object], index: int) -> int:
+        if index < 0 and len(obj) >= abs(index):
+            return len(obj) + index
+        return index
+
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
             if not isinstance(match.obj, Sequence):
@@ -199,9 +207,8 @@ class SliceSelector(JSONPathSelector):
             idx = self.slice.start or 0
             step = self.slice.step or 1
             for obj in self.env.getitem(match.obj, self.slice):
-                # TODO: canonical concrete index
                 yield JSONPathMatch(
-                    path=f"{match.path}[{idx}]",
+                    path=f"{match.path}[{self._normalized_index(match.obj, idx)}]",
                     obj=obj,
                     root=match.root,
                     filter_context=match.filter_context(),
@@ -220,7 +227,7 @@ class SliceSelector(JSONPathSelector):
             step = self.slice.step or 1
             for obj in await self.env.getitem_async(match.obj, self.slice):
                 yield JSONPathMatch(
-                    path=f"{match.path}[{idx}]",
+                    path=f"{match.path}[{self._normalized_index(match.obj, idx)}]",
                     obj=obj,
                     root=match.root,
                     filter_context=match.filter_context(),
