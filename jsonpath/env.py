@@ -20,6 +20,7 @@ from .exceptions import JSONPathSyntaxError
 from .filter import UNDEFINED
 from .lex import Lexer
 from .match import FilterContextVars
+from .match import JSONPathMatch
 from .parse import Parser
 
 from .path import CompoundJSONPath
@@ -113,7 +114,7 @@ class JSONPathEnvironment:
         data: Union[str, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
-    ) -> Iterable[object]:
+    ) -> Iterable[JSONPathMatch]:
         """Return an iterator yielding :class:`JSONPathMatch` objects for each
         match of the path in the given `data`.
 
@@ -145,7 +146,7 @@ class JSONPathEnvironment:
         data: Union[str, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
-    ) -> AsyncIterable[object]:
+    ) -> AsyncIterable[JSONPathMatch]:
         """An async version of :meth:`finditer`."""
         _path = self.compile(path)
         if isinstance(data, str):

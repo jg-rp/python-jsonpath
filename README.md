@@ -17,6 +17,12 @@ Another JSONPath implementation for Python. Specifically one that is strictly re
 
 This project is in the early stages of development. If you stubble across it, don't try and use it yet. More to follow.
 
+## API
+
+TODO:
+
+- Mention convenience functions and use of the default JSONDecoder
+
 ## Syntax
 
 TODO:
