@@ -26,8 +26,16 @@ TEST_CASES = [
         path="$.some | $.thing | [0]",
         want="$['some'] | $['thing'] | $[0]",
     ),
-    # TODO: intersection
-    # TODO: union and intersection on one
+    Case(
+        description="intersection of two paths",
+        path="$.some.* & $.thing.*",
+        want="$['some'][*] & $['thing'][*]",
+    ),
+    Case(
+        description="intersection then union",
+        path="$.some.* & $.thing.* | $.other",
+        want="$['some'][*] & $['thing'][*] | $['other']",
+    ),
 ]
 
 
@@ -41,6 +49,3 @@ def env() -> JSONPathEnvironment:
 def test_parse_compound_path(env: JSONPathEnvironment, case: Case) -> None:
     path = env.compile(case.path)
     assert str(path) == case.want
-
-
-# TODO: test find union and intersection
