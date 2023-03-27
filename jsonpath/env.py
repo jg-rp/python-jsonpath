@@ -1,7 +1,6 @@
 """Core JSONPath configuration object."""
 from __future__ import annotations
 
-import json
 import re
 
 from collections.abc import Collection
@@ -96,17 +95,15 @@ class JSONPathEnvironment:
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
-        """Find all objects in `data` matching the given JSONPath. Return a
-        list of matches, or an empty list if no matches.
+        """Find all objects in `data` matching the given JSONPath `path`.
+        Return a list of matches, or an empty list if no matches.
 
-        If `data` is a string, it will be loaded using :meth:`json.loads`.
+        If `data` is a string, it will be loaded using :meth:`json.loads` and
+        the default `JSONDecoder`.
 
         Raises a :class:`JSONPathSyntaxError` if the path is invalid.
         """
-        _path = self.compile(path)
-        if isinstance(data, str):
-            data = json.loads(data)
-        return _path.findall(data, filter_context=filter_context)
+        return self.compile(path).findall(data, filter_context=filter_context)
 
     def finditer(
         self,
@@ -122,10 +119,7 @@ class JSONPathEnvironment:
 
         Raises a :class:`JSONPathSyntaxError` if the path is invalid.
         """
-        _path = self.compile(path)
-        if isinstance(data, str):
-            data = json.loads(data)
-        return _path.finditer(data, filter_context=filter_context)
+        return self.compile(path).finditer(data, filter_context=filter_context)
 
     async def findall_async(
         self,
@@ -135,10 +129,9 @@ class JSONPathEnvironment:
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """An async version of :meth:`findall`."""
-        _path = self.compile(path)
-        if isinstance(data, str):
-            data = json.loads(data)
-        return await _path.findall_async(data, filter_context=filter_context)
+        return await self.compile(path).findall_async(
+            data, filter_context=filter_context
+        )
 
     async def finditer_async(
         self,
@@ -148,10 +141,9 @@ class JSONPathEnvironment:
         filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:
         """An async version of :meth:`finditer`."""
-        _path = self.compile(path)
-        if isinstance(data, str):
-            data = json.loads(data)
-        return await _path.finditer_async(data, filter_context=filter_context)
+        return await self.compile(path).finditer_async(
+            data, filter_context=filter_context
+        )
 
     def getitem(self, obj: Any, key: Any) -> Any:
         """Sequence and mapping item getter used throughout JSONPath resolution."""

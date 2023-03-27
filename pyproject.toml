@@ -48,6 +48,12 @@ dependencies = [
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=jsonpath --cov=tests {args}"
 no-cov = "cov --no-cov {args}"
 test = "pytest {args}"
+lint = [
+  "flake8 tests/ jsonpath/",
+  "black tests/ jsonpath/ --check --diff",
+  "pylint tests/ jsonpath/",
+]
+typing = "mypy"
 
 [[tool.hatch.envs.test.matrix]]
 python = ["37", "38", "39", "310", "311", "pypy38", "pypy39"]
@@ -64,7 +70,7 @@ omit = ["jsonpath/__about__.py"]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 
 [tool.mypy]
-files = "liquid_at_scale"
+files = "jsonpath"
 python_version = "3.10"
 disallow_subclassing_any = true
 disallow_untyped_calls = true

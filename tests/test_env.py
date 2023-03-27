@@ -9,7 +9,7 @@ from jsonpath import JSONPathEnvironment
 
 
 @pytest.fixture
-def env() -> JSONPathEnvironment:
+def env() -> JSONPathEnvironment:  # pylint: disable=missing-function-docstring
     return JSONPathEnvironment()
 
 
