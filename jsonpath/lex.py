@@ -76,16 +76,18 @@ class Lexer:
     def __init__(self, *, env: JSONPathEnvironment) -> None:
         self.env = env
 
+        self.key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
+
         # 'thing' or "thing" in the right hand side of a filter expression or in a list
         # self.string_pattern = r"(?P<G_QUOTE>[\"'])(?P<G_QUOTED>.*?)(?P=G_QUOTE)"
         self.double_quote_pattern = r'"(?P<G_DQUOTE>(?:(?!(?<!\\)").)*)"'
         self.single_quote_pattern = r"'(?P<G_SQUOTE>(?:(?!(?<!\\)').)*)'"
 
         # .thing
-        self.dot_property_pattern = rf"\.(?P<G_PROP>{env.key_pattern})"
+        self.dot_property_pattern = rf"\.(?P<G_PROP>{self.key_pattern})"
 
         # [thing]
-        self.bracketed_property_pattern = rf"\[\s*(?P<G_BPROP>{env.key_pattern})\s*]"
+        self.bracketed_property_pattern = rf"\[\s*(?P<G_BPROP>{self.key_pattern})\s*]"
 
         # .1
         # NOTE: `.1` can be a dot property where the key is "1".
@@ -171,7 +173,7 @@ class Lexer:
             (TOKEN_LT, r"<"),
             (TOKEN_GT, r">"),
             (TOKEN_NOT, self.logical_not_pattern),
-            (TOKEN_BARE_PROPERTY, self.env.key_pattern),
+            (TOKEN_BARE_PROPERTY, self.key_pattern),
             (TOKEN_LPAREN, r"\("),
             (TOKEN_RPAREN, r"\)"),
             (TOKEN_SKIP, r"[ \n\t\r\.]+"),

@@ -43,15 +43,12 @@ class JSONPathEnvironment:
     union_token = "|"
     filter_context_token = "#"
 
-    key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
-
     lexer_class = Lexer
     parser_class = Parser
 
     def __init__(self) -> None:
         self.lexer = self.lexer_class(env=self)
         self.parser = self.parser_class(env=self)
-        self.re_key = re.compile(self.key_pattern)
 
     def compile(self, path: str) -> Union[JSONPath, CompoundJSONPath]:
         """Prepare an internal representation of a JSONPath string."""
