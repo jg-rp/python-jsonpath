@@ -10,6 +10,7 @@ from .lex import Lexer
 from .parse import Parser
 
 __all__ = (
+    "compile",
     "CompoundJSONPath",
     "findall_async",
     "findall",
@@ -29,3 +30,4 @@ findall = DEFAULT_ENV.findall
 finditer = DEFAULT_ENV.finditer
 findall_async = DEFAULT_ENV.findall_async
 finditer_async = DEFAULT_ENV.finditer_async
+compile = DEFAULT_ENV.compile  # pylint: disable=redefined-builtin

@@ -66,6 +66,8 @@ FILTER_SELECTOR_DATA = {
     "e": "f",
 }
 
+# TODO: update with examples from version 12
+
 TEST_CASES = [
     Case(description="root", path="$", data={"k": "v"}, want=[{"k": "v"}]),
     Case(
