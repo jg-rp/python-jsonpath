@@ -306,6 +306,7 @@ class Parser:
 
             stream.next_token()
 
+        # TODO: is an empty list an error?
         return ListSelector(env=self.env, token=tok, items=list_items)
 
     def parse_filter(self, stream: TokenStream) -> Filter:

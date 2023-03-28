@@ -43,6 +43,7 @@ dependencies = [
   "flake8-bugbear",
   "ipython",
   "pyyaml",
+  "types-pyyaml",
 ]
 
 [tool.hatch.envs.default.scripts]
