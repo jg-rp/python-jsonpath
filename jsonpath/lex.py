@@ -19,6 +19,7 @@ from .token import TOKEN_FILTER_CONTEXT
 from .token import TOKEN_DDOT
 from .token import TOKEN_DOT_INDEX
 from .token import TOKEN_DOT_PROPERTY
+from .token import TOKEN_DOUBLE_QUOTE_STRING
 from .token import TOKEN_EQ
 from .token import TOKEN_FALSE
 from .token import TOKEN_FILTER_END
@@ -47,13 +48,13 @@ from .token import TOKEN_NOT
 from .token import TOKEN_NULL
 from .token import TOKEN_OR
 from .token import TOKEN_PROPERTY
-from .token import TOKEN_QUOTE_PROPERTY
 from .token import TOKEN_RE
 from .token import TOKEN_RE_FLAGS
 from .token import TOKEN_RE_PATTERN
 from .token import TOKEN_ROOT
 from .token import TOKEN_RPAREN
 from .token import TOKEN_SELF
+from .token import TOKEN_SINGLE_QUOTE_STRING
 from .token import TOKEN_SKIP
 from .token import TOKEN_SLICE
 from .token import TOKEN_SLICE_START
@@ -76,7 +77,9 @@ class Lexer:
         self.env = env
 
         # 'thing' or "thing" in the right hand side of a filter expression or in a list
-        self.string_pattern = r"(?P<G_QUOTE>[\"'])(?P<G_QUOTED>.*?)(?P=G_QUOTE)"
+        # self.string_pattern = r"(?P<G_QUOTE>[\"'])(?P<G_QUOTED>.*?)(?P=G_QUOTE)"
+        self.double_quote_pattern = r'"(?P<G_DQUOTE>(?:(?!(?<!\\)").)*)"'
+        self.single_quote_pattern = r"'(?P<G_SQUOTE>(?:(?!(?<!\\)').)*)'"
 
         # .thing
         self.dot_property_pattern = rf"\.(?P<G_PROP>{env.key_pattern})"
@@ -124,7 +127,8 @@ class Lexer:
     def compile_rules(self) -> Pattern[str]:
         """Prepare regular expression rules."""
         rules = [
-            (TOKEN_STRING, self.string_pattern),
+            (TOKEN_DOUBLE_QUOTE_STRING, self.double_quote_pattern),
+            (TOKEN_SINGLE_QUOTE_STRING, self.single_quote_pattern),
             (TOKEN_RE_PATTERN, self.re_pattern),
             (TOKEN_DOT_INDEX, self.dot_index_pattern),
             (TOKEN_INDEX, self.index_pattern),
@@ -250,11 +254,17 @@ class Lexer:
                     value=match.group("G_SLICE_STEP") or "",
                     index=match.start("G_SLICE_STEP"),
                 )
-            elif kind == TOKEN_STRING:
+            elif kind == TOKEN_DOUBLE_QUOTE_STRING:
                 yield _token(
                     kind=TOKEN_STRING,
-                    value=match.group("G_QUOTED"),
-                    index=match.start("G_QUOTED"),
+                    value=match.group("G_DQUOTE"),
+                    index=match.start("G_DQUOTE"),
+                )
+            elif kind == TOKEN_SINGLE_QUOTE_STRING:
+                yield _token(
+                    kind=TOKEN_STRING,
+                    value=match.group("G_SQUOTE"),
+                    index=match.start("G_SQUOTE"),
                 )
             elif kind == TOKEN_RE_PATTERN:
                 yield _token(
