@@ -186,7 +186,6 @@ class Lexer:
 
         for match in self.rules.finditer(path):
             kind = match.lastgroup
-            print(match, kind)
             assert kind is not None
 
             if kind == TOKEN_DOT_PROPERTY:

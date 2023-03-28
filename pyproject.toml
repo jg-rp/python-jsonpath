@@ -42,6 +42,7 @@ dependencies = [
   "mypy",
   "flake8-bugbear",
   "ipython",
+  "pyyaml",
 ]
 
 [tool.hatch.envs.default.scripts]
@@ -88,7 +89,7 @@ warn_unreachable = true
 
 
 [tool.pylint.basic]
-good-names = ["op", "it", "rv"]
+good-names = ["op", "it", "rv", "fd", "id"]
 
 [tool.pylint.format]
 max-line-length = "88"

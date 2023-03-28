@@ -43,7 +43,7 @@ class JSONPathEnvironment:
     union_token = "|"
     filter_context_token = "#"
 
-    key_pattern = r"[a-zA-Z_][a-zA-Z0-9_-]*"
+    key_pattern = r"[\w][\w-]*"
 
     lexer_class = Lexer
     parser_class = Parser
