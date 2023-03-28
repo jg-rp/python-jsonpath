@@ -25,9 +25,9 @@ dependencies = []
 dynamic = ["version"]
 
 [project.urls]
-Documentation = "https://github.com/unknown/python-jsonpath#readme"
-Issues = "https://github.com/unknown/python-jsonpath/issues"
-Source = "https://github.com/unknown/python-jsonpath"
+Documentation = "https://github.com/jg-rp/python-jsonpath#readme"
+Issues = "https://github.com/jg-rp/python-jsonpath/issues"
+Source = "https://github.com/jg-rp/python-jsonpath"
 
 [tool.hatch.version]
 path = "jsonpath/__about__.py"
