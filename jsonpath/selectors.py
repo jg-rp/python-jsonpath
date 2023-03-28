@@ -201,7 +201,7 @@ class SliceSelector(JSONPathSelector):
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
-            if not isinstance(match.obj, Sequence):
+            if not isinstance(match.obj, Sequence) or self.slice.step == 0:
                 continue
 
             idx = self.slice.start or 0
@@ -220,7 +220,7 @@ class SliceSelector(JSONPathSelector):
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
         async for match in matches:
-            if not isinstance(match.obj, Sequence):
+            if not isinstance(match.obj, Sequence) or self.slice.step == 0:
                 continue
 
             idx = self.slice.start or 0
