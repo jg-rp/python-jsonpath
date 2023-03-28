@@ -82,7 +82,9 @@ TEST_CASES = [
         path='$["some"]',
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path='$["some"]'),
-            Token(kind=TOKEN_PROPERTY, value="some", index=3, path='$["some"]'),
+            Token(kind=TOKEN_LIST_START, value="[", index=1, path='$["some"]'),
+            Token(kind=TOKEN_STRING, value="some", index=3, path='$["some"]'),
+            Token(kind=TOKEN_LIST_END, value="]", index=8, path='$["some"]'),
         ],
     ),
     Case(
@@ -90,7 +92,9 @@ TEST_CASES = [
         path="$['some']",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$['some']"),
-            Token(kind=TOKEN_PROPERTY, value="some", index=3, path="$['some']"),
+            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$['some']"),
+            Token(kind=TOKEN_STRING, value="some", index=3, path="$['some']"),
+            Token(kind=TOKEN_LIST_END, value="]", index=8, path="$['some']"),
         ],
     ),
     Case(
@@ -1022,6 +1026,20 @@ TEST_CASES = [
                 index=29,
                 path="[?(nil == none && nil == null)]",
             ),
+        ],
+    ),
+    Case(
+        description="list of quoted properties",
+        path="$['some', 'thing']",
+        want=[
+            Token(kind=TOKEN_ROOT, value="$", index=0, path="$['some', 'thing']"),
+            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$['some', 'thing']"),
+            Token(kind=TOKEN_STRING, value="some", index=3, path="$['some', 'thing']"),
+            Token(kind=TOKEN_COMMA, value=",", index=8, path="$['some', 'thing']"),
+            Token(
+                kind=TOKEN_STRING, value="thing", index=11, path="$['some', 'thing']"
+            ),
+            Token(kind=TOKEN_LIST_END, value="]", index=17, path="$['some', 'thing']"),
         ],
     ),
 ]

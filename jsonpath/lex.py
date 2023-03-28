@@ -84,11 +84,6 @@ class Lexer:
         # [thing]
         self.bracketed_property_pattern = rf"\[\s*(?P<G_BPROP>{env.key_pattern})\s*]"
 
-        # ["thing"] or ['thing']
-        self.quoted_property_pattern = (
-            r"\[\s*(?P<G_PQUOTE>[\"'])(?P<G_PQUOTED>.*?)(?P=G_PQUOTE)\s*]"
-        )
-
         # .1
         # NOTE: `.1` can be a dot property where the key is "1".
         self.dot_index_pattern = r"\.\s*(?P<G_DINDEX>\d+)\b"
@@ -129,7 +124,6 @@ class Lexer:
     def compile_rules(self) -> Pattern[str]:
         """Prepare regular expression rules."""
         rules = [
-            (TOKEN_QUOTE_PROPERTY, self.quoted_property_pattern),
             (TOKEN_STRING, self.string_pattern),
             (TOKEN_RE_PATTERN, self.re_pattern),
             (TOKEN_DOT_INDEX, self.dot_index_pattern),
@@ -192,15 +186,10 @@ class Lexer:
 
         for match in self.rules.finditer(path):
             kind = match.lastgroup
+            print(match, kind)
             assert kind is not None
 
-            if kind == TOKEN_QUOTE_PROPERTY:
-                yield _token(
-                    kind=TOKEN_PROPERTY,
-                    value=match.group("G_PQUOTED"),
-                    index=match.start("G_PQUOTED"),
-                )
-            elif kind == TOKEN_DOT_PROPERTY:
+            if kind == TOKEN_DOT_PROPERTY:
                 yield _token(
                     kind=TOKEN_PROPERTY,
                     value=match.group("G_PROP"),
