@@ -129,7 +129,7 @@ class Parser:
         TOKEN_GE: ">=",
         TOKEN_GT: ">",
         TOKEN_IN: "in",
-        TOKEN_LE: "<",
+        TOKEN_LE: "<=",
         TOKEN_LG: "<>",
         TOKEN_LT: "<",
         TOKEN_NE: "!=",
