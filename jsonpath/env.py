@@ -43,7 +43,7 @@ class JSONPathEnvironment:
     union_token = "|"
     filter_context_token = "#"
 
-    key_pattern = r"[\w][\w-]*"
+    key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
 
     lexer_class = Lexer
     parser_class = Parser
@@ -224,5 +224,8 @@ class JSONPathEnvironment:
             and operator == "<="
         ):
             return left == right
+
+        if left is None and right is None and operator in ("<=", ">="):
+            return True
 
         return False
