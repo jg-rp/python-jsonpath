@@ -78,4 +78,7 @@ ENV/
 
 # Dev utils
 dev.py
+
+# Test fixtures
 comparison_regression_suite.yaml
+cts.json
