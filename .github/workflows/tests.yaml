@@ -1,10 +1,9 @@
 name: tests
-
 on: [push, pull_request]
 
 jobs:
   tests:
-    name: ${{ matrix.python-version }}
+    name: ${{ matrix.python-version }} on ${{ startsWith(matrix.os, 'macos-') && 'macOS' || startsWith(matrix.os, 'windows-') && 'Windows' || 'Linux' }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -22,4 +21,4 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --upgrade hatch
       - name: Test
-        run: hatch run test:test
+        run: hatch run test
