@@ -1,7 +1,9 @@
 # Python JSONPath
 
-[![PyPI - Version](https://img.shields.io/pypi/v/python-jsonpath.svg)](https://pypi.org/project/python-jsonpath)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/python-jsonpath.svg)](https://pypi.org/project/python-jsonpath)
+[![PyPI - Version](https://img.shields.io/pypi/v/python-jsonpath.svg?style=flat-square)](https://pypi.org/project/python-jsonpath)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/jg-rp/python-jsonpath/tests.yaml?branch=main&label=tests&style=flat-square)](https://github.com/jg-rp/python-jsonpath/actions)
+[![PyPI - License](https://img.shields.io/pypi/l/python-jsonpath?style=flat-square)](https://github.com/jg-rp/python-jsonpath/blob/main/LICENSE.txt)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/python-jsonpath.svg?style=flat-square)](https://pypi.org/project/python-jsonpath)
 
 ---
 
