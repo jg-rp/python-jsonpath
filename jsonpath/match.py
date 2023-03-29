@@ -1,14 +1,10 @@
 """The JSONPath match object, as returned from :meth:`JSONPath.finditer`."""
 
-from typing import Any
-from typing import Mapping
-from typing import Sequence
-from typing import Union
+from typing import Any, Mapping, Sequence, Union
 
 FilterContextVars = Mapping[str, Any]
 
 
-# pylint: disable=too-few-public-methods
 class JSONPathMatch:
     """Bind a matched object to its path."""
 

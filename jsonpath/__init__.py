@@ -2,12 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 
-from .path import CompoundJSONPath
-from .path import JSONPath
 from .env import JSONPathEnvironment
-from .match import JSONPathMatch
 from .lex import Lexer
+from .match import JSONPathMatch
 from .parse import Parser
+from .path import CompoundJSONPath, JSONPath
 
 __all__ = (
     "compile",
@@ -30,4 +29,4 @@ findall = DEFAULT_ENV.findall
 finditer = DEFAULT_ENV.finditer
 findall_async = DEFAULT_ENV.findall_async
 finditer_async = DEFAULT_ENV.finditer_async
-compile = DEFAULT_ENV.compile  # pylint: disable=redefined-builtin
+compile = DEFAULT_ENV.compile  # noqa: A001

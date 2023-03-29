@@ -89,7 +89,7 @@ pipx install python-jsonpath
 
 Find all objects in `data` matching the given JSONPath `path`. If data is a string, it will be loaded using `json.loads()` and the default `JSONDecoder`.
 
-Returns a list of matched objects, or an empty list if there were not matches.
+Returns a list of matched objects, or an empty list if there were no matches.
 
 ### jsonpath.finditer
 
@@ -103,11 +103,11 @@ Return an iterator yielding a `JSONPathMatch` instance for each match of the `pa
 
 Prepare a path for repeated matching against different data. `jsonpath.findall()` and `jsonpath.finditer()` are convenience functions that call `compile()` for you.
 
-`JSONPath` and `CompoundJSONPath` both have `findall()` and `finditer()` methods that behave the same as `jsonpath.findall()` and `jsonpath.finditer()`, just without taking a path string argument.
+`JSONPath` and `CompoundJSONPath` both have `findall()` and `finditer()` methods that behave the same as `jsonpath.findall()` and `jsonpath.finditer()`, just without the path argument.
 
 ### async
 
-`findall_async()` and `finditer_async` are async equivalents of `findall()` and `finditer()`. They are used when integrating Python JSONPath with [Python Liquid](https://github.com/jg-rp/liquid) and use Python Liquid's [async protocol](https://jg-rp.github.io/liquid/introduction/async-support).
+`findall_async()` and `finditer_async()` are async equivalents of `findall()` and `finditer()`. They are used when integrating Python JSONPath with [Python Liquid](https://github.com/jg-rp/liquid) and use Python Liquid's [async protocol](https://jg-rp.github.io/liquid/introduction/async-support).
 
 ### Extra filter context
 
@@ -119,7 +119,7 @@ Use `#` to query extra filter data, similar to how one might use `@` or `$`.
 
 Python JSONPath's default syntax is an opinionated combination of JSONPath features from existing, popular implementations, and much of the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11). If you're already familiar with JSONPath syntax, skip to [notable differences](#notable-differences).
 
-TODO: tree analogy / target document
+TODO: tree analogy / target document  
 TODO: use "node" terminology  
 TODO: mention JSON and Python equivalency
 
@@ -235,7 +235,7 @@ Comparison operators include `==`, `!=`, `<`, `>`, `<=` and `>=`. Plus `<>` as a
 
 `&&` and `||` are logical operators, `and` and `or` work too.
 
-`=~` matches the left value with a regular expression literal. Regular expressions use a similar syntax to that found in JavaScript, where the pattern to match is surrounded by slashes, optionally followed by flags.
+`=~` matches the left value with a regular expression literal. Regular expressions use a syntax similar to that found in JavaScript, where the pattern to match is surrounded by slashes, optionally followed by flags.
 
 ```text
 $..products.*[?(@.description =~ /.*trainers/i)]
@@ -263,7 +263,7 @@ And this is a list of areas where we deviate from the [IETF JSONPath draft](http
 - Nested filters are not supported.
 - When a filter is applied to an object (mapping) value, we do not silently apply that filter to the object's values. See the "Existence of non-singular queries" example in the IETF JSONPath draft.
 - `|` is a union operator, where matches from two or more JSONPaths are combined.
-- `&` is an intersection operator, where we output matches that exist in two paths.
+- `&` is an intersection operator, where we exclude matches that don't exist in both left and right paths.
 
 ## License
 

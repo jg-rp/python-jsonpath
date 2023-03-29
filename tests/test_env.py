@@ -1,6 +1,5 @@
 """JSONPathEnvironment API test cases."""
 import asyncio
-
 from typing import List
 
 import pytest
@@ -8,12 +7,9 @@ import pytest
 from jsonpath import JSONPathEnvironment
 
 
-@pytest.fixture
-def env() -> JSONPathEnvironment:  # pylint: disable=missing-function-docstring
+@pytest.fixture()
+def env() -> JSONPathEnvironment:
     return JSONPathEnvironment()
-
-
-# pylint: disable=redefined-outer-name
 
 
 def test_find_all_from_object(env: JSONPathEnvironment) -> None:

@@ -1,8 +1,7 @@
 """JSONPath exceptions."""
 from __future__ import annotations
 
-from typing import Optional
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from .token import Token
@@ -22,7 +21,6 @@ class JSONPathError(Exception):
             return msg
 
         line, column = self.token.position()
-        # TODO: give context from source path string
         return f"{msg}, line {line}, column {column}"
 
 

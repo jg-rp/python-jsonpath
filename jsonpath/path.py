@@ -2,25 +2,25 @@ from __future__ import annotations
 
 import itertools
 import json
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncIterable,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
-from typing import Any
-from typing import AsyncIterable
-from typing import Iterable
-from typing import List
-from typing import Mapping
-from typing import Optional
-from typing import Sequence
-from typing import Tuple
-from typing import TypeVar
-from typing import TYPE_CHECKING
-from typing import Union
-
-from .match import FilterContextVars
-from .match import JSONPathMatch
-from .selectors import JSONPathSelector
+from .match import FilterContextVars, JSONPathMatch
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
+    from .selectors import JSONPathSelector
 
 
 class JSONPath:
@@ -51,8 +51,6 @@ class JSONPath:
         """Return a list of objects matching this path in the given data."""
         if isinstance(data, str):
             data = json.loads(data)
-        # pylint bug?
-        # pylint: disable=not-an-iterable
         return [
             match.obj
             for match in self.finditer(
@@ -95,7 +93,6 @@ class JSONPath:
         """An async version of :meth:`findall`."""
         if isinstance(data, str):
             data = json.loads(data)
-        # pylint: disable=not-an-iterable
         return [
             match.obj
             async for match in await self.finditer_async(

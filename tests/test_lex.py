@@ -1,47 +1,46 @@
-# pylint: disable=missing-class-docstring, missing-function-docstring
 import dataclasses
 import operator
-
 from typing import List
 
 import pytest
 
 from jsonpath import JSONPathEnvironment
-
-from jsonpath.token import Token
-from jsonpath.token import TOKEN_AND
-from jsonpath.token import TOKEN_COMMA
-from jsonpath.token import TOKEN_DDOT
-from jsonpath.token import TOKEN_EQ
-from jsonpath.token import TOKEN_FALSE
-from jsonpath.token import TOKEN_FILTER_END
-from jsonpath.token import TOKEN_FILTER_START
-from jsonpath.token import TOKEN_FLOAT
-from jsonpath.token import TOKEN_GT
-from jsonpath.token import TOKEN_IN
-from jsonpath.token import TOKEN_INDEX
-from jsonpath.token import TOKEN_INT
-from jsonpath.token import TOKEN_INTERSECTION
-from jsonpath.token import TOKEN_LIST_END
-from jsonpath.token import TOKEN_BARE_PROPERTY
-from jsonpath.token import TOKEN_LIST_START
-from jsonpath.token import TOKEN_LT
-from jsonpath.token import TOKEN_NIL
-from jsonpath.token import TOKEN_NOT
-from jsonpath.token import TOKEN_OR
-from jsonpath.token import TOKEN_PROPERTY
-from jsonpath.token import TOKEN_RE
-from jsonpath.token import TOKEN_RE_FLAGS
-from jsonpath.token import TOKEN_RE_PATTERN
-from jsonpath.token import TOKEN_ROOT
-from jsonpath.token import TOKEN_SELF
-from jsonpath.token import TOKEN_SLICE_START
-from jsonpath.token import TOKEN_SLICE_STEP
-from jsonpath.token import TOKEN_SLICE_STOP
-from jsonpath.token import TOKEN_STRING
-from jsonpath.token import TOKEN_TRUE
-from jsonpath.token import TOKEN_UNION
-from jsonpath.token import TOKEN_WILD
+from jsonpath.token import (
+    TOKEN_AND,
+    TOKEN_BARE_PROPERTY,
+    TOKEN_COMMA,
+    TOKEN_DDOT,
+    TOKEN_EQ,
+    TOKEN_FALSE,
+    TOKEN_FILTER_END,
+    TOKEN_FILTER_START,
+    TOKEN_FLOAT,
+    TOKEN_GT,
+    TOKEN_IN,
+    TOKEN_INDEX,
+    TOKEN_INT,
+    TOKEN_INTERSECTION,
+    TOKEN_LIST_END,
+    TOKEN_LIST_START,
+    TOKEN_LT,
+    TOKEN_NIL,
+    TOKEN_NOT,
+    TOKEN_OR,
+    TOKEN_PROPERTY,
+    TOKEN_RE,
+    TOKEN_RE_FLAGS,
+    TOKEN_RE_PATTERN,
+    TOKEN_ROOT,
+    TOKEN_SELF,
+    TOKEN_SLICE_START,
+    TOKEN_SLICE_STEP,
+    TOKEN_SLICE_STOP,
+    TOKEN_STRING,
+    TOKEN_TRUE,
+    TOKEN_UNION,
+    TOKEN_WILD,
+    Token,
+)
 
 
 @dataclasses.dataclass
@@ -1045,12 +1044,11 @@ TEST_CASES = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def env() -> JSONPathEnvironment:
     return JSONPathEnvironment()
 
 
-# pylint: disable=redefined-outer-name
 @pytest.mark.parametrize("case", TEST_CASES, ids=operator.attrgetter("description"))
 def test_default_lexer(env: JSONPathEnvironment, case: Case) -> None:
     tokens = list(env.lexer.tokenize(case.path))

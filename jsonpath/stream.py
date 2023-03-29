@@ -2,14 +2,10 @@
 from __future__ import annotations
 
 from collections import deque
-
-from typing import Deque
-from typing import Iterator
+from typing import Deque, Iterator
 
 from .exceptions import JSONPathSyntaxError
-
-from .token import Token
-from .token import TOKEN_EOF
+from .token import TOKEN_EOF, Token
 
 
 class TokenStream:
@@ -34,7 +30,7 @@ class TokenStream:
             tok = self.stream.current
             if tok.kind is TOKEN_EOF:
                 self.stream.close()
-                raise StopIteration()
+                raise StopIteration
             next(self.stream)
             return tok
 

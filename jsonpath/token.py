@@ -74,7 +74,6 @@ TOKEN_UNION = sys.intern("UNION")
 TOKEN_INTERSECTION = sys.intern("INTERSECT")
 
 
-# pylint: disable=too-few-public-methods
 class Token:
     """A token, as returned from :meth:`lex.Lexer.tokenize`."""
 

@@ -1,17 +1,8 @@
 from __future__ import annotations
 
 import re
-
-from abc import ABC
-from abc import abstractmethod
-
-from typing import Generic
-from typing import List
-from typing import Mapping
-from typing import Pattern
-from typing import Sequence
-from typing import TypeVar
-from typing import TYPE_CHECKING
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Generic, List, Mapping, Pattern, Sequence, TypeVar
 
 from .exceptions import JSONPathTypeError
 
@@ -44,10 +35,10 @@ class Nil(FilterExpression):
     def __str__(self) -> str:  # pragma: no cover
         return "nil"
 
-    def evaluate(self, context: FilterContext) -> None:
+    def evaluate(self, _: FilterContext) -> None:
         return None
 
-    async def evaluate_async(self, context: FilterContext) -> None:
+    async def evaluate_async(self, _: FilterContext) -> None:
         return None
 
 
@@ -74,10 +65,10 @@ class Undefined(FilterExpression):
     def __str__(self) -> str:
         return "undefined"
 
-    def evaluate(self, context: FilterContext) -> object:
+    def evaluate(self, _: FilterContext) -> object:
         return UNDEFINED
 
-    async def evaluate_async(self, context: FilterContext) -> object:
+    async def evaluate_async(self, _: FilterContext) -> object:
         return UNDEFINED
 
 
@@ -103,11 +94,11 @@ class Literal(FilterExpression, Generic[LITERAL_EXPRESSION_T]):
     def __hash__(self) -> int:
         return hash(self.value)
 
-    def evaluate(self, context: FilterContext) -> LITERAL_EXPRESSION_T:
+    def evaluate(self, _: FilterContext) -> LITERAL_EXPRESSION_T:
         """"""
         return self.value
 
-    async def evaluate_async(self, context: FilterContext) -> LITERAL_EXPRESSION_T:
+    async def evaluate_async(self, _: FilterContext) -> LITERAL_EXPRESSION_T:
         """"""
         return self.value
 

@@ -2,34 +2,30 @@
 from __future__ import annotations
 
 import re
-
 from collections.abc import Collection
 from operator import getitem
-
-from typing import AsyncIterable
-from typing import Any
-from typing import Iterable
-from typing import List
-from typing import Mapping
-from typing import Optional
-from typing import Sequence
-from typing import Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncIterable,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Union,
+)
 
 from .exceptions import JSONPathSyntaxError
 from .filter import UNDEFINED
 from .lex import Lexer
-from .match import FilterContextVars
-from .match import JSONPathMatch
 from .parse import Parser
-
-from .path import CompoundJSONPath
-from .path import JSONPath
-
+from .path import CompoundJSONPath, JSONPath
 from .stream import TokenStream
+from .token import TOKEN_EOF, TOKEN_INTERSECTION, TOKEN_UNION
 
-from .token import TOKEN_EOF
-from .token import TOKEN_UNION
-from .token import TOKEN_INTERSECTION
+if TYPE_CHECKING:
+    from .match import FilterContextVars, JSONPathMatch
 
 
 class JSONPathEnvironment:
@@ -50,7 +46,7 @@ class JSONPathEnvironment:
         self.lexer = self.lexer_class(env=self)
         self.parser = self.parser_class(env=self)
 
-    def compile(self, path: str) -> Union[JSONPath, CompoundJSONPath]:
+    def compile(self, path: str) -> Union[JSONPath, CompoundJSONPath]:  # noqa: A003
         """Prepare an internal representation of a JSONPath string."""
         tokens = self.lexer.tokenize(path)
         stream = TokenStream(tokens)
@@ -162,7 +158,7 @@ class JSONPathEnvironment:
             return True
         return bool(obj)
 
-    # pylint: disable=too-many-return-statements, too-many-branches
+    # ruff: noqa: PLR0912, PLR0911
     def compare(self, left: object, operator: str, right: object) -> bool:
         """Object comparison within JSONPath filters."""
         if operator == "&&":

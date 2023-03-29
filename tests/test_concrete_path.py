@@ -1,18 +1,11 @@
-# pylint: disable=missing-class-docstring, missing-function-docstring
 import asyncio
 import dataclasses
 import operator
-
-from typing import Any
-from typing import List
-from typing import Mapping
-from typing import Sequence
-from typing import Union
+from typing import Any, List, Mapping, Sequence, Union
 
 import pytest
 
-from jsonpath import JSONPathEnvironment
-from jsonpath import JSONPathMatch
+from jsonpath import JSONPathEnvironment, JSONPathMatch
 
 
 @dataclasses.dataclass
@@ -39,18 +32,17 @@ TEST_CASES = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def env() -> JSONPathEnvironment:
     return JSONPathEnvironment()
 
 
-# pylint: disable=redefined-outer-name
 @pytest.mark.parametrize("case", TEST_CASES, ids=operator.attrgetter("description"))
 def test_find(env: JSONPathEnvironment, case: Case) -> None:
     path = env.compile(case.path)
     matches = list(path.finditer(case.data))
     assert len(matches) == len(case.want)
-    for match, want in zip(matches, case.want):
+    for match, want in zip(matches, case.want):  # noqa: B905
         assert match.path == want
 
 
@@ -64,5 +56,5 @@ def test_find_async(env: JSONPathEnvironment, case: Case) -> None:
 
     matches = asyncio.run(coro())
     assert len(matches) == len(case.want)
-    for match, want in zip(matches, case.want):
+    for match, want in zip(matches, case.want):  # noqa: B905
         assert match.path == want

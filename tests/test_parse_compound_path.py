@@ -1,5 +1,3 @@
-# pylint: disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=missing-module-docstring
 import dataclasses
 import operator
 
@@ -39,12 +37,11 @@ TEST_CASES = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def env() -> JSONPathEnvironment:
     return JSONPathEnvironment()
 
 
-# pylint: disable=redefined-outer-name
 @pytest.mark.parametrize("case", TEST_CASES, ids=operator.attrgetter("description"))
 def test_parse_compound_path(env: JSONPathEnvironment, case: Case) -> None:
     path = env.compile(case.path)

@@ -9,30 +9,18 @@ We've deliberately named this file so as to exclude it when running `pytest` or
 """
 import operator
 import unittest
-
 from dataclasses import dataclass
-
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Mapping
-from typing import Optional
-from typing import Sequence
-from typing import Union
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Union
 
 import pytest
-
-from yaml import load
-from yaml import CLoader as Loader
+from yaml import safe_load
 
 import jsonpath
 
-# pylint: disable=missing-function-docstring, missing-class-docstring
-
 
 @dataclass
-class Query:  # pylint: disable=too-many-instance-attributes
-    id: str
+class Query:
+    id: str  # noqa: A003
     selector: str
     document: Union[Mapping[str, Any], Sequence[Any]]
     consensus: Any = None
@@ -71,7 +59,7 @@ def clean_query(query: Dict[str, Any]) -> Dict[str, Any]:
 
 def queries() -> List[Query]:
     with open("comparison_regression_suite.yaml", encoding="utf8") as fd:
-        data = load(fd, Loader=Loader)
+        data = safe_load(fd)
     return [Query(**clean_query(q)) for q in data["queries"]]
 
 
@@ -80,11 +68,10 @@ QUERIES_WITH_CONSENSUS = [
 ]
 
 
-# pylint: disable=redefined-outer-name
 @pytest.mark.parametrize("query", QUERIES_WITH_CONSENSUS, ids=operator.attrgetter("id"))
 def test_consensus(query: Query) -> None:
     if query.id in SKIP:
         pytest.skip(reason=SKIP[query.id])
     case = unittest.TestCase()
     rv = jsonpath.findall(query.selector, query.document)
-    case.assertCountEqual(rv, query.consensus)
+    case.assertCountEqual(rv, query.consensus)  # noqa: PT009

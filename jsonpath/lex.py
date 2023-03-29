@@ -1,70 +1,68 @@
 """JSONPath tokenization."""
 from __future__ import annotations
+
 import re
-
 from functools import partial
-
-from typing import Iterator
-from typing import Pattern
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator, Pattern
 
 from .exceptions import JSONPathSyntaxError
-
-from .token import Token
-from .token import TOKEN_AND
-from .token import TOKEN_BRACKET_PROPERTY
-from .token import TOKEN_COMMA
-from .token import TOKEN_CONTAINS
-from .token import TOKEN_FILTER_CONTEXT
-from .token import TOKEN_DDOT
-from .token import TOKEN_DOT_INDEX
-from .token import TOKEN_DOT_PROPERTY
-from .token import TOKEN_DOUBLE_QUOTE_STRING
-from .token import TOKEN_EQ
-from .token import TOKEN_FALSE
-from .token import TOKEN_FILTER_END
-from .token import TOKEN_FILTER_START
-from .token import TOKEN_FLOAT
-from .token import TOKEN_GE
-from .token import TOKEN_GT
-from .token import TOKEN_ILLEGAL
-from .token import TOKEN_IN
-from .token import TOKEN_INDEX
-from .token import TOKEN_INT
-from .token import TOKEN_INTERSECTION
-from .token import TOKEN_LE
-from .token import TOKEN_LG
-from .token import TOKEN_LIST_END
-from .token import TOKEN_BARE_PROPERTY
-from .token import TOKEN_LIST_SLICE
-from .token import TOKEN_LIST_START
-from .token import TOKEN_LPAREN
-from .token import TOKEN_LT
-from .token import TOKEN_MISSING
-from .token import TOKEN_NE
-from .token import TOKEN_NIL
-from .token import TOKEN_NONE
-from .token import TOKEN_NOT
-from .token import TOKEN_NULL
-from .token import TOKEN_OR
-from .token import TOKEN_PROPERTY
-from .token import TOKEN_RE
-from .token import TOKEN_RE_FLAGS
-from .token import TOKEN_RE_PATTERN
-from .token import TOKEN_ROOT
-from .token import TOKEN_RPAREN
-from .token import TOKEN_SELF
-from .token import TOKEN_SINGLE_QUOTE_STRING
-from .token import TOKEN_SKIP
-from .token import TOKEN_SLICE
-from .token import TOKEN_SLICE_START
-from .token import TOKEN_SLICE_STEP
-from .token import TOKEN_SLICE_STOP
-from .token import TOKEN_STRING
-from .token import TOKEN_TRUE
-from .token import TOKEN_UNION
-from .token import TOKEN_UNDEFINED
-from .token import TOKEN_WILD
+from .token import (
+    TOKEN_AND,
+    TOKEN_BARE_PROPERTY,
+    TOKEN_BRACKET_PROPERTY,
+    TOKEN_COMMA,
+    TOKEN_CONTAINS,
+    TOKEN_DDOT,
+    TOKEN_DOT_INDEX,
+    TOKEN_DOT_PROPERTY,
+    TOKEN_DOUBLE_QUOTE_STRING,
+    TOKEN_EQ,
+    TOKEN_FALSE,
+    TOKEN_FILTER_CONTEXT,
+    TOKEN_FILTER_END,
+    TOKEN_FILTER_START,
+    TOKEN_FLOAT,
+    TOKEN_GE,
+    TOKEN_GT,
+    TOKEN_ILLEGAL,
+    TOKEN_IN,
+    TOKEN_INDEX,
+    TOKEN_INT,
+    TOKEN_INTERSECTION,
+    TOKEN_LE,
+    TOKEN_LG,
+    TOKEN_LIST_END,
+    TOKEN_LIST_SLICE,
+    TOKEN_LIST_START,
+    TOKEN_LPAREN,
+    TOKEN_LT,
+    TOKEN_MISSING,
+    TOKEN_NE,
+    TOKEN_NIL,
+    TOKEN_NONE,
+    TOKEN_NOT,
+    TOKEN_NULL,
+    TOKEN_OR,
+    TOKEN_PROPERTY,
+    TOKEN_RE,
+    TOKEN_RE_FLAGS,
+    TOKEN_RE_PATTERN,
+    TOKEN_ROOT,
+    TOKEN_RPAREN,
+    TOKEN_SELF,
+    TOKEN_SINGLE_QUOTE_STRING,
+    TOKEN_SKIP,
+    TOKEN_SLICE,
+    TOKEN_SLICE_START,
+    TOKEN_SLICE_STEP,
+    TOKEN_SLICE_STOP,
+    TOKEN_STRING,
+    TOKEN_TRUE,
+    TOKEN_UNDEFINED,
+    TOKEN_UNION,
+    TOKEN_WILD,
+    Token,
+)
 
 if TYPE_CHECKING:
     from . import JSONPathEnvironment
@@ -78,8 +76,6 @@ class Lexer:
 
         self.key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
 
-        # 'thing' or "thing" in the right hand side of a filter expression or in a list
-        # self.string_pattern = r"(?P<G_QUOTE>[\"'])(?P<G_QUOTED>.*?)(?P=G_QUOTE)"
         self.double_quote_pattern = r'"(?P<G_DQUOTE>(?:(?!(?<!\\)").)*)"'
         self.single_quote_pattern = r"'(?P<G_SQUOTE>(?:(?!(?<!\\)').)*)'"
 
@@ -137,7 +133,6 @@ class Lexer:
             (TOKEN_SLICE, self.slice_pattern),
             (TOKEN_WILD, self.wild_pattern),
             (TOKEN_LIST_SLICE, self.slice_list_pattern),
-            # TODO: IETF parentheses are optional (or not allowed?)
             (TOKEN_FILTER_START, r"\[\s*\?\s*\("),
             (TOKEN_FILTER_END, r"\)\s*]"),
             (TOKEN_BRACKET_PROPERTY, self.bracketed_property_pattern),
@@ -185,8 +180,7 @@ class Lexer:
             re.DOTALL,
         )
 
-    # pylint: disable=too-many-branches
-    def tokenize(self, path: str) -> Iterator[Token]:
+    def tokenize(self, path: str) -> Iterator[Token]:  # noqa PLR0912
         """Generate a sequence of tokens from a JSONPath string."""
         _token = partial(Token, path=path)
 

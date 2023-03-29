@@ -10,20 +10,12 @@ or `hatch run test`. Target it specifically using `pytest compliance.py`.
 import json
 import operator
 import unittest
-
 from dataclasses import dataclass
-
-from typing import Any
-from typing import List
-from typing import Mapping
-from typing import Optional
-from typing import Sequence
-from typing import Union
+from typing import Any, List, Mapping, Optional, Sequence, Union
 
 import pytest
-import jsonpath
 
-# pylint: disable=missing-function-docstring, missing-class-docstring
+import jsonpath
 
 
 @dataclass
@@ -53,9 +45,8 @@ def cases() -> List[Case]:
 def valid_cases() -> List[Case]:
     def mangle_filter(case: Case) -> Case:
         # XXX: Insert parentheses around filter expression :(
-        if case.name.startswith("filter"):
-            if case.selector.count("]") == 1:
-                case.selector = case.selector.replace("[?", "[?(").replace("]", ")]")
+        if case.name.startswith("filter") and case.selector.count("]") == 1:
+            case.selector = case.selector.replace("[?", "[?(").replace("]", ")]")
 
         # XXX: Insert wildcard in front of root :(
         if (
@@ -79,7 +70,6 @@ def valid_cases() -> List[Case]:
     ]
 
 
-# pylint: disable=redefined-outer-name
 @pytest.mark.parametrize("case", valid_cases(), ids=operator.attrgetter("name"))
 def test_compliance(case: Case) -> None:
     if case.name in SKIP:
@@ -89,4 +79,4 @@ def test_compliance(case: Case) -> None:
 
     test_case = unittest.TestCase()
     rv = jsonpath.findall(case.selector, case.document)
-    test_case.assertCountEqual(rv, case.result)
+    test_case.assertCountEqual(rv, case.result)  # noqa: PT009

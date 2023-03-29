@@ -35,17 +35,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-# pylint: disable=missing-class-docstring, missing-function-docstring
-
 import asyncio
 import dataclasses
 import operator
-
-from typing import Any
-from typing import List
-from typing import Mapping
-from typing import Sequence
-from typing import Union
+from typing import Any, List, Mapping, Sequence, Union
 
 import pytest
 
@@ -338,12 +331,11 @@ TEST_CASES = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def env() -> JSONPathEnvironment:
     return JSONPathEnvironment()
 
 
-# pylint: disable=redefined-outer-name
 @pytest.mark.parametrize("case", TEST_CASES, ids=operator.attrgetter("description"))
 def test_find_ieft(env: JSONPathEnvironment, case: Case) -> None:
     path = env.compile(case.path)

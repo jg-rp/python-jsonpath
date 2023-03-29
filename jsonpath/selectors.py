@@ -1,28 +1,27 @@
 """JSONPath selector objects, as returned from :meth:`Parser.parse`."""
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
-
-from collections.abc import Mapping
-from collections.abc import Sequence
-
-from typing import Any
-from typing import AsyncIterable
-from typing import Iterable
-from typing import List
-from typing import Optional
-from typing import TypeVar
-from typing import TYPE_CHECKING
-from typing import Union
+from abc import ABC, abstractmethod
+from collections.abc import Mapping, Sequence
+from contextlib import suppress
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncIterable,
+    Iterable,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+)
 
 from .exceptions import JSONPathTypeError
 from .match import JSONPathMatch
 
 if TYPE_CHECKING:
-    from .token import Token
     from .env import JSONPathEnvironment
     from .filter import BooleanExpression
+    from .token import Token
 
 
 class JSONPathSelector(ABC):
@@ -67,32 +66,29 @@ class PropertySelector(JSONPathSelector):
         for match in matches:
             if not isinstance(match.obj, Mapping):
                 continue
-            try:
+
+            with suppress(KeyError):
                 yield JSONPathMatch(
                     path=match.path + f"['{self.name}']",
                     obj=self.env.getitem(match.obj, self.name),
                     root=match.root,
                     filter_context=match.filter_context(),
                 )
-            except KeyError:
-                pass
 
-    # pylint: disable=invalid-overridden-method
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
         async for match in matches:
             if not isinstance(match.obj, Mapping):
                 continue
-            try:
+
+            with suppress(KeyError):
                 yield JSONPathMatch(
                     path=match.path + f"['{self.name}']",
                     obj=await self.env.getitem_async(match.obj, self.name),
                     root=match.root,
                     filter_context=match.filter_context(),
                 )
-            except KeyError:
-                pass
 
 
 class IndexSelector(JSONPathSelector):
@@ -123,52 +119,43 @@ class IndexSelector(JSONPathSelector):
         for match in matches:
             if isinstance(match.obj, Mapping):
                 # Try the string representation of the index as a key.
-                try:
+                with suppress(KeyError):
                     yield JSONPathMatch(
                         path=f"{match.path}['{self.index}']",
                         obj=self.env.getitem(match.obj, self._as_key),
                         root=match.root,
                         filter_context=match.filter_context(),
                     )
-                except KeyError:
-                    pass
             elif isinstance(match.obj, Sequence):
-                try:
+                with suppress(IndexError):
                     yield JSONPathMatch(
                         path=match.path + f"[{self._normalized_index(match.obj)}]",
                         obj=self.env.getitem(match.obj, self.index),
                         root=match.root,
                         filter_context=match.filter_context(),
                     )
-                except IndexError:
-                    pass
 
-    # pylint: disable=invalid-overridden-method
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
         async for match in matches:
             if isinstance(match.obj, Mapping):
                 # Try the string representation of the index as a key.
-                try:
+                with suppress(KeyError):
                     yield JSONPathMatch(
                         path=f"{match.path}['{self.index}']",
                         obj=await self.env.getitem_async(match.obj, self._as_key),
                         root=match.root,
                         filter_context=match.filter_context(),
                     )
-                except KeyError:
-                    pass
             elif isinstance(match.obj, Sequence):
-                try:
+                with suppress(IndexError):
                     yield JSONPathMatch(
                         path=match.path + f"[{self._normalized_index(match.obj)}]",
                         obj=await self.env.getitem_async(match.obj, self.index),
                         root=match.root,
                         filter_context=match.filter_context(),
                     )
-                except IndexError:
-                    pass
 
 
 class SliceSelector(JSONPathSelector):
@@ -215,7 +202,6 @@ class SliceSelector(JSONPathSelector):
                 )
                 idx += step
 
-    # pylint: disable=invalid-overridden-method
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
@@ -262,7 +248,6 @@ class WildSelector(JSONPathSelector):
                         filter_context=match.filter_context(),
                     )
 
-    # pylint: disable=invalid-overridden-method
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
@@ -324,7 +309,6 @@ class RecursiveDescentSelector(JSONPathSelector):
             yield match
             yield from self._expand(match)
 
-    # pylint: disable=invalid-overridden-method
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
@@ -376,7 +360,6 @@ class ListSelector(JSONPathSelector):
         for item in self.items:
             yield from item.resolve(_matches)
 
-    # pylint: disable=invalid-overridden-method
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
@@ -442,7 +425,6 @@ class Filter(JSONPathSelector):
                             err.token = self.token
                         raise
 
-    # pylint: disable=invalid-overridden-method
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
