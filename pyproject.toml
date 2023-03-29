@@ -44,6 +44,7 @@ dependencies = [
   "ipython",
   "pyyaml",
   "types-pyyaml",
+  "twine",
 ]
 
 [tool.hatch.envs.default.scripts]

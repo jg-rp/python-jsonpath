@@ -14,7 +14,7 @@
 
 A flexible JSONPath engine for Python.
 
-JSONPath is a mini language for extracting objects from data formatted in JavaScript Object Notation, or equivalent Python objects like dictionaries, and lists.
+JSONPath is a mini language for extracting objects from data formatted in JavaScript Object Notation, or equivalent Python objects, like dictionaries and lists.
 
 ```python
 import jsonpath
@@ -73,6 +73,12 @@ or [pip](https://pip.pypa.io/en/stable/getting-started/):
 pip install python-jsonpath
 ```
 
+or [pipx](https://pypa.github.io/pipx/)
+
+```console
+pipx install python-jsonpath
+```
+
 ## API
 
 ### jsonpath.findall
@@ -99,7 +105,7 @@ Prepare a path for repeated matching against different data. `jsonpath.findall()
 
 ### async
 
-`findall_async()` and `finditer_async` are async equivalents of `findall()` and `finditer()`. They are used by when integrating Python JSONPath with [Python Liquid](https://github.com/jg-rp/liquid) and use Python Liquid's [async protocol](https://jg-rp.github.io/liquid/introduction/async-support).
+`findall_async()` and `finditer_async` are async equivalents of `findall()` and `finditer()`. They are used when integrating Python JSONPath with [Python Liquid](https://github.com/jg-rp/liquid) and use Python Liquid's [async protocol](https://jg-rp.github.io/liquid/introduction/async-support).
 
 ### Extra filter context
 
@@ -109,7 +115,7 @@ Use `#` to query extra filter data, similar to how one might use `@` or `$`.
 
 ## Syntax
 
-Python JSONPath's default syntax is an opinionated combination of JSONPath features from existing, popular implementations, and much of the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11). If you're already familiar with JSONPath syntax, skip to [Notable differences](#notable-differences).
+Python JSONPath's default syntax is an opinionated combination of JSONPath features from existing, popular implementations, and much of the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11). If you're already familiar with JSONPath syntax, skip to [notable differences](#notable-differences).
 
 TODO: tree analogy / target document
 TODO: use "node" terminology  
@@ -244,6 +250,7 @@ This is a list of things that you might find in other JSONPath implementation th
 - We don't support extension functions of the form `selector.func()`.
 - We always return a list of matches from `jsonpath.findall()`, never a scalar value.
 - We do not support arithmetic in filter expression.
+- Python JSONPath is strictly read only. There are no update "selectors".
 
 And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11).
 
