@@ -63,7 +63,7 @@ print(products)
 
 ## Install
 
-Install Python Liquid using [Pipenv](https://pipenv.pypa.io/en/latest/):
+Install Python JSONPath using [Pipenv](https://pipenv.pypa.io/en/latest/):
 
 ```console
 pipenv install -u python-jsonpath
