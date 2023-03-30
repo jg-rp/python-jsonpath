@@ -29,7 +29,7 @@ class MockLazyMapping(Mapping[str, object]):
         self.await_count += 1
         if k == self.key:
             return self.val
-        raise KeyError(k)  # pragma: no cover
+        raise KeyError(k)
 
 
 def test_async_getitem() -> None:
@@ -37,11 +37,11 @@ def test_async_getitem() -> None:
     data = {"foo": lazy_mapping}
 
     async def coro() -> List[object]:
-        return await jsonpath.findall_async("$.foo.bar", data)
+        return await jsonpath.findall_async("$.foo.bar | $.foo.nosuchthing", data)
 
     matches = asyncio.run(coro())
 
     assert len(matches) == 1
     assert matches[0] == "thing"
     assert lazy_mapping.call_count == 0
-    assert lazy_mapping.await_count == 1
+    assert lazy_mapping.await_count == 2  # noqa: PLR2004
