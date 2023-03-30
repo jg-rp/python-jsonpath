@@ -1,7 +1,7 @@
 import asyncio
-from collections.abc import Mapping
 from typing import Iterator
 from typing import List
+from typing import Mapping
 
 import jsonpath
 
