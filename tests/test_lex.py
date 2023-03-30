@@ -5,6 +5,7 @@ from typing import List
 import pytest
 
 from jsonpath import JSONPathEnvironment
+from jsonpath.exceptions import JSONPathSyntaxError
 from jsonpath.token import TOKEN_AND
 from jsonpath.token import TOKEN_BARE_PROPERTY
 from jsonpath.token import TOKEN_COMMA
@@ -1051,3 +1052,8 @@ def env() -> JSONPathEnvironment:
 def test_default_lexer(env: JSONPathEnvironment, case: Case) -> None:
     tokens = list(env.lexer.tokenize(case.path))
     assert tokens == case.want
+
+
+def test_illegal_token(env: JSONPathEnvironment) -> None:
+    with pytest.raises(JSONPathSyntaxError):
+        list(env.lexer.tokenize("^"))

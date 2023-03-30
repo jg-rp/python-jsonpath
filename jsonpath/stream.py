@@ -86,6 +86,6 @@ class TokenStream:
         """"""
         if self.peek.kind != typ:
             raise JSONPathSyntaxError(
-                f"expected {typ!r}, found {self.current.kind!r}",
+                f"expected {typ!r}, found {self.peek.kind!r}",
                 token=self.peek,
             )

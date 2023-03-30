@@ -75,7 +75,8 @@ class JSONPathEnvironment:
                             selectors=self.parser.parse(stream),
                         )
                     )
-                else:
+                else:  # pragma: no cover
+                    # Parser.parse catches this too
                     raise JSONPathSyntaxError(  # noqa: TRY003
                         f"unexpected token {stream.current.value!r}",
                         token=stream.current,
@@ -192,8 +193,9 @@ class JSONPathEnvironment:
                 return left >= right
             if operator == "<":
                 return left < right
-            if operator == ">":
-                return left > right
+
+            assert operator == ">"
+            return left > right
 
         # This will catch booleans too.
         if isinstance(left, (int, float)) and isinstance(right, (int, float)):
@@ -203,8 +205,9 @@ class JSONPathEnvironment:
                 return left >= right
             if operator == "<":
                 return left < right
-            if operator == ">":
-                return left > right
+
+            assert operator == ">"
+            return left > right
 
         if (
             isinstance(left, Mapping)

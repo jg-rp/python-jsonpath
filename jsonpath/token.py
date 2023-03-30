@@ -91,7 +91,7 @@ class Token:
         self.index = index
         self.path = path
 
-    def __repr__(self) -> str:
+    def __repr__(self) -> str:  # pragma: no cover
         return (
             f"Token(kind={self.kind!r}, value={self.value!r}, "
             f"index={self.index}, path={self.path!r})"

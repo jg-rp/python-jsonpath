@@ -51,11 +51,7 @@ class JSONPath:
         if isinstance(data, str):
             data = json.loads(data)
         return [
-            match.obj
-            for match in self.finditer(
-                data,
-                filter_context=filter_context,
-            )
+            match.obj for match in self.finditer(data, filter_context=filter_context)
         ]
 
     def finditer(
@@ -162,7 +158,8 @@ class CompoundJSONPath:
             _objs = path.findall(data, filter_context=filter_context)
             if op == self.union_token:
                 objs.extend(_objs)
-            elif op == self.intersection_token:
+            else:
+                assert op == self.intersection_token, op
                 objs = [obj for obj in objs if obj in _objs]
 
         return objs
@@ -180,9 +177,10 @@ class CompoundJSONPath:
             _matches = path.finditer(data, filter_context=filter_context)
             if op == self.union_token:
                 matches = itertools.chain(matches, _matches)
-            elif op == self.intersection_token:
+            else:
+                assert op == self.intersection_token
                 _objs = [match.obj for match in _matches]
-                _matches = (match for match in matches if match.obj in _objs)
+                matches = (match for match in matches if match.obj in _objs)
 
         return matches
 
@@ -198,7 +196,8 @@ class CompoundJSONPath:
             _objs = await path.findall_async(data, filter_context=filter_context)
             if op == self.union_token:
                 objs.extend(_objs)
-            elif op == self.intersection_token:
+            else:
+                assert op == self.intersection_token
                 objs = [obj for obj in objs if obj in _objs]
 
         return objs
@@ -216,9 +215,10 @@ class CompoundJSONPath:
             _matches = await path.finditer_async(data, filter_context=filter_context)
             if op == self.union_token:
                 matches = _achain(matches, _matches)
-            elif op == self.intersection_token:
+            else:
+                assert op == self.intersection_token
                 _objs = [match.obj async for match in _matches]
-                _matches = (match async for match in matches if match.obj in _objs)
+                matches = (match async for match in matches if match.obj in _objs)
 
         return matches
 

@@ -63,7 +63,7 @@ test = "pytest {args}"
 [tool.coverage.run]
 branch = true
 parallel = true
-omit = ["jsonpath/__about__.py"]
+omit = ["jsonpath/__about__.py", "tests/compliance.py", "tests/consensus.py"]
 
 [tool.coverage.report]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]

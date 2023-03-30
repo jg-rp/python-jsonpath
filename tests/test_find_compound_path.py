@@ -63,6 +63,7 @@ def env() -> JSONPathEnvironment:
 def test_find_compound_path(env: JSONPathEnvironment, case: Case) -> None:
     path = env.compile(case.path)
     assert path.findall(case.data) == case.want
+    assert [match.obj for match in path.finditer(case.data)] == case.want
 
 
 @pytest.mark.parametrize("case", TEST_CASES, ids=operator.attrgetter("description"))
@@ -72,4 +73,8 @@ def test_find_compound_path_async(env: JSONPathEnvironment, case: Case) -> None:
     async def coro() -> List[object]:
         return await path.findall_async(case.data)
 
+    async def iter_coro() -> List[object]:
+        return [match.obj async for match in await path.finditer_async(case.data)]
+
     assert asyncio.run(coro()) == case.want
+    assert asyncio.run(iter_coro()) == case.want

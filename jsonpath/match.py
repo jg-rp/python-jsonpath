@@ -27,7 +27,7 @@ class JSONPathMatch:
         self._filter_context = filter_context
 
     def __str__(self) -> str:
-        return f"{_truncate(str(self.obj), 5)} @ {_truncate(self.path, 5)}"
+        return f"{_truncate(str(self.obj), 5)!r} @ {_truncate(self.path, 5)}"
 
     def filter_context(self) -> FilterContextVars:
         """"""

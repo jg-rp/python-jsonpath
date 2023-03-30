@@ -296,7 +296,6 @@ class Parser:
                 )
 
             if stream.peek.kind != TOKEN_LIST_END:
-                stream.expect_peek(TOKEN_COMMA)
                 stream.next_token()
 
             stream.next_token()
