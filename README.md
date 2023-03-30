@@ -119,9 +119,11 @@ Use `#` to query extra filter data, similar to how one might use `@` or `$`.
 
 Python JSONPath's default syntax is an opinionated combination of JSONPath features from existing, popular implementations, and much of the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11). If you're already familiar with JSONPath syntax, skip to [notable differences](#notable-differences).
 
-TODO: tree analogy / target document  
-TODO: use "node" terminology  
-TODO: mention JSON and Python equivalency
+Imagine a JSON document as a tree structure, where each object (mapping) and array can contain more objects (mappings), arrays and scalar values. Every object (mapping), array and scalar value is a node in the tree, and the outermost object (mapping) or array is the "root" node.
+
+For our purposes, a JSON "document" could be a file containing valid JSON data, a Python string containing valid JSON data, or a Python `Object` made up of dictionaries (or any [Mapping](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes)), lists (or any [Sequence](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes)), strings, etc.
+
+We chain _selectors_ together to retrieve `Object`s from the target document. Each selector operates on the `Object`s matched by preceding selectors.
 
 ### Root (`$`)
 
@@ -134,6 +136,8 @@ $.categories.*.name
 ```text
 categories.*.name
 ```
+
+An empty path or a path containing just the root (`$`) selector returns the input data in its entirety.
 
 ### Properties (`.thing`, `[thing]` or `['thing']`)
 
@@ -243,7 +247,21 @@ $..products.*[?(@.description =~ /.*trainers/i)]
 
 ### Union (`|`) and intersection (`&`)
 
-TODO:
+Union (`|`) and intersection (`&`) are similar to Python's set operations, but we don't dedupe the matches (matches will often contain unhashable objects).
+
+The `|` operator combines matches from two or more paths. This example selects a single list of all prices, plus the price cap as the last element.
+
+```text
+$..products.*.price | $.price_cap
+```
+
+The `&` operator produces matches that are common to both left and right paths. This example would select the list of products that are common to both the "footwear" and "headwear" categories.
+
+```text
+$.categories.*[?(@.name == 'footwear')].products.* & $.categories.*[?(@.name == 'headwear')].products.*
+```
+
+Note that `|` and `&` are not allowed inside filter expressions.
 
 ## Notable differences
 
@@ -262,8 +280,13 @@ And this is a list of areas where we deviate from the [IETF JSONPath draft](http
 - Paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.
 - Nested filters are not supported.
 - When a filter is applied to an object (mapping) value, we do not silently apply that filter to the object's values. See the "Existence of non-singular queries" example in the IETF JSONPath draft.
-- `|` is a union operator, where matches from two or more JSONPaths are combined.
-- `&` is an intersection operator, where we exclude matches that don't exist in both left and right paths.
+- Parentheses are required when writing filter selectors, as is common in existing JSONPath implementations. `$.some[?(@.thing)]` is OK, `$.some[?@.thing]` is not.
+
+And this is a list of features that are uncommon or unique to Python JSONPath.
+
+- `|` is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.
+- `&` is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.
+- `#` is a filter context selector. With usage similar to `$` and `@`, `#` exposes arbitrary data from the `filter_context` argument to `findall()` and `finditer()`.
 
 ## License
 
