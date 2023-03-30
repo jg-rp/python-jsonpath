@@ -5,7 +5,7 @@ working directory as "comparison_regression_suite.yaml".
 See https://github.com/cburgmer/json-path-comparison.
 
 We've deliberately named this file so as to exclude it when running `pytest` or
-`hatch run test`. Target it specifically using `pytest consensus.py`.
+`hatch run test`. Target it specifically using `pytest tests/consensus.py`.
 """
 import operator
 import unittest

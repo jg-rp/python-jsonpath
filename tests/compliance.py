@@ -5,7 +5,7 @@ directory as "cts.json".
 See https://github.com/jsonpath-standard/jsonpath-compliance-test-suite.
 
 We've deliberately named this file so as to exclude it when running `pytest`
-or `hatch run test`. Target it specifically using `pytest compliance.py`.
+or `hatch run test`. Target it specifically using `pytest tests/compliance.py`.
 """
 import json
 import operator
