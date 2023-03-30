@@ -1,8 +1,15 @@
 from __future__ import annotations
 
 import re
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Generic, List, Mapping, Pattern, Sequence, TypeVar
+from abc import ABC
+from abc import abstractmethod
+from typing import TYPE_CHECKING
+from typing import Generic
+from typing import List
+from typing import Mapping
+from typing import Pattern
+from typing import Sequence
+from typing import TypeVar
 
 from .exceptions import JSONPathTypeError
 

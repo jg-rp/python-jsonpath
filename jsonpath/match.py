@@ -1,6 +1,9 @@
 """The JSONPath match object, as returned from :meth:`JSONPath.finditer`."""
 
-from typing import Any, Mapping, Sequence, Union
+from typing import Any
+from typing import Mapping
+from typing import Sequence
+from typing import Union
 
 FilterContextVars = Mapping[str, Any]
 

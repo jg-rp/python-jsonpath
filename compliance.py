@@ -11,7 +11,12 @@ import json
 import operator
 import unittest
 from dataclasses import dataclass
-from typing import Any, List, Mapping, Optional, Sequence, Union
+from typing import Any
+from typing import List
+from typing import Mapping
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import pytest
 

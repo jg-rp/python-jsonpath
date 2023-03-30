@@ -2,21 +2,20 @@ from __future__ import annotations
 
 import itertools
 import json
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    AsyncIterable,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import AsyncIterable
+from typing import Iterable
+from typing import List
+from typing import Mapping
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import TypeVar
+from typing import Union
 
-from .match import FilterContextVars, JSONPathMatch
+from .match import FilterContextVars
+from .match import JSONPathMatch
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment

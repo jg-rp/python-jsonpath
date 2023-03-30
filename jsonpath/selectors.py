@@ -1,19 +1,19 @@
 """JSONPath selector objects, as returned from :meth:`Parser.parse`."""
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from collections.abc import Mapping, Sequence
+from abc import ABC
+from abc import abstractmethod
+from collections.abc import Mapping
+from collections.abc import Sequence
 from contextlib import suppress
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    AsyncIterable,
-    Iterable,
-    List,
-    Optional,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import AsyncIterable
+from typing import Iterable
+from typing import List
+from typing import Optional
+from typing import TypeVar
+from typing import Union
 
 from .exceptions import JSONPathTypeError
 from .match import JSONPathMatch

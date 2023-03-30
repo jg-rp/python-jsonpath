@@ -2,86 +2,86 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Optional, Union
+from typing import TYPE_CHECKING
+from typing import Callable
+from typing import Dict
+from typing import Iterable
+from typing import List
+from typing import Optional
+from typing import Union
 
 from .exceptions import JSONPathSyntaxError
-from .filter import (
-    FALSE,
-    NIL,
-    TRUE,
-    UNDEFINED_LITERAL,
-    BooleanExpression,
-    FilterContextPath,
-    FilterExpression,
-    FloatLiteral,
-    InfixExpression,
-    IntegerLiteral,
-    ListLiteral,
-    PrefixExpression,
-    RegexLiteral,
-    RootPath,
-    SelfPath,
-    StringLiteral,
-)
+from .filter import FALSE
+from .filter import NIL
+from .filter import TRUE
+from .filter import UNDEFINED_LITERAL
+from .filter import BooleanExpression
+from .filter import FilterContextPath
+from .filter import FilterExpression
+from .filter import FloatLiteral
+from .filter import InfixExpression
+from .filter import IntegerLiteral
+from .filter import ListLiteral
+from .filter import PrefixExpression
+from .filter import RegexLiteral
+from .filter import RootPath
+from .filter import SelfPath
+from .filter import StringLiteral
 from .path import JSONPath
-from .selectors import (
-    Filter,
-    IndexSelector,
-    JSONPathSelector,
-    ListSelector,
-    PropertySelector,
-    RecursiveDescentSelector,
-    SliceSelector,
-    WildSelector,
-)
-from .token import (
-    TOKEN_AND,
-    TOKEN_BARE_PROPERTY,
-    TOKEN_COMMA,
-    TOKEN_CONTAINS,
-    TOKEN_DDOT,
-    TOKEN_EOF,
-    TOKEN_EQ,
-    TOKEN_FALSE,
-    TOKEN_FILTER_CONTEXT,
-    TOKEN_FILTER_END,
-    TOKEN_FILTER_START,
-    TOKEN_FLOAT,
-    TOKEN_GE,
-    TOKEN_GT,
-    TOKEN_IN,
-    TOKEN_INDEX,
-    TOKEN_INT,
-    TOKEN_INTERSECTION,
-    TOKEN_LE,
-    TOKEN_LG,
-    TOKEN_LIST_END,
-    TOKEN_LIST_START,
-    TOKEN_LPAREN,
-    TOKEN_LT,
-    TOKEN_MISSING,
-    TOKEN_NE,
-    TOKEN_NIL,
-    TOKEN_NONE,
-    TOKEN_NOT,
-    TOKEN_NULL,
-    TOKEN_OR,
-    TOKEN_PROPERTY,
-    TOKEN_RE,
-    TOKEN_RE_FLAGS,
-    TOKEN_RE_PATTERN,
-    TOKEN_ROOT,
-    TOKEN_RPAREN,
-    TOKEN_SELF,
-    TOKEN_SLICE_START,
-    TOKEN_SLICE_STEP,
-    TOKEN_SLICE_STOP,
-    TOKEN_STRING,
-    TOKEN_TRUE,
-    TOKEN_UNDEFINED,
-    TOKEN_UNION,
-    TOKEN_WILD,
-)
+from .selectors import Filter
+from .selectors import IndexSelector
+from .selectors import JSONPathSelector
+from .selectors import ListSelector
+from .selectors import PropertySelector
+from .selectors import RecursiveDescentSelector
+from .selectors import SliceSelector
+from .selectors import WildSelector
+from .token import TOKEN_AND
+from .token import TOKEN_BARE_PROPERTY
+from .token import TOKEN_COMMA
+from .token import TOKEN_CONTAINS
+from .token import TOKEN_DDOT
+from .token import TOKEN_EOF
+from .token import TOKEN_EQ
+from .token import TOKEN_FALSE
+from .token import TOKEN_FILTER_CONTEXT
+from .token import TOKEN_FILTER_END
+from .token import TOKEN_FILTER_START
+from .token import TOKEN_FLOAT
+from .token import TOKEN_GE
+from .token import TOKEN_GT
+from .token import TOKEN_IN
+from .token import TOKEN_INDEX
+from .token import TOKEN_INT
+from .token import TOKEN_INTERSECTION
+from .token import TOKEN_LE
+from .token import TOKEN_LG
+from .token import TOKEN_LIST_END
+from .token import TOKEN_LIST_START
+from .token import TOKEN_LPAREN
+from .token import TOKEN_LT
+from .token import TOKEN_MISSING
+from .token import TOKEN_NE
+from .token import TOKEN_NIL
+from .token import TOKEN_NONE
+from .token import TOKEN_NOT
+from .token import TOKEN_NULL
+from .token import TOKEN_OR
+from .token import TOKEN_PROPERTY
+from .token import TOKEN_RE
+from .token import TOKEN_RE_FLAGS
+from .token import TOKEN_RE_PATTERN
+from .token import TOKEN_ROOT
+from .token import TOKEN_RPAREN
+from .token import TOKEN_SELF
+from .token import TOKEN_SLICE_START
+from .token import TOKEN_SLICE_STEP
+from .token import TOKEN_SLICE_STOP
+from .token import TOKEN_STRING
+from .token import TOKEN_TRUE
+from .token import TOKEN_UNDEFINED
+from .token import TOKEN_UNION
+from .token import TOKEN_WILD
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment

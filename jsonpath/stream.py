@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 from collections import deque
-from typing import Deque, Iterator
+from typing import Deque
+from typing import Iterator
 
 from .exceptions import JSONPathSyntaxError
-from .token import TOKEN_EOF, Token
+from .token import TOKEN_EOF
+from .token import Token
 
 
 class TokenStream:

@@ -4,28 +4,30 @@ from __future__ import annotations
 import re
 from collections.abc import Collection
 from operator import getitem
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    AsyncIterable,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Union,
-)
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import AsyncIterable
+from typing import Iterable
+from typing import List
+from typing import Mapping
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 from .exceptions import JSONPathSyntaxError
 from .filter import UNDEFINED
 from .lex import Lexer
 from .parse import Parser
-from .path import CompoundJSONPath, JSONPath
+from .path import CompoundJSONPath
+from .path import JSONPath
 from .stream import TokenStream
-from .token import TOKEN_EOF, TOKEN_INTERSECTION, TOKEN_UNION
+from .token import TOKEN_EOF
+from .token import TOKEN_INTERSECTION
+from .token import TOKEN_UNION
 
 if TYPE_CHECKING:
-    from .match import FilterContextVars, JSONPathMatch
+    from .match import FilterContextVars
+    from .match import JSONPathMatch
 
 
 class JSONPathEnvironment:
@@ -74,7 +76,7 @@ class JSONPathEnvironment:
                         )
                     )
                 else:
-                    raise JSONPathSyntaxError(
+                    raise JSONPathSyntaxError(  # noqa: TRY003
                         f"unexpected token {stream.current.value!r}",
                         token=stream.current,
                     )

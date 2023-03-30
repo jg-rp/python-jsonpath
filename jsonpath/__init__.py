@@ -6,7 +6,8 @@ from .env import JSONPathEnvironment
 from .lex import Lexer
 from .match import JSONPathMatch
 from .parse import Parser
-from .path import CompoundJSONPath, JSONPath
+from .path import CompoundJSONPath
+from .path import JSONPath
 
 __all__ = (
     "compile",

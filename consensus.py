@@ -10,7 +10,13 @@ We've deliberately named this file so as to exclude it when running `pytest` or
 import operator
 import unittest
 from dataclasses import dataclass
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Union
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Mapping
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import pytest
 from yaml import safe_load
