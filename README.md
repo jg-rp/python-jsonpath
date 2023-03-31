@@ -123,7 +123,7 @@ Imagine a JSON document as a tree structure, where each object (mapping) and arr
 
 For our purposes, a JSON "document" could be a file containing valid JSON data, a Python string containing valid JSON data, or a Python `Object` made up of dictionaries (or any [Mapping](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes)), lists (or any [Sequence](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes)), strings, etc.
 
-We chain _selectors_ together to retrieve `Object`s from the target document. Each selector operates on the `Object`s matched by preceding selectors.
+We chain _selectors_ together to retrieve nodes from the target document. Each selector operates on the nodes matched by preceding selectors.
 
 ### Root (`$`)
 
@@ -245,6 +245,8 @@ Comparison operators include `==`, `!=`, `<`, `>`, `<=` and `>=`. Plus `<>` as a
 $..products.*[?(@.description =~ /.*trainers/i)]
 ```
 
+Filters can use [function extensions](#function-extensions) too.
+
 ### Union (`|`) and intersection (`&`)
 
 Union (`|`) and intersection (`&`) are similar to Python's set operations, but we don't dedupe the matches (matches will often contain unhashable objects).
@@ -263,6 +265,10 @@ $.categories.*[?(@.name == 'footwear')].products.* & $.categories.*[?(@.name == 
 
 Note that `|` and `&` are not allowed inside filter expressions.
 
+## Function extensions
+
+TODO:
+
 ## Notable differences
 
 This is a list of things that you might find in other JSONPath implementation that we don't support (yet).
@@ -274,7 +280,8 @@ This is a list of things that you might find in other JSONPath implementation th
 
 And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11).
 
-- We don't support extension functions of the form `func(path, ..)`.
+- For now, the only built-in function extension is `length()`.
+- We don't require filters that use a function extension to include a comparison operator.
 - Whitespace is mostly insignificant unless inside quotes.
 - The root token (default `$`) is optional.
 - Paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.

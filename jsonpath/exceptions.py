@@ -11,9 +11,9 @@ if TYPE_CHECKING:
 class JSONPathError(Exception):
     """Base exception for all JSONPath syntax and type errors."""
 
-    def __init__(self, *args: object) -> None:
+    def __init__(self, *args: object, token: Optional[Token] = None) -> None:
         super().__init__(*args)
-        self.token: Optional[Token] = None
+        self.token: Optional[Token] = token
 
     def __str__(self) -> str:
         msg = super().__str__()
@@ -36,6 +36,14 @@ class JSONPathSyntaxError(JSONPathError):
 class JSONPathTypeError(JSONPathError):
     """An exception raised at filter evaluation time when a filter
     expression can not be evaluated due to type errors."""
+
+
+class JSONPathNameError(JSONPathError):
+    """An exception raised when an unknown function extension is called."""
+
+    def __init__(self, *args: object, token: Token) -> None:
+        super().__init__(*args)
+        self.token = token
 
 
 def _truncate_message(value: str, num: int, end: str = "...") -> str:

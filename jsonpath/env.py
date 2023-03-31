@@ -1,12 +1,15 @@
 """Core JSONPath configuration object."""
 from __future__ import annotations
 
+import inspect
 import re
 from collections.abc import Collection
 from operator import getitem
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import AsyncIterable
+from typing import Callable
+from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Mapping
@@ -14,7 +17,10 @@ from typing import Optional
 from typing import Sequence
 from typing import Union
 
+from . import function_extensions
+from .exceptions import JSONPathNameError
 from .exceptions import JSONPathSyntaxError
+from .exceptions import JSONPathTypeError
 from .filter import UNDEFINED
 from .lex import Lexer
 from .parse import Parser
@@ -24,6 +30,7 @@ from .stream import TokenStream
 from .token import TOKEN_EOF
 from .token import TOKEN_INTERSECTION
 from .token import TOKEN_UNION
+from .token import Token
 
 if TYPE_CHECKING:
     from .match import FilterContextVars
@@ -47,6 +54,53 @@ class JSONPathEnvironment:
     def __init__(self) -> None:
         self.lexer = self.lexer_class(env=self)
         self.parser = self.parser_class(env=self)
+        self.function_extensions: Dict[str, Callable[..., Any]] = {}
+        self.setup_function_extensions()
+
+    def setup_function_extensions(self) -> None:
+        self.function_extensions["length"] = function_extensions.length
+
+    def validate_function_extension_signature(
+        self, token: Token, args: List[Any]
+    ) -> None:
+        """Compile-time validation of function extension arguments."""
+        try:
+            func = self.function_extensions[token.value]
+        except KeyError as err:
+            raise JSONPathNameError(
+                f"function {token.value!r} is not defined", token=token
+            ) from err
+
+        params = list(inspect.signature(func).parameters.values())
+
+        # Keyword only params are not supported
+        if len([p for p in params if p.kind in (p.KEYWORD_ONLY, p.VAR_KEYWORD)]):
+            raise JSONPathTypeError(
+                f"function {token.value!r} requires keyword arguments",
+                token=token,
+            )
+
+        # Too few args?
+        positional_args = [
+            p for p in params if p.kind in (p.POSITIONAL_ONLY, p.POSITIONAL_OR_KEYWORD)
+        ]
+        if len(args) < len(positional_args):
+            raise JSONPathTypeError(
+                f"{token.value!r}() requires {len(positional_args)} arguments",
+                token=token,
+            )
+
+        # Does the signature have var args?
+        if len([p for p in params if p.kind == p.VAR_POSITIONAL]):
+            return
+
+        # Too many args?
+        if len(args) > len(positional_args):
+            raise JSONPathTypeError(
+                f"{token.value!r}() requires at most "
+                f"{len(positional_args) + len(positional_args)} arguments",
+                token=token,
+            )
 
     def compile(self, path: str) -> Union[JSONPath, CompoundJSONPath]:  # noqa: A003
         """Prepare an internal representation of a JSONPath string."""

@@ -15,6 +15,7 @@ from jsonpath.token import TOKEN_FALSE
 from jsonpath.token import TOKEN_FILTER_END
 from jsonpath.token import TOKEN_FILTER_START
 from jsonpath.token import TOKEN_FLOAT
+from jsonpath.token import TOKEN_FUNCTION
 from jsonpath.token import TOKEN_GT
 from jsonpath.token import TOKEN_IN
 from jsonpath.token import TOKEN_INDEX
@@ -31,6 +32,7 @@ from jsonpath.token import TOKEN_RE
 from jsonpath.token import TOKEN_RE_FLAGS
 from jsonpath.token import TOKEN_RE_PATTERN
 from jsonpath.token import TOKEN_ROOT
+from jsonpath.token import TOKEN_RPAREN
 from jsonpath.token import TOKEN_SELF
 from jsonpath.token import TOKEN_SLICE_START
 from jsonpath.token import TOKEN_SLICE_STEP
@@ -1038,6 +1040,72 @@ TEST_CASES = [
                 kind=TOKEN_STRING, value="thing", index=11, path="$['some', 'thing']"
             ),
             Token(kind=TOKEN_LIST_END, value="]", index=17, path="$['some', 'thing']"),
+        ],
+    ),
+    Case(
+        description="call a function",
+        path="$.some[?(length(@.thing) < 2)]",
+        want=[
+            Token(
+                kind=TOKEN_ROOT,
+                value="$",
+                index=0,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_PROPERTY,
+                value="some",
+                index=2,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_FILTER_START,
+                value="[?(",
+                index=6,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_FUNCTION,
+                value="length",
+                index=9,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_SELF,
+                value="@",
+                index=16,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_PROPERTY,
+                value="thing",
+                index=18,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_RPAREN,
+                value=")",
+                index=23,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_LT,
+                value="<",
+                index=25,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_INT,
+                value="2",
+                index=27,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_FILTER_END,
+                value=")]",
+                index=28,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
         ],
     ),
 ]

@@ -19,6 +19,7 @@ from .filter import BooleanExpression
 from .filter import FilterContextPath
 from .filter import FilterExpression
 from .filter import FloatLiteral
+from .filter import FunctionExtension
 from .filter import InfixExpression
 from .filter import IntegerLiteral
 from .filter import ListLiteral
@@ -48,6 +49,7 @@ from .token import TOKEN_FILTER_CONTEXT
 from .token import TOKEN_FILTER_END
 from .token import TOKEN_FILTER_START
 from .token import TOKEN_FLOAT
+from .token import TOKEN_FUNCTION
 from .token import TOKEN_GE
 from .token import TOKEN_GT
 from .token import TOKEN_IN
@@ -165,6 +167,7 @@ class Parser:
             TOKEN_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
             TOKEN_UNDEFINED: self.parse_undefined,
+            TOKEN_FUNCTION: self.parse_function_extension,
         }
 
         self.list_item_map: Dict[str, Callable[[TokenStream], FilterExpression]] = {
@@ -176,6 +179,21 @@ class Parser:
             TOKEN_NULL: self.parse_nil,
             TOKEN_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
+        }
+
+        self.function_argument_map: Dict[
+            str, Callable[[TokenStream], FilterExpression]
+        ] = {
+            TOKEN_FALSE: self.parse_boolean,
+            TOKEN_FLOAT: self.parse_float_literal,
+            TOKEN_INT: self.parse_integer_literal,
+            TOKEN_NIL: self.parse_nil,
+            TOKEN_NONE: self.parse_nil,
+            TOKEN_NULL: self.parse_nil,
+            TOKEN_STRING: self.parse_string_literal,
+            TOKEN_TRUE: self.parse_boolean,
+            TOKEN_ROOT: self.parse_root_path,
+            TOKEN_SELF: self.parse_self_path,
         }
 
     def parse(self, stream: TokenStream) -> Iterable[JSONPathSelector]:
@@ -417,6 +435,30 @@ class Parser:
             stream.next_token()
 
         return ListLiteral(list_items)
+
+    def parse_function_extension(self, stream: TokenStream) -> FilterExpression:
+        function_arguments: List[FilterExpression] = []
+        tok = stream.next_token()
+
+        while stream.current.kind != TOKEN_RPAREN:
+            try:
+                function_arguments.append(
+                    self.function_argument_map[stream.current.kind](stream)
+                )
+            except KeyError as err:
+                raise JSONPathSyntaxError(
+                    f"unexpected {stream.current.value!r}",
+                    token=stream.current,
+                ) from err
+
+            if stream.peek.kind != TOKEN_RPAREN:
+                stream.expect_peek(TOKEN_COMMA)
+                stream.next_token()
+
+            stream.next_token()
+
+        self.env.validate_function_extension_signature(tok, function_arguments)
+        return FunctionExtension(tok.value, function_arguments)
 
     def parse_filter_selector(
         self, stream: TokenStream, precedence: int = PRECEDENCE_LOWEST

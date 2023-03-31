@@ -332,6 +332,24 @@ TEST_CASES = [
         data={"a": None, "b": [None], "c": [{}], "null": 1},
         want=[1],
     ),
+    Case(
+        description=("filter, length function, string data"),
+        path="$[?(length(@.a)>=2)]",
+        data=[{"a": "ab"}, {"a": "d"}],
+        want=[{"a": "ab"}],
+    ),
+    Case(
+        description=("filter, length function, array data"),
+        path="$[?(length(@.a)>=2)]",
+        data=[{"a": [1, 2, 3]}, {"a": [1]}],
+        want=[{"a": [1, 2, 3]}],
+    ),
+    Case(
+        description=("filter, length function, missing data"),
+        path="$[?(length(@.a)>=2)]",
+        data=[{"d": "f"}],
+        want=[],
+    ),
 ]
 
 

@@ -63,8 +63,7 @@ def valid_cases() -> List[Case]:
             case.selector = case.selector.replace("$[?", "$.*[?")
         return case
 
-    # XXX: skipping "escaped" test cases for now.
-    # Not sure if the test fixture is escaping the input "document" correctly.
+    # TODO: skipping "escaped" test cases for now.
     # XXX: skipping filter functions. Not supported.
     return [
         mangle_filter(case)

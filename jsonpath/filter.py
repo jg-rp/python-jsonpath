@@ -354,3 +354,31 @@ class FilterContextPath(Path):
         if len(matches) == 1:
             return matches[0]
         return matches
+
+
+class FunctionExtension(FilterExpression):
+    __slots__ = ("name", "args")
+
+    def __init__(self, name: str, args: Sequence[FilterExpression]) -> None:
+        self.name = name
+        self.args = args
+
+    def __str__(self) -> str:
+        args = [str(arg) for arg in self.args]
+        return f"{self.name}({', '.join(args)})"
+
+    def evaluate(self, context: FilterContext) -> object:
+        try:
+            func = context.env.function_extensions[self.name]
+        except KeyError:
+            return UNDEFINED
+        args = [arg.evaluate(context) for arg in self.args]
+        return func(*args)
+
+    async def evaluate_async(self, context: FilterContext) -> object:
+        try:
+            func = context.env.function_extensions[self.name]
+        except KeyError:
+            return UNDEFINED
+        args = [await arg.evaluate_async(context) for arg in self.args]
+        return func(*args)

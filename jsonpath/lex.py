@@ -23,6 +23,7 @@ from .token import TOKEN_FILTER_CONTEXT
 from .token import TOKEN_FILTER_END
 from .token import TOKEN_FILTER_START
 from .token import TOKEN_FLOAT
+from .token import TOKEN_FUNCTION
 from .token import TOKEN_GE
 from .token import TOKEN_GT
 from .token import TOKEN_ILLEGAL
@@ -120,6 +121,9 @@ class Lexer:
         # /pattern/ or /pattern/flags
         self.re_pattern = r"/(?P<G_RE>.+?)/(?P<G_RE_FLAGS>[aims]*)"
 
+        # func(
+        self.function_pattern = r"(?P<G_FUNC>[a-z][a-z_0-9]+)\(\s*"
+
         self.rules = self.compile_rules()
 
     def compile_rules(self) -> Pattern[str]:
@@ -135,6 +139,7 @@ class Lexer:
             (TOKEN_LIST_SLICE, self.slice_list_pattern),
             (TOKEN_FILTER_START, r"\[\s*\?\s*\("),
             (TOKEN_FILTER_END, r"\)\s*]"),
+            (TOKEN_FUNCTION, self.function_pattern),
             (TOKEN_BRACKET_PROPERTY, self.bracketed_property_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
             (TOKEN_FLOAT, r"-?\d+\.\d*(?:e[+-]?\d+)?"),
@@ -278,6 +283,12 @@ class Lexer:
                     kind=TOKEN_NIL,
                     value=match.group(),
                     index=match.start(),
+                )
+            elif kind == TOKEN_FUNCTION:
+                yield _token(
+                    kind=TOKEN_FUNCTION,
+                    value=match.group("G_FUNC"),
+                    index=match.start("G_FUNC"),
                 )
             elif kind == TOKEN_SKIP:
                 continue

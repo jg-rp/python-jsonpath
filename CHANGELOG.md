@@ -1,5 +1,12 @@
 # Python JSONPath Change Log
 
+## Version 0.3.0 (unreleased)
+
+**Features**
+
+- Added support for function extensions.
+- Added the built-in `length()` function.
+
 ## Version 0.2.0
 
 **Fixes**
