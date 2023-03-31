@@ -49,10 +49,6 @@ def cases() -> List[Case]:
 
 def valid_cases() -> List[Case]:
     def mangle_filter(case: Case) -> Case:
-        # XXX: Insert parentheses around filter expression :(
-        if case.name.startswith("filter") and case.selector.count("]") == 1:
-            case.selector = case.selector.replace("[?", "[?(").replace("]", ")]")
-
         # XXX: Insert wildcard in front of root :(
         if (
             case.name.startswith("filter")

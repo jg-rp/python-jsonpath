@@ -227,10 +227,14 @@ $...title
 
 ### Filters (`[?(EXPRESSION)]`)
 
-Filters allow you to remove nodes from a selection using a Boolean expression. Within a filter, `@` refers to the current node and `$` refers to the root node in the target document. `@` and `$` can be used to select nodes as part of the expression.
+Filters allow you to remove nodes from a selection using a Boolean expression. Within a filter, `@` refers to the current node and `$` refers to the root node in the target document. `@` and `$` can be used to select nodes as part of the expression. Since version 0.3.0, the parentheses are optional, as per the IETF JSONPath draft. These two examples are equivalent.
 
 ```text
 $..products.*[?(@.price < $.price_cap)]
+```
+
+```text
+$..products.*[?@.price < $.price_cap]
 ```
 
 Comparison operators include `==`, `!=`, `<`, `>`, `<=` and `>=`. Plus `<>` as an alias for `!=`.
@@ -286,8 +290,7 @@ And this is a list of areas where we deviate from the [IETF JSONPath draft](http
 - The root token (default `$`) is optional.
 - Paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.
 - Nested filters are not supported.
-- When a filter is applied to an object (mapping) value, we do not silently apply that filter to the object's values. See the "Existence of non-singular queries" example in the IETF JSONPath draft.
-- Parentheses are required when writing filter selectors, as is common in existing JSONPath implementations. `$.some[?(@.thing)]` is OK, `$.some[?@.thing]` is not.
+- We don't treat filter expressions without a comparison as existence test, but an "is truthy" test. See the "Existence of non-singular queries" example in the IETF JSONPath draft.
 
 And this is a list of features that are uncommon or unique to Python JSONPath.
 

@@ -74,17 +74,17 @@ class TokenStream:
         """Close the stream."""
         self.current = Token(TOKEN_EOF, "", -1, "")
 
-    def expect(self, typ: str) -> None:
+    def expect(self, *typ: str) -> None:
         """"""
-        if self.current.kind != typ:
+        if self.current.kind not in typ:
             raise JSONPathSyntaxError(
                 f"expected {typ!r}, found {self.current.kind!r}",
                 token=self.current,
             )
 
-    def expect_peek(self, typ: str) -> None:
+    def expect_peek(self, *typ: str) -> None:
         """"""
-        if self.peek.kind != typ:
+        if self.peek.kind not in typ:
             raise JSONPathSyntaxError(
                 f"expected {typ!r}, found {self.peek.kind!r}",
                 token=self.peek,

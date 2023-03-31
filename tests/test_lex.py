@@ -21,13 +21,13 @@ from jsonpath.token import TOKEN_IN
 from jsonpath.token import TOKEN_INDEX
 from jsonpath.token import TOKEN_INT
 from jsonpath.token import TOKEN_INTERSECTION
-from jsonpath.token import TOKEN_LIST_END
 from jsonpath.token import TOKEN_LIST_START
 from jsonpath.token import TOKEN_LT
 from jsonpath.token import TOKEN_NIL
 from jsonpath.token import TOKEN_NOT
 from jsonpath.token import TOKEN_OR
 from jsonpath.token import TOKEN_PROPERTY
+from jsonpath.token import TOKEN_RBRACKET
 from jsonpath.token import TOKEN_RE
 from jsonpath.token import TOKEN_RE_FLAGS
 from jsonpath.token import TOKEN_RE_PATTERN
@@ -84,7 +84,7 @@ TEST_CASES = [
             Token(kind=TOKEN_ROOT, value="$", index=0, path='$["some"]'),
             Token(kind=TOKEN_LIST_START, value="[", index=1, path='$["some"]'),
             Token(kind=TOKEN_STRING, value="some", index=3, path='$["some"]'),
-            Token(kind=TOKEN_LIST_END, value="]", index=8, path='$["some"]'),
+            Token(kind=TOKEN_RBRACKET, value="]", index=8, path='$["some"]'),
         ],
     ),
     Case(
@@ -94,7 +94,7 @@ TEST_CASES = [
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$['some']"),
             Token(kind=TOKEN_LIST_START, value="[", index=1, path="$['some']"),
             Token(kind=TOKEN_STRING, value="some", index=3, path="$['some']"),
-            Token(kind=TOKEN_LIST_END, value="]", index=8, path="$['some']"),
+            Token(kind=TOKEN_RBRACKET, value="]", index=8, path="$['some']"),
         ],
     ),
     Case(
@@ -245,7 +245,7 @@ TEST_CASES = [
             Token(kind=TOKEN_INT, value="4", index=4, path="$[1,4,5]"),
             Token(kind=TOKEN_COMMA, value=",", index=5, path="$[1,4,5]"),
             Token(kind=TOKEN_INT, value="5", index=6, path="$[1,4,5]"),
-            Token(kind=TOKEN_LIST_END, value="]", index=7, path="$[1,4,5]"),
+            Token(kind=TOKEN_RBRACKET, value="]", index=7, path="$[1,4,5]"),
         ],
     ),
     Case(
@@ -259,7 +259,7 @@ TEST_CASES = [
             Token(kind=TOKEN_SLICE_START, value="4", index=4, path="$[1,4:9]"),
             Token(kind=TOKEN_SLICE_STOP, value="9", index=6, path="$[1,4:9]"),
             Token(kind=TOKEN_SLICE_STEP, value="", index=-1, path="$[1,4:9]"),
-            Token(kind=TOKEN_LIST_END, value="]", index=7, path="$[1,4:9]"),
+            Token(kind=TOKEN_RBRACKET, value="]", index=7, path="$[1,4:9]"),
         ],
     ),
     Case(
@@ -275,7 +275,7 @@ TEST_CASES = [
             Token(
                 kind=TOKEN_BARE_PROPERTY, value="thing", index=7, path="$[some,thing]"
             ),
-            Token(kind=TOKEN_LIST_END, value="]", index=12, path="$[some,thing]"),
+            Token(kind=TOKEN_RBRACKET, value="]", index=12, path="$[some,thing]"),
         ],
     ),
     Case(
@@ -781,7 +781,7 @@ TEST_CASES = [
                 kind=TOKEN_STRING, value="1", index=19, path="[?(@.thing in [1, '1'])]"
             ),
             Token(
-                kind=TOKEN_LIST_END,
+                kind=TOKEN_RBRACKET,
                 value="]",
                 index=21,
                 path="[?(@.thing in [1, '1'])]",
@@ -1039,7 +1039,7 @@ TEST_CASES = [
             Token(
                 kind=TOKEN_STRING, value="thing", index=11, path="$['some', 'thing']"
             ),
-            Token(kind=TOKEN_LIST_END, value="]", index=17, path="$['some', 'thing']"),
+            Token(kind=TOKEN_RBRACKET, value="]", index=17, path="$['some', 'thing']"),
         ],
     ),
     Case(

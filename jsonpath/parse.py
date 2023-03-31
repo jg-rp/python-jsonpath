@@ -58,7 +58,6 @@ from .token import TOKEN_INT
 from .token import TOKEN_INTERSECTION
 from .token import TOKEN_LE
 from .token import TOKEN_LG
-from .token import TOKEN_LIST_END
 from .token import TOKEN_LIST_START
 from .token import TOKEN_LPAREN
 from .token import TOKEN_LT
@@ -70,6 +69,7 @@ from .token import TOKEN_NOT
 from .token import TOKEN_NULL
 from .token import TOKEN_OR
 from .token import TOKEN_PROPERTY
+from .token import TOKEN_RBRACKET
 from .token import TOKEN_RE
 from .token import TOKEN_RE_FLAGS
 from .token import TOKEN_RE_PATTERN
@@ -288,7 +288,7 @@ class Parser:
         tok = stream.next_token()
         list_items: List[Union[IndexSelector, PropertySelector, SliceSelector]] = []
 
-        while stream.current.kind != TOKEN_LIST_END:
+        while stream.current.kind != TOKEN_RBRACKET:
             if stream.current.kind == TOKEN_INT:
                 list_items.append(
                     IndexSelector(
@@ -313,7 +313,7 @@ class Parser:
                     token=stream.current,
                 )
 
-            if stream.peek.kind != TOKEN_LIST_END:
+            if stream.peek.kind != TOKEN_RBRACKET:
                 stream.next_token()
 
             stream.next_token()
@@ -329,7 +329,7 @@ class Parser:
             raise JSONPathSyntaxError("unbalanced ')'", token=stream.current)
 
         stream.next_token()
-        stream.expect(TOKEN_FILTER_END)
+        stream.expect(TOKEN_FILTER_END, TOKEN_RBRACKET)
         return Filter(env=self.env, token=tok, expression=expr)
 
     def parse_boolean(self, stream: TokenStream) -> FilterExpression:
@@ -379,13 +379,18 @@ class Parser:
         stream.next_token()
 
         while stream.current.kind != TOKEN_RPAREN:
-            if stream.current.kind in (TOKEN_EOF, TOKEN_FILTER_END):
+            if stream.current.kind == TOKEN_EOF:
                 raise JSONPathSyntaxError(
                     "unbalanced parentheses", token=stream.current
                 )
+            if stream.current.kind == TOKEN_FILTER_END:
+                # In some cases, an RPAREN followed by an RBRACKET can
+                # look like the long form "end of filter" token.
+                stream.push(stream.current)
+                break
             expr = self.parse_infix_expression(stream, expr)
 
-        stream.expect(TOKEN_RPAREN)
+        stream.expect(TOKEN_RPAREN, TOKEN_FILTER_END)
         return expr
 
     def parse_root_path(self, stream: TokenStream) -> FilterExpression:
@@ -419,7 +424,7 @@ class Parser:
         stream.next_token()
         list_items: List[FilterExpression] = []
 
-        while stream.current.kind != TOKEN_LIST_END:
+        while stream.current.kind != TOKEN_RBRACKET:
             try:
                 list_items.append(self.list_item_map[stream.current.kind](stream))
             except KeyError as err:
@@ -428,7 +433,7 @@ class Parser:
                     token=stream.current,
                 ) from err
 
-            if stream.peek.kind != TOKEN_LIST_END:
+            if stream.peek.kind != TOKEN_RBRACKET:
                 stream.expect_peek(TOKEN_COMMA)
                 stream.next_token()
 
@@ -466,7 +471,7 @@ class Parser:
         try:
             left = self.token_map[stream.current.kind](stream)
         except KeyError as err:
-            if stream.current.kind in (TOKEN_EOF, TOKEN_FILTER_END):
+            if stream.current.kind in (TOKEN_EOF, TOKEN_FILTER_END, TOKEN_RBRACKET):
                 msg = "end of expression"
             else:
                 msg = repr(stream.current.value)
@@ -477,7 +482,7 @@ class Parser:
         while True:
             peek_kind = stream.peek.kind
             if (
-                peek_kind in (TOKEN_EOF, TOKEN_FILTER_END)
+                peek_kind in (TOKEN_EOF, TOKEN_FILTER_END, TOKEN_RBRACKET)
                 or self.PRECEDENCES.get(peek_kind, self.PRECEDENCE_LOWEST) < precedence
             ):
                 break

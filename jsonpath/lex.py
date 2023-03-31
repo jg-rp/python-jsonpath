@@ -33,7 +33,6 @@ from .token import TOKEN_INT
 from .token import TOKEN_INTERSECTION
 from .token import TOKEN_LE
 from .token import TOKEN_LG
-from .token import TOKEN_LIST_END
 from .token import TOKEN_LIST_SLICE
 from .token import TOKEN_LIST_START
 from .token import TOKEN_LPAREN
@@ -46,6 +45,7 @@ from .token import TOKEN_NOT
 from .token import TOKEN_NULL
 from .token import TOKEN_OR
 from .token import TOKEN_PROPERTY
+from .token import TOKEN_RBRACKET
 from .token import TOKEN_RE
 from .token import TOKEN_RE_FLAGS
 from .token import TOKEN_RE_PATTERN
@@ -137,7 +137,7 @@ class Lexer:
             (TOKEN_SLICE, self.slice_pattern),
             (TOKEN_WILD, self.wild_pattern),
             (TOKEN_LIST_SLICE, self.slice_list_pattern),
-            (TOKEN_FILTER_START, r"\[\s*\?\s*\("),
+            (TOKEN_FILTER_START, r"\[\s*\?\s*\(?"),
             (TOKEN_FILTER_END, r"\)\s*]"),
             (TOKEN_FUNCTION, self.function_pattern),
             (TOKEN_BRACKET_PROPERTY, self.bracketed_property_pattern),
@@ -162,7 +162,7 @@ class Lexer:
             (TOKEN_UNDEFINED, r"undefined"),
             (TOKEN_MISSING, r"missing"),
             (TOKEN_LIST_START, r"\["),
-            (TOKEN_LIST_END, r"]"),
+            (TOKEN_RBRACKET, r"]"),
             (TOKEN_COMMA, r","),
             (TOKEN_EQ, r"=="),
             (TOKEN_NE, r"!="),

@@ -8,6 +8,7 @@
 - Added the built-in `length()` function.
 - Added the built-in `count()` function. `count()` is an alias for `length()`
 - Added the built-in `keys()` function.
+- Support filters without parentheses.
 
 ## Version 0.2.0
 
