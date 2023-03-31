@@ -305,7 +305,9 @@ class Parser:
                         token=stream.current,
                         name=codecs.decode(
                             stream.current.value.replace("\\/", "/"), "unicode-escape"
-                        ),
+                        )
+                        .encode("utf-16", "surrogatepass")
+                        .decode("utf-16"),
                     ),
                 )
             elif stream.current.kind == TOKEN_SLICE_START:

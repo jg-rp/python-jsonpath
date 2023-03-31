@@ -2,12 +2,15 @@
 
 ## Version 0.3.0 (unreleased)
 
+**IETF JSONPath Draft compliance**
+
 - Added support for function extensions.
 - Added the built-in `length()` function.
 - Added the built-in `count()` function. `count()` is an alias for `length()`
-- Added the built-in `keys()` function.
+- Added the built-in `keys()` function (non-standard).
 - Support filters without parentheses.
 - Adhere to IETF JSONPath draft escaping in quoted property selectors.
+- Handle UTF-16 surrogate pairs in quoted property selectors.
 
 ## Version 0.2.0
 

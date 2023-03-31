@@ -33,10 +33,6 @@ class Case:
 
 
 SKIP = {
-    "name selector, double quotes, surrogate pair 𝄞": "TODO",
-    "name selector, double quotes, surrogate pair 😀": "TODO",
-    "name selector, single quotes, surrogate pair 𝄞": "TODO",
-    "name selector, single quotes, surrogate pair 😀": "TODO",
     "filter, nested": "not supported",
 }
 
@@ -59,7 +55,7 @@ def valid_cases() -> List[Case]:
             case.selector = case.selector.replace("$[?", "$.*[?")
         return case
 
-    # XXX: skipping filter functions. Not supported.
+    # TODO: skipping filter functions. Not supported.
     return [
         mangle_filter(case)
         for case in cases()
