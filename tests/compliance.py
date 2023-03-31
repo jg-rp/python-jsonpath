@@ -59,14 +59,11 @@ def valid_cases() -> List[Case]:
             case.selector = case.selector.replace("$[?", "$.*[?")
         return case
 
-    # TODO: skipping "escaped" test cases for now.
     # XXX: skipping filter functions. Not supported.
     return [
         mangle_filter(case)
         for case in cases()
-        if not case.invalid_selector
-        and "escaped" not in case.name
-        and "function" not in case.name
+        if not case.invalid_selector and "function" not in case.name
     ]
 
 

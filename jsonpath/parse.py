@@ -1,6 +1,7 @@
 """The default JSONPath parser."""
 from __future__ import annotations
 
+import codecs
 import re
 from typing import TYPE_CHECKING
 from typing import Callable
@@ -302,8 +303,10 @@ class Parser:
                     PropertySelector(
                         env=self.env,
                         token=stream.current,
-                        name=stream.current.value,
-                    )
+                        name=codecs.decode(
+                            stream.current.value.replace("\\/", "/"), "unicode-escape"
+                        ),
+                    ),
                 )
             elif stream.current.kind == TOKEN_SLICE_START:
                 list_items.append(self.parse_slice(stream))
