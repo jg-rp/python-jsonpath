@@ -1,8 +1,8 @@
 from collections.abc import Sized
-from typing import Union
+from typing import Optional
 
 
-def length(obj: Sized) -> Union[int, None]:
+def length(obj: Sized) -> Optional[int]:
     try:
         return len(obj)
     except TypeError:

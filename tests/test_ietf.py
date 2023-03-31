@@ -350,6 +350,12 @@ TEST_CASES = [
         data=[{"d": "f"}],
         want=[],
     ),
+    Case(
+        description=("filter, count function"),
+        path="$[?(count(@..*)>2)]",
+        data=[{"a": [1, 2, 3]}, {"a": [1], "d": "f"}, {"a": 1, "d": "f"}],
+        want=[{"a": [1, 2, 3]}, {"a": [1], "d": "f"}],
+    ),
 ]
 
 

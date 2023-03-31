@@ -58,7 +58,9 @@ class JSONPathEnvironment:
         self.setup_function_extensions()
 
     def setup_function_extensions(self) -> None:
+        self.function_extensions["keys"] = function_extensions.keys
         self.function_extensions["length"] = function_extensions.length
+        self.function_extensions["count"] = function_extensions.length
 
     def validate_function_extension_signature(
         self, token: Token, args: List[Any]

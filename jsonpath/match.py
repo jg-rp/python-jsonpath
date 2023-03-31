@@ -7,6 +7,10 @@ from typing import Union
 
 FilterContextVars = Mapping[str, Any]
 
+# TODO: store path as tuple of things
+# TODO: store reference to parent
+# TODO: store list of children
+
 
 class JSONPathMatch:
     """Bind a matched object to its path."""
