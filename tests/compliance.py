@@ -50,7 +50,6 @@ def valid_cases() -> List[Case]:
             case.name.startswith("filter")
             and case.selector.startswith("$[?")
             and isinstance(case.document, list)
-            # and all([isinstance(obj, dict) for obj in case.document])
         ):
             case.selector = case.selector.replace("$[?", "$.*[?")
         return case

@@ -67,10 +67,12 @@ class JSONPath:
 
         matches: Iterable[JSONPathMatch] = [
             JSONPathMatch(
-                path=self.env.root_token,
-                obj=data,
-                root=data,
                 filter_context=filter_context or {},
+                obj=data,
+                parent=None,
+                path=self.env.root_token,
+                parts=(),
+                root=data,
             )
         ]
 
@@ -108,10 +110,12 @@ class JSONPath:
 
         async def root_iter() -> AsyncIterable[JSONPathMatch]:
             yield JSONPathMatch(
-                path=self.env.root_token,
-                obj=data,
-                root=data,
                 filter_context=filter_context or {},
+                obj=data,
+                parent=None,
+                path=self.env.root_token,
+                parts=(),
+                root=data,
             )
 
         matches: AsyncIterable[JSONPathMatch] = root_iter()

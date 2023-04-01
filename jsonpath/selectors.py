@@ -68,12 +68,16 @@ class PropertySelector(JSONPathSelector):
                 continue
 
             with suppress(KeyError):
-                yield JSONPathMatch(
-                    path=match.path + f"['{self.name}']",
-                    obj=self.env.getitem(match.obj, self.name),
-                    root=match.root,
+                _match = JSONPathMatch(
                     filter_context=match.filter_context(),
+                    obj=self.env.getitem(match.obj, self.name),
+                    parent=match,
+                    parts=match.parts + (self.name,),
+                    path=match.path + f"['{self.name}']",
+                    root=match.root,
                 )
+                match.add_child(_match)
+                yield _match
 
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
@@ -83,12 +87,16 @@ class PropertySelector(JSONPathSelector):
                 continue
 
             with suppress(KeyError):
-                yield JSONPathMatch(
-                    path=match.path + f"['{self.name}']",
-                    obj=await self.env.getitem_async(match.obj, self.name),
-                    root=match.root,
+                _match = JSONPathMatch(
                     filter_context=match.filter_context(),
+                    obj=await self.env.getitem_async(match.obj, self.name),
+                    parent=match,
+                    parts=match.parts + (self.name,),
+                    path=match.path + f"['{self.name}']",
+                    root=match.root,
                 )
+                match.add_child(_match)
+                yield _match
 
 
 class IndexSelector(JSONPathSelector):
@@ -120,20 +128,29 @@ class IndexSelector(JSONPathSelector):
             if isinstance(match.obj, Mapping):
                 # Try the string representation of the index as a key.
                 with suppress(KeyError):
-                    yield JSONPathMatch(
-                        path=f"{match.path}['{self.index}']",
+                    _match = JSONPathMatch(
+                        filter_context=match.filter_context(),
                         obj=self.env.getitem(match.obj, self._as_key),
+                        parent=match,
+                        parts=match.parts + (self.index,),
+                        path=f"{match.path}['{self.index}']",
                         root=match.root,
-                        filter_context=match.filter_context(),
                     )
+                    match.add_child(_match)
+                    yield _match
             elif isinstance(match.obj, Sequence):
+                norm_index = self._normalized_index(match.obj)
                 with suppress(IndexError):
-                    yield JSONPathMatch(
-                        path=match.path + f"[{self._normalized_index(match.obj)}]",
-                        obj=self.env.getitem(match.obj, self.index),
-                        root=match.root,
+                    _match = JSONPathMatch(
                         filter_context=match.filter_context(),
+                        obj=self.env.getitem(match.obj, self.index),
+                        parent=match,
+                        parts=match.parts + (norm_index,),
+                        path=match.path + f"[{norm_index}]",
+                        root=match.root,
                     )
+                    match.add_child(_match)
+                    yield _match
 
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
@@ -142,20 +159,29 @@ class IndexSelector(JSONPathSelector):
             if isinstance(match.obj, Mapping):
                 # Try the string representation of the index as a key.
                 with suppress(KeyError):
-                    yield JSONPathMatch(
-                        path=f"{match.path}['{self.index}']",
+                    _match = JSONPathMatch(
+                        filter_context=match.filter_context(),
                         obj=await self.env.getitem_async(match.obj, self._as_key),
+                        parent=match,
+                        parts=match.parts + (self.index,),
+                        path=f"{match.path}['{self.index}']",
                         root=match.root,
-                        filter_context=match.filter_context(),
                     )
+                    match.add_child(_match)
+                    yield _match
             elif isinstance(match.obj, Sequence):
+                norm_index = self._normalized_index(match.obj)
                 with suppress(IndexError):
-                    yield JSONPathMatch(
-                        path=match.path + f"[{self._normalized_index(match.obj)}]",
-                        obj=await self.env.getitem_async(match.obj, self.index),
-                        root=match.root,
+                    _match = JSONPathMatch(
                         filter_context=match.filter_context(),
+                        obj=await self.env.getitem_async(match.obj, self.index),
+                        parent=match,
+                        parts=match.parts + (norm_index,),
+                        path=match.path + f"[{norm_index}]",
+                        root=match.root,
                     )
+                    match.add_child(_match)
+                    yield _match
 
 
 class SliceSelector(JSONPathSelector):
@@ -194,12 +220,17 @@ class SliceSelector(JSONPathSelector):
             idx = self.slice.start or 0
             step = self.slice.step or 1
             for obj in self.env.getitem(match.obj, self.slice):
-                yield JSONPathMatch(
-                    path=f"{match.path}[{self._normalized_index(match.obj, idx)}]",
-                    obj=obj,
-                    root=match.root,
+                norm_index = self._normalized_index(match.obj, idx)
+                _match = JSONPathMatch(
                     filter_context=match.filter_context(),
+                    obj=obj,
+                    parent=match,
+                    parts=match.parts + (norm_index,),
+                    path=f"{match.path}[{norm_index}]",
+                    root=match.root,
                 )
+                match.add_child(_match)
+                yield _match
                 idx += step
 
     async def resolve_async(
@@ -212,12 +243,17 @@ class SliceSelector(JSONPathSelector):
             idx = self.slice.start or 0
             step = self.slice.step or 1
             for obj in await self.env.getitem_async(match.obj, self.slice):
-                yield JSONPathMatch(
-                    path=f"{match.path}[{self._normalized_index(match.obj, idx)}]",
-                    obj=obj,
-                    root=match.root,
+                norm_index = self._normalized_index(match.obj, idx)
+                _match = JSONPathMatch(
                     filter_context=match.filter_context(),
+                    obj=obj,
+                    parent=match,
+                    parts=match.parts + (norm_index,),
+                    path=f"{match.path}[{norm_index}]",
+                    root=match.root,
                 )
+                match.add_child(_match)
+                yield _match
                 idx += step
 
 
@@ -233,20 +269,28 @@ class WildSelector(JSONPathSelector):
                 continue
             if isinstance(match.obj, Mapping):
                 for key, val in match.obj.items():
-                    yield JSONPathMatch(
-                        path=match.path + f"['{key}']",
-                        obj=val,
-                        root=match.root,
+                    _match = JSONPathMatch(
                         filter_context=match.filter_context(),
+                        obj=val,
+                        parent=match,
+                        parts=match.parts + (key,),
+                        path=match.path + f"['{key}']",
+                        root=match.root,
                     )
+                    match.add_child(_match)
+                    yield _match
             elif isinstance(match.obj, Sequence):
                 for i, val in enumerate(match.obj):
-                    yield JSONPathMatch(
-                        path=f"{match.path}[{i}]",
-                        obj=val,
-                        root=match.root,
+                    _match = JSONPathMatch(
                         filter_context=match.filter_context(),
+                        obj=val,
+                        parent=match,
+                        parts=match.parts + (i,),
+                        path=f"{match.path}[{i}]",
+                        root=match.root,
                     )
+                    match.add_child(_match)
+                    yield _match
 
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
@@ -254,20 +298,28 @@ class WildSelector(JSONPathSelector):
         async for match in matches:
             if isinstance(match.obj, Mapping):
                 for key, val in match.obj.items():
-                    yield JSONPathMatch(
-                        path=match.path + f"['{key}']",
-                        obj=val,
-                        root=match.root,
+                    _match = JSONPathMatch(
                         filter_context=match.filter_context(),
+                        obj=val,
+                        parent=match,
+                        parts=match.parts + (key,),
+                        path=match.path + f"['{key}']",
+                        root=match.root,
                     )
+                    match.add_child(_match)
+                    yield _match
             elif isinstance(match.obj, Sequence):
                 for i, val in enumerate(match.obj):
-                    yield JSONPathMatch(
-                        path=f"{match.path}[{i}]",
-                        obj=val,
-                        root=match.root,
+                    _match = JSONPathMatch(
                         filter_context=match.filter_context(),
+                        obj=val,
+                        parent=match,
+                        parts=match.parts + (i,),
+                        path=f"{match.path}[{i}]",
+                        root=match.root,
                     )
+                    match.add_child(_match)
+                    yield _match
 
 
 class RecursiveDescentSelector(JSONPathSelector):
@@ -283,11 +335,14 @@ class RecursiveDescentSelector(JSONPathSelector):
                     pass
                 elif isinstance(val, (Mapping, Sequence)):
                     _match = JSONPathMatch(
-                        path=match.path + f"['{key}']",
-                        obj=val,
-                        root=match.root,
                         filter_context=match.filter_context(),
+                        obj=val,
+                        parent=match,
+                        parts=match.parts + (key,),
+                        path=match.path + f"['{key}']",
+                        root=match.root,
                     )
+                    match.add_child(_match)
                     yield _match
                     yield from self._expand(_match)
         elif isinstance(match.obj, Sequence) and not isinstance(match.obj, str):
@@ -296,11 +351,14 @@ class RecursiveDescentSelector(JSONPathSelector):
                     pass
                 elif isinstance(val, (Mapping, Sequence)):
                     _match = JSONPathMatch(
-                        path=f"{match.path}[{i}]",
-                        obj=val,
-                        root=match.root,
                         filter_context=match.filter_context(),
+                        obj=val,
+                        parent=match,
+                        parts=match.parts + (i,),
+                        path=f"{match.path}[{i}]",
+                        root=match.root,
                     )
+                    match.add_child(_match)
                     yield _match
                     yield from self._expand(_match)
 
@@ -414,12 +472,16 @@ class Filter(JSONPathSelector):
                     )
                     try:
                         if self.expression.evaluate(context):
-                            yield JSONPathMatch(
-                                path=f"{match.path}[{i}]",
-                                obj=obj,
-                                root=match.root,
+                            _match = JSONPathMatch(
                                 filter_context=match.filter_context(),
+                                obj=obj,
+                                parent=match,
+                                parts=match.parts + (i,),
+                                path=f"{match.path}[{i}]",
+                                root=match.root,
                             )
+                            match.add_child(_match)
+                            yield _match
                     except JSONPathTypeError as err:
                         if not err.token:
                             err.token = self.token
@@ -455,12 +517,16 @@ class Filter(JSONPathSelector):
                     )
                     try:
                         if await self.expression.evaluate_async(context):
-                            yield JSONPathMatch(
-                                path=f"{match.path}[{i}]",
-                                obj=obj,
-                                root=match.root,
+                            _match = JSONPathMatch(
                                 filter_context=match.filter_context(),
+                                obj=obj,
+                                parent=match,
+                                parts=match.parts + (i,),
+                                path=f"{match.path}[{i}]",
+                                root=match.root,
                             )
+                            match.add_child(_match)
+                            yield _match
                     except JSONPathTypeError as err:
                         if not err.token:
                             err.token = self.token
