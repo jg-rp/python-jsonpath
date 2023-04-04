@@ -27,7 +27,7 @@ dependencies = []
 dynamic = ["version"]
 
 [project.urls]
-Documentation = "https://github.com/jg-rp/python-jsonpath#readme"
+Documentation = "https://jg-rp.github.io/python-jsonpath/"
 Issues = "https://github.com/jg-rp/python-jsonpath/issues"
 Source = "https://github.com/jg-rp/python-jsonpath"
 

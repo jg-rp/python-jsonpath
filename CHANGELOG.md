@@ -1,6 +1,6 @@
 # Python JSONPath Change Log
 
-## Version 0.3.0 (unreleased)
+## Version 0.3.0
 
 **IETF JSONPath Draft compliance**
 
