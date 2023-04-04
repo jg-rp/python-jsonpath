@@ -1,3 +1,4 @@
+# noqa: D104
 from .keys import keys
 from .length import length
 

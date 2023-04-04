@@ -1,4 +1,4 @@
-""""""
+# noqa: D100
 from __future__ import annotations
 
 from collections import deque
@@ -8,6 +8,8 @@ from typing import Iterator
 from .exceptions import JSONPathSyntaxError
 from .token import TOKEN_EOF
 from .token import Token
+
+# ruff: noqa: D102
 
 
 class TokenStream:
@@ -75,7 +77,6 @@ class TokenStream:
         self.current = Token(TOKEN_EOF, "", -1, "")
 
     def expect(self, *typ: str) -> None:
-        """"""
         if self.current.kind not in typ:
             raise JSONPathSyntaxError(
                 f"expected {typ!r}, found {self.current.kind!r}",
@@ -83,7 +84,6 @@ class TokenStream:
             )
 
     def expect_peek(self, *typ: str) -> None:
-        """"""
         if self.peek.kind not in typ:
             raise JSONPathSyntaxError(
                 f"expected {typ!r}, found {self.peek.kind!r}",

@@ -1,4 +1,5 @@
 """Test Python JSONPath against the JSONPath Compliance Test Suite.
+
 Assumes a version of the test suite is available in the current  working
 directory as "cts.json".
 

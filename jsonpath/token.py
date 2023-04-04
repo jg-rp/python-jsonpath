@@ -1,4 +1,4 @@
-""""""
+"""JSONPath tokens."""
 import sys
 from typing import Tuple
 
@@ -76,7 +76,7 @@ TOKEN_INTERSECTION = sys.intern("INTERSECT")
 
 
 class Token:
-    """A token, as returned from :meth:`lex.Lexer.tokenize`."""
+    """A token, as returned from `lex.Lexer.tokenize()`."""
 
     __slots__ = ("kind", "value", "index", "path")
 

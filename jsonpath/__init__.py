@@ -3,6 +3,10 @@
 # SPDX-License-Identifier: MIT
 
 from .env import JSONPathEnvironment
+from .exceptions import JSONPathError
+from .exceptions import JSONPathNameError
+from .exceptions import JSONPathSyntaxError
+from .exceptions import JSONPathTypeError
 from .lex import Lexer
 from .match import JSONPathMatch
 from .parse import Parser
@@ -18,7 +22,11 @@ __all__ = (
     "finditer",
     "JSONPath",
     "JSONPathEnvironment",
+    "JSONPathError",
     "JSONPathMatch",
+    "JSONPathNameError",
+    "JSONPathSyntaxError",
+    "JSONPathTypeError",
     "Lexer",
     "Parser",
 )

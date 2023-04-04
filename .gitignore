@@ -51,8 +51,9 @@ cov.xml
 *.mo
 *.pot
 
-# Sphinx documentation
+# Documentation
 docs/_build/
+site/
 
 # PyBuilder
 target/

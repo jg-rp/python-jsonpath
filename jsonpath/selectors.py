@@ -1,4 +1,4 @@
-"""JSONPath selector objects, as returned from :meth:`Parser.parse`."""
+"""JSONPath selector objects, as returned from `Parser.parse`."""
 from __future__ import annotations
 
 from abc import ABC
@@ -23,6 +23,8 @@ if TYPE_CHECKING:
     from .filter import BooleanExpression
     from .token import Token
 
+# ruff: noqa: D102
+
 
 class JSONPathSelector(ABC):
     """Base class for all JSONPath selectors."""
@@ -41,7 +43,7 @@ class JSONPathSelector(ABC):
     def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
-        """An async version of :meth:`expand`."""
+        """An async version of `expand`."""
 
 
 class PropertySelector(JSONPathSelector):
@@ -428,7 +430,7 @@ class ListSelector(JSONPathSelector):
 
 
 class Filter(JSONPathSelector):
-    """"""
+    """A filter selector."""
 
     __slots__ = ("expression",)
 
@@ -534,7 +536,7 @@ class Filter(JSONPathSelector):
 
 
 class FilterContext:
-    """"""
+    """A filter expression context."""
 
     __slots__ = ("current", "env", "root", "extra_context")
 

@@ -90,9 +90,11 @@ if TYPE_CHECKING:
     from .env import JSONPathEnvironment
     from .stream import TokenStream
 
+# ruff: noqa: D102
+
 
 class Parser:
-    """A JSONPath expression parser bound to a JSONPathEnvironment."""
+    """A JSONPath parser bound to a JSONPathEnvironment."""
 
     PRECEDENCE_LOWEST = 1
     PRECEDENCE_LOGICALRIGHT = 3
@@ -284,8 +286,7 @@ class Parser:
         )
 
     def parse_selector_list(self, stream: TokenStream) -> ListSelector:
-        """Parse a comma separated list JSONPath selectors from a stream
-        of tokens."""
+        """Parse a comma separated list JSONPath selectors from a stream of tokens."""
         tok = stream.next_token()
         list_items: List[Union[IndexSelector, PropertySelector, SliceSelector]] = []
 

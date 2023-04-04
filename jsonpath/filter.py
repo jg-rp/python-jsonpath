@@ -1,3 +1,4 @@
+"""Filter expression nodes."""
 from __future__ import annotations
 
 import re
@@ -17,20 +18,35 @@ if TYPE_CHECKING:
     from .path import JSONPath
     from .selectors import FilterContext
 
+# ruff: noqa: D102
+
 
 class FilterExpression(ABC):
-    """"""
+    """Base class for all filter expression nodes."""
 
     @abstractmethod
     def evaluate(self, context: FilterContext) -> object:
-        """"""
+        """Resolve the filter expression in the given _context_.
+
+        Arguments:
+            context: Contextual information the expression might choose
+              use during evaluation.
+
+        Returns:
+            The result of evaluating the expression.
+        """
 
     @abstractmethod
     async def evaluate_async(self, context: FilterContext) -> object:
-        """"""
+        """An async version of `evaluate`."""
 
 
 class Nil(FilterExpression):
+    """The constant `nil`.
+
+    Also aliased as `null` and `None`, sometimes.
+    """
+
     __slots__ = ()
 
     def __eq__(self, other: object) -> bool:
@@ -64,6 +80,8 @@ UNDEFINED = _Undefined()
 
 
 class Undefined(FilterExpression):
+    """The constant `undefined`."""
+
     __slots__ = ()
 
     def __eq__(self, other: object) -> bool:
@@ -85,7 +103,7 @@ LITERAL_EXPRESSION_T = TypeVar("LITERAL_EXPRESSION_T")
 
 
 class Literal(FilterExpression, Generic[LITERAL_EXPRESSION_T]):
-    """"""
+    """Base class for filter expression literals."""
 
     __slots__ = ("value",)
 
@@ -102,15 +120,15 @@ class Literal(FilterExpression, Generic[LITERAL_EXPRESSION_T]):
         return hash(self.value)
 
     def evaluate(self, _: FilterContext) -> LITERAL_EXPRESSION_T:
-        """"""
         return self.value
 
     async def evaluate_async(self, _: FilterContext) -> LITERAL_EXPRESSION_T:
-        """"""
         return self.value
 
 
 class BooleanLiteral(Literal[bool]):
+    """A Boolean `True` or `False`."""
+
     __slots__ = ()
 
 
@@ -121,18 +139,26 @@ FALSE = BooleanLiteral(value=False)
 
 
 class StringLiteral(Literal[str]):
+    """A string literal."""
+
     __slots__ = ()
 
 
 class IntegerLiteral(Literal[int]):
+    """An integer literal."""
+
     __slots__ = ()
 
 
 class FloatLiteral(Literal[float]):
+    """A float literal."""
+
     __slots__ = ()
 
 
 class RegexLiteral(Literal[Pattern[str]]):
+    """A regex literal."""
+
     __slots__ = ()
 
     RE_FLAG_MAP = {
@@ -155,6 +181,8 @@ class RegexLiteral(Literal[Pattern[str]]):
 
 
 class ListLiteral(FilterExpression):
+    """A list literal."""
+
     __slots__ = ("items",)
 
     def __init__(self, items: List[FilterExpression]) -> None:
@@ -175,6 +203,8 @@ class ListLiteral(FilterExpression):
 
 
 class PrefixExpression(FilterExpression):
+    """An expression composed of a prefix operator and another expression."""
+
     __slots__ = ("operator", "right")
 
     def __init__(self, operator: str, right: FilterExpression):
@@ -204,6 +234,8 @@ class PrefixExpression(FilterExpression):
 
 
 class InfixExpression(FilterExpression):
+    """A pair of expressions and a comparison or logical operator."""
+
     __slots__ = ("left", "operator", "right")
 
     def __init__(
@@ -253,7 +285,7 @@ class InfixExpression(FilterExpression):
 
 
 class BooleanExpression(FilterExpression):
-    """"""
+    """An expression that always evaluates to `True` or `False`."""
 
     __slots__ = ("expression",)
 
@@ -276,6 +308,8 @@ class BooleanExpression(FilterExpression):
 
 
 class Path(FilterExpression, ABC):
+    """Base expression for all _sub paths_ found in filter expressions."""
+
     __slots__ = ("path",)
 
     def __init__(self, path: JSONPath) -> None:
@@ -283,6 +317,8 @@ class Path(FilterExpression, ABC):
 
 
 class SelfPath(Path):
+    """A JSONPath starting at the current node."""
+
     def __str__(self) -> str:
         return "@" + str(self.path)[1:]
 
@@ -314,6 +350,8 @@ class SelfPath(Path):
 
 
 class RootPath(Path):
+    """A JSONPath starting at the root node."""
+
     def __str__(self) -> str:
         return str(self.path)
 
@@ -335,6 +373,8 @@ class RootPath(Path):
 
 
 class FilterContextPath(Path):
+    """A JSONPath starting at the root of any extra context data."""
+
     def __str__(self) -> str:
         path_repr = str(self.path)
         return "#" + path_repr[1:]
@@ -357,6 +397,8 @@ class FilterContextPath(Path):
 
 
 class FunctionExtension(FilterExpression):
+    """A filter function."""
+
     __slots__ = ("name", "args")
 
     def __init__(self, name: str, args: Sequence[FilterExpression]) -> None:

@@ -9,7 +9,12 @@ if TYPE_CHECKING:
 
 
 class JSONPathError(Exception):
-    """Base exception for all JSONPath syntax and type errors."""
+    """Base exception for all JSONPath syntax and type errors.
+
+    Arguments:
+        args: Arguments passed to `Exception`.
+        token: The token that caused the error.
+    """
 
     def __init__(self, *args: object, token: Optional[Token] = None) -> None:
         super().__init__(*args)
@@ -34,8 +39,10 @@ class JSONPathSyntaxError(JSONPathError):
 
 
 class JSONPathTypeError(JSONPathError):
-    """An exception raised at filter evaluation time when a filter
-    expression can not be evaluated due to type errors."""
+    """An exception raised due to a type error.
+
+    This should only occur at when evaluating filter expressions.
+    """
 
 
 class JSONPathNameError(JSONPathError):

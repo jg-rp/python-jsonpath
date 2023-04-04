@@ -1,4 +1,4 @@
-"""The JSONPath match object, as returned from :meth:`JSONPath.finditer`."""
+"""The JSONPath match object, as returned from `JSONPath.finditer()`."""
 from __future__ import annotations
 
 from typing import Any
@@ -14,7 +14,20 @@ PathPart = Union[int, slice, str]
 
 
 class JSONPathMatch:
-    """Bind a matched object to its path."""
+    """A matched object with a concrete path.
+
+    Attributes:
+        children: Matched child nodes. This will only be populated after
+            all children have been visited, usually by using `findall()`
+            or `list(finditer())`.
+        obj: The matched object.
+        parent: The immediate parent to this match in the JSON document.
+            If this is the root node, _parent_ will be `None`.
+        path: The canonical string representation of the path to this match.
+        parts: The keys, indices and/or slices that make up the path to this
+            match.
+        root: A reference to the root node in the JSON document.
+    """
 
     __slots__ = (
         "_filter_context",
@@ -38,20 +51,21 @@ class JSONPathMatch:
     ) -> None:
         self._filter_context = filter_context
         self.children: List[JSONPathMatch] = []
-        self.obj = obj
-        self.parent = parent
-        self.parts = parts
-        self.path = path
-        self.root = root
+        self.obj: object = obj
+        self.parent: Optional[JSONPathMatch] = parent
+        self.parts: Tuple[PathPart, ...] = parts
+        self.path: str = path
+        self.root: Union[Sequence[Any], Mapping[str, Any]] = root
 
     def __str__(self) -> str:
         return f"{_truncate(str(self.obj), 5)!r} @ {_truncate(self.path, 5)}"
 
     def add_child(self, *children: JSONPathMatch) -> None:
+        """Append one or more children to this match."""
         self.children.extend(children)
 
     def filter_context(self) -> FilterContextVars:
-        """"""
+        """Return filter context data for this match."""
         return self._filter_context
 
 

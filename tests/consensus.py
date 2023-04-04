@@ -1,6 +1,7 @@
-"""Test Python JSONPath against the json-path-comparison project's regression
-suite. Assumes a version of the regression suite is available in the current
-working directory as "comparison_regression_suite.yaml".
+"""Test Python JSONPath against the json-path-comparison project's regression suite.
+
+Assumes a version of the regression suite is available in the current working
+directory as "comparison_regression_suite.yaml".
 
 See https://github.com/cburgmer/json-path-comparison.
 
