@@ -41,9 +41,10 @@ plugins:
 nav:
   - Introduction: "index.md"
   - Usage:
-      - QuickStart: "quickstart.md"
+      - Quick Start: "quickstart.md"
       - Advanced Usage: "advanced.md"
   - Guides:
+      - JSONPath Syntax: "syntax.md"
       - Async Support: "async.md"
   - API Reference:
       - High Level API: "api.md"
