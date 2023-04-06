@@ -4,7 +4,7 @@
 
 **IETF JSONPath Draft compliance**
 
-- **Behavioral change.** When applied to a JSON object, filters now have an implicit preceding wildcard selector. This is now consistent with applying filters to arrays and adheres to the IETF JSONPath Internet Draft.
+- **Behavioral change.** When applied to a JSON object, filters now have an implicit preceding wildcard selector and the "current" (`@`) object is set to each of the object's values. This is now consistent with applying filters to arrays and adheres to the IETF JSONPath Internet Draft.
 
 ## Version 0.3.0
 

@@ -45,6 +45,7 @@ nav:
       - Advanced Usage: "advanced.md"
   - Guides:
       - JSONPath Syntax: "syntax.md"
+      - Filter Functions: "functions.md"
       - Async Support: "async.md"
   - API Reference:
       - High Level API: "api.md"

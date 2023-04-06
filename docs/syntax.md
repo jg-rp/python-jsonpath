@@ -134,7 +134,7 @@ Comparison operators include `==`, `!=`, `<`, `>`, `<=` and `>=`. Plus `<>` as a
 $..products[?(@.description =~ /.*trainers/i)]
 ```
 
-Filters can use [function extensions](#function-extensions) too.
+Filters can use [function extensions](functions.md) too.
 
 ### Union (`|`) and intersection (`&`)
 
@@ -149,16 +149,10 @@ $..products.*.price | $.price_cap
 The `&` operator produces matches that are common to both left and right paths. This example would select the list of products that are common to both the "footwear" and "headwear" categories.
 
 ```text
-$.categories.*[?(@.name == 'footwear')].products.* & $.categories.*[?(@.name == 'headwear')].products.*
+$.categories[?(@.name == 'footwear')].products.* & $.categories[?(@.name == 'headwear')].products.*
 ```
 
 Note that `|` and `&` are not allowed inside filter expressions.
-
-## Function extensions
-
-[Filters](#filters-expression) can call functions, be they built-in functions or custom functions. The result of a function call will be evaluated as part of the filter expression.
-
-TODO:
 
 ## Notable differences
 
@@ -177,7 +171,6 @@ And this is a list of areas where we deviate from the [IETF JSONPath draft](http
 - The root token (default `$`) is optional.
 - Paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.
 - Nested filters are not supported.
-- We don't treat filter expressions without a comparison as existence test, but an "is truthy" test. See the "Existence of non-singular queries" example in the IETF JSONPath draft.
 
 And this is a list of features that are uncommon or unique to Python JSONPath.
 
