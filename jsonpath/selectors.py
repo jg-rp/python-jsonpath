@@ -447,22 +447,34 @@ class Filter(JSONPathSelector):
     def __str__(self) -> str:
         return f"[?({self.expression})]"
 
-    def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
+    def resolve(  # noqa: PLR0912
+        self, matches: Iterable[JSONPathMatch]
+    ) -> Iterable[JSONPathMatch]:
         for match in matches:
             if isinstance(match.obj, Mapping):
-                context = FilterContext(
-                    env=self.env,
-                    current=match.obj,
-                    root=match.root,
-                    extra_context=match.filter_context(),
-                )
-                try:
-                    if self.expression.evaluate(context):
-                        yield match
-                except JSONPathTypeError as err:
-                    if not err.token:
-                        err.token = self.token
-                    raise
+                for key, val in match.obj.items():
+                    context = FilterContext(
+                        env=self.env,
+                        current=val,
+                        root=match.root,
+                        extra_context=match.filter_context(),
+                    )
+                    try:
+                        if self.expression.evaluate(context):
+                            _match = JSONPathMatch(
+                                filter_context=match.filter_context(),
+                                obj=val,
+                                parent=match,
+                                parts=match.parts + (key,),
+                                path=match.path + f"['{key}']",
+                                root=match.root,
+                            )
+                            match.add_child(_match)
+                            yield _match
+                    except JSONPathTypeError as err:
+                        if not err.token:
+                            err.token = self.token
+                        raise
 
             elif isinstance(match.obj, Sequence) and not isinstance(match.obj, str):
                 for i, obj in enumerate(match.obj):
@@ -489,25 +501,37 @@ class Filter(JSONPathSelector):
                             err.token = self.token
                         raise
 
-    async def resolve_async(
+    async def resolve_async(  # noqa: PLR0912
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
         async for match in matches:
             if isinstance(match.obj, Mapping):
-                context = FilterContext(
-                    env=self.env,
-                    current=match.obj,
-                    root=match.root,
-                    extra_context=match.filter_context(),
-                )
+                for key, val in match.obj.items():
+                    context = FilterContext(
+                        env=self.env,
+                        current=val,
+                        root=match.root,
+                        extra_context=match.filter_context(),
+                    )
 
-                try:
-                    if await self.expression.evaluate_async(context):
-                        yield match
-                except JSONPathTypeError as err:
-                    if not err.token:
-                        err.token = self.token
-                    raise
+                    try:
+                        result = await self.expression.evaluate_async(context)
+                    except JSONPathTypeError as err:
+                        if not err.token:
+                            err.token = self.token
+                        raise
+
+                    if result:
+                        _match = JSONPathMatch(
+                            filter_context=match.filter_context(),
+                            obj=val,
+                            parent=match,
+                            parts=match.parts + (key,),
+                            path=match.path + f"['{key}']",
+                            root=match.root,
+                        )
+                        match.add_child(_match)
+                        yield _match
 
             elif isinstance(match.obj, Sequence) and not isinstance(match.obj, str):
                 for i, obj in enumerate(match.obj):
@@ -517,22 +541,24 @@ class Filter(JSONPathSelector):
                         root=match.root,
                         extra_context=match.filter_context(),
                     )
+
                     try:
-                        if await self.expression.evaluate_async(context):
-                            _match = JSONPathMatch(
-                                filter_context=match.filter_context(),
-                                obj=obj,
-                                parent=match,
-                                parts=match.parts + (i,),
-                                path=f"{match.path}[{i}]",
-                                root=match.root,
-                            )
-                            match.add_child(_match)
-                            yield _match
+                        result = await self.expression.evaluate_async(context)
                     except JSONPathTypeError as err:
                         if not err.token:
                             err.token = self.token
                         raise
+                    if result:
+                        _match = JSONPathMatch(
+                            filter_context=match.filter_context(),
+                            obj=obj,
+                            parent=match,
+                            parts=match.parts + (i,),
+                            path=f"{match.path}[{i}]",
+                            root=match.root,
+                        )
+                        match.add_child(_match)
+                        yield _match
 
 
 class FilterContext:

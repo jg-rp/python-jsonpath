@@ -290,7 +290,7 @@ And this is a list of areas where we deviate from the [IETF JSONPath draft](http
 - The root token (default `$`) is optional.
 - Paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.
 - Nested filters are not supported.
-- We don't treat filter expressions without a comparison as existence test, but an "is truthy" test. See the "Existence of non-singular queries" example in the IETF JSONPath draft.
+- We don't treat filter expressions without a comparison as existence test, but an "is truthy" test.
 
 And this is a list of features that are uncommon or unique to Python JSONPath.
 

@@ -1,6 +1,7 @@
 """Filter expression nodes."""
 from __future__ import annotations
 
+import json
 import re
 from abc import ABC
 from abc import abstractmethod
@@ -262,25 +263,15 @@ class InfixExpression(FilterExpression):
     def evaluate(self, context: FilterContext) -> bool:
         if isinstance(self.left, Undefined) and isinstance(self.right, Undefined):
             return True
-
         left = self.left.evaluate(context)
         right = self.right.evaluate(context)
-
-        if left is UNDEFINED and right is UNDEFINED:
-            return False
-
         return context.env.compare(left, self.operator, right)
 
     async def evaluate_async(self, context: FilterContext) -> bool:
         if isinstance(self.left, Undefined) and isinstance(self.right, Undefined):
             return True
-
         left = await self.left.evaluate_async(context)
         right = await self.right.evaluate_async(context)
-
-        if left is UNDEFINED and right is UNDEFINED:
-            return False
-
         return context.env.compare(left, self.operator, right)
 
 
@@ -328,7 +319,11 @@ class SelfPath(Path):
                 return UNDEFINED
             return context.current
 
-        matches = self.path.findall(context.current)
+        try:
+            matches = self.path.findall(context.current)
+        except json.JSONDecodeError:
+            return UNDEFINED
+
         if not matches:
             return UNDEFINED
         if len(matches) == 1:
@@ -341,7 +336,11 @@ class SelfPath(Path):
                 return UNDEFINED
             return context.current
 
-        matches = await self.path.findall_async(context.current)
+        try:
+            matches = await self.path.findall_async(context.current)
+        except json.JSONDecodeError:
+            return UNDEFINED
+
         if not matches:
             return UNDEFINED
         if len(matches) == 1:

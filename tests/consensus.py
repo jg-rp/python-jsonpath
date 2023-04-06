@@ -47,11 +47,6 @@ SKIP = {
     "bracket_notation_with_number_on_object": "Bad consensus",
     "bracket_notation_with_number_on_string": "Invalid document",
     "dot_notation_with_number_-1": "Unexpected token",
-    "filter_expression_with_equals_on_object_with_key_matching_query": "Bad consensus",
-    (
-        "filter_expression_with_value_after_"
-        "dot_notation_with_wildcard_on_array_of_objects"
-    ): "Bad consensus",
 }
 
 

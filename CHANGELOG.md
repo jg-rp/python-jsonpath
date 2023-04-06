@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 0.4.0
+
+**IETF JSONPath Draft compliance**
+
+- **Behavioral change.** When applied to a JSON object, filters now have an implicit preceding wildcard selector. This is now consistent with applying filters to arrays and adheres to the IETF JSONPath Internet Draft.
+
 ## Version 0.3.0
 
 **IETF JSONPath Draft compliance**

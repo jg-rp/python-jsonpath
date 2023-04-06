@@ -157,15 +157,15 @@ TEST_CASES = [
         data=FILTER_SELECTOR_DATA,
         want=[{"b": "j"}, {"b": "k"}, {"b": {}}, {"b": "kilo"}],
     ),
-    # Case(
-    #     description="filter selector - Existence of non-singular queries",
-    #     path="$[?(@.*)]",
-    #     data=FILTER_SELECTOR_DATA,
-    #     want=[
-    #         [3, 5, 1, 2, 4, 6, {"b": "j"}, {"b": "k"}, {"b": {}}, {"b": "kilo"}],
-    #         {"p": 1, "q": 2, "r": 3, "s": 5, "t": {"u": 6}},
-    #     ],
-    # ),
+    Case(
+        description="filter selector - Existence of non-singular queries",
+        path="$[?(@.*)]",
+        data=FILTER_SELECTOR_DATA,
+        want=[
+            [3, 5, 1, 2, 4, 6, {"b": "j"}, {"b": "k"}, {"b": {}}, {"b": "kilo"}],
+            {"p": 1, "q": 2, "r": 3, "s": 5, "t": {"u": 6}},
+        ],
+    ),
     # Case(
     #     description="filter selector - Nested filters",
     #     path="$[?(@[?(@.b)])]	",
@@ -190,24 +190,24 @@ TEST_CASES = [
     #     data=FILTER_SELECTOR_DATA,
     #     want=[{"b": "j"}, {"b": "k"}, {"b": "kilo"}],
     # ),
-    # Case(
-    #     description="filter selector - Object value logical AND",
-    #     path="$.o[?(@>1 && @<4)]",
-    #     data=FILTER_SELECTOR_DATA,
-    #     want=[2, 3],
-    # ),
-    # Case(
-    #     description="filter selector - Object value logical OR",
-    #     path="$.o[?(@.u || @.x)]",
-    #     data=FILTER_SELECTOR_DATA,
-    #     want=[{"u": 6}],
-    # ),
-    # Case(
-    #     description="filter selector - Comparison of queries with no values",
-    #     path="$.a[?(@.b == $.x)]",
-    #     data=FILTER_SELECTOR_DATA,
-    #     want=[3, 5, 1, 2, 4, 6],
-    # ),
+    Case(
+        description="filter selector - Object value logical AND",
+        path="$.o[?(@>1 && @<4)]",
+        data=FILTER_SELECTOR_DATA,
+        want=[2, 3],
+    ),
+    Case(
+        description="filter selector - Object value logical OR",
+        path="$.o[?(@.u || @.x)]",
+        data=FILTER_SELECTOR_DATA,
+        want=[{"u": 6}],
+    ),
+    Case(
+        description="filter selector - Comparison of queries with no values",
+        path="$.a[?(@.b == $.x)]",
+        data=FILTER_SELECTOR_DATA,
+        want=[3, 5, 1, 2, 4, 6],
+    ),
     Case(
         description=(
             "filter selector - Comparisons of primitive and of structured values"

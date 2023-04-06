@@ -45,19 +45,9 @@ def cases() -> List[Case]:
 
 
 def valid_cases() -> List[Case]:
-    def mangle_filter(case: Case) -> Case:
-        # XXX: Insert wildcard in front of root :(
-        if (
-            case.name.startswith("filter")
-            and case.selector.startswith("$[?")
-            and isinstance(case.document, list)
-        ):
-            case.selector = case.selector.replace("$[?", "$.*[?")
-        return case
-
     # TODO: skipping filter functions. Not supported.
     return [
-        mangle_filter(case)
+        case
         for case in cases()
         if not case.invalid_selector and "function" not in case.name
     ]

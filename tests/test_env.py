@@ -28,7 +28,7 @@ def test_find_all_with_extra_filter_context(env: JSONPathEnvironment) -> None:
     """Test that we can pass extra filter context to findall."""
     rv = env.findall(
         "$[?(@.some == #.other)]",
-        {"some": 1, "thing": 2},
+        {"foo": {"some": 1, "thing": 2}},
         filter_context={"other": 1},
     )
     assert rv == [{"some": 1, "thing": 2}]
@@ -50,7 +50,7 @@ def test_find_iter_with_extra_filter_context(env: JSONPathEnvironment) -> None:
     """Test that we can pass extra filter context to finditer."""
     matches = env.finditer(
         "$[?(@.some == #.other)]",
-        {"some": 1, "thing": 2},
+        {"foo": {"some": 1, "thing": 2}},
         filter_context={"other": 1},
     )
     assert [match.obj for match in matches] == [{"some": 1, "thing": 2}]
@@ -80,7 +80,7 @@ def test_find_all_async_with_extra_filter_context(env: JSONPathEnvironment) -> N
     async def coro() -> List[object]:
         return await env.findall_async(
             "$[?(@.some == #.other)]",
-            {"some": 1, "thing": 2},
+            {"foo": {"some": 1, "thing": 2}},
             filter_context={"other": 1},
         )
 
@@ -113,7 +113,7 @@ def test_find_iter_async_with_extra_filter_context(env: JSONPathEnvironment) -> 
     async def coro() -> List[object]:
         matches = await env.finditer_async(
             "$[?(@.some == #.other)]",
-            {"some": 1, "thing": 2},
+            {"foo": {"some": 1, "thing": 2}},
             filter_context={"other": 1},
         )
         return [match.obj async for match in matches]

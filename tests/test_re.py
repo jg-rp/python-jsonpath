@@ -24,19 +24,19 @@ TEST_CASES = [
     Case(
         description="match a regex",
         path="$.some[?(@.thing =~ /fo[a-z]/)]",
-        data={"some": {"thing": "foo"}},
+        data={"some": [{"thing": "foo"}]},
         want=[{"thing": "foo"}],
     ),
     Case(
         description="regex with no match",
         path="$.some[?(@.thing =~ /fo[a-z]/)]",
-        data={"some": {"thing": "foO"}},
+        data={"some": [{"thing": "foO"}]},
         want=[],
     ),
     Case(
         description="case insensitive match",
         path="$.some[?(@.thing =~ /fo[a-z]/i)]",
-        data={"some": {"thing": "foO"}},
+        data={"some": [{"thing": "foO"}]},
         want=[{"thing": "foO"}],
     ),
 ]
