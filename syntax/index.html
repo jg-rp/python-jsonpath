@@ -16,7 +16,7 @@
         <link rel="prev" href="../advanced/">
       
       
-        <link rel="next" href="../async/">
+        <link rel="next" href="../functions/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.5">
@@ -364,10 +364,131 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          JSONPath Syntax
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         JSONPath Syntax
       </a>
       
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#selectors" class="md-nav__link">
+    Selectors
+  </a>
+  
+    <nav class="md-nav" aria-label="Selectors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#root" class="md-nav__link">
+    Root ($)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#properties-thing-thing-or-thing" class="md-nav__link">
+    Properties (.thing, [thing] or ['thing'])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#array-indices-0-0-or-1" class="md-nav__link">
+    Array indices (.0, [0] or [-1])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wildcard-or" class="md-nav__link">
+    Wildcard (.* or [*])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slices-0-1-or-10-1" class="md-nav__link">
+    Slices ([0:-1] or [-1:0:-1])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lists-1-2-1020" class="md-nav__link">
+    Lists ([1, 2, 10:20])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recursive-descent" class="md-nav__link">
+    Recursive descent (..)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filters-expression" class="md-nav__link">
+    Filters ([?(EXPRESSION)])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#union-and-intersection" class="md-nav__link">
+    Union (|) and intersection (&amp;)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notable-differences" class="md-nav__link">
+    Notable differences
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/" class="md-nav__link">
+        Filter Functions
+      </a>
     </li>
   
 
@@ -492,6 +613,97 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#selectors" class="md-nav__link">
+    Selectors
+  </a>
+  
+    <nav class="md-nav" aria-label="Selectors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#root" class="md-nav__link">
+    Root ($)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#properties-thing-thing-or-thing" class="md-nav__link">
+    Properties (.thing, [thing] or ['thing'])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#array-indices-0-0-or-1" class="md-nav__link">
+    Array indices (.0, [0] or [-1])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wildcard-or" class="md-nav__link">
+    Wildcard (.* or [*])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slices-0-1-or-10-1" class="md-nav__link">
+    Slices ([0:-1] or [-1:0:-1])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lists-1-2-1020" class="md-nav__link">
+    Lists ([1, 2, 10:20])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recursive-descent" class="md-nav__link">
+    Recursive descent (..)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filters-expression" class="md-nav__link">
+    Filters ([?(EXPRESSION)])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#union-and-intersection" class="md-nav__link">
+    Union (|) and intersection (&amp;)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notable-differences" class="md-nav__link">
+    Notable differences
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -506,7 +718,106 @@
 
 
 <h1 id="jsonpath-syntax">JSONPath Syntax</h1>
-<p>TODO</p>
+<p>Python JSONPath's default syntax is an opinionated combination of JSONPath features from existing, popular implementations, and much of the <a href="https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11">IETF JSONPath draft</a>. If you're already familiar with JSONPath syntax, skip to <a href="#notable-differences">notable differences</a>.</p>
+<p>Imagine a JSON document as a tree structure, where each object (mapping) and array can contain more objects, arrays and scalar values. Every object, array and scalar value is a node in the tree, and the outermost object or array is the "root" node.</p>
+<p>For our purposes, a JSON "document" could be a file containing valid JSON data, a Python string containing valid JSON data, or a Python <code>Object</code> made up of dictionaries (or any <a href="https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes">Mapping</a>), lists (or any <a href="https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes">Sequence</a>), strings, etc.</p>
+<p>We chain <em>selectors</em> together to retrieve nodes from the target document. Each selector operates on the nodes matched by preceding selectors. What follows is a description of those selectors.</p>
+<h2 id="selectors">Selectors</h2>
+<h3 id="root">Root (<code>$</code>)</h3>
+<p><code>$</code> refers to the first node in the target document, be it an object or an array. Unless referencing the root node from inside a filter expression, <code>$</code> is optional. The following two examples are equivalent.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$.categories.*.name
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>categories.*.name
+</span></code></pre></div>
+<p>An empty path or a path containing just the root (<code>$</code>) selector returns the input data in its entirety.</p>
+<h3 id="properties-thing-thing-or-thing">Properties (<code>.thing</code>, <code>[thing]</code> or <code>['thing']</code>)</h3>
+<p>Select nodes by property/key name using dot notation (<code>.something</code>) or bracket notation (<code>[something]</code>). If a target property/key contains reserved characters, it must use bracket notation and be enclosed in quotes (<code>['thing']</code>).</p>
+<p>A dot in front of bracket notation is OK, but unnecessary. The following examples are equivalent.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$.categories[0].name
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$.categories[0][name]
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$.categories[0][&#39;name&#39;]
+</span></code></pre></div>
+<h3 id="array-indices-0-0-or-1">Array indices (<code>.0</code>, <code>[0]</code> or <code>[-1]</code>)</h3>
+<p>Select an item from an array by its index. Indices are zero-based and enclosed in brackets. If the index is negative, items are selected from the end of the array. Considering example data from the top of this page, the following examples are equivalent.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$.categories[0]
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$.categories.0
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$.categories[-1]
+</span></code></pre></div>
+<h3 id="wildcard-or">Wildcard (<code>.*</code> or <code>[*]</code>)</h3>
+<p>Select all elements from an array or all values from an object using <code>*</code>. These two examples are equivalent.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$.categories[0].products.*
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$.categories[0].products[*]
+</span></code></pre></div>
+<h3 id="slices-0-1-or-10-1">Slices (<code>[0:-1]</code> or <code>[-1:0:-1]</code>)</h3>
+<p>Select a range of elements from an array using slice notation. The start index, stop index and step are all optional. These examples are equivalent.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$.categories[0:]
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$.categories[0:-1:]
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$.categories[0:-1:1]
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$.categories[::]
+</span></code></pre></div>
+<h3 id="lists-1-2-1020">Lists (<code>[1, 2, 10:20]</code>)</h3>
+<p>Select multiple indices, slices or properties using list notation (sometimes known as a "union" or "segment", we use "union" to mean something else).</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$..products.*.[title, price]
+</span></code></pre></div>
+<h3 id="recursive-descent">Recursive descent (<code>..</code>)</h3>
+<p>The <code>..</code> selector visits every node beneath the current selection. If a property selector, using dot notation, follows <code>..</code>, the dot is optional. These two examples are equivalent.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$..title
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$...title
+</span></code></pre></div>
+<h3 id="filters-expression">Filters (<code>[?(EXPRESSION)]</code>)</h3>
+<p>Filters allow you to remove nodes from a selection using a Boolean expression. Within a filter, <code>@</code> refers to the current node and <code>$</code> refers to the root node in the target document. <code>@</code> and <code>$</code> can be used to select nodes as part of the expression. Since version 0.3.0, the parentheses are optional, as per the IETF JSONPath draft. These two examples are equivalent.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$..products[?(@.price &lt; $.price_cap)]
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$..products[?@.price &lt; $.price_cap]
+</span></code></pre></div>
+<p>Comparison operators include <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code> and <code>&gt;=</code>. Plus <code>&lt;&gt;</code> as an alias for <code>!=</code>.</p>
+<p><code>in</code> and <code>contains</code> are membership operators. <code>left in right</code> is equivalent to <code>right contains left</code>.</p>
+<p><code>&amp;&amp;</code> and <code>||</code> are logical operators, <code>and</code> and <code>or</code> work too.</p>
+<p><code>=~</code> matches the left value with a regular expression literal. Regular expressions use a syntax similar to that found in JavaScript, where the pattern to match is surrounded by slashes, optionally followed by flags.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$..products[?(@.description =~ /.*trainers/i)]
+</span></code></pre></div>
+<p>Filters can use <a href="../functions/">function extensions</a> too.</p>
+<h3 id="union-and-intersection">Union (<code>|</code>) and intersection (<code>&amp;</code>)</h3>
+<p>Union (<code>|</code>) and intersection (<code>&amp;</code>) are similar to Python's set operations, but we don't dedupe the matches (matches will often contain unhashable objects).</p>
+<p>The <code>|</code> operator combines matches from two or more paths. This example selects a single list of all prices, plus the price cap as the last element.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$..products.*.price | $.price_cap
+</span></code></pre></div>
+<p>The <code>&amp;</code> operator produces matches that are common to both left and right paths. This example would select the list of products that are common to both the "footwear" and "headwear" categories.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$.categories[?(@.name == &#39;footwear&#39;)].products.* &amp; $.categories[?(@.name == &#39;headwear&#39;)].products.*
+</span></code></pre></div>
+<p>Note that <code>|</code> and <code>&amp;</code> are not allowed inside filter expressions.</p>
+<h2 id="notable-differences">Notable differences</h2>
+<p>This is a list of things that you might find in other JSONPath implementation that we don't support (yet).</p>
+<ul>
+<li>We don't support extension functions of the form <code>selector.func()</code>.</li>
+<li>We always return a list of matches from <code>jsonpath.findall()</code>, never a scalar value.</li>
+<li>We do not support arithmetic in filter expression.</li>
+<li>Python JSONPath is strictly read only. There are no update "selectors".</li>
+</ul>
+<p>And this is a list of areas where we deviate from the <a href="https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11">IETF JSONPath draft</a>.</p>
+<ul>
+<li>For now, the only built-in function extension is <code>length()</code>.</li>
+<li>We don't require filters that use a function extension to include a comparison operator.</li>
+<li>Whitespace is mostly insignificant unless inside quotes.</li>
+<li>The root token (default <code>$</code>) is optional.</li>
+<li>Paths starting with a dot (<code>.</code>) are OK. <code>.thing</code> is the same as <code>$.thing</code>, as is <code>thing</code>, <code>$[thing]</code> and <code>$["thing"]</code>.</li>
+<li>Nested filters are not supported.</li>
+</ul>
+<p>And this is a list of features that are uncommon or unique to Python JSONPath.</p>
+<ul>
+<li><code>|</code> is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.</li>
+<li><code>&amp;</code> is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.</li>
+<li><code>#</code> is a filter context selector. With usage similar to <code>$</code> and <code>@</code>, <code>#</code> exposes arbitrary data from the <code>filter_context</code> argument to <code>findall()</code> and <code>finditer()</code>.</li>
+</ul>
 
 
 
