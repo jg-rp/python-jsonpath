@@ -230,11 +230,11 @@ $...title
 Filters allow you to remove nodes from a selection using a Boolean expression. Within a filter, `@` refers to the current node and `$` refers to the root node in the target document. `@` and `$` can be used to select nodes as part of the expression. Since version 0.3.0, the parentheses are optional, as per the IETF JSONPath draft. These two examples are equivalent.
 
 ```text
-$..products.*[?(@.price < $.price_cap)]
+$..products[?(@.price < $.price_cap)]
 ```
 
 ```text
-$..products.*[?@.price < $.price_cap]
+$..products[?@.price < $.price_cap]
 ```
 
 Comparison operators include `==`, `!=`, `<`, `>`, `<=` and `>=`. Plus `<>` as an alias for `!=`.
@@ -246,7 +246,7 @@ Comparison operators include `==`, `!=`, `<`, `>`, `<=` and `>=`. Plus `<>` as a
 `=~` matches the left value with a regular expression literal. Regular expressions use a syntax similar to that found in JavaScript, where the pattern to match is surrounded by slashes, optionally followed by flags.
 
 ```text
-$..products.*[?(@.description =~ /.*trainers/i)]
+$..products[?(@.description =~ /.*trainers/i)]
 ```
 
 Filters can use [function extensions](#function-extensions) too.
