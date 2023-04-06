@@ -101,6 +101,6 @@ print(products)
 
 ## Next Steps
 
-Have a read through the [Quick Start](quickstart.md) and [High Level API Reference](api.md).
+Have a read through the [Quick Start](quickstart.md) and [High Level API Reference](api.md), or the default [JSONPath Syntax](syntax.md) supported by Python JSONPath.
 
 If you're interested in customizing JSONPath, take a look at [Advanced Usage](advanced.md) and the [Low Level API Reference](custom_api.md).

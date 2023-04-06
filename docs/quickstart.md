@@ -83,7 +83,7 @@ for match in matches:
     print(matches)
 ```
 
-The string representation of a [`JSONPathMatch`](api.md#jsonpath.JSONPathMatch) shows the matched object and the canonical path to that object in the given data.
+The string representation of a [`JSONPathMatch`](api.md#jsonpath.JSONPathMatch) shows the matched object and the canonical path to that object.
 
 ```text
 'Sue' @ $['users'][0]['name']
