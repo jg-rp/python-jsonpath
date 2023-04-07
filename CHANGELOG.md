@@ -4,7 +4,13 @@
 
 **Features**
 
-- Added a built-in `match` filter function.
+- Added the built-in `match` filter function.
+- Added the built-in `search` filter function.
+- Added the built-in `value` filter function.
+
+**Fixes**
+
+- Fixed a bug where the current object selector (`@`) would evaluate to `undefined` when a filter is applied to an array of strings.
 
 ## Version 0.4.0
 

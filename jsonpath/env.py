@@ -230,6 +230,8 @@ class JSONPathEnvironment:
         self.function_extensions["length"] = function_extensions.length
         self.function_extensions["count"] = function_extensions.length
         self.function_extensions["match"] = function_extensions.Match()
+        self.function_extensions["search"] = function_extensions.Search()
+        self.function_extensions["value"] = function_extensions.value
 
     def validate_function_extension_signature(
         self, token: Token, args: List[Any]

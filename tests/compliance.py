@@ -45,12 +45,11 @@ def cases() -> List[Case]:
 
 
 def valid_cases() -> List[Case]:
-    # TODO: skipping filter functions. Not supported.
-    return [
-        case
-        for case in cases()
-        if not case.invalid_selector and "function" not in case.name
-    ]
+    return [case for case in cases() if not case.invalid_selector]
+
+
+def invalid_cases() -> List[Case]:
+    return [case for case in cases() if case.invalid_selector]
 
 
 @pytest.mark.parametrize("case", valid_cases(), ids=operator.attrgetter("name"))
@@ -63,3 +62,15 @@ def test_compliance(case: Case) -> None:
     test_case = unittest.TestCase()
     rv = jsonpath.findall(case.selector, case.document)
     test_case.assertCountEqual(rv, case.result)  # noqa: PT009
+
+
+# TODO: async compliance
+
+
+# @pytest.mark.parametrize("case", invalid_cases(), ids=operator.attrgetter("name"))
+# def test_invalid_selectors(case: Case) -> None:
+#     if case.name in SKIP:
+#         pytest.skip(reason=SKIP[case.name])
+
+#     with pytest.raises(jsonpath.JSONPathError):
+#         jsonpath.compile(case.selector)

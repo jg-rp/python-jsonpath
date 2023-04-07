@@ -331,15 +331,19 @@ class SelfPath(Path):
     def __str__(self) -> str:
         return "@" + str(self.path)[1:]
 
-    def evaluate(self, context: FilterContext) -> object:
+    def evaluate(self, context: FilterContext) -> object:  # noqa: PLR0911
+        if isinstance(context.current, str):
+            if self.path.empty():
+                return context.current
+            return UNDEFINED
         if not isinstance(context.current, (Sequence, Mapping)):
             if self.path.empty():
-                return UNDEFINED
-            return context.current
+                return context.current
+            return UNDEFINED
 
         try:
             matches = self.path.findall(context.current)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # this should never happen
             return UNDEFINED
 
         if not matches:
@@ -348,11 +352,15 @@ class SelfPath(Path):
             return matches[0]
         return matches
 
-    async def evaluate_async(self, context: FilterContext) -> object:
+    async def evaluate_async(self, context: FilterContext) -> object:  # noqa: PLR0911
+        if isinstance(context.current, str):
+            if self.path.empty():
+                return context.current
+            return UNDEFINED
         if not isinstance(context.current, (Sequence, Mapping)):
             if self.path.empty():
-                return UNDEFINED
-            return context.current
+                return context.current
+            return UNDEFINED
 
         try:
             matches = await self.path.findall_async(context.current)
