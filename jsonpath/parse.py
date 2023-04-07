@@ -463,12 +463,16 @@ class Parser:
                 ) from err
 
             if stream.peek.kind != TOKEN_RPAREN:
+                if stream.peek.kind == TOKEN_FILTER_END:
+                    break
                 stream.expect_peek(TOKEN_COMMA)
                 stream.next_token()
 
             stream.next_token()
 
-        self.env.validate_function_extension_signature(tok, function_arguments)
+        function_arguments = self.env.validate_function_extension_signature(
+            tok, function_arguments
+        )
         return FunctionExtension(tok.value, function_arguments)
 
     def parse_filter_selector(

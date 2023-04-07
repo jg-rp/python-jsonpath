@@ -284,7 +284,7 @@ This is a list of things that you might find in other JSONPath implementation th
 
 And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11).
 
-- For now, the only built-in function extension is `length()`.
+- The built-in `match()` function uses Python's standard _re_ module, without attempting to map I-Regexps to it. A closer approximation of I-Regexps could be achieved by depending on the third-party [regex](https://pypi.org/project/regex/) package.
 - We don't require filters that use a function extension to include a comparison operator.
 - Whitespace is mostly insignificant unless inside quotes.
 - The root token (default `$`) is optional.

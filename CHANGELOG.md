@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 0.5.0 (unreleased)
+
+**Features**
+
+- Added a built-in `match` filter function.
+
 ## Version 0.4.0
 
 **IETF JSONPath Draft compliance**

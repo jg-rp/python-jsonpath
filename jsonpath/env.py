@@ -1,7 +1,6 @@
 """Core JSONPath configuration object."""
 from __future__ import annotations
 
-import inspect
 import re
 from collections.abc import Collection
 from operator import getitem
@@ -22,8 +21,8 @@ from typing import Union
 from . import function_extensions
 from .exceptions import JSONPathNameError
 from .exceptions import JSONPathSyntaxError
-from .exceptions import JSONPathTypeError
 from .filter import UNDEFINED
+from .function_extensions import validate
 from .lex import Lexer
 from .parse import Parser
 from .path import CompoundJSONPath
@@ -230,10 +229,11 @@ class JSONPathEnvironment:
         self.function_extensions["keys"] = function_extensions.keys
         self.function_extensions["length"] = function_extensions.length
         self.function_extensions["count"] = function_extensions.length
+        self.function_extensions["match"] = function_extensions.Match()
 
     def validate_function_extension_signature(
         self, token: Token, args: List[Any]
-    ) -> None:
+    ) -> List[Any]:
         """Compile-time validation of function extension arguments.
 
         The IETF JSONPath draft requires us to reject paths that use filter
@@ -246,36 +246,11 @@ class JSONPathEnvironment:
                 f"function {token.value!r} is not defined", token=token
             ) from err
 
-        params = list(inspect.signature(func).parameters.values())
-
-        # Keyword only params are not supported
-        if len([p for p in params if p.kind in (p.KEYWORD_ONLY, p.VAR_KEYWORD)]):
-            raise JSONPathTypeError(
-                f"function {token.value!r} requires keyword arguments",
-                token=token,
-            )
-
-        # Too few args?
-        positional_args = [
-            p for p in params if p.kind in (p.POSITIONAL_ONLY, p.POSITIONAL_OR_KEYWORD)
-        ]
-        if len(args) < len(positional_args):
-            raise JSONPathTypeError(
-                f"{token.value!r}() requires {len(positional_args)} arguments",
-                token=token,
-            )
-
-        # Does the signature have var args?
-        if len([p for p in params if p.kind == p.VAR_POSITIONAL]):
-            return
-
-        # Too many args?
-        if len(args) > len(positional_args):
-            raise JSONPathTypeError(
-                f"{token.value!r}() requires at most "
-                f"{len(positional_args) + len(positional_args)} arguments",
-                token=token,
-            )
+        if hasattr(func, "validate"):
+            args = func.validate(token, args)
+            assert isinstance(args, list)
+            return args
+        return validate(func, token, args)
 
     def getitem(self, obj: Any, key: Any) -> Any:
         """Sequence and mapping item getter used throughout JSONPath resolution.
@@ -353,7 +328,7 @@ class JSONPathEnvironment:
             return operator == "<="
 
         if operator == "=~" and isinstance(right, re.Pattern) and isinstance(left, str):
-            return bool(right.match(left))
+            return bool(right.fullmatch(left))
 
         if isinstance(left, str) and isinstance(right, str):
             if operator == "<=":

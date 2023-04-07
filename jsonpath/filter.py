@@ -181,6 +181,24 @@ class RegexLiteral(Literal[Pattern[str]]):
         return f"/{pattern}/{''.join(flags)}"
 
 
+class RegexArgument(FilterExpression):
+    """A compiled regex."""
+
+    __slots__ = ("pattern",)
+
+    def __init__(self, pattern: Pattern[str]) -> None:
+        self.pattern = pattern
+
+    def __str__(self) -> str:
+        return repr(self.pattern.pattern)
+
+    def evaluate(self, _: FilterContext) -> object:
+        return self.pattern
+
+    async def evaluate_async(self, _: FilterContext) -> object:
+        return self.pattern
+
+
 class ListLiteral(FilterExpression):
     """A list literal."""
 
