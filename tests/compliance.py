@@ -8,6 +8,7 @@ See https://github.com/jsonpath-standard/jsonpath-compliance-test-suite.
 We've deliberately named this file so as to exclude it when running `pytest`
 or `hatch run test`. Target it specifically using `pytest tests/compliance.py`.
 """
+import asyncio
 import json
 import operator
 import unittest
@@ -64,7 +65,17 @@ def test_compliance(case: Case) -> None:
     test_case.assertCountEqual(rv, case.result)  # noqa: PT009
 
 
-# TODO: async compliance
+@pytest.mark.parametrize("case", valid_cases(), ids=operator.attrgetter("name"))
+def test_compliance_async(case: Case) -> None:
+    if case.name in SKIP:
+        pytest.skip(reason=SKIP[case.name])
+
+    async def coro() -> List[object]:
+        assert case.document is not None
+        return await jsonpath.findall_async(case.selector, case.document)
+
+    test_case = unittest.TestCase()
+    test_case.assertCountEqual(asyncio.run(coro()), case.result)  # noqa: PT009
 
 
 # @pytest.mark.parametrize("case", invalid_cases(), ids=operator.attrgetter("name"))
