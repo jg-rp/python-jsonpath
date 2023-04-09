@@ -121,6 +121,13 @@ class JSONPathEnvironment:
         if stream.current.kind != TOKEN_EOF:
             _path = CompoundJSONPath(env=self, path=_path)
             while stream.current.kind != TOKEN_EOF:
+                if stream.peek.kind == TOKEN_EOF:
+                    # trailing union or intersection
+                    raise JSONPathSyntaxError(
+                        f"expected a path after {stream.current.value!r}",
+                        token=stream.current,
+                    )
+
                 if stream.current.kind == TOKEN_UNION:
                     stream.next_token()
                     _path.union(
