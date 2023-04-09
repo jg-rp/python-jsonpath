@@ -32,7 +32,6 @@ TEST_CASES = [
         want="$['anything{!%']",
     ),
     Case(description="root dot bracket property", path="$.[thing]", want="$['thing']"),
-    Case(description="root dot index", path="$.1", want="$[1]"),
     Case(description="root bracket index", path="$[1]", want="$[1]"),
     Case(description="root slice", path="$[1:-1]", want="$[1:-1:1]"),
     Case(description="root dot slice", path="$.[1:-1]", want="$[1:-1:1]"),

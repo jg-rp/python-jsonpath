@@ -11,6 +11,11 @@
 **Fixes**
 
 - Fixed a bug where the current object selector (`@`) would evaluate to `undefined` when a filter is applied to an array of strings.
+- Compound paths that have a trailing `|` or `&` now raise a `JSONPathSyntaxError`.
+
+**IETF JSONPath Draft compliance**
+
+- Removed support for dotted index selectors.
 
 ## Version 0.4.0
 

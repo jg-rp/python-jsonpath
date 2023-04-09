@@ -107,14 +107,6 @@ TEST_CASES = [
         ],
     ),
     Case(
-        description="root dot index",
-        path="$.1",
-        want=[
-            Token(kind=TOKEN_ROOT, value="$", index=0, path="$.1"),
-            Token(kind=TOKEN_INDEX, value="1", index=2, path="$.1"),
-        ],
-    ),
-    Case(
         description="root bracket index",
         path="$[1]",
         want=[
@@ -301,14 +293,14 @@ TEST_CASES = [
         ],
     ),
     Case(
-        description="root dot filter on self dot index",
-        path="$.[?(@.1)]",
+        description="root dot filter on self index",
+        path="$.[?(@[1])]",
         want=[
-            Token(kind=TOKEN_ROOT, value="$", index=0, path="$.[?(@.1)]"),
-            Token(kind=TOKEN_FILTER_START, value="[?(", index=2, path="$.[?(@.1)]"),
-            Token(kind=TOKEN_SELF, value="@", index=5, path="$.[?(@.1)]"),
-            Token(kind=TOKEN_INDEX, value="1", index=7, path="$.[?(@.1)]"),
-            Token(kind=TOKEN_FILTER_END, value=")]", index=8, path="$.[?(@.1)]"),
+            Token(kind=TOKEN_ROOT, value="$", index=0, path="$.[?(@[1])]"),
+            Token(kind=TOKEN_FILTER_START, value="[?(", index=2, path="$.[?(@[1])]"),
+            Token(kind=TOKEN_SELF, value="@", index=5, path="$.[?(@[1])]"),
+            Token(kind=TOKEN_INDEX, value="1", index=7, path="$.[?(@[1])]"),
+            Token(kind=TOKEN_FILTER_END, value=")]", index=9, path="$.[?(@[1])]"),
         ],
     ),
     Case(
@@ -358,34 +350,17 @@ TEST_CASES = [
         ],
     ),
     Case(
-        description="filter self dot index equality with float",
-        path="[?(@.1 == 1.1)]",
+        description="filter self index equality with float",
+        path="[?(@[1] == 1.1)]",
         want=[
             Token(
-                kind=TOKEN_FILTER_START, value="[?(", index=0, path="[?(@.1 == 1.1)]"
+                kind=TOKEN_FILTER_START, value="[?(", index=0, path="[?(@[1] == 1.1)]"
             ),
-            Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@.1 == 1.1)]"),
-            Token(kind=TOKEN_INDEX, value="1", index=5, path="[?(@.1 == 1.1)]"),
-            Token(kind=TOKEN_EQ, value="==", index=7, path="[?(@.1 == 1.1)]"),
-            Token(kind=TOKEN_FLOAT, value="1.1", index=10, path="[?(@.1 == 1.1)]"),
-            Token(kind=TOKEN_FILTER_END, value=")]", index=13, path="[?(@.1 == 1.1)]"),
-        ],
-    ),
-    Case(
-        description="filter self dot index that looks like a float",
-        path="[?(@.0.1 == 1.1)]",
-        want=[
-            Token(
-                kind=TOKEN_FILTER_START, value="[?(", index=0, path="[?(@.0.1 == 1.1)]"
-            ),
-            Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@.0.1 == 1.1)]"),
-            Token(kind=TOKEN_INDEX, value="0", index=5, path="[?(@.0.1 == 1.1)]"),
-            Token(kind=TOKEN_INDEX, value="1", index=7, path="[?(@.0.1 == 1.1)]"),
-            Token(kind=TOKEN_EQ, value="==", index=9, path="[?(@.0.1 == 1.1)]"),
-            Token(kind=TOKEN_FLOAT, value="1.1", index=12, path="[?(@.0.1 == 1.1)]"),
-            Token(
-                kind=TOKEN_FILTER_END, value=")]", index=15, path="[?(@.0.1 == 1.1)]"
-            ),
+            Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@[1] == 1.1)]"),
+            Token(kind=TOKEN_INDEX, value="1", index=5, path="[?(@[1] == 1.1)]"),
+            Token(kind=TOKEN_EQ, value="==", index=8, path="[?(@[1] == 1.1)]"),
+            Token(kind=TOKEN_FLOAT, value="1.1", index=11, path="[?(@[1] == 1.1)]"),
+            Token(kind=TOKEN_FILTER_END, value=")]", index=14, path="[?(@[1] == 1.1)]"),
         ],
     ),
     Case(

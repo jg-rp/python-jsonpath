@@ -86,10 +86,6 @@ class Lexer:
         # [thing]
         self.bracketed_property_pattern = rf"\[\s*(?P<G_BPROP>{self.key_pattern})\s*]"
 
-        # .1
-        # NOTE: `.1` can be a dot property where the key is "1".
-        self.dot_index_pattern = r"\.\s*(?P<G_DINDEX>\d+)\b"
-
         # [1] or [-1]
         self.index_pattern = r"\[\s*(?P<G_INDEX>\-?\s*\d+)\s*]"
 
@@ -132,7 +128,6 @@ class Lexer:
             (TOKEN_DOUBLE_QUOTE_STRING, self.double_quote_pattern),
             (TOKEN_SINGLE_QUOTE_STRING, self.single_quote_pattern),
             (TOKEN_RE_PATTERN, self.re_pattern),
-            (TOKEN_DOT_INDEX, self.dot_index_pattern),
             (TOKEN_INDEX, self.index_pattern),
             (TOKEN_SLICE, self.slice_pattern),
             (TOKEN_WILD, self.wild_pattern),
