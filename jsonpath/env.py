@@ -256,10 +256,10 @@ class JSONPathEnvironment:
             ) from err
 
         if hasattr(func, "validate"):
-            args = func.validate(token, args)
+            args = func.validate(self, args, token)
             assert isinstance(args, list)
             return args
-        return validate(func, token, args)
+        return validate(self, func, args, token)
 
     def getitem(self, obj: Any, key: Any) -> Any:
         """Sequence and mapping item getter used throughout JSONPath resolution.

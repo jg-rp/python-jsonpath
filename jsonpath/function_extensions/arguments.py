@@ -6,12 +6,18 @@ from typing import Callable
 from typing import List
 
 if TYPE_CHECKING:
+    from ..env import JSONPathEnvironment
     from ..token import Token
 
 from ..exceptions import JSONPathTypeError
 
 
-def validate(func: Callable[..., Any], token: "Token", args: List[Any]) -> List[Any]:
+def validate(
+    _: "JSONPathEnvironment",
+    func: Callable[..., Any],
+    args: List[Any],
+    token: "Token",
+) -> List[Any]:
     """Generic validation of function extension arguments using introspection.
 
     The IETF JSONPath draft requires us to reject paths that use filter

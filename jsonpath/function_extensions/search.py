@@ -11,6 +11,7 @@ from ..filter import RegexArgument
 from ..filter import StringLiteral
 
 if TYPE_CHECKING:
+    from ..env import JSONPathEnvironment
     from ..token import Token
 
 
@@ -33,7 +34,12 @@ class Search:
         except TypeError:
             return False
 
-    def validate(self, token: "Token", args: List[object]) -> List[object]:
+    def validate(
+        self,
+        _: "JSONPathEnvironment",
+        args: List[object],
+        token: "Token",
+    ) -> List[object]:
         """Function argument validation."""
         if len(args) != 2:  # noqa: PLR2004
             raise JSONPathTypeError(

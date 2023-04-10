@@ -7,6 +7,7 @@
 - Added the built-in `match` filter function.
 - Added the built-in `search` filter function.
 - Added the built-in `value` filter function.
+- Pass the current environment to filter function validation.
 
 **Fixes**
 
