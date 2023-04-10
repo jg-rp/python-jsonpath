@@ -68,13 +68,21 @@ class JSONPathEnvironment:
     ## Class attributes
 
     Attributes:
-        intersection_token: The pattern used as the intersection operator.
-        root_token: The pattern used to select the root node in a JSON document.
-        self_token: The pattern used to select the current node in a JSON document.
-        union_token: The pattern used as the union operator.
         filter_context_token: The pattern used to select extra filter context data.
+            Defaults to `"#"`.
+        intersection_token: The pattern used as the intersection operator. Defaults
+            to `"$"`.
         lexer_class: The lexer to use when tokenizing path strings.
+        max_int_index: The maximum integer allowed when selecting array items by index.
+            Defaults to `(2**53) - 1`.
+        min_int_index: The minimum integer allowed when selecting array items by index.
+            Defaults to `-(2**53) + 1`.
         parser_class: The parser to use when parsing tokens from the lexer.
+        root_token: The pattern used to select the root node in a JSON document.
+            Defaults to `"$"`.
+        self_token: The pattern used to select the current node in a JSON document.
+            Defaults to `"@"`
+        union_token: The pattern used as the union operator. Defaults to `"|"`.
     """
 
     # These should be unescaped strings. `re.escape` will be called
@@ -85,8 +93,8 @@ class JSONPathEnvironment:
     union_token: str = "|"
     filter_context_token: str = "#"
 
-    max_int_index = (2**53) - 1
-    min_int_index = -(2**53) + 1
+    max_int_index: int = (2**53) - 1
+    min_int_index: int = -(2**53) + 1
 
     # Override these to customize path tokenization and parsing.
     lexer_class: Type[Lexer] = Lexer
