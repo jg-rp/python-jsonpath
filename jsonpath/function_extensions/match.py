@@ -31,7 +31,7 @@ class Match:
 
         try:
             return bool(re.fullmatch(pattern, string))
-        except TypeError:
+        except (TypeError, re.error):
             return False
 
     def validate(

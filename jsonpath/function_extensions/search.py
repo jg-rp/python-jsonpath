@@ -31,7 +31,7 @@ class Search:
 
         try:
             return bool(re.search(pattern, string))
-        except TypeError:
+        except (TypeError, re.error):
             return False
 
     def validate(
