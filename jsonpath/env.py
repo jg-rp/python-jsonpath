@@ -85,6 +85,9 @@ class JSONPathEnvironment:
     union_token: str = "|"
     filter_context_token: str = "#"
 
+    max_int_index = (2**53) - 1
+    min_int_index = -(2**53) + 1
+
     # Override these to customize path tokenization and parsing.
     lexer_class: Type[Lexer] = Lexer
     parser_class: Type[Parser] = Parser

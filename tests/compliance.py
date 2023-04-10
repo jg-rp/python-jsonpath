@@ -87,3 +87,6 @@ def test_invalid_selectors(case: Case) -> None:
 
     with pytest.raises(jsonpath.JSONPathError):
         jsonpath.compile(case.selector)
+
+
+# TODO: async invalid cases

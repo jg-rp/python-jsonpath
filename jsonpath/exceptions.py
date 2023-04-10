@@ -45,6 +45,10 @@ class JSONPathTypeError(JSONPathError):
     """
 
 
+class JSONPathIndexError(JSONPathError):
+    """An exception raised when an array index is out of range."""
+
+
 class JSONPathNameError(JSONPathError):
     """An exception raised when an unknown function extension is called."""
 

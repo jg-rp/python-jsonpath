@@ -19,6 +19,7 @@
 - Removed support for dotted index selectors.
 - Raise a `JSONPathSyntaxError` for unescaped whitespace and control characters.
 - Raise a `JSONPathSyntaxError` for empty selector segments.
+- Raise a `JSONPathIndexError` if an index selector is out of range.
 
 ## Version 0.4.0
 

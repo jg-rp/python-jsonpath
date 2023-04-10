@@ -15,6 +15,7 @@ from typing import Optional
 from typing import TypeVar
 from typing import Union
 
+from .exceptions import JSONPathIndexError
 from .exceptions import JSONPathTypeError
 from .match import JSONPathMatch
 
@@ -113,6 +114,9 @@ class IndexSelector(JSONPathSelector):
         token: Token,
         index: int,
     ) -> None:
+        if index < env.min_int_index or index > env.max_int_index:
+            raise JSONPathIndexError("index out of range", token=token)
+
         super().__init__(env=env, token=token)
         self.index = index
         self._as_key = str(self.index)
@@ -200,6 +204,7 @@ class SliceSelector(JSONPathSelector):
         stop: Optional[int] = None,
         step: Optional[int] = None,
     ) -> None:
+        # TODO: raise if start, stop or step are out of range
         super().__init__(env=env, token=token)
         self.slice = slice(start, stop, step)
 
