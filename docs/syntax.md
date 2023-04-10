@@ -42,16 +42,12 @@ $.categories[0][name]
 $.categories[0]['name']
 ```
 
-### Array indices (`.0`, `[0]` or `[-1]`)
+### Array indices (`[0]` or `[-1]`)
 
 Select an item from an array by its index. Indices are zero-based and enclosed in brackets. If the index is negative, items are selected from the end of the array. Considering example data from the top of this page, the following examples are equivalent.
 
 ```text
 $.categories[0]
-```
-
-```text
-$.categories.0
 ```
 
 ```text
