@@ -403,8 +403,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#count" class="md-nav__link">
+    count()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#length" class="md-nav__link">
     length()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#match" class="md-nav__link">
+    match()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    search()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#value" class="md-nav__link">
+    value()
   </a>
   
 </li>
@@ -544,8 +572,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#count" class="md-nav__link">
+    count()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#length" class="md-nav__link">
     length()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#match" class="md-nav__link">
+    match()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    search()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#value" class="md-nav__link">
+    value()
   </a>
   
 </li>
@@ -566,9 +622,45 @@
 
 
 <h1 id="filter-functions">Filter Functions</h1>
-<p>TODO:</p>
+<p>A filter function is a named function that can be called as part of a <a href="../syntax/#filters-expression">filter selector</a> expression. Here we describe the standard, built-in filters. You can <a href="../advanced/">define your own function extensions</a> too.</p>
+<h2 id="count"><code>count()</code></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>count(obj: object) -&gt; Optional[int]
+</span></code></pre></div>
+<p>Return the number of items in <em>obj</em>. If the object does not respond to Python's <code>len()</code> function, <code>None</code> is returned.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$.categories[?count(@.products.*) &gt;= 2]
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>As of Python JSONPath version 0.5.0, <code>count</code> is an alias for <code>length</code>. This might change in the future.</p>
+</div>
 <h2 id="length"><code>length()</code></h2>
-<p>TODO:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>length(obj: object) -&gt; Optional[int]
+</span></code></pre></div>
+<p>Return the number of items in the input object. If the object does not respond to Python's <code>len()</code> function, <code>None</code> is returned.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$.categories[?length(@) &gt; 1]
+</span></code></pre></div>
+<h2 id="match"><code>match()</code></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>match(obj: object, pattern: str) -&gt; bool
+</span></code></pre></div>
+<p>Return <code>True</code> if <em>obj</em> is a string and is a full match to the regex <em>pattern</em>.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$..products[?match(@.title, &quot;.+ainers.+&quot;)]
+</span></code></pre></div>
+<p>If <em>pattern</em> is a string literal, it will be compiled at compile time, and raise a <code>JSONPathTypeError</code> at compile time if it's invalid.</p>
+<p>If <em>pattern</em> is a query and the result is not a valid regex, <code>False</code> is returned.</p>
+<h2 id="search"><code>search()</code></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>search(obj: object, pattern: str) -&gt; bool
+</span></code></pre></div>
+<p>Return <code>True</code> if <em>obj</em> is a string and it contains the regexp <em>pattern</em>.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$..products[?search(@.title, &quot;ainers&quot;)]
+</span></code></pre></div>
+<p>If <em>pattern</em> is a string literal, it will be compiled at compile time, and raise a <code>JSONPathTypeError</code> at compile time if it's invalid.</p>
+<p>If <em>pattern</em> is a query and the result is not a valid regex, <code>False</code> is returned.</p>
+<h2 id="value"><code>value()</code></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>value(nodes: object) -&gt; object | undefined
+</span></code></pre></div>
+<p>Return the first value from <em>nodes</em> resulting from a JSONPath query, if there is only one node, or <code>undefined</code> otherwise.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$..products[?value(@.price) == 9]
+</span></code></pre></div>
 
 
 
