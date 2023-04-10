@@ -20,6 +20,7 @@
 - Raise a `JSONPathSyntaxError` for unescaped whitespace and control characters.
 - Raise a `JSONPathSyntaxError` for empty selector segments.
 - Raise a `JSONPathIndexError` if an index selector is out of range.
+- Raise a `JSONPathSyntaxError` for too many colons in a slice selector.
 
 ## Version 0.4.0
 
