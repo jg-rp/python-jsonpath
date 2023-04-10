@@ -204,8 +204,8 @@ class SliceSelector(JSONPathSelector):
         stop: Optional[int] = None,
         step: Optional[int] = None,
     ) -> None:
-        # TODO: raise if start, stop or step are out of range
         super().__init__(env=env, token=token)
+        self._check_range(start, stop, step)
         self.slice = slice(start, stop, step)
 
     def __str__(self) -> str:
@@ -213,6 +213,13 @@ class SliceSelector(JSONPathSelector):
         start = self.slice.start if self.slice.start is not None else ""
         step = self.slice.step if self.slice.step is not None else "1"
         return f"[{start}:{stop}:{step}]"
+
+    def _check_range(self, *indices: Optional[int]) -> None:
+        for i in indices:
+            if i is not None and (
+                i < self.env.min_int_index or i > self.env.max_int_index
+            ):
+                raise JSONPathIndexError("index out of range")
 
     def _normalized_index(self, obj: Sequence[object], index: int) -> int:
         if index < 0 and len(obj) >= abs(index):

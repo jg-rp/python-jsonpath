@@ -21,6 +21,7 @@
 - Raise a `JSONPathSyntaxError` for empty selector segments.
 - Raise a `JSONPathIndexError` if an index selector is out of range.
 - Raise a `JSONPathSyntaxError` for too many colons in a slice selector.
+- Raise a `JSONPathIndexError` if a slice selector argument is out of range.
 
 ## Version 0.4.0
 
