@@ -80,10 +80,10 @@ def test_compliance_async(case: Case) -> None:
     test_case.assertCountEqual(asyncio.run(coro()), case.result)  # noqa: PT009
 
 
-# @pytest.mark.parametrize("case", invalid_cases(), ids=operator.attrgetter("name"))
-# def test_invalid_selectors(case: Case) -> None:
-#     if case.name in SKIP:
-#         pytest.skip(reason=SKIP[case.name])
+@pytest.mark.parametrize("case", invalid_cases(), ids=operator.attrgetter("name"))
+def test_invalid_selectors(case: Case) -> None:
+    if case.name in SKIP:
+        pytest.skip(reason=SKIP[case.name])
 
-#     with pytest.raises(jsonpath.JSONPathError):
-#         jsonpath.compile(case.selector)
+    with pytest.raises(jsonpath.JSONPathError):
+        jsonpath.compile(case.selector)

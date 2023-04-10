@@ -72,10 +72,10 @@ if TYPE_CHECKING:
 class Lexer:
     """Tokenize a JSONPath string."""
 
+    key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
+
     def __init__(self, *, env: JSONPathEnvironment) -> None:
         self.env = env
-
-        self.key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
 
         self.double_quote_pattern = r'"(?P<G_DQUOTE>(?:(?!(?<!\\)").)*)"'
         self.single_quote_pattern = r"'(?P<G_SQUOTE>(?:(?!(?<!\\)').)*)'"

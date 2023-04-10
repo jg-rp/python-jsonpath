@@ -92,6 +92,41 @@ if TYPE_CHECKING:
 
 # ruff: noqa: D102
 
+INVALID_NAME_SELECTOR_CHARS = [
+    "\x00",
+    "\x01",
+    "\x02",
+    "\x03",
+    "\x04",
+    "\x05",
+    "\x06",
+    "\x07",
+    "\x08",
+    "\t",
+    "\n",
+    "\x0b",
+    "\x0c",
+    "\r",
+    "\x0e",
+    "\x0f",
+    "\x10",
+    "\x11",
+    "\x12",
+    "\x13",
+    "\x14",
+    "\x15",
+    "\x16",
+    "\x17",
+    "\x18",
+    "\x19",
+    "\x1a",
+    "\x1b",
+    "\x1c",
+    "\x1d",
+    "\x1e",
+    "\x1f",
+]
+
 
 class Parser:
     """A JSONPath parser bound to a JSONPathEnvironment."""
@@ -148,6 +183,11 @@ class Parser:
         "m": re.M,
         "s": re.S,
     }
+
+    _INVALID_NAME_SELECTOR_CHARS = f"[{''.join(INVALID_NAME_SELECTOR_CHARS)}]"
+    RE_INVALID_NAME_SELECTOR = re.compile(
+        rf'(?:(?!(?<!\\)"){_INVALID_NAME_SELECTOR_CHARS})'
+    )
 
     def __init__(self, *, env: JSONPathEnvironment) -> None:
         self.env = env
@@ -299,16 +339,34 @@ class Parser:
                         index=int(stream.current.value),
                     )
                 )
-            elif stream.current.kind in (TOKEN_BARE_PROPERTY, TOKEN_STRING):
+            elif stream.current.kind == TOKEN_BARE_PROPERTY:
                 list_items.append(
                     PropertySelector(
                         env=self.env,
                         token=stream.current,
-                        name=codecs.decode(
-                            stream.current.value.replace("\\/", "/"), "unicode-escape"
-                        )
-                        .encode("utf-16", "surrogatepass")
-                        .decode("utf-16"),
+                        name=stream.current.value,
+                    ),
+                )
+            elif stream.current.kind == TOKEN_STRING:
+                if self.RE_INVALID_NAME_SELECTOR.search(stream.current.value):
+                    raise JSONPathSyntaxError(
+                        f"invalid name selector {stream.current.value!r}",
+                        token=stream.current,
+                    )
+
+                name = (
+                    codecs.decode(
+                        stream.current.value.replace("\\/", "/"), "unicode-escape"
+                    )
+                    .encode("utf-16", "surrogatepass")
+                    .decode("utf-16")
+                )
+
+                list_items.append(
+                    PropertySelector(
+                        env=self.env,
+                        token=stream.current,
+                        name=name,
                     ),
                 )
             elif stream.current.kind == TOKEN_SLICE_START:
@@ -324,7 +382,9 @@ class Parser:
 
             stream.next_token()
 
-        # TODO: is an empty list an error?
+        if not list_items:
+            raise JSONPathSyntaxError("empty segment", token=tok)
+
         return ListSelector(env=self.env, token=tok, items=list_items)
 
     def parse_filter(self, stream: TokenStream) -> Filter:

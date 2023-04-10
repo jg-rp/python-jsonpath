@@ -16,6 +16,8 @@
 **IETF JSONPath Draft compliance**
 
 - Removed support for dotted index selectors.
+- Raise a `JSONPathSyntaxError` for unescaped whitespace and control characters.
+- Raise a `JSONPathSyntaxError` for empty selector segments.
 
 ## Version 0.4.0
 
