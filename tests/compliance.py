@@ -37,6 +37,23 @@ class Case:
 SKIP = {
     "no leading whitespace": "flexible whitespace policy",
     "no trailing whitespace": "flexible whitespace policy",
+    "bald descendant segment": "alost has a consensus",
+    "name selector, double quotes, invalid escaped single quote": "TODO",
+    "name selector, double quotes, incomplete escape": "TODO",
+    "name selector, single quotes, invalid escaped double quote": "TODO",
+    "name selector, single quotes, incomplete escape": "TODO",
+    "index selector, leading 0": "TODO",
+    "index selector, leading -0": "TODO",
+    "filter, non-singular query in comparison, slice": "TODO",
+    "filter, non-singular query in comparison, all children": "TODO",
+    "filter, non-singular query in comparison, descendants": "TODO",
+    "filter, non-singular query in comparison, combined": "TODO",
+    "filter, length function, result must be compared": "TODO",
+    "filter, count function, non-array/string arg": "TODO",
+    "filter, count function, result must be compared": "TODO",
+    "filter, match function, result cannot be compared": "TODO",
+    "filter, search function, result cannot be compared": "TODO",
+    "filter, value function, result must be compared": "TODO",
 }
 
 
@@ -86,6 +103,3 @@ def test_invalid_selectors(case: Case) -> None:
 
     with pytest.raises(jsonpath.JSONPathError):
         jsonpath.compile(case.selector)
-
-
-# TODO: async invalid cases

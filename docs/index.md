@@ -99,6 +99,19 @@ with open("some.json") as fd:
 print(products)
 ```
 
+You could use Python JSONPath on data read from a YAML formatted file too, or any data format that can be loaded into dictionaries and lists. If you have [PyYAML](https://pyyaml.org/wiki/PyYAML) installed:
+
+```python
+import jsonpath
+import yaml
+
+with open("some.yaml") as fd:
+    data = yaml.safe_load(fd)
+
+products = jsonpath.findall("$..products.*", data)
+print(products)
+```
+
 ## Next Steps
 
 Have a read through the [Quick Start](quickstart.md) and [High Level API Reference](api.md), or the default [JSONPath Syntax](syntax.md) supported by Python JSONPath.

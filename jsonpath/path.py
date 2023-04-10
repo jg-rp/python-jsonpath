@@ -76,7 +76,6 @@ class JSONPath:
                 an incompatible way.
         """
         if isinstance(data, str):
-            # TODO: catch JSONDecodeError?
             _data = json.loads(data)
         elif isinstance(data, TextIO):
             _data = json.loads(data.read())
@@ -141,7 +140,6 @@ class JSONPath:
     ) -> List[object]:
         """An async version of `findall()`."""
         if isinstance(data, str):
-            # TODO: catch JSONDecodeError
             _data = json.loads(data)
         elif isinstance(data, TextIO):
             _data = json.loads(data.read())
