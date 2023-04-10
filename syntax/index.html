@@ -411,8 +411,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#array-indices-0-0-or-1" class="md-nav__link">
-    Array indices (.0, [0] or [-1])
+  <a href="#array-indices-0-or-1" class="md-nav__link">
+    Array indices ([0] or [-1])
   </a>
   
 </li>
@@ -642,8 +642,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#array-indices-0-0-or-1" class="md-nav__link">
-    Array indices (.0, [0] or [-1])
+  <a href="#array-indices-0-or-1" class="md-nav__link">
+    Array indices ([0] or [-1])
   </a>
   
 </li>
@@ -739,60 +739,58 @@
 </span></code></pre></div>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$.categories[0][&#39;name&#39;]
 </span></code></pre></div>
-<h3 id="array-indices-0-0-or-1">Array indices (<code>.0</code>, <code>[0]</code> or <code>[-1]</code>)</h3>
+<h3 id="array-indices-0-or-1">Array indices (<code>[0]</code> or <code>[-1]</code>)</h3>
 <p>Select an item from an array by its index. Indices are zero-based and enclosed in brackets. If the index is negative, items are selected from the end of the array. Considering example data from the top of this page, the following examples are equivalent.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$.categories[0]
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$.categories.0
-</span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$.categories[-1]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$.categories[-1]
 </span></code></pre></div>
 <h3 id="wildcard-or">Wildcard (<code>.*</code> or <code>[*]</code>)</h3>
 <p>Select all elements from an array or all values from an object using <code>*</code>. These two examples are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$.categories[0].products.*
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$.categories[0].products.*
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$.categories[0].products[*]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$.categories[0].products[*]
 </span></code></pre></div>
 <h3 id="slices-0-1-or-10-1">Slices (<code>[0:-1]</code> or <code>[-1:0:-1]</code>)</h3>
 <p>Select a range of elements from an array using slice notation. The start index, stop index and step are all optional. These examples are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$.categories[0:]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$.categories[0:]
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$.categories[0:-1:]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$.categories[0:-1:]
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$.categories[0:-1:1]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$.categories[0:-1:1]
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$.categories[::]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$.categories[::]
 </span></code></pre></div>
 <h3 id="lists-1-2-1020">Lists (<code>[1, 2, 10:20]</code>)</h3>
 <p>Select multiple indices, slices or properties using list notation (sometimes known as a "union" or "segment", we use "union" to mean something else).</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$..products.*.[title, price]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$..products.*.[title, price]
 </span></code></pre></div>
 <h3 id="recursive-descent">Recursive descent (<code>..</code>)</h3>
 <p>The <code>..</code> selector visits every node beneath the current selection. If a property selector, using dot notation, follows <code>..</code>, the dot is optional. These two examples are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$..title
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$..title
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$...title
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$...title
 </span></code></pre></div>
 <h3 id="filters-expression">Filters (<code>[?(EXPRESSION)]</code>)</h3>
 <p>Filters allow you to remove nodes from a selection using a Boolean expression. Within a filter, <code>@</code> refers to the current node and <code>$</code> refers to the root node in the target document. <code>@</code> and <code>$</code> can be used to select nodes as part of the expression. Since version 0.3.0, the parentheses are optional, as per the IETF JSONPath draft. These two examples are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$..products[?(@.price &lt; $.price_cap)]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$..products[?(@.price &lt; $.price_cap)]
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$..products[?@.price &lt; $.price_cap]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$..products[?@.price &lt; $.price_cap]
 </span></code></pre></div>
 <p>Comparison operators include <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code> and <code>&gt;=</code>. Plus <code>&lt;&gt;</code> as an alias for <code>!=</code>.</p>
 <p><code>in</code> and <code>contains</code> are membership operators. <code>left in right</code> is equivalent to <code>right contains left</code>.</p>
 <p><code>&amp;&amp;</code> and <code>||</code> are logical operators, <code>and</code> and <code>or</code> work too.</p>
 <p><code>=~</code> matches the left value with a regular expression literal. Regular expressions use a syntax similar to that found in JavaScript, where the pattern to match is surrounded by slashes, optionally followed by flags.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$..products[?(@.description =~ /.*trainers/i)]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$..products[?(@.description =~ /.*trainers/i)]
 </span></code></pre></div>
 <p>Filters can use <a href="../functions/">function extensions</a> too.</p>
 <h3 id="union-and-intersection">Union (<code>|</code>) and intersection (<code>&amp;</code>)</h3>
 <p>Union (<code>|</code>) and intersection (<code>&amp;</code>) are similar to Python's set operations, but we don't dedupe the matches (matches will often contain unhashable objects).</p>
 <p>The <code>|</code> operator combines matches from two or more paths. This example selects a single list of all prices, plus the price cap as the last element.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$..products.*.price | $.price_cap
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$..products.*.price | $.price_cap
 </span></code></pre></div>
 <p>The <code>&amp;</code> operator produces matches that are common to both left and right paths. This example would select the list of products that are common to both the "footwear" and "headwear" categories.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$.categories[?(@.name == &#39;footwear&#39;)].products.* &amp; $.categories[?(@.name == &#39;headwear&#39;)].products.*
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$.categories[?(@.name == &#39;footwear&#39;)].products.* &amp; $.categories[?(@.name == &#39;headwear&#39;)].products.*
 </span></code></pre></div>
 <p>Note that <code>|</code> and <code>&amp;</code> are not allowed inside filter expressions.</p>
 <h2 id="notable-differences">Notable differences</h2>
@@ -801,16 +799,14 @@
 <li>We don't support extension functions of the form <code>selector.func()</code>.</li>
 <li>We always return a list of matches from <code>jsonpath.findall()</code>, never a scalar value.</li>
 <li>We do not support arithmetic in filter expression.</li>
-<li>Python JSONPath is strictly read only. There are no update "selectors".</li>
+<li>Python JSONPath is strictly read only. There are no update "selectors", although a Python API for working with <code>JSONPathMatch</code>s may well be added in the future.</li>
 </ul>
 <p>And this is a list of areas where we deviate from the <a href="https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11">IETF JSONPath draft</a>.</p>
 <ul>
-<li>For now, the only built-in function extension is <code>length()</code>.</li>
 <li>We don't require filters that use a function extension to include a comparison operator.</li>
 <li>Whitespace is mostly insignificant unless inside quotes.</li>
 <li>The root token (default <code>$</code>) is optional.</li>
 <li>Paths starting with a dot (<code>.</code>) are OK. <code>.thing</code> is the same as <code>$.thing</code>, as is <code>thing</code>, <code>$[thing]</code> and <code>$["thing"]</code>.</li>
-<li>Nested filters are not supported.</li>
 </ul>
 <p>And this is a list of features that are uncommon or unique to Python JSONPath.</p>
 <ul>

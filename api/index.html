@@ -1111,57 +1111,23 @@ customizations include:</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>intersection_token</code></td>
-          <td class="doc-attribute-details">
-            <p>The pattern used as the intersection operator.</p>
-            <p>
-                <span class="doc-attribute-annotation">
-                  <b>TYPE:</b>
-                    <code>str</code>
-                </span>
-            </p>
-          </td>
-        </tr>
-        <tr>
-          <td><code>root_token</code></td>
-          <td class="doc-attribute-details">
-            <p>The pattern used to select the root node in a JSON document.</p>
-            <p>
-                <span class="doc-attribute-annotation">
-                  <b>TYPE:</b>
-                    <code>str</code>
-                </span>
-            </p>
-          </td>
-        </tr>
-        <tr>
-          <td><code>self_token</code></td>
-          <td class="doc-attribute-details">
-            <p>The pattern used to select the current node in a JSON document.</p>
-            <p>
-                <span class="doc-attribute-annotation">
-                  <b>TYPE:</b>
-                    <code>str</code>
-                </span>
-            </p>
-          </td>
-        </tr>
-        <tr>
-          <td><code>union_token</code></td>
-          <td class="doc-attribute-details">
-            <p>The pattern used as the union operator.</p>
-            <p>
-                <span class="doc-attribute-annotation">
-                  <b>TYPE:</b>
-                    <code>str</code>
-                </span>
-            </p>
-          </td>
-        </tr>
-        <tr>
           <td><code>filter_context_token</code></td>
           <td class="doc-attribute-details">
-            <p>The pattern used to select extra filter context data.</p>
+            <p>The pattern used to select extra filter context data.
+Defaults to <code>"#"</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>str</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>intersection_token</code></td>
+          <td class="doc-attribute-details">
+            <p>The pattern used as the intersection operator. Defaults
+to <code>"$"</code>.</p>
             <p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
@@ -1183,6 +1149,32 @@ customizations include:</p>
           </td>
         </tr>
         <tr>
+          <td><code>max_int_index</code></td>
+          <td class="doc-attribute-details">
+            <p>The maximum integer allowed when selecting array items by index.
+Defaults to <code>(2**53) - 1</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>int</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>min_int_index</code></td>
+          <td class="doc-attribute-details">
+            <p>The minimum integer allowed when selecting array items by index.
+Defaults to <code>-(2**53) + 1</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>int</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
           <td><code>parser_class</code></td>
           <td class="doc-attribute-details">
             <p>The parser to use when parsing tokens from the lexer.</p>
@@ -1190,6 +1182,44 @@ customizations include:</p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
                     <code><span title="typing.Type">Type</span>[<span title="jsonpath.parse.Parser">Parser</span>]</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>root_token</code></td>
+          <td class="doc-attribute-details">
+            <p>The pattern used to select the root node in a JSON document.
+Defaults to <code>"$"</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>str</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>self_token</code></td>
+          <td class="doc-attribute-details">
+            <p>The pattern used to select the current node in a JSON document.
+Defaults to <code>"@"</code></p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>str</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>union_token</code></td>
+          <td class="doc-attribute-details">
+            <p>The pattern used as the union operator. Defaults to <code>"|"</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>str</code>
                 </span>
             </p>
           </td>
@@ -1917,7 +1947,7 @@ means that <em>obj</em> was missing, as opposed to an explicit <code>None</code>
 </h3>
 <div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">validate_function_extension_signature</span><span class="p">(</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
 </span></code></pre></div>
 
   <div class="doc doc-contents ">
