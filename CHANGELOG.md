@@ -8,6 +8,7 @@
 - Added the built-in `search` filter function.
 - Added the built-in `value` filter function.
 - Pass the current environment to filter function validation.
+- Added support for the wildcard selector in selector segment lists.
 
 **Fixes**
 

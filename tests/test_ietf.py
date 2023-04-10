@@ -96,12 +96,12 @@ TEST_CASES = [
         data={"o": {"j": 1, "k": 2}, "a": [5, 3]},
         want=[1, 2],
     ),
-    # Case(
-    #     description="wildcard selector - double wild",
-    #     path="$.o[*, *]",
-    #     data={"o": {"j": 1, "k": 2}, "a": [5, 3]},
-    #     want=[1, 2, 1, 2],
-    # ),
+    Case(
+        description="wildcard selector - double wild",
+        path="$.o[*, *]",
+        data={"o": {"j": 1, "k": 2}, "a": [5, 3]},
+        want=[1, 2, 1, 2],
+    ),
     Case(
         description="wildcard selector - dot property wild",
         path="$.a[*]",

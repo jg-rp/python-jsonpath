@@ -328,7 +328,9 @@ class Parser:
     def parse_selector_list(self, stream: TokenStream) -> ListSelector:
         """Parse a comma separated list JSONPath selectors from a stream of tokens."""
         tok = stream.next_token()
-        list_items: List[Union[IndexSelector, PropertySelector, SliceSelector]] = []
+        list_items: List[
+            Union[IndexSelector, PropertySelector, SliceSelector, WildSelector]
+        ] = []
 
         while stream.current.kind != TOKEN_RBRACKET:
             if stream.current.kind == TOKEN_INT:
@@ -371,6 +373,8 @@ class Parser:
                 )
             elif stream.current.kind == TOKEN_SLICE_START:
                 list_items.append(self.parse_slice(stream))
+            elif stream.current.kind == TOKEN_WILD:
+                list_items.append(WildSelector(env=self.env, token=stream.current))
 
             if stream.peek.kind == TOKEN_EOF:
                 raise JSONPathSyntaxError(

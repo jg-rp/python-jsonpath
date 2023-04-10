@@ -408,7 +408,9 @@ class ListSelector(JSONPathSelector):
         *,
         env: JSONPathEnvironment,
         token: Token,
-        items: List[Union[SliceSelector, IndexSelector, PropertySelector]],
+        items: List[
+            Union[SliceSelector, IndexSelector, PropertySelector, WildSelector]
+        ],
     ) -> None:
         super().__init__(env=env, token=token)
         self.items = items
@@ -423,6 +425,8 @@ class ListSelector(JSONPathSelector):
                 buf.append(f"{start}:{stop}:{step}")
             elif isinstance(item, PropertySelector):
                 buf.append(f"'{item.name}'")
+            elif isinstance(item, WildSelector):
+                buf.append("*")
             else:
                 buf.append(str(item.index))
         return f"[{', '.join(buf)}]"
