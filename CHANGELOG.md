@@ -23,6 +23,7 @@
 - Raise a `JSONPathIndexError` if an index selector is out of range.
 - Raise a `JSONPathSyntaxError` for too many colons in a slice selector.
 - Raise a `JSONPathIndexError` if a slice selector argument is out of range.
+- Allow nested filters.
 
 ## Version 0.4.0
 

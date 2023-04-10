@@ -285,7 +285,7 @@ class Parser:
                 )
             elif stream.current.kind == TOKEN_LIST_START:
                 yield self.parse_selector_list(stream)
-            elif stream.current.kind == TOKEN_FILTER_START and not in_filter:
+            elif stream.current.kind == TOKEN_FILTER_START:
                 yield self.parse_filter(stream)
             else:
                 if in_filter:

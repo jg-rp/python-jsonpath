@@ -171,12 +171,12 @@ TEST_CASES = [
             {"p": 1, "q": 2, "r": 3, "s": 5, "t": {"u": 6}},
         ],
     ),
-    # Case(
-    #     description="filter selector - Nested filters",
-    #     path="$[?(@[?(@.b)])]	",
-    #     data=FILTER_SELECTOR_DATA,
-    #     want=[[3, 5, 1, 2, 4, 6, {"b": "j"}, {"b": "k"}, {"b": {}}, {"b": "kilo"}]],
-    # ),
+    Case(
+        description="filter selector - Nested filters",
+        path="$[?(@[?(@.b)])]	",
+        data=FILTER_SELECTOR_DATA,
+        want=[[3, 5, 1, 2, 4, 6, {"b": "j"}, {"b": "k"}, {"b": {}}, {"b": "kilo"}]],
+    ),
     Case(
         description="filter selector - Array value logical OR",
         path='$.a[?(@<2 || @.b == "k")]',

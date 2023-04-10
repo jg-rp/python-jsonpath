@@ -35,7 +35,6 @@ class Case:
 
 
 SKIP = {
-    "filter, nested": "not supported",
     "no leading whitespace": "flexible whitespace policy",
     "no trailing whitespace": "flexible whitespace policy",
 }
