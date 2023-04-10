@@ -63,7 +63,6 @@ FILTER_SELECTOR_DATA = {
     "e": "f",
 }
 
-# TODO: update with examples from version 12
 
 TEST_CASES = [
     Case(description="root", path="$", data={"k": "v"}, want=[{"k": "v"}]),
@@ -128,6 +127,12 @@ TEST_CASES = [
         want=["b", "c"],
     ),
     Case(
+        description="array slice selector - slice with no end index",
+        path="$[5:]",
+        data=["a", "b", "c", "d", "e", "f", "g"],
+        want=["f", "g"],
+    ),
+    Case(
         description="array slice selector - slice with negative step",
         path="$[5:1:-2]",
         data=["a", "b", "c", "d", "e", "f", "g"],
@@ -178,18 +183,18 @@ TEST_CASES = [
         data=FILTER_SELECTOR_DATA,
         want=[1, {"b": "k"}],
     ),
-    # Case(
-    #     description="filter selector - Array value regular expression match",
-    #     path='$.a[?match(@.b, "[jk]")]',
-    #     data=FILTER_SELECTOR_DATA,
-    #     want=[{"b": "j"}, {"b": "k"}],
-    # ),
-    # Case(
-    #     description="filter selector - Array value regular expression search",
-    #     path='$.a[?search(@.b, "[jk]")]',
-    #     data=FILTER_SELECTOR_DATA,
-    #     want=[{"b": "j"}, {"b": "k"}, {"b": "kilo"}],
-    # ),
+    Case(
+        description="filter selector - Array value regular expression match",
+        path='$.a[?match(@.b, "[jk]")]',
+        data=FILTER_SELECTOR_DATA,
+        want=[{"b": "j"}, {"b": "k"}],
+    ),
+    Case(
+        description="filter selector - Array value regular expression search",
+        path='$.a[?search(@.b, "[jk]")]',
+        data=FILTER_SELECTOR_DATA,
+        want=[{"b": "j"}, {"b": "k"}, {"b": "kilo"}],
+    ),
     Case(
         description="filter selector - Object value logical AND",
         path="$.o[?(@>1 && @<4)]",
