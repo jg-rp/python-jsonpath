@@ -32,12 +32,12 @@ pip install python-jsonpath
 
 ## Links
 
-Documentation: https://jg-rp.github.io/python-jsonpath/.  
-JSONPath Syntax: https://jg-rp.github.io/python-jsonpath/syntax/  
-Change log: https://github.com/jg-rp/python-jsonpath/blob/main/CHANGELOG.md  
-PyPi: https://pypi.org/project/python-jsonpath  
-Source code: https://github.com/jg-rp/python-jsonpath  
-Issue tracker: https://github.com/jg-rp/python-jsonpath/issues
+- Documentation: https://jg-rp.github.io/python-jsonpath/.
+- JSONPath Syntax: https://jg-rp.github.io/python-jsonpath/syntax/
+- Change log: https://github.com/jg-rp/python-jsonpath/blob/main/CHANGELOG.md
+- PyPi: https://pypi.org/project/python-jsonpath
+- Source code: https://github.com/jg-rp/python-jsonpath
+- Issue tracker: https://github.com/jg-rp/python-jsonpath/issues
 
 ## Example
 
