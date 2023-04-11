@@ -161,7 +161,8 @@ This is a list of things that you might find in other JSONPath implementation th
 
 And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11).
 
-- We don't require filters that use a function extension to include a comparison operator.
+- We don't yet follow all "non-singular query" rules when evaluating a filter comparison.
+- We don't yet force the result of some filter functions to be compared.
 - Whitespace is mostly insignificant unless inside quotes.
 - The root token (default `$`) is optional.
 - Paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.

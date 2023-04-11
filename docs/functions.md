@@ -1,6 +1,6 @@
 # Filter Functions
 
-A filter function is a named function that can be called as part of a [filter selector](syntax.md#filters-expression) expression. Here we describe the standard, built-in filters. You can [define your own function extensions](advanced.md) too.
+A filter function is a named function that can be called as part of a [filter selector](syntax.md#filters-expression) expression. Here we describe the standard, built-in filters. You can [define your own function extensions](advanced.md#function-extensions) too.
 
 ## `count()`
 
@@ -15,7 +15,7 @@ $.categories[?count(@.products.*) >= 2]
 ```
 
 !!! warning
-    As of Python JSONPath version 0.5.0, `count` is an alias for `length`. This might change in the future.
+As of Python JSONPath version 0.5.0, `count` is an alias for `length`. This might change in the future.
 
 ## `length()`
 
