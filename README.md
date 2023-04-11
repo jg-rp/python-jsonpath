@@ -13,7 +13,7 @@ A flexible JSONPath engine for Python.
 
 - [Install](#install)
 - [Links](#links)
-- [Example](#exampl)
+- [Example](#example)
 - [License](#license)
 
 ## Install
