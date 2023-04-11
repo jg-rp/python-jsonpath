@@ -7,6 +7,7 @@ from .exceptions import JSONPathError
 from .exceptions import JSONPathNameError
 from .exceptions import JSONPathSyntaxError
 from .exceptions import JSONPathTypeError
+from .filter import UNDEFINED
 from .lex import Lexer
 from .match import JSONPathMatch
 from .parse import Parser
@@ -29,6 +30,7 @@ __all__ = (
     "JSONPathTypeError",
     "Lexer",
     "Parser",
+    "UNDEFINED",
 )
 
 
