@@ -266,11 +266,7 @@ class Parser:
                     name=stream.current.value,
                 )
             elif stream.current.kind == TOKEN_INDEX:
-                yield IndexSelector(
-                    env=self.env,
-                    token=stream.current,
-                    index=int(stream.current.value),
-                )
+                yield self.parse_index(stream)
             elif stream.current.kind == TOKEN_SLICE_START:
                 yield self.parse_slice(stream)
             elif stream.current.kind == TOKEN_WILD:
@@ -293,6 +289,20 @@ class Parser:
                 break
 
             stream.next_token()
+
+    def parse_index(self, stream: TokenStream) -> IndexSelector:
+        """Parse an index selector from a stream of tokens."""
+        if (
+            len(stream.current.value) > 1 and stream.current.value.startswith("0")
+        ) or stream.current.value.startswith("-0"):
+            raise JSONPathSyntaxError(
+                "leading zero in index selector", token=stream.current
+            )
+        return IndexSelector(
+            env=self.env,
+            token=stream.current,
+            index=int(stream.current.value),
+        )
 
     def parse_slice(self, stream: TokenStream) -> SliceSelector:
         """Parse a slice JSONPath expression from a stream of tokens."""

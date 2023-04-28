@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 0.6.0
+
+**IETF JSONPath Draft compliance**
+
+- Don't allow leading zeros in index selectors. We now raise a `JSONPathSyntaxError`.
+
 ## Version 0.5.0
 
 **Features**

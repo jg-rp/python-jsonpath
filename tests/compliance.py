@@ -46,8 +46,6 @@ SKIP = {
     "name selector, double quotes, incomplete escape": "TODO",
     "name selector, single quotes, invalid escaped double quote": "TODO",
     "name selector, single quotes, incomplete escape": "TODO",
-    "index selector, leading 0": "TODO",
-    "index selector, leading -0": "TODO",
     "filter, non-singular query in comparison, slice": "TODO",
     "filter, non-singular query in comparison, all children": "TODO",
     "filter, non-singular query in comparison, descendants": "TODO",
