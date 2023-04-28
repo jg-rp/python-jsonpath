@@ -14,9 +14,6 @@ Return the number of items in _obj_. If the object does not respond to Python's 
 $.categories[?count(@.products.*) >= 2]
 ```
 
-!!! warning
-As of Python JSONPath version 0.5.0, `count` is an alias for `length`. This might change in the future.
-
 ## `length()`
 
 ```text

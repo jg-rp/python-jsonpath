@@ -246,7 +246,7 @@ class JSONPathEnvironment:
         """Initialize function extensions."""
         self.function_extensions["keys"] = function_extensions.keys
         self.function_extensions["length"] = function_extensions.length
-        self.function_extensions["count"] = function_extensions.length
+        self.function_extensions["count"] = function_extensions.Count()
         self.function_extensions["match"] = function_extensions.Match()
         self.function_extensions["search"] = function_extensions.Search()
         self.function_extensions["value"] = function_extensions.value

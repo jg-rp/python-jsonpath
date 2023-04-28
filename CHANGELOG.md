@@ -5,6 +5,7 @@
 **IETF JSONPath Draft compliance**
 
 - Don't allow leading zeros in index selectors. We now raise a `JSONPathSyntaxError`.
+- Validate the built-in `count()` function's argument is array-like.
 
 ## Version 0.5.0
 
