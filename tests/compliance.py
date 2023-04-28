@@ -35,9 +35,13 @@ class Case:
 
 
 SKIP = {
-    "no leading whitespace": "flexible whitespace policy",
-    "no trailing whitespace": "flexible whitespace policy",
-    "bald descendant segment": "alost has a consensus",
+    "basic, no leading whitespace": "flexible whitespace policy",
+    "basic, no trailing whitespace": "flexible whitespace policy",
+    "basic, bald descendant segment": "almost has a consensus",
+    "functions, match, filter, match function, unicode char class, uppercase": "\\p not supported",  # noqa: E501
+    "functions, match, filter, match function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
+    "functions, search, filter, search function, unicode char class, uppercase": "\\p not supported",  # noqa: E501
+    "functions, search, filter, search function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
     "name selector, double quotes, invalid escaped single quote": "TODO",
     "name selector, double quotes, incomplete escape": "TODO",
     "name selector, single quotes, invalid escaped double quote": "TODO",
@@ -48,12 +52,12 @@ SKIP = {
     "filter, non-singular query in comparison, all children": "TODO",
     "filter, non-singular query in comparison, descendants": "TODO",
     "filter, non-singular query in comparison, combined": "TODO",
-    "filter, length function, result must be compared": "TODO",
-    "filter, count function, non-array/string arg": "TODO",
-    "filter, count function, result must be compared": "TODO",
-    "filter, match function, result cannot be compared": "TODO",
-    "filter, search function, result cannot be compared": "TODO",
-    "filter, value function, result must be compared": "TODO",
+    "functions, length, result must be compared": "TODO",
+    "functions, count, non-array/string arg": "TODO",
+    "functions, count, result must be compared": "TODO",
+    "functions, match, result cannot be compared": "TODO",
+    "functions, search, result cannot be compared": "TODO",
+    "functions, value, result must be compared": "TODO",
 }
 
 
