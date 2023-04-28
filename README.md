@@ -1,13 +1,26 @@
-# Python JSONPath
+<h1 align="center">Python JSONPath</h1>
 
-[![PyPI - Version](https://img.shields.io/pypi/v/python-jsonpath.svg?style=flat-square)](https://pypi.org/project/python-jsonpath)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/jg-rp/python-jsonpath/tests.yaml?branch=main&label=tests&style=flat-square)](https://github.com/jg-rp/python-jsonpath/actions)
-[![PyPI - License](https://img.shields.io/pypi/l/python-jsonpath?style=flat-square)](https://github.com/jg-rp/python-jsonpath/blob/main/LICENSE.txt)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/python-jsonpath.svg?style=flat-square)](https://pypi.org/project/python-jsonpath)
+<p align="center">
+A flexible JSONPath engine for Python.
+</p>
+
+<p align="center">
+  <a href="https://github.com/jg-rp/python-jsonpath/blob/main/LICENSE.txt">
+    <img src="https://img.shields.io/pypi/l/python-jsonpath?style=flat-square" alt="License">
+  </a>
+  <a href="https://github.com/jg-rp/python-jsonpath/actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/jg-rp/python-jsonpath/tests.yaml?branch=main&label=tests&style=flat-square" alt="Tests">
+  </a>
+  <br>
+  <a href="https://pypi.org/project/python-jsonpath">
+    <img src="https://img.shields.io/pypi/v/python-jsonpath.svg?style=flat-square" alt="PyPi - Version">
+  </a>
+  <a href="https://pypi.org/project/python-jsonpath">
+    <img src="https://img.shields.io/pypi/pyversions/python-jsonpath.svg?style=flat-square" alt="Python versions">
+  </a>
+</p>
 
 ---
-
-A flexible JSONPath engine for Python.
 
 **Table of Contents**
 
@@ -18,16 +31,16 @@ A flexible JSONPath engine for Python.
 
 ## Install
 
-Install Python JSONPath using [Pipenv](https://pipenv.pypa.io/en/latest/):
-
-```console
-pipenv install -u python-jsonpath
-```
-
-or [pip](https://pip.pypa.io/en/stable/getting-started/):
+Install Python JSONPath using [pip](https://pip.pypa.io/en/stable/getting-started/):
 
 ```console
 pip install python-jsonpath
+```
+
+Or [Pipenv](https://pipenv.pypa.io/en/latest/):
+
+```console
+pipenv install -u python-jsonpath
 ```
 
 ## Links
@@ -45,43 +58,28 @@ pip install python-jsonpath
 import jsonpath
 
 data = {
-    "categories": [
+    "users": [
         {
-            "name": "footwear",
-            "products": [
-                {
-                    "title": "Trainers",
-                    "description": "Fashionable trainers.",
-                    "price": 89.99,
-                },
-                {
-                    "title": "Barefoot Trainers",
-                    "description": "Running trainers.",
-                    "price": 130.00,
-                },
-            ],
+            "name": "Sue",
+            "score": 100,
         },
         {
-            "name": "headwear",
-            "products": [
-                {
-                    "title": "Cap",
-                    "description": "Baseball cap",
-                    "price": 15.00,
-                },
-                {
-                    "title": "Beanie",
-                    "description": "Winter running hat.",
-                    "price": 9.00,
-                },
-            ],
+            "name": "John",
+            "score": 86,
         },
-    ],
-    "price_cap": 10,
+        {
+            "name": "Sally",
+            "score": 84,
+        },
+        {
+            "name": "Jane",
+            "score": 55,
+        },
+    ]
 }
 
-products = jsonpath.findall("$..products.*", data)
-print(products)
+user_names = jsonpath.findall("$.users[?@.score < 100].name", data)
+print(user_names) # ['John', 'Sally', 'Jane']
 ```
 
 ## License
