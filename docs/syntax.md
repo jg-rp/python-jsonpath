@@ -166,6 +166,8 @@ And this is a list of areas where we deviate from the [IETF JSONPath draft](http
 - Whitespace is mostly insignificant unless inside quotes.
 - The root token (default `$`) is optional.
 - Paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.
+- The built-in `match()` and `search()` filter functions use Python's standard library `re` module, which, at least, doesn't support Unicode properties. We might add an implementation of `match()` and `search()` using the third party [regex](https://pypi.org/project/regex/) package in the future.
+- We silently ignore unnecessary escaping when parsing some quoted selectors. The standard treats this as an "invalid selector".
 
 And this is a list of features that are uncommon or unique to Python JSONPath.
 
