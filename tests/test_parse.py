@@ -165,6 +165,11 @@ TEST_CASES = [
         path="$.some[?(@.thing > 1 and ($.foo or $.bar))]",
         want="$['some'][?(@['thing'] > 1 && $['foo'] || $['bar'])]",
     ),
+    Case(
+        description="keys selector",
+        path="$.some.~",
+        want="$['some'][~]",
+    ),
 ]
 
 

@@ -68,33 +68,35 @@ class JSONPathEnvironment:
     ## Class attributes
 
     Attributes:
-        filter_context_token: The pattern used to select extra filter context data.
-            Defaults to `"#"`.
-        intersection_token: The pattern used as the intersection operator. Defaults
-            to `"$"`.
-        lexer_class: The lexer to use when tokenizing path strings.
-        max_int_index: The maximum integer allowed when selecting array items by index.
-            Defaults to `(2**53) - 1`.
-        min_int_index: The minimum integer allowed when selecting array items by index.
-            Defaults to `-(2**53) + 1`.
-        parser_class: The parser to use when parsing tokens from the lexer.
-        root_token: The pattern used to select the root node in a JSON document.
+        filter_context_token (str): The pattern used to select extra filter context
+            data. Defaults to `"#"`.
+        intersection_token (str): The pattern used as the intersection operator.
             Defaults to `"$"`.
-        self_token: The pattern used to select the current node in a JSON document.
-            Defaults to `"@"`
-        union_token: The pattern used as the union operator. Defaults to `"|"`.
+        keys_token (str): The pattern used as the "keys" selector. Defaults to `"~"`.
+        lexer_class: The lexer to use when tokenizing path strings.
+        max_int_index (int): The maximum integer allowed when selecting array items by
+            index. Defaults to `(2**53) - 1`.
+        min_int_index (int): The minimum integer allowed when selecting array items by
+            index. Defaults to `-(2**53) + 1`.
+        parser_class: The parser to use when parsing tokens from the lexer.
+        root_token (str): The pattern used to select the root node in a JSON document.
+            Defaults to `"$"`.
+        self_token (str): The pattern used to select the current node in a JSON
+            document. Defaults to `"@"`
+        union_token (str): The pattern used as the union operator. Defaults to `"|"`.
     """
 
     # These should be unescaped strings. `re.escape` will be called
     # on them automatically when compiling lexer rules.
-    intersection_token: str = "&"
-    root_token: str = "$"
-    self_token: str = "@"
-    union_token: str = "|"
-    filter_context_token: str = "#"
+    intersection_token = "&"
+    keys_token = "~"
+    root_token = "$"
+    self_token = "@"
+    union_token = "|"
+    filter_context_token = "#"
 
-    max_int_index: int = (2**53) - 1
-    min_int_index: int = -(2**53) + 1
+    max_int_index = (2**53) - 1
+    min_int_index = -(2**53) + 1
 
     # Override these to customize path tokenization and parsing.
     lexer_class: Type[Lexer] = Lexer

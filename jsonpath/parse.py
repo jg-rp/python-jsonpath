@@ -33,6 +33,7 @@ from .path import JSONPath
 from .selectors import Filter
 from .selectors import IndexSelector
 from .selectors import JSONPathSelector
+from .selectors import KeysSelector
 from .selectors import ListSelector
 from .selectors import PropertySelector
 from .selectors import RecursiveDescentSelector
@@ -57,6 +58,7 @@ from .token import TOKEN_IN
 from .token import TOKEN_INDEX
 from .token import TOKEN_INT
 from .token import TOKEN_INTERSECTION
+from .token import TOKEN_KEYS
 from .token import TOKEN_LE
 from .token import TOKEN_LG
 from .token import TOKEN_LIST_START
@@ -274,6 +276,11 @@ class Parser:
                     env=self.env,
                     token=stream.current,
                 )
+            elif stream.current.kind == TOKEN_KEYS:
+                yield KeysSelector(
+                    env=self.env,
+                    token=stream.current,
+                )
             elif stream.current.kind == TOKEN_DDOT:
                 yield RecursiveDescentSelector(
                     env=self.env,
@@ -339,7 +346,13 @@ class Parser:
         """Parse a comma separated list JSONPath selectors from a stream of tokens."""
         tok = stream.next_token()
         list_items: List[
-            Union[IndexSelector, PropertySelector, SliceSelector, WildSelector]
+            Union[
+                IndexSelector,
+                KeysSelector,
+                PropertySelector,
+                SliceSelector,
+                WildSelector,
+            ]
         ] = []
 
         while stream.current.kind != TOKEN_RBRACKET:
@@ -358,6 +371,13 @@ class Parser:
                         token=stream.current,
                         name=stream.current.value,
                     ),
+                )
+            elif stream.current.kind == TOKEN_KEYS:
+                list_items.append(
+                    KeysSelector(
+                        env=self.env,
+                        token=stream.current,
+                    )
                 )
             elif stream.current.kind == TOKEN_STRING:
                 if self.RE_INVALID_NAME_SELECTOR.search(stream.current.value):

@@ -31,6 +31,7 @@ from .token import TOKEN_IN
 from .token import TOKEN_INDEX
 from .token import TOKEN_INT
 from .token import TOKEN_INTERSECTION
+from .token import TOKEN_KEYS
 from .token import TOKEN_LE
 from .token import TOKEN_LG
 from .token import TOKEN_LIST_SLICE
@@ -147,6 +148,7 @@ class Lexer:
             (TOKEN_UNION, re.escape(self.env.union_token)),
             (TOKEN_INTERSECTION, re.escape(self.env.intersection_token)),
             (TOKEN_FILTER_CONTEXT, re.escape(self.env.filter_context_token)),
+            (TOKEN_KEYS, re.escape(self.env.keys_token)),
             (TOKEN_IN, r"in"),
             (TOKEN_TRUE, r"[Tt]rue"),
             (TOKEN_FALSE, r"[Ff]alse"),

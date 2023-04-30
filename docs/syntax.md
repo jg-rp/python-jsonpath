@@ -66,6 +66,18 @@ $.categories[0].products.*
 $.categories[0].products[*]
 ```
 
+### Keys (`.~` or `[~]`)
+
+Select keys/properties from an object using `~`.
+
+```text
+$.categories.~
+```
+
+```text
+$.categories[~]
+```
+
 ### Slices (`[0:-1]` or `[-1:0:-1]`)
 
 Select a range of elements from an array using slice notation. The start index, stop index and step are all optional. These examples are equivalent.
@@ -174,3 +186,4 @@ And this is a list of features that are uncommon or unique to Python JSONPath.
 - `|` is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.
 - `&` is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.
 - `#` is a filter context selector. With usage similar to `$` and `@`, `#` exposes arbitrary data from the `filter_context` argument to `findall()` and `finditer()`.
+- `~` is a "keys" or "properties" selector.

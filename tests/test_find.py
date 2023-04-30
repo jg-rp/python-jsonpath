@@ -33,6 +33,18 @@ TEST_CASES = [
         data={"some": {"thing": "else"}},
         want=[],
     ),
+    Case(
+        description="keys from a mapping",
+        path="$.some[~]",
+        data={"some": {"thing": "else"}},
+        want=["thing"],
+    ),
+    Case(
+        description="keys from a sequence",
+        path="$.some.~",
+        data={"some": ["thing", "else"]},
+        want=[],
+    ),
 ]
 
 

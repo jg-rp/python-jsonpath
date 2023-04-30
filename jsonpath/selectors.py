@@ -15,6 +15,8 @@ from typing import Optional
 from typing import TypeVar
 from typing import Union
 
+from jsonpath.match import JSONPathMatch
+
 from .exceptions import JSONPathIndexError
 from .exceptions import JSONPathTypeError
 from .match import JSONPathMatch
@@ -188,6 +190,40 @@ class IndexSelector(JSONPathSelector):
                     )
                     match.add_child(_match)
                     yield _match
+
+
+class KeysSelector(JSONPathSelector):
+    """Select an mapping's keys/properties."""
+
+    __slots__ = ()
+
+    def __str__(self) -> str:
+        return f"[{self.env.keys_token}]"
+
+    def _keys(self, match: JSONPathMatch) -> Iterable[JSONPathMatch]:
+        if isinstance(match.obj, Mapping):
+            for i, key in enumerate(match.obj.keys()):
+                _match = JSONPathMatch(
+                    filter_context=match.filter_context(),
+                    obj=key,
+                    parent=match,
+                    parts=match.parts + (self.env.keys_token, i),
+                    path=f"{match.path}[{self.env.keys_token}][{i}]",
+                    root=match.root,
+                )
+                match.add_child(_match)
+                yield _match
+
+    def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
+        for match in matches:
+            yield from self._keys(match)
+
+    async def resolve_async(
+        self, matches: AsyncIterable[JSONPathMatch]
+    ) -> AsyncIterable[JSONPathMatch]:
+        async for match in matches:
+            for _match in self._keys(match):
+                yield _match
 
 
 class SliceSelector(JSONPathSelector):
@@ -409,7 +445,13 @@ class ListSelector(JSONPathSelector):
         env: JSONPathEnvironment,
         token: Token,
         items: List[
-            Union[SliceSelector, IndexSelector, PropertySelector, WildSelector]
+            Union[
+                SliceSelector,
+                KeysSelector,
+                IndexSelector,
+                PropertySelector,
+                WildSelector,
+            ]
         ],
     ) -> None:
         super().__init__(env=env, token=token)
@@ -427,6 +469,8 @@ class ListSelector(JSONPathSelector):
                 buf.append(f"'{item.name}'")
             elif isinstance(item, WildSelector):
                 buf.append("*")
+            elif isinstance(item, KeysSelector):
+                buf.append(self.env.keys_token)
             else:
                 buf.append(str(item.index))
         return f"[{', '.join(buf)}]"

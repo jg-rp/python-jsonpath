@@ -21,6 +21,7 @@ from jsonpath.token import TOKEN_IN
 from jsonpath.token import TOKEN_INDEX
 from jsonpath.token import TOKEN_INT
 from jsonpath.token import TOKEN_INTERSECTION
+from jsonpath.token import TOKEN_KEYS
 from jsonpath.token import TOKEN_LIST_START
 from jsonpath.token import TOKEN_LT
 from jsonpath.token import TOKEN_NIL
@@ -1081,6 +1082,26 @@ TEST_CASES = [
                 index=28,
                 path="$.some[?(length(@.thing) < 2)]",
             ),
+        ],
+    ),
+    Case(
+        description="keys selector",
+        path="$.thing.~",
+        want=[
+            Token(kind=TOKEN_ROOT, value="$", index=0, path="$.thing.~"),
+            Token(kind=TOKEN_PROPERTY, value="thing", index=2, path="$.thing.~"),
+            Token(kind=TOKEN_KEYS, value="~", index=8, path="$.thing.~"),
+        ],
+    ),
+    Case(
+        description="keys in list selector",
+        path="$.thing[~]",
+        want=[
+            Token(kind=TOKEN_ROOT, value="$", index=0, path="$.thing[~]"),
+            Token(kind=TOKEN_PROPERTY, value="thing", index=2, path="$.thing[~]"),
+            Token(kind=TOKEN_LIST_START, value="[", index=7, path="$.thing[~]"),
+            Token(kind=TOKEN_KEYS, value="~", index=8, path="$.thing[~]"),
+            Token(kind=TOKEN_RBRACKET, value="]", index=9, path="$.thing[~]"),
         ],
     ),
 ]
