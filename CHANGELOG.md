@@ -2,6 +2,10 @@
 
 ## Version 0.6.0
 
+**Features**
+
+- Added the keys/properties selector (`~`).
+
 **IETF JSONPath Draft compliance**
 
 - Don't allow leading zeros in index selectors. We now raise a `JSONPathSyntaxError`.

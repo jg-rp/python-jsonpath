@@ -15,8 +15,6 @@ from typing import Optional
 from typing import TypeVar
 from typing import Union
 
-from jsonpath.match import JSONPathMatch
-
 from .exceptions import JSONPathIndexError
 from .exceptions import JSONPathTypeError
 from .match import JSONPathMatch

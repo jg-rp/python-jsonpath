@@ -68,6 +68,8 @@ $.categories[0].products[*]
 
 ### Keys (`.~` or `[~]`)
 
+**_New in version 0.6.0_**
+
 Select keys/properties from an object using `~`.
 
 ```text
