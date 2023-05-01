@@ -4,7 +4,9 @@
 
 **Features**
 
-- Added the keys/properties selector (`~`).
+- Added a non-standard keys/properties selector (`~`).
+- Added a non-standard `typeof()` filter function. `type()` is an alias for `typeof()`.
+- Added a non-standard `isinstance()` filter function. `is()` is an alias for `isinstance()`.
 
 **IETF JSONPath Draft compliance**
 

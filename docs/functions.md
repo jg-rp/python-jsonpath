@@ -1,6 +1,6 @@
 # Filter Functions
 
-A filter function is a named function that can be called as part of a [filter selector](syntax.md#filters-expression) expression. Here we describe the standard, built-in filters. You can [define your own function extensions](advanced.md#function-extensions) too.
+A filter function is a named function that can be called as part of a [filter selector](syntax.md#filters-expression) expression. Here we describe built-in filters. You can [define your own function extensions](advanced.md#function-extensions) too.
 
 ## `count()`
 
@@ -12,6 +12,39 @@ Return the number of items in _obj_. If the object does not respond to Python's 
 
 ```
 $.categories[?count(@.products.*) >= 2]
+```
+
+## `isinstance()`
+
+**_New in version 0.6.0_**
+
+```text
+isinstance(obj: object, t: str) -> bool
+```
+
+Return `True` if the type of _obj_ matches _t_. This function allows _t_ to be one of several aliases for the real Python "type". Some of these aliases follow JavaScript/JSON semantics.
+
+| type                  | aliases                       |
+| --------------------- | ----------------------------- |
+| UNDEFINED             | "undefined"                   |
+| None                  | "null", "nil", "None", "none" |
+| str                   | "str", "string"               |
+| Sequence (array-like) | "array", "list", "sequence"   |
+| Mapping (dict-like)   | "object", "dict", "mapping"   |
+| bool                  | "bool", "boolean"             |
+| int                   | "number", "int"               |
+| float                 | "number", "float"             |
+
+For example :
+
+```
+$.categories[?isinstance(@.length, 'number')]
+```
+
+And `is()` is an alias for `isinstance()`:
+
+```
+$.categories[?is(@.length, 'number')]
 ```
 
 ## `length()`
@@ -57,6 +90,22 @@ $..products[?search(@.title, "ainers")]
 If _pattern_ is a string literal, it will be compiled at compile time, and raise a `JSONPathTypeError` at compile time if it's invalid.
 
 If _pattern_ is a query and the result is not a valid regex, `False` is returned.
+
+## `typeof()`
+
+**_New in version 0.6.0_**
+
+```text
+typeof(obj: object) -> str
+```
+
+Return the type of _obj_ as a string. The strings returned from this function use JavaScript/JSON terminology like "string", "array" and "object", much like the result of JavaScript's `typeof` operator.
+
+```
+$.categories[?typeof(@.length) == 'number']
+```
+
+`type()` is and alias for `typeof()`.
 
 ## `value()`
 
