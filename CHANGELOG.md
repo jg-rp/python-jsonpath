@@ -8,10 +8,10 @@
 
 **Features**
 
-- Added a non-standard keys/properties selector (`~`).
-- Added a non-standard `typeof()` filter function. `type()` is an alias for `typeof()`.
-- Added a non-standard `isinstance()` filter function. `is()` is an alias for `isinstance()`.
-- Added a current key/property or index identifier. When filtering a mapping, `#` will hold key associated with the current node (`@`). When filtering a sequence, `#` will hold the current index.
+- Added a non-standard keys/properties selector ([docs](https://jg-rp.github.io/python-jsonpath/syntax/#keys-or), [source](https://github.com/jg-rp/python-jsonpath/blob/main/jsonpath/selectors.py#L193)).
+- Added a non-standard `typeof()` filter function. `type()` is an alias for `typeof()` ([docs](https://jg-rp.github.io/python-jsonpath/functions/#typeof), [source](https://github.com/jg-rp/python-jsonpath/blob/main/jsonpath/function_extensions/typeof.py)).
+- Added a non-standard `isinstance()` filter function. `is()` is an alias for `isinstance()` ([docs](https://jg-rp.github.io/python-jsonpath/functions/#isinstance), [source](https://github.com/jg-rp/python-jsonpath/blob/main/jsonpath/function_extensions/is_instance.py)).
+- Added a current key/property or index identifier. When filtering a mapping, `#` will hold key associated with the current node (`@`). When filtering a sequence, `#` will hold the current index. See [docs](https://jg-rp.github.io/python-jsonpath/syntax/#filters-expression).
 
 **IETF JSONPath Draft compliance**
 
