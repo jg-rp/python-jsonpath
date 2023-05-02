@@ -12,6 +12,7 @@ from typing import Optional
 from typing import Union
 
 from .exceptions import JSONPathSyntaxError
+from .filter import CURRENT_KEY
 from .filter import FALSE
 from .filter import NIL
 from .filter import TRUE
@@ -58,6 +59,7 @@ from .token import TOKEN_IN
 from .token import TOKEN_INDEX
 from .token import TOKEN_INT
 from .token import TOKEN_INTERSECTION
+from .token import TOKEN_KEY
 from .token import TOKEN_KEYS
 from .token import TOKEN_LE
 from .token import TOKEN_LG
@@ -198,6 +200,7 @@ class Parser:
             TOKEN_FALSE: self.parse_boolean,
             TOKEN_FLOAT: self.parse_float_literal,
             TOKEN_INT: self.parse_integer_literal,
+            TOKEN_KEY: self.parse_current_key,
             TOKEN_LIST_START: self.parse_list_literal,
             TOKEN_LPAREN: self.parse_grouped_expression,
             TOKEN_MISSING: self.parse_undefined,
@@ -232,6 +235,7 @@ class Parser:
             TOKEN_FALSE: self.parse_boolean,
             TOKEN_FLOAT: self.parse_float_literal,
             TOKEN_INT: self.parse_integer_literal,
+            TOKEN_KEY: self.parse_current_key,
             TOKEN_NIL: self.parse_nil,
             TOKEN_NONE: self.parse_nil,
             TOKEN_NULL: self.parse_nil,
@@ -506,6 +510,9 @@ class Parser:
         return SelfPath(
             JSONPath(env=self.env, selectors=self.parse_path(stream, in_filter=True))
         )
+
+    def parse_current_key(self, _: TokenStream) -> FilterExpression:
+        return CURRENT_KEY
 
     def parse_filter_context_path(self, stream: TokenStream) -> FilterExpression:
         stream.next_token()

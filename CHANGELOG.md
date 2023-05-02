@@ -4,13 +4,14 @@
 
 **Breaking changes**
 
-- The "extra context" identifier now defaults to `_`. Previously it defaulted to `#`, but it has been decided that `#` is better suited as a "keys" or "properties" identifier.
+- The "extra filter context" identifier now defaults to `_`. Previously it defaulted to `#`, but it has been decided that `#` is better suited as a current key/property or index identifier.
 
 **Features**
 
 - Added a non-standard keys/properties selector (`~`).
 - Added a non-standard `typeof()` filter function. `type()` is an alias for `typeof()`.
 - Added a non-standard `isinstance()` filter function. `is()` is an alias for `isinstance()`.
+- Added a current key/property or index identifier. When filtering a mapping, `#` will hold key associated with the current node (`@`). When filtering a sequence, `#` will hold the current index.
 
 **IETF JSONPath Draft compliance**
 

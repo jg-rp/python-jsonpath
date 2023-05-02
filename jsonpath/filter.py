@@ -449,3 +449,20 @@ class FunctionExtension(FilterExpression):
             return UNDEFINED
         args = [await arg.evaluate_async(context) for arg in self.args]
         return func(*args)
+
+
+class CurrentKey(FilterExpression):
+    """The key/property or index associated with the current object."""
+
+    __slots__ = ()
+
+    def evaluate(self, context: FilterContext) -> object:
+        if context.current_key is None:
+            return UNDEFINED
+        return context.current_key
+
+    async def evaluate_async(self, context: FilterContext) -> object:
+        return self.evaluate(context)
+
+
+CURRENT_KEY = CurrentKey()

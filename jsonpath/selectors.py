@@ -196,7 +196,7 @@ class KeysSelector(JSONPathSelector):
     __slots__ = ()
 
     def __str__(self) -> str:
-        return f"[{self.env.keys_token}]"
+        return f"[{self.env.keys_selector_token}]"
 
     def _keys(self, match: JSONPathMatch) -> Iterable[JSONPathMatch]:
         if isinstance(match.obj, Mapping):
@@ -205,8 +205,8 @@ class KeysSelector(JSONPathSelector):
                     filter_context=match.filter_context(),
                     obj=key,
                     parent=match,
-                    parts=match.parts + (self.env.keys_token, i),
-                    path=f"{match.path}[{self.env.keys_token}][{i}]",
+                    parts=match.parts + (self.env.keys_selector_token, i),
+                    path=f"{match.path}[{self.env.keys_selector_token}][{i}]",
                     root=match.root,
                 )
                 match.add_child(_match)
@@ -468,7 +468,7 @@ class ListSelector(JSONPathSelector):
             elif isinstance(item, WildSelector):
                 buf.append("*")
             elif isinstance(item, KeysSelector):
-                buf.append(self.env.keys_token)
+                buf.append(self.env.keys_selector_token)
             else:
                 buf.append(str(item.index))
         return f"[{', '.join(buf)}]"
@@ -516,6 +516,7 @@ class Filter(JSONPathSelector):
                         current=val,
                         root=match.root,
                         extra_context=match.filter_context(),
+                        current_key=key,
                     )
                     try:
                         if self.expression.evaluate(context):
@@ -541,6 +542,7 @@ class Filter(JSONPathSelector):
                         current=obj,
                         root=match.root,
                         extra_context=match.filter_context(),
+                        current_key=i,
                     )
                     try:
                         if self.expression.evaluate(context):
@@ -570,6 +572,7 @@ class Filter(JSONPathSelector):
                         current=val,
                         root=match.root,
                         extra_context=match.filter_context(),
+                        current_key=key,
                     )
 
                     try:
@@ -598,6 +601,7 @@ class Filter(JSONPathSelector):
                         current=obj,
                         root=match.root,
                         extra_context=match.filter_context(),
+                        current_key=i,
                     )
 
                     try:
@@ -622,7 +626,7 @@ class Filter(JSONPathSelector):
 class FilterContext:
     """A filter expression context."""
 
-    __slots__ = ("current", "env", "root", "extra_context")
+    __slots__ = ("current", "current_key", "env", "root", "extra_context")
 
     def __init__(
         self,
@@ -631,11 +635,13 @@ class FilterContext:
         current: object,
         root: Union[Sequence[Any], Mapping[str, Any]],
         extra_context: Optional[Mapping[str, Any]] = None,
+        current_key: Union[str, int, None] = None,
     ) -> None:
         self.env = env
         self.current = current
         self.root = root
         self.extra_context = extra_context or {}
+        self.current_key = current_key
 
     def __str__(self) -> str:
         return (

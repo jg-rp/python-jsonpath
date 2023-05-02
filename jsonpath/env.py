@@ -72,7 +72,10 @@ class JSONPathEnvironment:
             data. Defaults to `"_"`.
         intersection_token (str): The pattern used as the intersection operator.
             Defaults to `"$"`.
-        keys_token (str): The pattern used as the "keys" selector. Defaults to `"~"`.
+        key_token (str): The pattern used to identify the current key or index when
+            filtering a, mapping or sequence. Defaults to `"#"`.
+        keys_selector_token (str): The pattern used as the "keys" selector. Defaults to
+            `"~"`.
         lexer_class: The lexer to use when tokenizing path strings.
         max_int_index (int): The maximum integer allowed when selecting array items by
             index. Defaults to `(2**53) - 1`.
@@ -88,12 +91,13 @@ class JSONPathEnvironment:
 
     # These should be unescaped strings. `re.escape` will be called
     # on them automatically when compiling lexer rules.
+    filter_context_token = "_"
     intersection_token = "&"
-    keys_token = "~"
+    key_token = "#"
+    keys_selector_token = "~"
     root_token = "$"
     self_token = "@"
     union_token = "|"
-    filter_context_token = "_"
 
     max_int_index = (2**53) - 1
     min_int_index = -(2**53) + 1

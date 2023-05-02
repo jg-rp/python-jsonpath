@@ -45,6 +45,18 @@ TEST_CASES = [
         data={"some": ["thing", "else"]},
         want=[],
     ),
+    Case(
+        description="match key pattern",
+        path="$.some[?match(#, 'thing[0-9]+')]",
+        data={
+            "some": {
+                "thing1": {"foo": 1},
+                "thing2": {"foo": 2},
+                "other": {"foo": 3},
+            }
+        },
+        want=[{"foo": 1}, {"foo": 2}],
+    ),
 ]
 
 

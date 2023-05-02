@@ -120,9 +120,9 @@ $..title
 $...title
 ```
 
-### Filters (`[?(EXPRESSION)]`)
+### Filters (`[?EXPRESSION]`)
 
-Filters allow you to remove nodes from a selection using a Boolean expression. Within a filter, `@` refers to the current node and `$` refers to the root node in the target document. `@` and `$` can be used to select nodes as part of the expression. Since version 0.3.0, the parentheses are optional, as per the IETF JSONPath draft. These two examples are equivalent.
+Filters allow you to remove nodes from a selection using a Boolean expression. When filtering a mapping-like object, `#` references the current key/property and `@` references the current value associated with `#`. When filtering a sequence-like object, `@` references the current item and `#` will hold the item's index in the sequence.
 
 ```text
 $..products[?(@.price < $.price_cap)]
@@ -187,5 +187,6 @@ And this is a list of features that are uncommon or unique to Python JSONPath.
 
 - `|` is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.
 - `&` is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.
+- `#` is the current key/property or index identifier when filtering a mapping or sequence.
 - `_` is a filter context selector. With usage similar to `$` and `@`, `_` exposes arbitrary data from the `filter_context` argument to `findall()` and `finditer()`.
 - `~` is a "keys" or "properties" selector.
