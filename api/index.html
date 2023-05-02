@@ -1090,7 +1090,7 @@ default environment.</p>
 and overriding class attributes and/or methods. Some of these
 customizations include:</p>
 <ul>
-<li>Changing the root (<code>$</code>), self (<code>@</code>) or filter context (<code>#</code>) token with
+<li>Changing the root (<code>$</code>), self (<code>@</code>) or filter context (<code>_</code>) token with
   class attributes <code>root_token</code>, <code>self_token</code> and <code>filter_context_token</code>.</li>
 <li>Registering a custom lexer or parser with the class attributes
   <code>lexer_class</code> or <code>parser_class</code>. <code>lexer_class</code> must be a subclass of
@@ -1113,8 +1113,8 @@ customizations include:</p>
         <tr>
           <td><code>filter_context_token</code></td>
           <td class="doc-attribute-details">
-            <p>The pattern used to select extra filter context data.
-Defaults to <code>"#"</code>.</p>
+            <p>The pattern used to select extra filter context
+data. Defaults to <code>"_"</code>.</p>
             <p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
@@ -1126,8 +1126,34 @@ Defaults to <code>"#"</code>.</p>
         <tr>
           <td><code>intersection_token</code></td>
           <td class="doc-attribute-details">
-            <p>The pattern used as the intersection operator. Defaults
-to <code>"$"</code>.</p>
+            <p>The pattern used as the intersection operator.
+Defaults to <code>"$"</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>str</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>key_token</code></td>
+          <td class="doc-attribute-details">
+            <p>The pattern used to identify the current key or index when
+filtering a, mapping or sequence. Defaults to <code>"#"</code>.</p>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code>str</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>keys_selector_token</code></td>
+          <td class="doc-attribute-details">
+            <p>The pattern used as the "keys" selector. Defaults to
+<code>"~"</code>.</p>
             <p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
@@ -1151,8 +1177,8 @@ to <code>"$"</code>.</p>
         <tr>
           <td><code>max_int_index</code></td>
           <td class="doc-attribute-details">
-            <p>The maximum integer allowed when selecting array items by index.
-Defaults to <code>(2**53) - 1</code>.</p>
+            <p>The maximum integer allowed when selecting array items by
+index. Defaults to <code>(2**53) - 1</code>.</p>
             <p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
@@ -1164,8 +1190,8 @@ Defaults to <code>(2**53) - 1</code>.</p>
         <tr>
           <td><code>min_int_index</code></td>
           <td class="doc-attribute-details">
-            <p>The minimum integer allowed when selecting array items by index.
-Defaults to <code>-(2**53) + 1</code>.</p>
+            <p>The minimum integer allowed when selecting array items by
+index. Defaults to <code>-(2**53) + 1</code>.</p>
             <p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
@@ -1202,8 +1228,8 @@ Defaults to <code>"$"</code>.</p>
         <tr>
           <td><code>self_token</code></td>
           <td class="doc-attribute-details">
-            <p>The pattern used to select the current node in a JSON document.
-Defaults to <code>"@"</code></p>
+            <p>The pattern used to select the current node in a JSON
+document. Defaults to <code>"@"</code></p>
             <p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
