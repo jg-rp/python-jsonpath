@@ -24,16 +24,16 @@ isinstance(obj: object, t: str) -> bool
 
 Return `True` if the type of _obj_ matches _t_. This function allows _t_ to be one of several aliases for the real Python "type". Some of these aliases follow JavaScript/JSON semantics.
 
-| type                  | aliases                       |
-| --------------------- | ----------------------------- |
-| UNDEFINED             | "undefined"                   |
-| None                  | "null", "nil", "None", "none" |
-| str                   | "str", "string"               |
-| Sequence (array-like) | "array", "list", "sequence"   |
-| Mapping (dict-like)   | "object", "dict", "mapping"   |
-| bool                  | "bool", "boolean"             |
-| int                   | "number", "int"               |
-| float                 | "number", "float"             |
+| type                  | aliases                              |
+| --------------------- | ------------------------------------ |
+| UNDEFINED             | "undefined"                          |
+| None                  | "null", "nil", "None", "none"        |
+| str                   | "str", "string"                      |
+| Sequence (array-like) | "array", "list", "sequence", "tuple" |
+| Mapping (dict-like)   | "object", "dict", "mapping"          |
+| bool                  | "bool", "boolean"                    |
+| int                   | "number", "int"                      |
+| float                 | "number", "float"                    |
 
 For example :
 

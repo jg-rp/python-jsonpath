@@ -23,7 +23,7 @@ class IsInstance:
         if isinstance(obj, str):
             return t in ("str", "string")
         if isinstance(obj, Sequence):
-            return t in ("array", "list", "sequence")
+            return t in ("array", "list", "sequence", "tuple")
         if isinstance(obj, Mapping):
             return t in ("object", "dict", "mapping")
         if isinstance(obj, bool):
