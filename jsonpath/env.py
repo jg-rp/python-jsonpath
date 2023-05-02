@@ -55,7 +55,7 @@ class JSONPathEnvironment:
     and overriding class attributes and/or methods. Some of these
     customizations include:
 
-    - Changing the root (`$`), self (`@`) or filter context (`#`) token with
+    - Changing the root (`$`), self (`@`) or filter context (`_`) token with
       class attributes `root_token`, `self_token` and `filter_context_token`.
     - Registering a custom lexer or parser with the class attributes
       `lexer_class` or `parser_class`. `lexer_class` must be a subclass of
@@ -69,7 +69,7 @@ class JSONPathEnvironment:
 
     Attributes:
         filter_context_token (str): The pattern used to select extra filter context
-            data. Defaults to `"#"`.
+            data. Defaults to `"_"`.
         intersection_token (str): The pattern used as the intersection operator.
             Defaults to `"$"`.
         keys_token (str): The pattern used as the "keys" selector. Defaults to `"~"`.
@@ -93,7 +93,7 @@ class JSONPathEnvironment:
     root_token = "$"
     self_token = "@"
     union_token = "|"
-    filter_context_token = "#"
+    filter_context_token = "_"
 
     max_int_index = (2**53) - 1
     min_int_index = -(2**53) + 1

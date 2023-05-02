@@ -2,6 +2,10 @@
 
 ## Version 0.6.0
 
+**Breaking changes**
+
+- The "extra context" identifier now defaults to `_`. Previously it defaulted to `#`, but it has been decided that `#` is better suited as a "keys" or "properties" identifier.
+
 **Features**
 
 - Added a non-standard keys/properties selector (`~`).
@@ -25,7 +29,7 @@
 
 **Fixes**
 
-- Fixed a bug where the current object selector (`@`) would evaluate to `undefined` when a filter is applied to an array of strings.
+- Fixed a bug where the current object identifier (`@`) would evaluate to `undefined` when a filter is applied to an array of strings.
 - Compound paths that have a trailing `|` or `&` now raise a `JSONPathSyntaxError`.
 
 **IETF JSONPath Draft compliance**

@@ -402,7 +402,7 @@ class FilterContextPath(Path):
 
     def __str__(self) -> str:
         path_repr = str(self.path)
-        return "#" + path_repr[1:]
+        return "_" + path_repr[1:]
 
     def evaluate(self, context: FilterContext) -> object:
         matches = self.path.findall(context.extra_context)

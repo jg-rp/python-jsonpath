@@ -187,5 +187,5 @@ And this is a list of features that are uncommon or unique to Python JSONPath.
 
 - `|` is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.
 - `&` is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.
-- `#` is a filter context selector. With usage similar to `$` and `@`, `#` exposes arbitrary data from the `filter_context` argument to `findall()` and `finditer()`.
+- `_` is a filter context selector. With usage similar to `$` and `@`, `_` exposes arbitrary data from the `filter_context` argument to `findall()` and `finditer()`.
 - `~` is a "keys" or "properties" selector.
