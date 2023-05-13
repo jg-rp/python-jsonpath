@@ -1,8 +1,8 @@
 # Quick Start
 
-This page gets you starting with Python JSONPath, see [JSONPath Syntax](syntax.md) for information on JSONPath selector syntax.
+This page gets you started using JSONPath wih Python, see [JSONPath Syntax](syntax.md) for information on JSONPath selector syntax.
 
-## `findall`
+## `findall(path, data)`
 
 Find all objects matching a JSONPath with [`jsonpath.findall()`](api.md#jsonpath.env.JSONPathEnvironment.findall). It takes, as arguments, a JSONPath string and some _data_ object. It always returns a list of objects selected from the given data.
 
@@ -50,7 +50,7 @@ with open("users.json") as fd:
     user_names = jsonpath.findall("$.users.*.name", fd)
 ```
 
-## `finditer`
+## `finditer(path, data)`
 
 Use [`jsonpath.finditer()`](api.md#jsonpath.env.JSONPathEnvironment.finditer) to create an iterator which yields instances of [`jsonpath.JSONPathMatch`](api.md#jsonpath.JSONPathMatch) for every object in some data that matches a JSONPath. It accepts the same arguments as [`findall()`](#findall), a path string and _data_ from which to select matches.
 
@@ -94,7 +94,7 @@ The string representation of a [`JSONPathMatch`](api.md#jsonpath.JSONPathMatch) 
 
 The selected object is available from a [`JSONPathMatch`](api.md#jsonpath.JSONPathMatch) as `obj` and its path, as a string, as `path`. Other useful properties of `JSONPathMatch` include a reference to the parent match, a list of child matches, and a `parts` tuple of keys and indices that make up the path.
 
-## `compile`
+## `compile(path)`
 
 When you have a JSONPath that needs to be matched against different data repeatedly, you can _compile_ the path ahead of time using [`jsonpath.compile()`](api.md#jsonpath.env.JSONPathEnvironment.compile). It takes a path as a string and returns a [`JSONPath`](api.md#jsonpath.JSONPath) instance. `JSONPath` has `findall()` and `finditer()` methods that behave similarly to package-level `findall()` and `finditer()`, just without the `path` argument.
 
