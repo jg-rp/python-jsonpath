@@ -84,7 +84,7 @@ exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 
 [tool.mypy]
 files = "jsonpath"
-python_version = "3.10"
+python_version = "3.11"
 disallow_subclassing_any = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
