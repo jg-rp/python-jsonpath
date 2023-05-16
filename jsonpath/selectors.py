@@ -253,7 +253,7 @@ class SliceSelector(JSONPathSelector):
             if i is not None and (
                 i < self.env.min_int_index or i > self.env.max_int_index
             ):
-                raise JSONPathIndexError("index out of range")
+                raise JSONPathIndexError("index out of range", token=self.token)
 
     def _normalized_index(self, obj: Sequence[object], index: int) -> int:
         if index < 0 and len(obj) >= abs(index):

@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class JSONPathError(Exception):
-    """Base exception for all JSONPath syntax and type errors.
+    """Base exception for all errors.
 
     Arguments:
         args: Arguments passed to `Exception`.
@@ -31,7 +31,12 @@ class JSONPathError(Exception):
 
 
 class JSONPathSyntaxError(JSONPathError):
-    """An exception raised when parsing a JSONPath string."""
+    """An exception raised when parsing a JSONPath string.
+
+    Arguments:
+        args: Arguments passed to `Exception`.
+        token: The token that caused the error.
+    """
 
     def __init__(self, *args: object, token: Token) -> None:
         super().__init__(*args)
@@ -46,11 +51,25 @@ class JSONPathTypeError(JSONPathError):
 
 
 class JSONPathIndexError(JSONPathError):
-    """An exception raised when an array index is out of range."""
+    """An exception raised when an array index is out of range.
+
+    Arguments:
+        args: Arguments passed to `Exception`.
+        token: The token that caused the error.
+    """
+
+    def __init__(self, *args: object, token: Token) -> None:
+        super().__init__(*args)
+        self.token = token
 
 
 class JSONPathNameError(JSONPathError):
-    """An exception raised when an unknown function extension is called."""
+    """An exception raised when an unknown function extension is called.
+
+    Arguments:
+        args: Arguments passed to `Exception`.
+        token: The token that caused the error.
+    """
 
     def __init__(self, *args: object, token: Token) -> None:
         super().__init__(*args)

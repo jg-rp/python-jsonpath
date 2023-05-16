@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 0.7.0
+
+**Breaking changes**
+
+- `JSONPathIndexError` now requires a `token` parameter. It used to be optional.
+
 ## Version 0.6.0
 
 **Breaking changes**
