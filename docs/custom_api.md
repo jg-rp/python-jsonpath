@@ -1,7 +1,7 @@
 # Low Level API Reference
 
 ::: jsonpath.token.Token
-handler: python
+    handler: python
 
 ## jsonpath.filter.FilterExpression
 
