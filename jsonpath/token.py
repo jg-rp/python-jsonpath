@@ -78,7 +78,16 @@ TOKEN_INTERSECTION = sys.intern("INTERSECT")
 
 
 class Token:
-    """A token, as returned from `lex.Lexer.tokenize()`."""
+    """A token, as returned from `lex.Lexer.tokenize()`.
+
+    Attributes:
+        kind (str): The token's type. It is always one of the constants defined
+            in _jsonpath.token.py_.
+        value (str): The _path_ substring containing text for the token.
+        index (str): The index at which _value_ starts in _path_.
+        path (str): A reference to the complete JSONPath string from which this
+            token derives.
+    """
 
     __slots__ = ("kind", "value", "index", "path")
 
