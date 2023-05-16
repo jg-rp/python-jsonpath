@@ -506,6 +506,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#jsonpath.JSONPathSyntaxError" class="md-nav__link">
+    JSONPathSyntaxError
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jsonpath.JSONPathTypeError" class="md-nav__link">
+    JSONPathTypeError
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jsonpath.JSONPathIndexError" class="md-nav__link">
+    JSONPathIndexError
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jsonpath.JSONPathNameError" class="md-nav__link">
+    JSONPathNameError
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -554,6 +582,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#jsonpath.JSONPathSyntaxError" class="md-nav__link">
+    JSONPathSyntaxError
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jsonpath.JSONPathTypeError" class="md-nav__link">
+    JSONPathTypeError
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jsonpath.JSONPathIndexError" class="md-nav__link">
+    JSONPathIndexError
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jsonpath.JSONPathNameError" class="md-nav__link">
+    JSONPathNameError
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -570,7 +626,7 @@
 
 
 <h1 id="exceptions">Exceptions</h1>
-<p>TODO: mention accessing the token and position</p>
+<p>Each of the following exceptions has a <code>token</code> property, referencing the <a href="../custom_api/#jsonpath.token.Token"><code>Token</code></a> that caused the error. You can use <a href="../custom_api/#jsonpath.token.Token.position"><code>Token.position()</code></a> to get the token's line and column number.</p>
 
 
 <div class="doc doc-object doc-class">
@@ -589,7 +645,7 @@
         Bases: <code>Exception</code></p>
 
   
-      <p>Base exception for all JSONPath syntax and type errors.</p>
+      <p>Base exception for all errors.</p>
 
   <table>
     <thead>
@@ -622,7 +678,7 @@
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="typing.Optional">Optional</span>[<span title="jsonpath.token.Token">Token</span>]</code>
+                    <code><span title="typing.Optional">Optional</span>[<a class="autorefs autorefs-internal" title="jsonpath.token.Token" href="../custom_api/#jsonpath.token.Token">Token</a>]</code>
                 </span>
                 <span class="doc-param-default">
                   <b>DEFAULT:</b> 
@@ -654,7 +710,273 @@
 
   </div>
 
-</div>
+</div><p>handler: python</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="jsonpath.JSONPathSyntaxError" class="doc doc-heading">
+        <span class="doc doc-object-name doc-class-name">jsonpath.JSONPathSyntaxError</span>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="jsonpath.exceptions.JSONPathError" href="#jsonpath.JSONPathError">JSONPathError</a></code></p>
+
+  
+      <p>An exception raised when parsing a JSONPath string.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>args</code></td>
+          <td class="doc-param-details">
+            <p>Arguments passed to <code>Exception</code>.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>object</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>()</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>token</code></td>
+          <td class="doc-param-details">
+            <p>The token that caused the error.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><a class="autorefs autorefs-internal" title="jsonpath.token.Token" href="../custom_api/#jsonpath.token.Token">Token</a></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div><p>handler: python</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="jsonpath.JSONPathTypeError" class="doc doc-heading">
+        <span class="doc doc-object-name doc-class-name">jsonpath.JSONPathTypeError</span>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="jsonpath.exceptions.JSONPathError" href="#jsonpath.JSONPathError">JSONPathError</a></code></p>
+
+  
+      <p>An exception raised due to a type error.</p>
+<p>This should only occur at when evaluating filter expressions.</p>
+
+
+
+  </div>
+
+</div><p>handler: python</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="jsonpath.JSONPathIndexError" class="doc doc-heading">
+        <span class="doc doc-object-name doc-class-name">jsonpath.JSONPathIndexError</span>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="jsonpath.exceptions.JSONPathError" href="#jsonpath.JSONPathError">JSONPathError</a></code></p>
+
+  
+      <p>An exception raised when an array index is out of range.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>args</code></td>
+          <td class="doc-param-details">
+            <p>Arguments passed to <code>Exception</code>.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>object</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>()</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>token</code></td>
+          <td class="doc-param-details">
+            <p>The token that caused the error.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><a class="autorefs autorefs-internal" title="jsonpath.token.Token" href="../custom_api/#jsonpath.token.Token">Token</a></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div><p>handler: python</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="jsonpath.JSONPathNameError" class="doc doc-heading">
+        <span class="doc doc-object-name doc-class-name">jsonpath.JSONPathNameError</span>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="jsonpath.exceptions.JSONPathError" href="#jsonpath.JSONPathError">JSONPathError</a></code></p>
+
+  
+      <p>An exception raised when an unknown function extension is called.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>args</code></td>
+          <td class="doc-param-details">
+            <p>Arguments passed to <code>Exception</code>.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>object</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>()</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>token</code></td>
+          <td class="doc-param-details">
+            <p>The token that caused the error.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><a class="autorefs autorefs-internal" title="jsonpath.token.Token" href="../custom_api/#jsonpath.token.Token">Token</a></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div><p>handler: python</p>
 
 
 
