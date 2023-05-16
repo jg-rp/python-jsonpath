@@ -4,6 +4,7 @@
 
 from .env import JSONPathEnvironment
 from .exceptions import JSONPathError
+from .exceptions import JSONPathIndexError
 from .exceptions import JSONPathNameError
 from .exceptions import JSONPathSyntaxError
 from .exceptions import JSONPathTypeError
@@ -24,6 +25,7 @@ __all__ = (
     "JSONPath",
     "JSONPathEnvironment",
     "JSONPathError",
+    "JSONPathIndexError",
     "JSONPathMatch",
     "JSONPathNameError",
     "JSONPathSyntaxError",
