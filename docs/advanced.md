@@ -1,8 +1,45 @@
 # Advanced Usage
 
+## Filter Variables
+
+Arbitrary variables can be made available to [filter expressions](syntax.md#filters-expression) using the _filter_context_ argument to [`findall()`](quickstart.md#findallpath-data) and [`finditer()`](quickstart.md#finditerpath-data). _filter_context_ should be a [mapping](https://docs.python.org/3/library/typing.html#typing.Mapping) of strings to JSON-like objects, like lists, dictionaries, strings and integers.
+
+Filter context variables are selected using the _filter context selector_, which defaults to `_` and has usage similar to `$` and `@`.
+
+```python
+import jsonpath
+
+data = {
+    "users": [
+        {
+            "name": "Sue",
+            "score": 100,
+        },
+        {
+            "name": "John",
+            "score": 86,
+        },
+        {
+            "name": "Sally",
+            "score": 84,
+        },
+        {
+            "name": "Jane",
+            "score": 55,
+        },
+    ]
+}
+
+user_names = jsonpath.findall(
+    "$.users[?@.score < _.limit].name",
+    data,
+    filter_context={"limit": 100},
+)
+```
+
 ## Function Extensions
 
-Add, remove or replace [filter functions](functions.md) by updating [`JSONPathEnvironment.function_extensions`](api.md#jsonpath.env.JSONPathEnvironment.function_extensions). It is a regular Python dictionary mapping the name of the function to any [Callable](https://docs.python.org/3/library/typing.html#typing.Callable), like a function or class with a `__call__` method.
+Add, remove or replace [filter functions](functions.md) by updating the [`function_extensions`](api.md#jsonpath.env.JSONPathEnvironment.function_extensions) attribute of a [`JSONPathEnvironment`](api.md#jsonpath.env.JSONPathEnvironment). It is a regular Python dictionary mapping filter function names to any [callable](https://docs.python.org/3/library/typing.html#typing.Callable), like a function or class with a `__call__` method.
 
 ### Example
 
@@ -92,10 +129,6 @@ def validate(
 ```
 
 It should return an argument list, either the same as the input argument list, or a modified version of it. See the implementation of the built-in [`match` function](https://github.com/jg-rp/python-jsonpath/blob/main/jsonpath/function_extensions/match.py) for an example.
-
-## Extra Filter Context
-
-TODO:
 
 ## Custom Environments
 
