@@ -17,7 +17,7 @@ class IsInstance:
         Python "type". Some of these aliases follow JavaScript/JSON semantics.
         """
         if obj is UNDEFINED or obj is UNDEFINED_LITERAL:
-            return t == "undefined"
+            return t in ("undefined", "missing")
         if obj is None:
             return t in ("null", "nil", "None", "none")
         if isinstance(obj, str):

@@ -6,6 +6,10 @@
 
 - `JSONPathIndexError` now requires a `token` parameter. It used to be optional.
 
+**Features**
+
+- `missing` is now an allowed alias of `undefined` when using the `isinstance()` filter function.
+
 ## Version 0.6.0
 
 **Breaking changes**

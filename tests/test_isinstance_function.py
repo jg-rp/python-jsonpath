@@ -42,6 +42,12 @@ TEST_CASES = [
         want=[{"thing": "foo"}],
     ),
     Case(
+        description="'missing' is an alias for 'undefined'",
+        path="$.some[?is(@.other, 'missing')]",  # things without `other`
+        data={"some": [{"thing": "foo"}]},
+        want=[{"thing": "foo"}],
+    ),
+    Case(
         description="type of None",
         path="$.some[?is(@.thing, 'null')]",
         data={"some": [{"thing": None}]},

@@ -26,7 +26,7 @@ Return `True` if the type of _obj_ matches _t_. This function allows _t_ to be o
 
 | type                  | aliases                              |
 | --------------------- | ------------------------------------ |
-| UNDEFINED             | "undefined"                          |
+| UNDEFINED             | "undefined", "missing"               |
 | None                  | "null", "nil", "None", "none"        |
 | str                   | "str", "string"                      |
 | Sequence (array-like) | "array", "list", "sequence", "tuple" |
