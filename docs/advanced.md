@@ -133,7 +133,3 @@ It should return an argument list, either the same as the input argument list, o
 ## Custom Environments
 
 TODO:
-
-## Undefined
-
-TODO:

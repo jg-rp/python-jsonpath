@@ -144,7 +144,17 @@ Comparison operators include `==`, `!=`, `<`, `>`, `<=` and `>=`. Plus `<>` as a
 $..products[?(@.description =~ /.*trainers/i)]
 ```
 
-Filters can use [function extensions](functions.md) too.
+Filter expressions can call predefined [function extensions](functions.md) too.
+
+```text
+$.categories[?count(@.products.*) >= 2]
+```
+
+`undefined` can be used to filter on the absence of a key/property or an undefined value returned from a filter function. `missing` is an alias for `undefined`.
+
+```text
+$..products[?@.sale_price == undefined]
+```
 
 ### Union (`|`) and intersection (`&`)
 
