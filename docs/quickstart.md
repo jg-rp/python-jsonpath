@@ -133,8 +133,14 @@ some_users = path.findall(some_data)
 other_users = path.findall(other_data)
 ```
 
-## What's Next
+## What's Next?
 
 Read about user-defined filter functions at [Function Extensions](advanced.md#function-extensions), or see how to make extra data available to filters with [Extra Filter Context](advanced.md#extra-filter-context).
 
-`findall`, `finditer` and `compile` are shortcuts that use the default[`JSONPathEnvironment`](api.md#jsonpath.JSONPathEnvironment). `jsonpath.findall(path, data)` is equivalent to `jsonpath.JSONPathEnvironment().compile(path).findall(data)`. If you would like to use a custom environment, see [Advanced Usage](advanced.md#custom-environments).
+`findall()`, `finditer()` and `compile()` are shortcuts that use the default[`JSONPathEnvironment`](api.md#jsonpath.JSONPathEnvironment). `jsonpath.findall(path, data)` is equivalent to:
+
+```python
+jsonpath.JSONPathEnvironment().compile(path).findall(data)
+```
+
+If you would like to use a customize Python JSONPath, see [Advanced Usage](advanced.md#custom-environments).

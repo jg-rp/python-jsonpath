@@ -132,4 +132,85 @@ It should return an argument list, either the same as the input argument list, o
 
 ## Custom Environments
 
+Python JSONPath can be customized by subclassing [`JSONPathEnvironment`](api.md#jsonpath.JSONPathEnvironment) and overriding class attributes and/or methods. Then using `findall()`, `finditer()` and `compile()` methods of that subclass.
+
+### Identifier Tokens
+
+The default identifier tokens, like `$` and `@`, can be changed by setting attributes a on `JSONPathEnvironment`. This example sets the root token (default `$`) to be `^`.
+
+```python
+import jsonpath
+
+class MyJSONPathEnvironment(jsonpath.JSONPathEnvironment):
+    root_token = "^"
+
+
+data = {
+    "users": [
+        {
+            "name": "Sue",
+            "score": 100,
+        },
+        {
+            "name": "John",
+            "score": 86,
+        },
+        {
+            "name": "Sally",
+            "score": 84,
+        },
+        {
+            "name": "Jane",
+            "score": 55,
+        },
+    ],
+    "limit": 100,
+}
+
+env = MyJSONPathEnvironment()
+user_names = env.findall(
+    "^.users[?@.score < ^.limit].name",
+    data,
+)
+```
+
+This table shows all available identifier token attributes.
+
+| attribute            | default |
+| -------------------- | ------- |
+| filter_context_token | `_`     |
+| keys_token           | `#`     |
+| root_token           | `$`     |
+| self_token           | `@`     |
+
+### Operator Tokens
+
+TODO:
+
+### Keys Selector
+
+TODO:
+
+### Array Index Limits
+
+TODO:
+
+### Subclassing Lexer
+
+TODO:
+
+### Subclassing Parser
+
+TODO:
+
+### Get Item
+
+TODO:
+
+### Truthiness and Existence
+
+TODO:
+
+### Filter Infix Expressions
+
 TODO:

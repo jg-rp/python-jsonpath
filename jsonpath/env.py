@@ -71,7 +71,7 @@ class JSONPathEnvironment:
         filter_context_token (str): The pattern used to select extra filter context
             data. Defaults to `"_"`.
         intersection_token (str): The pattern used as the intersection operator.
-            Defaults to `"$"`.
+            Defaults to `"&"`.
         key_token (str): The pattern used to identify the current key or index when
             filtering a, mapping or sequence. Defaults to `"#"`.
         keys_selector_token (str): The pattern used as the "keys" selector. Defaults to
