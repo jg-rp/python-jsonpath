@@ -143,4 +143,4 @@ Read about user-defined filter functions at [Function Extensions](advanced.md#fu
 jsonpath.JSONPathEnvironment().compile(path).findall(data)
 ```
 
-If you would like to use a customize Python JSONPath, see [Advanced Usage](advanced.md#custom-environments).
+If you would like to customize Python JSONPath, see [Advanced Usage](advanced.md#custom-environments).
