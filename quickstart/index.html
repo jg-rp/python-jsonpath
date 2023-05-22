@@ -352,7 +352,7 @@
       
         <li class="md-nav__item">
   <a href="#whats-next" class="md-nav__link">
-    What's Next
+    What's Next?
   </a>
   
 </li>
@@ -593,7 +593,7 @@
       
         <li class="md-nav__item">
   <a href="#whats-next" class="md-nav__link">
-    What's Next
+    What's Next?
   </a>
   
 </li>
@@ -723,9 +723,12 @@
 </span><span id="__span-5-31"><a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="n">some_users</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">some_data</span><span class="p">)</span>
 </span><span id="__span-5-32"><a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="n">other_users</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">other_data</span><span class="p">)</span>
 </span></code></pre></div>
-<h2 id="whats-next">What's Next</h2>
+<h2 id="whats-next">What's Next?</h2>
 <p>Read about user-defined filter functions at <a href="../advanced/#function-extensions">Function Extensions</a>, or see how to make extra data available to filters with <a href="../advanced/#extra-filter-context">Extra Filter Context</a>.</p>
-<p><code>findall</code>, <code>finditer</code> and <code>compile</code> are shortcuts that use the default<a href="../api/#jsonpath.JSONPathEnvironment"><code>JSONPathEnvironment</code></a>. <code>jsonpath.findall(path, data)</code> is equivalent to <code>jsonpath.JSONPathEnvironment().compile(path).findall(data)</code>. If you would like to use a custom environment, see <a href="../advanced/#custom-environments">Advanced Usage</a>.</p>
+<p><code>findall()</code>, <code>finditer()</code> and <code>compile()</code> are shortcuts that use the default<a href="../api/#jsonpath.JSONPathEnvironment"><code>JSONPathEnvironment</code></a>. <code>jsonpath.findall(path, data)</code> is equivalent to:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">jsonpath</span><span class="o">.</span><span class="n">JSONPathEnvironment</span><span class="p">()</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></code></pre></div>
+<p>If you would like to use a customize Python JSONPath, see <a href="../advanced/#custom-environments">Advanced Usage</a>.</p>
 
 
 
