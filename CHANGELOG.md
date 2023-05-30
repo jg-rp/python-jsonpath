@@ -1,14 +1,19 @@
 # Python JSONPath Change Log
 
-## Version 0.7.0
+## Version 0.7.0 (unreleased)
 
 **Breaking changes**
 
 - `JSONPathIndexError` now requires a `token` parameter. It used to be optional.
+- Filter expressions that resolve JSON paths (like `SelfPath` and `RootPath`) now return a `NodeList`. The node list must then be explicitly unpacked by `JSONPathEnvironment.compare()` and any filter function that has a `with_node_lists` attribute set to `True`. This is done for the benefit of the `count()` filter function and standards compliance.
 
 **Features**
 
 - `missing` is now an allowed alias of `undefined` when using the `isinstance()` filter function.
+
+**IETF JSONPath Draft compliance**
+
+- The built-in `count()` filter function is now compliant with the standard, operating on a "nodelist" instead of node values.
 
 ## Version 0.6.0
 

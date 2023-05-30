@@ -14,6 +14,7 @@ from typing import Sequence
 from typing import TypeVar
 
 from .exceptions import JSONPathTypeError
+from .match import NodeList
 
 if TYPE_CHECKING:
     from .path import JSONPath
@@ -342,14 +343,12 @@ class SelfPath(Path):
             return UNDEFINED
 
         try:
-            matches = self.path.findall(context.current)
+            matches = NodeList(self.path.finditer(context.current))
         except json.JSONDecodeError:  # this should never happen
             return UNDEFINED
 
         if not matches:
             return UNDEFINED
-        if len(matches) == 1:
-            return matches[0]
         return matches
 
     async def evaluate_async(self, context: FilterContext) -> object:  # noqa: PLR0911
@@ -363,14 +362,17 @@ class SelfPath(Path):
             return UNDEFINED
 
         try:
-            matches = await self.path.findall_async(context.current)
+            matches = NodeList(
+                [
+                    match
+                    async for match in await self.path.finditer_async(context.current)
+                ]
+            )
         except json.JSONDecodeError:
             return UNDEFINED
 
         if not matches:
             return UNDEFINED
-        if len(matches) == 1:
-            return matches[0]
         return matches
 
 
@@ -381,19 +383,17 @@ class RootPath(Path):
         return str(self.path)
 
     def evaluate(self, context: FilterContext) -> object:
-        matches = self.path.findall(context.root)
+        matches = NodeList(self.path.finditer(context.root))
         if not matches:
             return UNDEFINED
-        if len(matches) == 1:
-            return matches[0]
         return matches
 
     async def evaluate_async(self, context: FilterContext) -> object:
-        matches = await self.path.findall_async(context.root)
+        matches = NodeList(
+            [match async for match in await self.path.finditer_async(context.root)]
+        )
         if not matches:
             return UNDEFINED
-        if len(matches) == 1:
-            return matches[0]
         return matches
 
 
@@ -405,19 +405,20 @@ class FilterContextPath(Path):
         return "_" + path_repr[1:]
 
     def evaluate(self, context: FilterContext) -> object:
-        matches = self.path.findall(context.extra_context)
+        matches = NodeList(self.path.finditer(context.extra_context))
         if not matches:
             return UNDEFINED
-        if len(matches) == 1:
-            return matches[0]
         return matches
 
     async def evaluate_async(self, context: FilterContext) -> object:
-        matches = await self.path.findall_async(context.extra_context)
+        matches = NodeList(
+            [
+                match
+                async for match in await self.path.finditer_async(context.extra_context)
+            ]
+        )
         if not matches:
             return UNDEFINED
-        if len(matches) == 1:
-            return matches[0]
         return matches
 
 
@@ -440,7 +441,9 @@ class FunctionExtension(FilterExpression):
         except KeyError:
             return UNDEFINED
         args = [arg.evaluate(context) for arg in self.args]
-        return func(*args)
+        if getattr(func, "with_node_lists", False):
+            return func(*args)
+        return func(*self._unpack_node_lists(args))
 
     async def evaluate_async(self, context: FilterContext) -> object:
         try:
@@ -448,7 +451,15 @@ class FunctionExtension(FilterExpression):
         except KeyError:
             return UNDEFINED
         args = [await arg.evaluate_async(context) for arg in self.args]
-        return func(*args)
+        if getattr(func, "with_node_lists", False):
+            return func(*args)
+        return func(*self._unpack_node_lists(args))
+
+    def _unpack_node_lists(self, args: List[object]) -> List[object]:
+        return [
+            obj.values_or_singular() if isinstance(obj, NodeList) else obj
+            for obj in args
+        ]
 
 
 class CurrentKey(FilterExpression):

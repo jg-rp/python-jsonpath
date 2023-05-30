@@ -76,3 +76,17 @@ def _truncate(val: str, num: int, end: str = "...") -> str:
     if len(words) < num:
         return " ".join(words)
     return " ".join(words[:num]) + end
+
+
+class NodeList(List[JSONPathMatch]):
+    """List of JSONPathMatch objects, analogous to the spec's nodelist."""
+
+    def values(self) -> List[object]:
+        """Return the values from this node list."""
+        return [match.obj for match in self]
+
+    def values_or_singular(self) -> object:
+        """Return the values from this node list."""
+        if len(self) == 1:
+            return self[0].obj
+        return [match.obj for match in self]

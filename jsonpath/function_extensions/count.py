@@ -1,26 +1,27 @@
 """The standard `count` function extension."""
-from collections.abc import Sized
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 from typing import List
-from typing import Optional
 
 from ..exceptions import JSONPathTypeError
 from ..filter import Literal
+from ..filter import Nil
 
 if TYPE_CHECKING:
     from ..env import JSONPathEnvironment
+    from ..match import NodeList
     from ..token import Token
 
 
 class Count:
     """The built-in `count` function."""
 
-    def __call__(self, obj: Sized) -> Optional[int]:
-        """Return an object's length, or `None` if the object does not have a length."""
-        try:
-            return len(obj)
-        except TypeError:
-            return None
+    with_node_lists = True
+
+    def __call__(self, node_list: NodeList) -> int:
+        """Return the number of nodes in the node list."""
+        return len(node_list)
 
     def validate(
         self,
@@ -35,7 +36,7 @@ class Count:
                 token=token,
             )
 
-        if isinstance(args[0], Literal):
+        if isinstance(args[0], (Literal, Nil)):
             raise JSONPathTypeError(
                 f"{token.value!r} requires a node list, "
                 f"found {args[0].__class__.__name__}",

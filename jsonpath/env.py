@@ -24,6 +24,7 @@ from .exceptions import JSONPathSyntaxError
 from .filter import UNDEFINED
 from .function_extensions import validate
 from .lex import Lexer
+from .match import NodeList
 from .parse import Parser
 from .path import CompoundJSONPath
 from .path import JSONPath
@@ -338,6 +339,11 @@ class JSONPathEnvironment:
             `True` if the comparison between _left_ and _right_, with the
             given _operator_, is truthy. `False` otherwise.
         """
+        if isinstance(left, NodeList):
+            left = left.values_or_singular()
+        if isinstance(right, NodeList):
+            right = right.values_or_singular()
+
         if operator == "&&":
             return self.is_truthy(left) and self.is_truthy(right)
         if operator == "||":
