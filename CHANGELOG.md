@@ -1,6 +1,6 @@
 # Python JSONPath Change Log
 
-## Version 0.7.0 (unreleased)
+## Version 0.7.0
 
 **Breaking changes**
 
