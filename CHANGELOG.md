@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 0.7.1
+
+**Fixes**
+
+- Fixed a bug with the filter context selector (default `_`) when it's used as a filter function argument.
+
 ## Version 0.7.0
 
 **Breaking changes**
