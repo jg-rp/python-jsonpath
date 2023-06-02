@@ -243,6 +243,7 @@ class Parser:
             TOKEN_TRUE: self.parse_boolean,
             TOKEN_ROOT: self.parse_root_path,
             TOKEN_SELF: self.parse_self_path,
+            TOKEN_FILTER_CONTEXT: self.parse_filter_context_path,
         }
 
     def parse(self, stream: TokenStream) -> Iterable[JSONPathSelector]:
