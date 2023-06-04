@@ -105,7 +105,8 @@ class JSONPath:
         Returns:
             An iterator yielding `JSONPathMatch` objects for each match.
 
-        JSONPathSyntaxError: If the path is invalid.
+        Raises:
+            JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
         """
