@@ -183,7 +183,7 @@ This is a list of things that you might find in other JSONPath implementation th
 - We do not support arithmetic in filter expression.
 - Python JSONPath is strictly read only. There are no update "selectors", although a Python API for working with `JSONPathMatch`s may well be added in the future.
 
-And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11).
+And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-13).
 
 - We don't yet follow all "non-singular query" rules when evaluating a filter comparison.
 - We don't yet force the result of some filter functions to be compared.
