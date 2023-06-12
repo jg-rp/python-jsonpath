@@ -10,7 +10,7 @@ from typing import Tuple
 from typing import Union
 
 FilterContextVars = Mapping[str, Any]
-PathPart = Union[int, slice, str]
+PathPart = Union[int, str]
 
 
 class JSONPathMatch:

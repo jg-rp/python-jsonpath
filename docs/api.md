@@ -11,3 +11,6 @@
 
 ::: jsonpath.CompoundJSONPath
     handler: python
+
+::: jsonpath.JSONPointer
+    handler: python

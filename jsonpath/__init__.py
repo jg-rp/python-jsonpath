@@ -14,6 +14,7 @@ from .match import JSONPathMatch
 from .parse import Parser
 from .path import CompoundJSONPath
 from .path import JSONPath
+from .pointer import JSONPointer
 
 __all__ = (
     "compile",
@@ -30,6 +31,7 @@ __all__ = (
     "JSONPathNameError",
     "JSONPathSyntaxError",
     "JSONPathTypeError",
+    "JSONPointer",
     "Lexer",
     "Parser",
     "UNDEFINED",

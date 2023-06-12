@@ -138,7 +138,7 @@ class IndexSelector(JSONPathSelector):
                         filter_context=match.filter_context(),
                         obj=self.env.getitem(match.obj, self._as_key),
                         parent=match,
-                        parts=match.parts + (self.index,),
+                        parts=match.parts + (self._as_key,),
                         path=f"{match.path}['{self.index}']",
                         root=match.root,
                     )
@@ -169,7 +169,7 @@ class IndexSelector(JSONPathSelector):
                         filter_context=match.filter_context(),
                         obj=await self.env.getitem_async(match.obj, self._as_key),
                         parent=match,
-                        parts=match.parts + (self.index,),
+                        parts=match.parts + (self._as_key,),
                         path=f"{match.path}['{self.index}']",
                         root=match.root,
                     )
