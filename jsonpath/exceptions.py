@@ -76,6 +76,18 @@ class JSONPathNameError(JSONPathError):
         self.token = token
 
 
+class JSONPointerError(Exception):
+    """Base class for all JSON Pointer errors."""
+
+
+class JSONPointerEncodeError(JSONPointerError):
+    """An exception raised when a JSONPathMatch can't be encoded to a JSON Pointer."""
+
+
+class JSONPointerIndexError(JSONPointerError):
+    """An exception raised when an array index is out of range."""
+
+
 def _truncate_message(value: str, num: int, end: str = "...") -> str:
     if len(value) < num:
         return value

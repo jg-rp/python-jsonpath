@@ -12,6 +12,9 @@ from typing import Tuple
 from typing import Union
 from urllib.parse import unquote
 
+from .exceptions import JSONPointerEncodeError
+from .exceptions import JSONPointerIndexError
+
 if TYPE_CHECKING:
     from .match import JSONPathMatch
 
@@ -98,8 +101,7 @@ class JSONPointer:
         try:
             index = int(s)
             if index < self.min_int_index or index > self.max_int_index:
-                # TODO: exceptions
-                raise Exception(":(")
+                raise JSONPointerIndexError("index out of range")
             return index
         except ValueError:
             return s
@@ -133,9 +135,8 @@ class JSONPointer:
     def from_match(cls, match: JSONPathMatch, *, strict: bool = True) -> JSONPointer:
         """Return a JSON Pointer for the path from a JSONPathMatch instance."""
         if strict and "~" in match.parts:
-            # TODO: better exception
             # TODO: reference env for current key selector token
-            raise Exception(
+            raise JSONPointerEncodeError(
                 "can't encode a JSON Pointer containing key or index selectors"
             )
 
