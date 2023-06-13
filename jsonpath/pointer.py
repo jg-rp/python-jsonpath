@@ -87,15 +87,9 @@ class JSONPointer:
                 .decode("utf-16")
             )
 
-        parts = tuple(
+        return tuple(
             self._index(p.replace("~1", "/").replace("~0", "~")) for p in s.split("/")
-        )
-
-        if parts == ("",):
-            return ()
-        if parts == ("", ""):
-            return ("",)
-        return parts[1:]
+        )[1:]
 
     def _index(self, s: str) -> Union[str, int]:
         try:
