@@ -15,6 +15,9 @@ from urllib.parse import unquote
 if TYPE_CHECKING:
     from .match import JSONPathMatch
 
+DEFAULT_MAX_INT_INDEX = (2**53) - 1
+DEFAULT_MIN_INT_INDEX = -(2**53) + 1
+
 PARTS = Tuple[Union[int, str], ...]
 
 
@@ -23,6 +26,10 @@ class JSONPointer:
 
     Arguments:
         s: A string representation of a JSON Pointer.
+        max_int_index: The maximum integer allowed when resolving array items by
+            index. Defaults to `(2**53) - 1`.
+        min_int_index: The minimum integer allowed when resolving array items by
+            index. Defaults to `-(2**53) + 1`.
         parts: The keys, indices and/or slices that make up a JSONPathMatch. If
             given, it is assumed that the parts have already been parsed by the
             JSONPath parser. `unicode_escape` and `uri_decode` are ignored if
@@ -33,16 +40,20 @@ class JSONPointer:
             before being parsed.
     """
 
-    __slots__ = ("parts", "_s")
+    __slots__ = ("max_int_index", "min_int_index", "parts", "_s")
 
     def __init__(
         self,
         s: str,
         *,
+        max_int_index: int = DEFAULT_MAX_INT_INDEX,
+        min_int_index: int = DEFAULT_MIN_INT_INDEX,
         parts: PARTS = (),
         unicode_escape: bool = True,
         uri_decode: bool = False,
     ) -> None:
+        self.max_int_index = max_int_index
+        self.min_int_index = min_int_index
         self.parts = parts or self._parse(
             s,
             unicode_escape=unicode_escape,
@@ -85,8 +96,11 @@ class JSONPointer:
 
     def _index(self, s: str) -> Union[str, int]:
         try:
-            # TODO: max/min int
-            return int(s)
+            index = int(s)
+            if index < self.min_int_index or index > self.max_int_index:
+                # TODO: exceptions
+                raise Exception(":(")
+            return index
         except ValueError:
             return s
 
