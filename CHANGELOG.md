@@ -1,5 +1,16 @@
 # Python JSONPath Change Log
 
+## Version 0.8.0 (unreleased)
+
+**Breaking changes**
+
+- Changed the `JSONPathMatch.parts` representation of the non-standard _keys_ selector (default `~`) to be `~` followed by the key name. It used to be two "parts", `~` and key index.
+
+**Features**
+
+- Added the `JSONPointer` class and methods for converting a `JSONPathMatch` to a `JSONPointer`.
+- All selectors now use `env.match_class` to instantiate new `JSONPathMatch` objects. This allows for subclassing of `JSONPathMatch`.
+
 ## Version 0.7.1
 
 **Fixes**

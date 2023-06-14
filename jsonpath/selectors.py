@@ -71,7 +71,7 @@ class PropertySelector(JSONPathSelector):
                 continue
 
             with suppress(KeyError):
-                _match = JSONPathMatch(
+                _match = self.env.match_class(
                     filter_context=match.filter_context(),
                     obj=self.env.getitem(match.obj, self.name),
                     parent=match,
@@ -90,7 +90,7 @@ class PropertySelector(JSONPathSelector):
                 continue
 
             with suppress(KeyError):
-                _match = JSONPathMatch(
+                _match = self.env.match_class(
                     filter_context=match.filter_context(),
                     obj=await self.env.getitem_async(match.obj, self.name),
                     parent=match,
@@ -134,7 +134,7 @@ class IndexSelector(JSONPathSelector):
             if isinstance(match.obj, Mapping):
                 # Try the string representation of the index as a key.
                 with suppress(KeyError):
-                    _match = JSONPathMatch(
+                    _match = self.env.match_class(
                         filter_context=match.filter_context(),
                         obj=self.env.getitem(match.obj, self._as_key),
                         parent=match,
@@ -147,7 +147,7 @@ class IndexSelector(JSONPathSelector):
             elif isinstance(match.obj, Sequence):
                 norm_index = self._normalized_index(match.obj)
                 with suppress(IndexError):
-                    _match = JSONPathMatch(
+                    _match = self.env.match_class(
                         filter_context=match.filter_context(),
                         obj=self.env.getitem(match.obj, self.index),
                         parent=match,
@@ -165,7 +165,7 @@ class IndexSelector(JSONPathSelector):
             if isinstance(match.obj, Mapping):
                 # Try the string representation of the index as a key.
                 with suppress(KeyError):
-                    _match = JSONPathMatch(
+                    _match = self.env.match_class(
                         filter_context=match.filter_context(),
                         obj=await self.env.getitem_async(match.obj, self._as_key),
                         parent=match,
@@ -178,7 +178,7 @@ class IndexSelector(JSONPathSelector):
             elif isinstance(match.obj, Sequence):
                 norm_index = self._normalized_index(match.obj)
                 with suppress(IndexError):
-                    _match = JSONPathMatch(
+                    _match = self.env.match_class(
                         filter_context=match.filter_context(),
                         obj=await self.env.getitem_async(match.obj, self.index),
                         parent=match,
@@ -201,11 +201,11 @@ class KeysSelector(JSONPathSelector):
     def _keys(self, match: JSONPathMatch) -> Iterable[JSONPathMatch]:
         if isinstance(match.obj, Mapping):
             for i, key in enumerate(match.obj.keys()):
-                _match = JSONPathMatch(
+                _match = self.env.match_class(
                     filter_context=match.filter_context(),
                     obj=key,
                     parent=match,
-                    parts=match.parts + (self.env.keys_selector_token, i),
+                    parts=match.parts + (f"{self.env.keys_selector_token}{key}",),
                     path=f"{match.path}[{self.env.keys_selector_token}][{i}]",
                     root=match.root,
                 )
@@ -269,7 +269,7 @@ class SliceSelector(JSONPathSelector):
             step = self.slice.step or 1
             for obj in self.env.getitem(match.obj, self.slice):
                 norm_index = self._normalized_index(match.obj, idx)
-                _match = JSONPathMatch(
+                _match = self.env.match_class(
                     filter_context=match.filter_context(),
                     obj=obj,
                     parent=match,
@@ -292,7 +292,7 @@ class SliceSelector(JSONPathSelector):
             step = self.slice.step or 1
             for obj in await self.env.getitem_async(match.obj, self.slice):
                 norm_index = self._normalized_index(match.obj, idx)
-                _match = JSONPathMatch(
+                _match = self.env.match_class(
                     filter_context=match.filter_context(),
                     obj=obj,
                     parent=match,
@@ -317,7 +317,7 @@ class WildSelector(JSONPathSelector):
                 continue
             if isinstance(match.obj, Mapping):
                 for key, val in match.obj.items():
-                    _match = JSONPathMatch(
+                    _match = self.env.match_class(
                         filter_context=match.filter_context(),
                         obj=val,
                         parent=match,
@@ -329,7 +329,7 @@ class WildSelector(JSONPathSelector):
                     yield _match
             elif isinstance(match.obj, Sequence):
                 for i, val in enumerate(match.obj):
-                    _match = JSONPathMatch(
+                    _match = self.env.match_class(
                         filter_context=match.filter_context(),
                         obj=val,
                         parent=match,
@@ -346,7 +346,7 @@ class WildSelector(JSONPathSelector):
         async for match in matches:
             if isinstance(match.obj, Mapping):
                 for key, val in match.obj.items():
-                    _match = JSONPathMatch(
+                    _match = self.env.match_class(
                         filter_context=match.filter_context(),
                         obj=val,
                         parent=match,
@@ -358,7 +358,7 @@ class WildSelector(JSONPathSelector):
                     yield _match
             elif isinstance(match.obj, Sequence):
                 for i, val in enumerate(match.obj):
-                    _match = JSONPathMatch(
+                    _match = self.env.match_class(
                         filter_context=match.filter_context(),
                         obj=val,
                         parent=match,
@@ -382,7 +382,7 @@ class RecursiveDescentSelector(JSONPathSelector):
                 if isinstance(val, str):
                     pass
                 elif isinstance(val, (Mapping, Sequence)):
-                    _match = JSONPathMatch(
+                    _match = self.env.match_class(
                         filter_context=match.filter_context(),
                         obj=val,
                         parent=match,
@@ -398,7 +398,7 @@ class RecursiveDescentSelector(JSONPathSelector):
                 if isinstance(val, str):
                     pass
                 elif isinstance(val, (Mapping, Sequence)):
-                    _match = JSONPathMatch(
+                    _match = self.env.match_class(
                         filter_context=match.filter_context(),
                         obj=val,
                         parent=match,
@@ -520,7 +520,7 @@ class Filter(JSONPathSelector):
                     )
                     try:
                         if self.expression.evaluate(context):
-                            _match = JSONPathMatch(
+                            _match = self.env.match_class(
                                 filter_context=match.filter_context(),
                                 obj=val,
                                 parent=match,
@@ -546,7 +546,7 @@ class Filter(JSONPathSelector):
                     )
                     try:
                         if self.expression.evaluate(context):
-                            _match = JSONPathMatch(
+                            _match = self.env.match_class(
                                 filter_context=match.filter_context(),
                                 obj=obj,
                                 parent=match,
@@ -583,7 +583,7 @@ class Filter(JSONPathSelector):
                         raise
 
                     if result:
-                        _match = JSONPathMatch(
+                        _match = self.env.match_class(
                             filter_context=match.filter_context(),
                             obj=val,
                             parent=match,
@@ -611,7 +611,7 @@ class Filter(JSONPathSelector):
                             err.token = self.token
                         raise
                     if result:
-                        _match = JSONPathMatch(
+                        _match = self.env.match_class(
                             filter_context=match.filter_context(),
                             obj=obj,
                             parent=match,

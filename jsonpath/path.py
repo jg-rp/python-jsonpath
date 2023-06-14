@@ -168,7 +168,7 @@ class JSONPath:
             _data = data
 
         async def root_iter() -> AsyncIterable[JSONPathMatch]:
-            yield JSONPathMatch(
+            yield self.env.match_class(
                 filter_context=filter_context or {},
                 obj=_data,
                 parent=None,

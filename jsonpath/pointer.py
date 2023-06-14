@@ -12,14 +12,10 @@ from typing import Tuple
 from typing import Union
 from urllib.parse import unquote
 
-from .exceptions import JSONPointerEncodeError
 from .exceptions import JSONPointerIndexError
 
 if TYPE_CHECKING:
     from .match import JSONPathMatch
-
-DEFAULT_MAX_INT_INDEX = (2**53) - 1
-DEFAULT_MIN_INT_INDEX = -(2**53) + 1
 
 PARTS = Tuple[Union[int, str], ...]
 
@@ -29,10 +25,6 @@ class JSONPointer:
 
     Arguments:
         s: A string representation of a JSON Pointer.
-        max_int_index: The maximum integer allowed when resolving array items by
-            index. Defaults to `(2**53) - 1`.
-        min_int_index: The minimum integer allowed when resolving array items by
-            index. Defaults to `-(2**53) + 1`.
         parts: The keys, indices and/or slices that make up a JSONPathMatch. If
             given, it is assumed that the parts have already been parsed by the
             JSONPath parser. `unicode_escape` and `uri_decode` are ignored if
@@ -41,22 +33,30 @@ class JSONPointer:
             before parsing the pointer.
         uri_decode: If `True`, the pointer will be unescaped using _urllib_
             before being parsed.
+
+    Attributes:
+        keys_selector (str): The non-standard token used to target a mapping
+            key or name.
+        max_int_index (int): The maximum integer allowed when resolving array
+            items by index. Defaults to `(2**53) - 1`.
+        min_int_index (int): The minimum integer allowed when resolving array
+            items by index. Defaults to `-(2**53) + 1`.
     """
 
-    __slots__ = ("max_int_index", "min_int_index", "parts", "_s")
+    __slots__ = ("_s", "parts")
+
+    keys_selector = ("~",)
+    max_int_index = (2**53) - 1
+    min_int_index = -(2**53) + 1
 
     def __init__(
         self,
         s: str,
         *,
-        max_int_index: int = DEFAULT_MAX_INT_INDEX,
-        min_int_index: int = DEFAULT_MIN_INT_INDEX,
         parts: PARTS = (),
         unicode_escape: bool = True,
         uri_decode: bool = False,
     ) -> None:
-        self.max_int_index = max_int_index
-        self.min_int_index = min_int_index
         self.parts = parts or self._parse(
             s,
             unicode_escape=unicode_escape,
@@ -113,7 +113,14 @@ class JSONPointer:
                         return getitem(obj, str(key))
                     except KeyError:
                         raise err
-                # TODO: handle non-standard keys selector
+                # Handle non-standard keys selector
+                if (
+                    isinstance(key, str)
+                    and isinstance(obj, Mapping)
+                    and key.startswith(self.keys_selector)
+                    and key[1:] in obj
+                ):
+                    return key[1:]
                 raise
             except TypeError as err:
                 if isinstance(obj, Sequence):
@@ -126,19 +133,15 @@ class JSONPointer:
         return reduce(_getitem, self.parts, obj)
 
     @classmethod
-    def from_match(cls, match: JSONPathMatch, *, strict: bool = True) -> JSONPointer:
+    def from_match(
+        cls,
+        match: JSONPathMatch,
+    ) -> JSONPointer:
         """Return a JSON Pointer for the path from a JSONPathMatch instance."""
-        if strict and "~" in match.parts:
-            # TODO: reference env for current key selector token
-            raise JSONPointerEncodeError(
-                "can't encode a JSON Pointer containing key or index selectors"
-            )
-
-        # TODO: use "relative JSON Pointer" style `#` for keys selectors?
-
         # A rfc6901 string representation of match.parts.
-        s = "/".join(
-            [str(p).replace("~", "~0").replace("/", "~1") for p in match.parts]
+        return cls(
+            "/".join(str(p).replace("~", "~0").replace("/", "~1") for p in match.parts),
+            parts=match.parts,
+            unicode_escape=False,
+            uri_decode=False,
         )
-
-        return cls(s, parts=match.parts, unicode_escape=False, uri_decode=False)
