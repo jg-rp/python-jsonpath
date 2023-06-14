@@ -17,11 +17,11 @@ from typing import Union
 
 from .exceptions import JSONPathIndexError
 from .exceptions import JSONPathTypeError
-from .match import JSONPathMatch
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
     from .filter import BooleanExpression
+    from .match import JSONPathMatch
     from .token import Token
 
 # ruff: noqa: D102
