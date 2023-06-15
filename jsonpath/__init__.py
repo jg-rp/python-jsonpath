@@ -8,6 +8,8 @@ from .exceptions import JSONPathIndexError
 from .exceptions import JSONPathNameError
 from .exceptions import JSONPathSyntaxError
 from .exceptions import JSONPathTypeError
+from .exceptions import JSONPointerError
+from .exceptions import JSONPointerIndexError
 from .filter import UNDEFINED
 from .lex import Lexer
 from .match import JSONPathMatch
@@ -32,6 +34,8 @@ __all__ = (
     "JSONPathSyntaxError",
     "JSONPathTypeError",
     "JSONPointer",
+    "JSONPointerError",
+    "JSONPointerIndexError",
     "Lexer",
     "Parser",
     "UNDEFINED",

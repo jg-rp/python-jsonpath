@@ -140,7 +140,10 @@ class JSONPointer:
         """Return a JSON Pointer for the path from a JSONPathMatch instance."""
         # A rfc6901 string representation of match.parts.
         return cls(
-            "/".join(str(p).replace("~", "~0").replace("/", "~1") for p in match.parts),
+            "/"
+            + "/".join(
+                str(p).replace("~", "~0").replace("/", "~1") for p in match.parts
+            ),
             parts=match.parts,
             unicode_escape=False,
             uri_decode=False,
