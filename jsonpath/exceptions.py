@@ -84,15 +84,19 @@ class JSONPointerEncodeError(JSONPointerError):
     """An exception raised when a JSONPathMatch can't be encoded to a JSON Pointer."""
 
 
-class JSONPointerIndexError(JSONPointerError, IndexError):
+class JSONPointerResolutionError(JSONPointerError):
+    """Base exception for those that can be raised during pointer resolution."""
+
+
+class JSONPointerIndexError(JSONPointerResolutionError, IndexError):
     """An exception raised when an array index is out of range."""
 
 
-class JSONPointerKeyError(JSONPointerError, KeyError):
+class JSONPointerKeyError(JSONPointerResolutionError, KeyError):
     """An exception raised when a pointer references a mapping with a missing key."""
 
 
-class JSONPointerTypeError(JSONPointerError, TypeError):
+class JSONPointerTypeError(JSONPointerResolutionError, TypeError):
     """An exception raised when a pointer resolves a string against a sequence."""
 
 

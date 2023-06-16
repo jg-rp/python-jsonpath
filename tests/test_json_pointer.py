@@ -100,3 +100,11 @@ def test_resolve_with_missing_parent() -> None:
     parent, rv = pointer.resolve_with_parent(data)
     assert parent is None
     assert rv == data
+
+
+def test_resolve_with_missing_target() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    pointer = JSONPointer("some/other")
+    parent, rv = pointer.resolve_with_parent(data)
+    assert parent == data
+    assert rv is None

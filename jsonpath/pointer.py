@@ -14,6 +14,7 @@ from urllib.parse import unquote
 
 from .exceptions import JSONPointerIndexError
 from .exceptions import JSONPointerKeyError
+from .exceptions import JSONPointerResolutionError
 from .exceptions import JSONPointerTypeError
 
 if TYPE_CHECKING:
@@ -132,7 +133,6 @@ class JSONPointer:
             raise JSONPointerTypeError(str(err)) from err
 
     # TODO: handle JSON "document" string and TextIO
-    # TODO: Wrap KeyError and TypeError?
 
     def resolve(self, obj: Union[Sequence[Any], Mapping[str, Any]]) -> object:
         """Resolve this pointer against _obj_.
@@ -165,10 +165,13 @@ class JSONPointer:
             A (parent, object) tuple, where parent will be `None` if this pointer
             points to the root node in the document.
         """
-        if len(self.parts) < 2:  # noqa: PLR2004
+        if not len(self.parts):
             return (None, self.resolve(obj))
         parent = reduce(self._getitem, self.parts[:-1], obj)
-        return (parent, self._getitem(parent, self.parts[-1]))
+        try:
+            return (parent, self._getitem(parent, self.parts[-1]))
+        except JSONPointerResolutionError:
+            return (parent, None)
 
     @classmethod
     def from_match(
