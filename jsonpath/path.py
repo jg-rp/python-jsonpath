@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import itertools
 import json
+from io import IOBase
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import AsyncIterable
@@ -11,7 +12,6 @@ from typing import List
 from typing import Mapping
 from typing import Optional
 from typing import Sequence
-from typing import TextIO
 from typing import Tuple
 from typing import TypeVar
 from typing import Union
@@ -51,7 +51,7 @@ class JSONPath:
 
     def findall(
         self,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
@@ -77,7 +77,7 @@ class JSONPath:
         """
         if isinstance(data, str):
             _data = json.loads(data)
-        elif isinstance(data, TextIO):
+        elif isinstance(data, IOBase):
             _data = json.loads(data.read())
         else:
             _data = data
@@ -87,7 +87,7 @@ class JSONPath:
 
     def finditer(
         self,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> Iterable[JSONPathMatch]:
@@ -112,7 +112,7 @@ class JSONPath:
         """
         if isinstance(data, str):
             _data = json.loads(data)
-        elif isinstance(data, TextIO):
+        elif isinstance(data, IOBase):
             _data = json.loads(data.read())
         else:
             _data = data
@@ -135,14 +135,14 @@ class JSONPath:
 
     async def findall_async(
         self,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """An async version of `findall()`."""
         if isinstance(data, str):
             _data = json.loads(data)
-        elif isinstance(data, TextIO):
+        elif isinstance(data, IOBase):
             _data = json.loads(data.read())
         else:
             _data = data
@@ -155,14 +155,14 @@ class JSONPath:
 
     async def finditer_async(
         self,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:
         """An async version of `finditer()`."""
         if isinstance(data, str):
             _data = json.loads(data)
-        elif isinstance(data, TextIO):
+        elif isinstance(data, IOBase):
             _data = json.loads(data.read())
         else:
             _data = data
@@ -213,7 +213,7 @@ class CompoundJSONPath:
 
     def findall(
         self,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """Find all objects in `data` matching the given JSONPath `path`.
@@ -250,7 +250,7 @@ class CompoundJSONPath:
 
     def finditer(
         self,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         filter_context: Optional[FilterContextVars] = None,
     ) -> Iterable[JSONPathMatch]:
         """Generate `JSONPathMatch` objects for each match.
@@ -287,7 +287,7 @@ class CompoundJSONPath:
 
     async def findall_async(
         self,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """An async version of `findall()`."""
@@ -305,7 +305,7 @@ class CompoundJSONPath:
 
     async def finditer_async(
         self,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:
         """An async version of `finditer()`."""

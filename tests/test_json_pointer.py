@@ -1,4 +1,6 @@
 """JSONPointer test cases."""
+from io import StringIO
+
 import pytest
 
 import jsonpath
@@ -89,7 +91,7 @@ def test_hyphen_index() -> None:
 def test_resolve_with_parent() -> None:
     data = {"some": {"thing": [1, 2, 3]}}
     pointer = JSONPointer("/some/thing")
-    parent, rv = pointer.resolve_with_parent(data)
+    parent, rv = pointer.resolve_parent(data)
     assert parent == data["some"]
     assert rv == data["some"]["thing"]
 
@@ -97,7 +99,7 @@ def test_resolve_with_parent() -> None:
 def test_resolve_with_missing_parent() -> None:
     data = {"some": {"thing": [1, 2, 3]}}
     pointer = JSONPointer("")
-    parent, rv = pointer.resolve_with_parent(data)
+    parent, rv = pointer.resolve_parent(data)
     assert parent is None
     assert rv == data
 
@@ -105,6 +107,21 @@ def test_resolve_with_missing_parent() -> None:
 def test_resolve_with_missing_target() -> None:
     data = {"some": {"thing": [1, 2, 3]}}
     pointer = JSONPointer("some/other")
-    parent, rv = pointer.resolve_with_parent(data)
+    parent, rv = pointer.resolve_parent(data)
     assert parent == data
     assert rv is None
+
+
+def test_resolve_from_json_string() -> None:
+    data = r'{"some": {"thing": [1,2,3]}}'
+    pointer = JSONPointer("/some/thing")
+    assert pointer.resolve(data) == [1, 2, 3]
+    assert pointer.resolve_parent(data) == ({"thing": [1, 2, 3]}, [1, 2, 3])
+
+
+def test_resolve_from_file_like() -> None:
+    data = StringIO(r'{"some": {"thing": [1,2,3]}}')
+    pointer = JSONPointer("/some/thing")
+    assert pointer.resolve(data) == [1, 2, 3]
+    data.seek(0)
+    assert pointer.resolve_parent(data) == ({"thing": [1, 2, 3]}, [1, 2, 3])

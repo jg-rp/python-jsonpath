@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import codecs
+import json
 from functools import reduce
+from io import IOBase
 from operator import getitem
 from typing import TYPE_CHECKING
 from typing import Any
@@ -14,7 +16,6 @@ from urllib.parse import unquote
 
 from .exceptions import JSONPointerIndexError
 from .exceptions import JSONPointerKeyError
-from .exceptions import JSONPointerResolutionError
 from .exceptions import JSONPointerTypeError
 
 if TYPE_CHECKING:
@@ -132,45 +133,67 @@ class JSONPointer:
                     pass
             raise JSONPointerTypeError(str(err)) from err
 
-    # TODO: handle JSON "document" string and TextIO
-
-    def resolve(self, obj: Union[Sequence[Any], Mapping[str, Any]]) -> object:
-        """Resolve this pointer against _obj_.
+    def resolve(
+        self, data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]]
+    ) -> object:
+        """Resolve this pointer against _data_.
 
         Args:
-            obj: The target JSON "document" or equivalent Python objects.
+            data: The target JSON "document" or equivalent Python objects.
 
         Returns:
-            The object in _obj_ pointed to by this pointer.
+            The object in _data_ pointed to by this pointer.
 
         Raises:
             JSONPointerIndexError: When attempting to access a sequence by
                 and out of range index.
-            KeyError: If any mapping object along the path does not contain
+            JSONPointerKeyError: If any mapping object along the path does not contain
                 a specified key.
-            TypeError: When attempting to resolve a non-index string path part
-                against a sequence.
+            JSONPointerTypeError: When attempting to resolve a non-index string path
+                part against a sequence.
         """
-        return reduce(self._getitem, self.parts, obj)
+        if isinstance(data, str):
+            data = json.loads(data)
+        elif isinstance(data, IOBase):
+            data = json.loads(data.read())
+        return reduce(self._getitem, self.parts, data)
 
-    def resolve_with_parent(
-        self, obj: Union[Sequence[Any], Mapping[str, Any]]
+    def resolve_parent(
+        self, data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]]
     ) -> Tuple[Union[Sequence[Any], Mapping[str, Any], None], object]:
-        """Resolve this pointer against _obj_, include the result's parent object.
+        """Resolve this pointer against _data_, return the object and its parent.
 
         Args:
-            obj: The target JSON "document" or equivalent Python objects.
+            data: The target JSON "document" or equivalent Python objects.
 
         Returns:
             A (parent, object) tuple, where parent will be `None` if this pointer
-            points to the root node in the document.
+            points to the root node in the document. If the parent exists but the
+            last object does not, (parent, None) will be returned.
+
+        Raises:
+            JSONPointerIndexError: When attempting to access a sequence by
+                and out of range index, unless using the special `-` index.
+            JSONPointerKeyError: If any mapping object along the path does not contain
+                a specified key, unless it is the last part of the pointer.
+            JSONPointerTypeError: When attempting to resolve a non-index string path
+                part against a sequence.
         """
         if not len(self.parts):
-            return (None, self.resolve(obj))
-        parent = reduce(self._getitem, self.parts[:-1], obj)
+            return (None, self.resolve(data))
+
+        if isinstance(data, str):
+            _data = json.loads(data)
+        elif isinstance(data, IOBase):
+            _data = json.loads(data.read())
+        else:
+            _data = data
+
+        parent = reduce(self._getitem, self.parts[:-1], _data)
+
         try:
             return (parent, self._getitem(parent, self.parts[-1]))
-        except JSONPointerResolutionError:
+        except (JSONPointerIndexError, JSONPointerKeyError):
             return (parent, None)
 
     @classmethod

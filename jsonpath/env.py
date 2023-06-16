@@ -14,7 +14,6 @@ from typing import List
 from typing import Mapping
 from typing import Optional
 from typing import Sequence
-from typing import TextIO
 from typing import Type
 from typing import Union
 
@@ -36,6 +35,8 @@ from .token import TOKEN_UNION
 from .token import Token
 
 if TYPE_CHECKING:
+    from io import IOBase
+
     from .match import FilterContextVars
 
 
@@ -175,7 +176,7 @@ class JSONPathEnvironment:
     def findall(
         self,
         path: str,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
@@ -203,7 +204,7 @@ class JSONPathEnvironment:
     def finditer(
         self,
         path: str,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> Iterable[JSONPathMatch]:
@@ -229,7 +230,7 @@ class JSONPathEnvironment:
     async def findall_async(
         self,
         path: str,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
@@ -241,7 +242,7 @@ class JSONPathEnvironment:
     async def finditer_async(
         self,
         path: str,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:
