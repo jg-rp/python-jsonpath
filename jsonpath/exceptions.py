@@ -84,8 +84,16 @@ class JSONPointerEncodeError(JSONPointerError):
     """An exception raised when a JSONPathMatch can't be encoded to a JSON Pointer."""
 
 
-class JSONPointerIndexError(JSONPointerError):
+class JSONPointerIndexError(JSONPointerError, IndexError):
     """An exception raised when an array index is out of range."""
+
+
+class JSONPointerKeyError(JSONPointerError, KeyError):
+    """An exception raised when a pointer references a mapping with a missing key."""
+
+
+class JSONPointerTypeError(JSONPointerError, TypeError):
+    """An exception raised when a pointer resolves a string against a sequence."""
 
 
 def _truncate_message(value: str, num: int, end: str = "...") -> str:

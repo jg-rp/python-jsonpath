@@ -13,17 +13,17 @@ from typing import Union
 from urllib.parse import unquote
 
 from .exceptions import JSONPointerIndexError
+from .exceptions import JSONPointerKeyError
+from .exceptions import JSONPointerTypeError
 
 if TYPE_CHECKING:
     from .match import JSONPathMatch
-
-PARTS = Tuple[Union[int, str], ...]
 
 
 class JSONPointer:
     """A JSON Pointer, as per rfc6901.
 
-    Arguments:
+    Args:
         s: A string representation of a JSON Pointer.
         parts: The keys, indices and/or slices that make up a JSONPathMatch. If
             given, it is assumed that the parts have already been parsed by the
@@ -53,7 +53,7 @@ class JSONPointer:
         self,
         s: str,
         *,
-        parts: PARTS = (),
+        parts: Tuple[Union[int, str], ...] = (),
         unicode_escape: bool = True,
         uri_decode: bool = False,
     ) -> None:
@@ -73,7 +73,7 @@ class JSONPointer:
         *,
         unicode_escape: bool,
         uri_decode: bool,
-    ) -> PARTS:
+    ) -> Tuple[Union[int, str], ...]:
         if uri_decode:
             s = unquote(s)
 
@@ -100,37 +100,75 @@ class JSONPointer:
         except ValueError:
             return s
 
+    def _getitem(self, obj: Any, key: Any) -> Any:
+        try:
+            return getitem(obj, key)
+        except KeyError as err:
+            # Try a string repr of the index-like item as a mapping key.
+            if isinstance(key, int):
+                try:
+                    return getitem(obj, str(key))
+                except KeyError:
+                    raise JSONPointerKeyError(str(err)) from err
+            # Handle non-standard keys selector
+            if (
+                isinstance(key, str)
+                and isinstance(obj, Mapping)
+                and key.startswith(self.keys_selector)
+                and key[1:] in obj
+            ):
+                return key[1:]
+            raise JSONPointerKeyError(str(err)) from err
+        except TypeError as err:
+            if isinstance(obj, Sequence):
+                if key == "-":
+                    # "-" is a valid index when appending to a JSON array
+                    # with JSON Patch, but not when resolving a JSON Pointer.
+                    raise JSONPointerIndexError("index out of range") from None
+                try:
+                    return getitem(obj, int(key))
+                except ValueError:
+                    pass
+            raise JSONPointerTypeError(str(err)) from err
+
+    # TODO: handle JSON "document" string and TextIO
+    # TODO: Wrap KeyError and TypeError?
+
     def resolve(self, obj: Union[Sequence[Any], Mapping[str, Any]]) -> object:
-        """Resolve this pointer against _data_."""
+        """Resolve this pointer against _obj_.
 
-        def _getitem(obj: Any, key: Any) -> Any:
-            try:
-                return getitem(obj, key)
-            except KeyError as err:
-                # Try a string repr of the index-like item as a mapping key.
-                if isinstance(key, int):
-                    try:
-                        return getitem(obj, str(key))
-                    except KeyError:
-                        raise err
-                # Handle non-standard keys selector
-                if (
-                    isinstance(key, str)
-                    and isinstance(obj, Mapping)
-                    and key.startswith(self.keys_selector)
-                    and key[1:] in obj
-                ):
-                    return key[1:]
-                raise
-            except TypeError as err:
-                if isinstance(obj, Sequence):
-                    try:
-                        return getitem(obj, int(key))
-                    except ValueError:
-                        raise err
-                raise
+        Args:
+            obj: The target JSON "document" or equivalent Python objects.
 
-        return reduce(_getitem, self.parts, obj)
+        Returns:
+            The object in _obj_ pointed to by this pointer.
+
+        Raises:
+            JSONPointerIndexError: When attempting to access a sequence by
+                and out of range index.
+            KeyError: If any mapping object along the path does not contain
+                a specified key.
+            TypeError: When attempting to resolve a non-index string path part
+                against a sequence.
+        """
+        return reduce(self._getitem, self.parts, obj)
+
+    def resolve_with_parent(
+        self, obj: Union[Sequence[Any], Mapping[str, Any]]
+    ) -> Tuple[Union[Sequence[Any], Mapping[str, Any], None], object]:
+        """Resolve this pointer against _obj_, include the result's parent object.
+
+        Args:
+            obj: The target JSON "document" or equivalent Python objects.
+
+        Returns:
+            A (parent, object) tuple, where parent will be `None` if this pointer
+            points to the root node in the document.
+        """
+        if len(self.parts) < 2:  # noqa: PLR2004
+            return (None, self.resolve(obj))
+        parent = reduce(self._getitem, self.parts[:-1], obj)
+        return (parent, self._getitem(parent, self.parts[-1]))
 
     @classmethod
     def from_match(

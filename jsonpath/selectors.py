@@ -44,7 +44,7 @@ class JSONPathSelector(ABC):
     def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
-        """An async version of `expand`."""
+        """An async version of `resolve`."""
 
 
 class PropertySelector(JSONPathSelector):

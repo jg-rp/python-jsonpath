@@ -3,6 +3,7 @@ import pytest
 
 import jsonpath
 from jsonpath import JSONPointer
+from jsonpath import JSONPointerIndexError
 
 
 def test_match_to_pointer() -> None:
@@ -76,3 +77,26 @@ def test_sequence_type_error() -> None:
     pointer = JSONPointer("/some/thing")
     with pytest.raises(TypeError):
         pointer.resolve(data)
+
+
+def test_hyphen_index() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    pointer = JSONPointer("/some/thing/-")
+    with pytest.raises(JSONPointerIndexError):
+        pointer.resolve(data)
+
+
+def test_resolve_with_parent() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    pointer = JSONPointer("/some/thing")
+    parent, rv = pointer.resolve_with_parent(data)
+    assert parent == data["some"]
+    assert rv == data["some"]["thing"]
+
+
+def test_resolve_with_missing_parent() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    pointer = JSONPointer("")
+    parent, rv = pointer.resolve_with_parent(data)
+    assert parent is None
+    assert rv == data
