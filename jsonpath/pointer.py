@@ -27,10 +27,10 @@ _missing = object()
 
 
 class JSONPointer:
-    """A JSON Pointer, as per rfc6901.
+    """A JSON Pointer, as per RFC 6901.
 
     Args:
-        s: A string representation of a JSON Pointer.
+        pointer: A string representation of a JSON Pointer.
         parts: The keys, indices and/or slices that make up a JSON Pointer. If
             given, it is assumed that the parts have already been parsed by the
             JSONPath parser. `unicode_escape` and `uri_decode` are ignored if
@@ -57,18 +57,18 @@ class JSONPointer:
 
     def __init__(
         self,
-        s: str,
+        pointer: str,
         *,
         parts: Tuple[Union[int, str], ...] = (),
         unicode_escape: bool = True,
         uri_decode: bool = False,
     ) -> None:
         self.parts = parts or self._parse(
-            s,
+            pointer,
             unicode_escape=unicode_escape,
             uri_decode=uri_decode,
         )
-        self._s = s
+        self._s = pointer
 
     def __str__(self) -> str:
         return self._s
@@ -159,11 +159,11 @@ class JSONPointer:
 
         Raises:
             JSONPointerIndexError: When attempting to access a sequence by
-                an out of range index.
+                an out of range index, unless a default is given.
             JSONPointerKeyError: If any mapping object along the path does not
-                contain a specified key.
+                contain a specified key, unless a default is given.
             JSONPointerTypeError: When attempting to resolve a non-index string
-                path part against a sequence.
+                path part against a sequence, unless a default is given.
         """
         if isinstance(data, str):
             data = json.loads(data)
@@ -295,11 +295,11 @@ def resolve(
 
     Raises:
         JSONPointerIndexError: When attempting to access a sequence by
-            an out of range index.
+            an out of range index, unless a default is given.
         JSONPointerKeyError: If any mapping object along the path does not contain
-            a specified key.
+            a specified key, unless a default is given.
         JSONPointerTypeError: When attempting to resolve a non-index string path
-            part against a sequence.
+            part against a sequence, unless a default is given.
     """
     if isinstance(pointer, str):
         try:
