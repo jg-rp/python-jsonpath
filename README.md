@@ -26,7 +26,7 @@ A flexible JSONPath engine for Python.
 
 - [Install](#install)
 - [Links](#links)
-- [Example](#example)
+- [Examples](#examples)
 - [License](#license)
 
 ## Install
@@ -52,7 +52,9 @@ pipenv install -u python-jsonpath
 - Source code: https://github.com/jg-rp/python-jsonpath
 - Issue tracker: https://github.com/jg-rp/python-jsonpath/issues
 
-## Example
+## Examples
+
+### JSONPath
 
 ```python
 import jsonpath
@@ -80,6 +82,41 @@ data = {
 
 user_names = jsonpath.findall("$.users[?@.score < 100].name", data)
 print(user_names) # ['John', 'Sally', 'Jane']
+```
+
+### JSON Pointer
+
+Since version 0.8.0, we also include an [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) compliant implementation of JSON Pointer.
+
+```python
+from jsonpath import pointer
+
+data = {
+    "users": [
+        {
+            "name": "Sue",
+            "score": 100,
+        },
+        {
+            "name": "John",
+            "score": 86,
+        },
+        {
+            "name": "Sally",
+            "score": 84,
+        },
+        {
+            "name": "Jane",
+            "score": 55,
+        },
+    ]
+}
+
+sue_score = pointer.resolve("/users/0/score", data)
+print(sue_score)  # 100
+
+jane_score = pointer.resolve(["users", 3, "score"], data)
+print(jane_score)  # 55
 ```
 
 ## License
