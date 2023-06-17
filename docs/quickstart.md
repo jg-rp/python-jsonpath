@@ -133,6 +133,65 @@ some_users = path.findall(some_data)
 other_users = path.findall(other_data)
 ```
 
+## `resolve(pointer, data)`
+
+Resolve a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901). A JSON Pointer references a single object on a specific "path" in a JSON document. Here, _pointer_ can be a string representation of a JSON Pointer, or a list of parts that make up a pointer. _data_ can be a file-like object or string containing JSON formatted data, or equivalent Python objects.
+
+```python
+import jsonpath
+
+data = {
+    "users": [
+        {
+            "name": "Sue",
+            "score": 100,
+        },
+        {
+            "name": "John",
+            "score": 86,
+        },
+        {
+            "name": "Sally",
+            "score": 84,
+        },
+        {
+            "name": "Jane",
+            "score": 55,
+        },
+    ]
+}
+
+sue_score = jsonpath.resolve("/users/0/score", data)
+print(sue_score)  # 100
+
+jane_score = jsonpath.resolve(["users", 3, "score"], data)
+print(jane_score)  # 55
+```
+
+If the pointer can't be resolved against the target JSON document - due to missing keys/properties or out of range indices - a `JSONPointerIndexError`, `JSONPointerKeyError` or `JSONPointerTypeError` will be raised, each of which inherit from `JSONPointerResolutionError`. A default value can be given, which will be returned in the event of a `JSONPointerResolutionError`.
+
+```python
+import jsonpath
+
+data = {
+    "users": [
+        {
+            "name": "Sue",
+            "score": 100,
+        },
+        {
+            "name": "John",
+            "score": 86,
+        },
+    ]
+}
+
+sue_score = jsonpath.resolve("/users/99/score", data, default=0)
+print(sue_score)  # 0
+```
+
+See also [`JSONPathMatch.pointer()`](api.md#jsonpath.match.JSONPathMatch.pointer), which builds a [`JSONPointer`](api.md#jsonpath.JSONPointer) from a `JSONPathMatch`.
+
 ## What's Next?
 
 Read about user-defined filter functions at [Function Extensions](advanced.md#function-extensions), or see how to make extra data available to filters with [Extra Filter Context](advanced.md#extra-filter-context).

@@ -1,5 +1,21 @@
 # Python JSONPath Change Log
 
+## Version 0.8.0 (unreleased)
+
+**Breaking changes**
+
+- Changed the `JSONPathMatch.parts` representation of the non-standard _keys_ selector (default `~`) to be `~` followed by the key name. It used to be two "parts", `~` and key index.
+
+**Fixes**
+
+- Changed `findall()` and `finditer()` to accept `data` arguments of any `io.IOBase` subclass, not just `TextIO`.
+
+**Features**
+
+- Added the `JSONPointer` class and methods for converting a `JSONPathMatch` to a `JSONPointer`.
+- Added `jsonpath.resolve()`, a convenience function for resolving a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901).
+- All selectors now use `env.match_class` to instantiate new `JSONPathMatch` objects. This allows for subclassing of `JSONPathMatch`.
+
 ## Version 0.7.1
 
 **Fixes**

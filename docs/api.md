@@ -1,5 +1,4 @@
 # API Reference
-
 ::: jsonpath.JSONPathEnvironment
     handler: python
 
@@ -10,4 +9,7 @@
     handler: python
 
 ::: jsonpath.CompoundJSONPath
+    handler: python
+
+::: jsonpath.JSONPointer
     handler: python

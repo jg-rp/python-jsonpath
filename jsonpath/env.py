@@ -14,7 +14,6 @@ from typing import List
 from typing import Mapping
 from typing import Optional
 from typing import Sequence
-from typing import TextIO
 from typing import Type
 from typing import Union
 
@@ -24,6 +23,7 @@ from .exceptions import JSONPathSyntaxError
 from .filter import UNDEFINED
 from .function_extensions import validate
 from .lex import Lexer
+from .match import JSONPathMatch
 from .match import NodeList
 from .parse import Parser
 from .path import CompoundJSONPath
@@ -35,8 +35,9 @@ from .token import TOKEN_UNION
 from .token import Token
 
 if TYPE_CHECKING:
+    from io import IOBase
+
     from .match import FilterContextVars
-    from .match import JSONPathMatch
 
 
 class JSONPathEnvironment:
@@ -106,6 +107,7 @@ class JSONPathEnvironment:
     # Override these to customize path tokenization and parsing.
     lexer_class: Type[Lexer] = Lexer
     parser_class: Type[Parser] = Parser
+    match_class: Type[JSONPathMatch] = JSONPathMatch
 
     def __init__(self) -> None:  # noqa: D107
         self.lexer: Lexer = self.lexer_class(env=self)
@@ -174,7 +176,7 @@ class JSONPathEnvironment:
     def findall(
         self,
         path: str,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
@@ -202,7 +204,7 @@ class JSONPathEnvironment:
     def finditer(
         self,
         path: str,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> Iterable[JSONPathMatch]:
@@ -228,7 +230,7 @@ class JSONPathEnvironment:
     async def findall_async(
         self,
         path: str,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
@@ -240,7 +242,7 @@ class JSONPathEnvironment:
     async def finditer_async(
         self,
         path: str,
-        data: Union[str, TextIO, Sequence[Any], Mapping[str, Any]],
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:

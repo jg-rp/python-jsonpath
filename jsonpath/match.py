@@ -9,8 +9,10 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
+from .pointer import JSONPointer
+
 FilterContextVars = Mapping[str, Any]
-PathPart = Union[int, slice, str]
+PathPart = Union[int, str]
 
 
 class JSONPathMatch:
@@ -38,6 +40,8 @@ class JSONPathMatch:
         "path",
         "root",
     )
+
+    pointer_class = JSONPointer
 
     def __init__(
         self,
@@ -67,6 +71,10 @@ class JSONPathMatch:
     def filter_context(self) -> FilterContextVars:
         """Return filter context data for this match."""
         return self._filter_context
+
+    def pointer(self) -> JSONPointer:
+        """Return a `JSONPointer` pointing to this match's path."""
+        return JSONPointer.from_match(self)
 
 
 def _truncate(val: str, num: int, end: str = "...") -> str:
