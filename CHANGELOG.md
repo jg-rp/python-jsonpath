@@ -6,6 +6,10 @@
 
 - Changed the `JSONPathMatch.parts` representation of the non-standard _keys_ selector (default `~`) to be `~` followed by the key name. It used to be two "parts", `~` and key index.
 
+**Fixes**
+
+- Changed `findall()` and `finditer()` to accept `data` arguments of any `io.IOBase` subclass, not just `TextIO`.
+
 **Features**
 
 - Added the `JSONPointer` class and methods for converting a `JSONPathMatch` to a `JSONPointer`.
