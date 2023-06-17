@@ -30,6 +30,12 @@ def test_pointer_repr() -> None:
     assert str(pointer) == "/some/thing"
 
 
+def test_resolve_with_default() -> None:
+    data = {"some": {"thing": "else"}}
+    pointer = JSONPointer("/some/other")
+    assert pointer.resolve(data, default=None) is None
+
+
 def test_pointer_index_out_fo_range() -> None:
     max_plus_one = JSONPointer.max_int_index + 1
     min_minus_one = JSONPointer.min_int_index - 1

@@ -135,7 +135,7 @@ other_users = path.findall(other_data)
 
 ## `resolve(pointer, data)`
 
-Resolve a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901). A JSON Pointer references a single object on a specific "path" in a JSON document. Here, _pointer_ must be a string representation of a JSON Pointer and _data_ can be a file-like object or string containing JSON formatted data, or equivalent Python objects.
+Resolve a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901). A JSON Pointer references a single object on a specific "path" in a JSON document. Here, _pointer_ can be a string representation of a JSON Pointer, or a list of parts that make up a pointer. _data_ can be a file-like object or string containing JSON formatted data, or equivalent Python objects.
 
 ```python
 import jsonpath
@@ -163,6 +163,9 @@ data = {
 
 sue_score = jsonpath.resolve("/users/0/score", data)
 print(sue_score)  # 100
+
+jane_score = jsonpath.resolve(["users", 3, "score"], data)
+print(jane_score)  # 55
 ```
 
 If the pointer can't be resolved against the target JSON document - due to missing keys/properties or out of range indices - a `JSONPointerIndexError`, `JSONPointerKeyError` or `JSONPointerTypeError` will be raised, each of which inherit from `JSONPointerResolutionError`. A default value can be given, which will be returned in the event of a `JSONPointerResolutionError`.

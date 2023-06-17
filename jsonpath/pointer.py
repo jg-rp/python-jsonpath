@@ -23,6 +23,8 @@ from .exceptions import JSONPointerTypeError
 if TYPE_CHECKING:
     from .match import JSONPathMatch
 
+_missing = object()
+
 
 class JSONPointer:
     """A JSON Pointer, as per rfc6901.
@@ -140,19 +142,24 @@ class JSONPointer:
             raise JSONPointerIndexError(str(err)) from err
 
     def resolve(
-        self, data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]]
+        self,
+        data: Union[str, IOBase, Sequence[object], Mapping[str, object]],
+        *,
+        default: object = _missing,
     ) -> object:
         """Resolve this pointer against _data_.
 
         Args:
             data: The target JSON "document" or equivalent Python objects.
+            default: A default value to return if the pointer can't be resolved
+                against the given data.
 
         Returns:
             The object in _data_ pointed to by this pointer.
 
         Raises:
             JSONPointerIndexError: When attempting to access a sequence by
-                and out of range index.
+                an out of range index.
             JSONPointerKeyError: If any mapping object along the path does not
                 contain a specified key.
             JSONPointerTypeError: When attempting to resolve a non-index string
@@ -162,11 +169,16 @@ class JSONPointer:
             data = json.loads(data)
         elif isinstance(data, IOBase):
             data = json.loads(data.read())
-        return reduce(self._getitem, self.parts, data)
+        try:
+            return reduce(self._getitem, self.parts, data)
+        except JSONPointerResolutionError:
+            if default is not _missing:
+                return default
+            raise
 
     def resolve_parent(
-        self, data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]]
-    ) -> Tuple[Union[Sequence[Any], Mapping[str, Any], None], object]:
+        self, data: Union[str, IOBase, Sequence[object], Mapping[str, object]]
+    ) -> Tuple[Union[Sequence[object], Mapping[str, object], None], object]:
         """Resolve this pointer against _data_, return the object and its parent.
 
         Args:
@@ -180,7 +192,7 @@ class JSONPointer:
 
         Raises:
             JSONPointerIndexError: When attempting to access a sequence by
-                and out of range index, unless using the special `-` index.
+                an out of range index, unless using the special `-` index.
             JSONPointerKeyError: If any mapping object along the path does not
                 contain a specified key, unless it is the last part of the
                 pointer.
@@ -257,12 +269,9 @@ class JSONPointer:
         )
 
 
-_missing = object()
-
-
 def resolve(
     pointer: Union[str, Iterable[Union[str, int]]],
-    data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+    data: Union[str, IOBase, Sequence[object], Mapping[str, object]],
     *,
     default: object = _missing,
     unicode_escape: bool = True,
@@ -275,6 +284,7 @@ def resolve(
             JSON Pointer parts.
         data: The target JSON "document" or equivalent Python objects.
         default: A default value to return if the pointer can't be resolved.
+            against the given data.
         unicode_escape: If `True`, UTF-16 escape sequences will be decoded
             before parsing the pointer.
         uri_decode: If `True`, the pointer will be unescaped using _urllib_
@@ -285,7 +295,7 @@ def resolve(
 
     Raises:
         JSONPointerIndexError: When attempting to access a sequence by
-            and out of range index.
+            an out of range index.
         JSONPointerKeyError: If any mapping object along the path does not contain
             a specified key.
         JSONPointerTypeError: When attempting to resolve a non-index string path
