@@ -8,6 +8,7 @@ from io import IOBase
 from operator import getitem
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import Iterable
 from typing import Mapping
 from typing import Sequence
 from typing import Tuple
@@ -28,7 +29,7 @@ class JSONPointer:
 
     Args:
         s: A string representation of a JSON Pointer.
-        parts: The keys, indices and/or slices that make up a JSONPathMatch. If
+        parts: The keys, indices and/or slices that make up a JSON Pointer. If
             given, it is assumed that the parts have already been parsed by the
             JSONPath parser. `unicode_escape` and `uri_decode` are ignored if
             _parts_ is given.
@@ -48,7 +49,7 @@ class JSONPointer:
 
     __slots__ = ("_s", "parts")
 
-    keys_selector = ("~",)
+    keys_selector = "~"
     max_int_index = (2**53) - 1
     min_int_index = -(2**53) + 1
 
@@ -103,7 +104,7 @@ class JSONPointer:
         except ValueError:
             return s
 
-    def _getitem(self, obj: Any, key: Any) -> Any:
+    def _getitem(self, obj: Any, key: Any) -> Any:  # noqa: PLR0912
         try:
             return getitem(obj, key)
         except KeyError as err:
@@ -132,6 +133,8 @@ class JSONPointer:
                     return getitem(obj, int(key))
                 except ValueError:
                     pass
+                except IndexError as index_err:
+                    raise JSONPointerIndexError(str(index_err)) from index_err
             raise JSONPointerTypeError(str(err)) from err
         except IndexError as err:
             raise JSONPointerIndexError(str(err)) from err
@@ -218,12 +221,47 @@ class JSONPointer:
             uri_decode=False,
         )
 
+    @classmethod
+    def from_parts(
+        cls,
+        parts: Iterable[Union[int, str]],
+        *,
+        unicode_escape: bool = True,
+        uri_decode: bool = False,
+    ) -> JSONPointer:
+        """Build a JSON Pointer from _parts_.
+
+        Args:
+            parts: The keys, indices and/or slices that make up a JSONPointer.
+            unicode_escape: If `True`, UTF-16 escape sequences will be decoded
+                before parsing the pointer.
+            uri_decode: If `True`, the pointer will be unescaped using _urllib_
+                before being parsed.
+        """
+        _parts = (str(p) for p in parts)
+        if uri_decode:
+            _parts = (unquote(p) for p in _parts)
+        if unicode_escape:
+            _parts = (
+                codecs.decode(p.replace("\\/", "/"), "unicode-escape")
+                .encode("utf-16", "surrogatepass")
+                .decode("utf-16")
+                for p in _parts
+            )
+        __parts = tuple(_parts)
+        return cls(
+            "/" + "/".join(p.replace("~", "~0").replace("/", "~1") for p in __parts),
+            parts=__parts,
+            unicode_escape=False,
+            uri_decode=False,
+        )
+
 
 _missing = object()
 
 
 def resolve(
-    pointer: str,
+    pointer: Union[str, Iterable[Union[str, int]]],
     data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
     *,
     default: object = _missing,
@@ -233,7 +271,8 @@ def resolve(
     """Resolve JSON Pointer _pointer_ against _data_.
 
     Args:
-        pointer: A string representation of a JSON Pointer.
+        pointer: A string representation of a JSON Pointer or an iterable of
+            JSON Pointer parts.
         data: The target JSON "document" or equivalent Python objects.
         default: A default value to return if the pointer can't be resolved.
         unicode_escape: If `True`, UTF-16 escape sequences will be decoded
@@ -252,8 +291,18 @@ def resolve(
         JSONPointerTypeError: When attempting to resolve a non-index string path
             part against a sequence.
     """
+    if isinstance(pointer, str):
+        try:
+            return JSONPointer(
+                pointer, unicode_escape=unicode_escape, uri_decode=uri_decode
+            ).resolve(data)
+        except JSONPointerResolutionError:
+            if default is not _missing:
+                return default
+            raise
+
     try:
-        return JSONPointer(
+        return JSONPointer.from_parts(
             pointer, unicode_escape=unicode_escape, uri_decode=uri_decode
         ).resolve(data)
     except JSONPointerResolutionError:

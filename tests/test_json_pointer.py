@@ -1,5 +1,7 @@
 """JSONPointer test cases."""
 from io import StringIO
+from typing import List
+from typing import Union
 
 import pytest
 
@@ -139,3 +141,28 @@ def test_convenience_resolve() -> None:
 def test_convenience_resolve_default() -> None:
     data = {"some": {"thing": [1, 2, 3]}}
     assert jsonpath.resolve("/some/thing/99", data, default=0) == 0
+
+
+def test_convenience_resolve_from_parts() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    assert jsonpath.resolve(["some", "thing", "0"], data) == 1
+
+    with pytest.raises(JSONPointerResolutionError):
+        jsonpath.resolve(["some", "thing", "99"], data)
+
+
+def test_convenience_resolve_default_from_parts() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    assert jsonpath.resolve(["some", "thing", "99"], data, default=0) == 0
+
+
+def test_pointer_from_parts() -> None:
+    parts: List[Union[str, int]] = ["some", "thing", 0]
+    pointer = JSONPointer.from_parts(parts)
+    assert str(pointer) == "/some/thing/0"
+
+
+def test_pointer_from_uri_encoded_parts() -> None:
+    parts: List[Union[str, int]] = ["some%20thing", "else", 0]
+    pointer = JSONPointer.from_parts(parts, uri_decode=True)
+    assert str(pointer) == "/some thing/else/0"
