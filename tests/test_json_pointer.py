@@ -6,6 +6,7 @@ import pytest
 import jsonpath
 from jsonpath import JSONPointer
 from jsonpath import JSONPointerIndexError
+from jsonpath import JSONPointerResolutionError
 
 
 def test_match_to_pointer() -> None:
@@ -125,3 +126,16 @@ def test_resolve_from_file_like() -> None:
     assert pointer.resolve(data) == [1, 2, 3]
     data.seek(0)
     assert pointer.resolve_parent(data) == ({"thing": [1, 2, 3]}, [1, 2, 3])
+
+
+def test_convenience_resolve() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    assert jsonpath.resolve("/some/thing/0", data) == 1
+
+    with pytest.raises(JSONPointerResolutionError):
+        jsonpath.resolve("/some/thing/99", data)
+
+
+def test_convenience_resolve_default() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    assert jsonpath.resolve("/some/thing/99", data, default=0) == 0

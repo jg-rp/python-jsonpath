@@ -16,6 +16,7 @@ from urllib.parse import unquote
 
 from .exceptions import JSONPointerIndexError
 from .exceptions import JSONPointerKeyError
+from .exceptions import JSONPointerResolutionError
 from .exceptions import JSONPointerTypeError
 
 if TYPE_CHECKING:
@@ -132,6 +133,8 @@ class JSONPointer:
                 except ValueError:
                     pass
             raise JSONPointerTypeError(str(err)) from err
+        except IndexError as err:
+            raise JSONPointerIndexError(str(err)) from err
 
     def resolve(
         self, data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]]
@@ -147,10 +150,10 @@ class JSONPointer:
         Raises:
             JSONPointerIndexError: When attempting to access a sequence by
                 and out of range index.
-            JSONPointerKeyError: If any mapping object along the path does not contain
-                a specified key.
-            JSONPointerTypeError: When attempting to resolve a non-index string path
-                part against a sequence.
+            JSONPointerKeyError: If any mapping object along the path does not
+                contain a specified key.
+            JSONPointerTypeError: When attempting to resolve a non-index string
+                path part against a sequence.
         """
         if isinstance(data, str):
             data = json.loads(data)
@@ -167,17 +170,19 @@ class JSONPointer:
             data: The target JSON "document" or equivalent Python objects.
 
         Returns:
-            A (parent, object) tuple, where parent will be `None` if this pointer
-            points to the root node in the document. If the parent exists but the
-            last object does not, (parent, None) will be returned.
+            A `(parent, object)` tuple, where parent will be `None` if this
+                pointer points to the root node in the document. If the parent
+                exists but the last object does not, `(parent, None)` will be
+                returned.
 
         Raises:
             JSONPointerIndexError: When attempting to access a sequence by
                 and out of range index, unless using the special `-` index.
-            JSONPointerKeyError: If any mapping object along the path does not contain
-                a specified key, unless it is the last part of the pointer.
-            JSONPointerTypeError: When attempting to resolve a non-index string path
-                part against a sequence.
+            JSONPointerKeyError: If any mapping object along the path does not
+                contain a specified key, unless it is the last part of the
+                pointer.
+            JSONPointerTypeError: When attempting to resolve a non-index string
+                path part against a sequence.
         """
         if not len(self.parts):
             return (None, self.resolve(data))
@@ -212,3 +217,46 @@ class JSONPointer:
             unicode_escape=False,
             uri_decode=False,
         )
+
+
+_missing = object()
+
+
+def resolve(
+    pointer: str,
+    data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+    *,
+    default: object = _missing,
+    unicode_escape: bool = True,
+    uri_decode: bool = False,
+) -> object:
+    """Resolve JSON Pointer _pointer_ against _data_.
+
+    Args:
+        pointer: A string representation of a JSON Pointer.
+        data: The target JSON "document" or equivalent Python objects.
+        default: A default value to return if the pointer can't be resolved.
+        unicode_escape: If `True`, UTF-16 escape sequences will be decoded
+            before parsing the pointer.
+        uri_decode: If `True`, the pointer will be unescaped using _urllib_
+            before being parsed.
+
+    Returns:
+        The object in _data_ pointed to by this pointer.
+
+    Raises:
+        JSONPointerIndexError: When attempting to access a sequence by
+            and out of range index.
+        JSONPointerKeyError: If any mapping object along the path does not contain
+            a specified key.
+        JSONPointerTypeError: When attempting to resolve a non-index string path
+            part against a sequence.
+    """
+    try:
+        return JSONPointer(
+            pointer, unicode_escape=unicode_escape, uri_decode=uri_decode
+        ).resolve(data)
+    except JSONPointerResolutionError:
+        if default is not _missing:
+            return default
+        raise

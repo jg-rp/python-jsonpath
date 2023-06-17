@@ -1,5 +1,4 @@
 # API Reference
-
 ::: jsonpath.JSONPathEnvironment
     handler: python
 
