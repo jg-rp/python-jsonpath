@@ -184,6 +184,36 @@ class JSONPath:
 
         return matches
 
+    def match(
+        self,
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
+    ) -> Union[JSONPathMatch, None]:
+        """Return a `JSONPathMatch` instance for the first object found in _data_.
+
+        `None` is returned if there are no matches.
+
+        Arguments:
+            data: A JSON document or Python object implementing the `Sequence`
+                or `Mapping` interfaces.
+            filter_context: Arbitrary data made available to filters using
+                the _filter context_ selector.
+
+        Returns:
+            A `JSONPathMatch` object for the first match, or `None` if there were
+                no matches.
+
+        Raises:
+            JSONPathSyntaxError: If the path is invalid.
+            JSONPathTypeError: If a filter expression attempts to use types in
+                an incompatible way.
+        """
+        try:
+            return next(iter(self.finditer(data, filter_context=filter_context)))
+        except StopIteration:
+            return None
+
     def empty(self) -> bool:
         """Return `True` if this path has no selectors."""
         return not bool(self._selectors)
@@ -284,6 +314,36 @@ class CompoundJSONPath:
                 matches = (match for match in matches if match.obj in _objs)
 
         return matches
+
+    def match(
+        self,
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
+    ) -> Union[JSONPathMatch, None]:
+        """Return a `JSONPathMatch` instance for the first object found in _data_.
+
+        `None` is returned if there are no matches.
+
+        Arguments:
+            data: A JSON document or Python object implementing the `Sequence`
+                or `Mapping` interfaces.
+            filter_context: Arbitrary data made available to filters using
+                the _filter context_ selector.
+
+        Returns:
+            A `JSONPathMatch` object for the first match, or `None` if there were
+                no matches.
+
+        Raises:
+            JSONPathSyntaxError: If the path is invalid.
+            JSONPathTypeError: If a filter expression attempts to use types in
+                an incompatible way.
+        """
+        try:
+            return next(iter(self.finditer(data, filter_context=filter_context)))
+        except StopIteration:
+            return None
 
     async def findall_async(
         self,

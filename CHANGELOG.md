@@ -14,6 +14,7 @@
 
 - Added the `JSONPointer` class and methods for converting a `JSONPathMatch` to a `JSONPointer`.
 - Added `jsonpath.resolve()`, a convenience function for resolving a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901).
+- Added `jsonpath.match()`, which returns a `JSONPathMatch` instance for the first match of a path, or `None` if there were no matches.
 - All selectors now use `env.match_class` to instantiate new `JSONPathMatch` objects. This allows for subclassing of `JSONPathMatch`.
 
 ## Version 0.7.1

@@ -133,7 +133,45 @@ some_users = path.findall(some_data)
 other_users = path.findall(other_data)
 ```
 
+## `match(path, data)`
+
+**_New in version 0.8.0_**
+
+Get a [`jsonpath.JSONPathMatch`](api.md#jsonpath.JSONPathMatch) instance for the first match found in _data_. If there are no matches, `None` is returned. `match()` accepts the same arguments as [`findall()`](#findall).
+
+```python
+import jsonpath
+
+data = {
+    "users": [
+        {
+            "name": "Sue",
+            "score": 100,
+        },
+        {
+            "name": "John",
+            "score": 86,
+        },
+        {
+            "name": "Sally",
+            "score": 84,
+        },
+        {
+            "name": "Jane",
+            "score": 55,
+        },
+    ]
+}
+
+match = jsonpath.match("$.users[?@.score > 85].name", data)
+if match:
+    print(match)  # 'Sue' @ $['users'][0]['name']
+    print(match.obj)  # Sue
+```
+
 ## `resolve(pointer, data)`
+
+**_New in version 0.8.0_**
 
 Resolve a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901). A JSON Pointer references a single object on a specific "path" in a JSON document. Here, _pointer_ can be a string representation of a JSON Pointer, or a list of parts that make up a pointer. _data_ can be a file-like object or string containing JSON formatted data, or equivalent Python objects.
 

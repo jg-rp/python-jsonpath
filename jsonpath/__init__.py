@@ -44,6 +44,7 @@ __all__ = (
     "JSONPointerResolutionError",
     "JSONPointerTypeError",
     "Lexer",
+    "match",
     "Parser",
     "resolve",
     "UNDEFINED",
@@ -52,8 +53,9 @@ __all__ = (
 
 # For convenience
 DEFAULT_ENV = JSONPathEnvironment()
-findall = DEFAULT_ENV.findall
-finditer = DEFAULT_ENV.finditer
-findall_async = DEFAULT_ENV.findall_async
-finditer_async = DEFAULT_ENV.finditer_async
 compile = DEFAULT_ENV.compile  # noqa: A001
+findall = DEFAULT_ENV.findall
+findall_async = DEFAULT_ENV.findall_async
+finditer = DEFAULT_ENV.finditer
+finditer_async = DEFAULT_ENV.finditer_async
+match = DEFAULT_ENV.match

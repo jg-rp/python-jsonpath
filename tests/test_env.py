@@ -119,3 +119,29 @@ def test_find_iter_async_with_extra_filter_context(env: JSONPathEnvironment) -> 
         return [match.obj async for match in matches]
 
     assert asyncio.run(coro()) == [{"some": 1, "thing": 2}]
+
+
+def test_match(env: JSONPathEnvironment) -> None:
+    """Test that we can get the first match of a path."""
+    match = env.match("$.some", {"some": 1, "thing": 2})
+    assert match is not None
+    assert match.obj == 1
+
+
+def test_no_match(env: JSONPathEnvironment) -> None:
+    """Test that we get `None` if there are no matches."""
+    match = env.match("$.other", {"some": 1, "thing": 2})
+    assert match is None
+
+
+def test_match_compound_path(env: JSONPathEnvironment) -> None:
+    """Test that we can get the first match of a compound path."""
+    match = env.match("$.some | $.thing", {"some": 1, "thing": 2})
+    assert match is not None
+    assert match.obj == 1
+
+
+def test_no_match_compound_path(env: JSONPathEnvironment) -> None:
+    """Test that we get `None` if there are no matches in a compound path."""
+    match = env.match("$.other | $.foo", {"some": 1, "thing": 2})
+    assert match is None
