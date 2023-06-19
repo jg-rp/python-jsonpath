@@ -9,6 +9,7 @@ import jsonpath
 from jsonpath import JSONPointer
 from jsonpath import JSONPointerIndexError
 from jsonpath import JSONPointerResolutionError
+from jsonpath import JSONPointerTypeError
 
 
 def test_match_to_pointer() -> None:
@@ -172,3 +173,21 @@ def test_pointer_from_uri_encoded_parts() -> None:
     parts: List[Union[str, int]] = ["some%20thing", "else", 0]
     pointer = JSONPointer.from_parts(parts, uri_decode=True)
     assert str(pointer) == "/some thing/else/0"
+
+
+def test_index_with_leading_zero() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    pointer = JSONPointer("/some/thing/0")
+    assert pointer.resolve(data) == 1
+
+    pointer = JSONPointer("/some/thing/01")
+    with pytest.raises(JSONPointerTypeError):
+        pointer.resolve(data)
+
+    pointer = JSONPointer("/some/thing/00")
+    with pytest.raises(JSONPointerTypeError):
+        pointer.resolve(data)
+
+    pointer = JSONPointer("/some/thing/01")
+    with pytest.raises(JSONPointerTypeError):
+        pointer.resolve_parent(data)

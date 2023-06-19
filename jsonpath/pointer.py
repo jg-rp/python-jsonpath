@@ -98,6 +98,10 @@ class JSONPointer:
         )[1:]
 
     def _index(self, s: str) -> Union[str, int]:
+        # Reject non-zero ints that start with a zero.
+        if len(s) > 1 and s.startswith("0"):
+            return s
+
         try:
             index = int(s)
             if index < self.min_int_index or index > self.max_int_index:
@@ -131,12 +135,15 @@ class JSONPointer:
                     # "-" is a valid index when appending to a JSON array
                     # with JSON Patch, but not when resolving a JSON Pointer.
                     raise JSONPointerIndexError("index out of range") from None
-                try:
-                    return getitem(obj, int(key))
-                except ValueError:
-                    pass
-                except IndexError as index_err:
-                    raise JSONPointerIndexError(str(index_err)) from index_err
+
+                # Try int index. Reject non-zero ints that start with a zero.
+                if isinstance(key, str):
+                    index = self._index(key)
+                    if isinstance(index, int):
+                        try:
+                            return getitem(obj, int(key))
+                        except IndexError as index_err:
+                            raise JSONPointerIndexError(str(index_err)) from index_err
             raise JSONPointerTypeError(str(err)) from err
         except IndexError as err:
             raise JSONPointerIndexError(str(err)) from err
@@ -214,6 +221,8 @@ class JSONPointer:
         try:
             return (parent, self._getitem(parent, self.parts[-1]))
         except (JSONPointerIndexError, JSONPointerKeyError):
+            # TODO: use _missing instead of `None`.
+            # TODO: change _missing to UNDEFINED
             return (parent, None)
 
     @classmethod
