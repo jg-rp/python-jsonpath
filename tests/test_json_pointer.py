@@ -10,6 +10,7 @@ from jsonpath import JSONPointer
 from jsonpath import JSONPointerIndexError
 from jsonpath import JSONPointerResolutionError
 from jsonpath import JSONPointerTypeError
+from jsonpath.pointer import UNDEFINED
 
 
 def test_match_to_pointer() -> None:
@@ -119,7 +120,7 @@ def test_resolve_with_missing_target() -> None:
     pointer = JSONPointer("some/other")
     parent, rv = pointer.resolve_parent(data)
     assert parent == data
-    assert rv is None
+    assert rv == UNDEFINED
 
 
 def test_resolve_from_json_string() -> None:

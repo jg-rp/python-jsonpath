@@ -23,7 +23,7 @@ from .exceptions import JSONPointerTypeError
 if TYPE_CHECKING:
     from .match import JSONPathMatch
 
-_missing = object()
+UNDEFINED = object()
 
 
 class JSONPointer:
@@ -152,7 +152,7 @@ class JSONPointer:
         self,
         data: Union[str, IOBase, Sequence[object], Mapping[str, object]],
         *,
-        default: object = _missing,
+        default: object = UNDEFINED,
     ) -> object:
         """Resolve this pointer against _data_.
 
@@ -179,7 +179,7 @@ class JSONPointer:
         try:
             return reduce(self._getitem, self.parts, data)
         except JSONPointerResolutionError:
-            if default is not _missing:
+            if default is not UNDEFINED:
                 return default
             raise
 
@@ -221,9 +221,7 @@ class JSONPointer:
         try:
             return (parent, self._getitem(parent, self.parts[-1]))
         except (JSONPointerIndexError, JSONPointerKeyError):
-            # TODO: use _missing instead of `None`.
-            # TODO: change _missing to UNDEFINED
-            return (parent, None)
+            return (parent, UNDEFINED)
 
     @classmethod
     def from_match(
@@ -282,7 +280,7 @@ def resolve(
     pointer: Union[str, Iterable[Union[str, int]]],
     data: Union[str, IOBase, Sequence[object], Mapping[str, object]],
     *,
-    default: object = _missing,
+    default: object = UNDEFINED,
     unicode_escape: bool = True,
     uri_decode: bool = False,
 ) -> object:
@@ -316,7 +314,7 @@ def resolve(
                 pointer, unicode_escape=unicode_escape, uri_decode=uri_decode
             ).resolve(data)
         except JSONPointerResolutionError:
-            if default is not _missing:
+            if default is not UNDEFINED:
                 return default
             raise
 
@@ -325,6 +323,6 @@ def resolve(
             pointer, unicode_escape=unicode_escape, uri_decode=uri_decode
         ).resolve(data)
     except JSONPointerResolutionError:
-        if default is not _missing:
+        if default is not UNDEFINED:
             return default
         raise
