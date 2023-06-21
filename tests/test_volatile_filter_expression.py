@@ -5,6 +5,7 @@ import operator
 import pytest
 
 import jsonpath
+from jsonpath.filter import is_volatile
 from jsonpath.selectors import Filter as FilterSelector
 
 
@@ -49,9 +50,9 @@ def test_is_volatile(case: Case) -> None:
     path = jsonpath.compile(case.path)
     assert isinstance(path, jsonpath.JSONPath)
 
-    exprs = [
+    filter_selectors = [
         selector for selector in path.selectors if isinstance(selector, FilterSelector)
     ]
 
-    assert len(exprs) == 1
-    assert exprs[0].is_volatile() is case.want
+    assert len(filter_selectors) == 1
+    assert is_volatile(filter_selectors[0].expression) is case.want

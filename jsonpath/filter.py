@@ -7,6 +7,7 @@ from abc import ABC
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 from typing import Generic
+from typing import Iterable
 from typing import List
 from typing import Mapping
 from typing import Pattern
@@ -522,3 +523,15 @@ class CurrentKey(FilterExpression):
 
 
 CURRENT_KEY = CurrentKey()
+
+
+def walk(expr: FilterExpression) -> Iterable[FilterExpression]:
+    """Walk the filter expression tree starting at _expr_."""
+    yield expr
+    for child in expr.children():
+        yield from walk(child)
+
+
+def is_volatile(expr: FilterExpression) -> bool:
+    """Return `True` if _expr_ is volatile and should not be cached."""
+    return any(expr.volatile for expr in walk(expr))
