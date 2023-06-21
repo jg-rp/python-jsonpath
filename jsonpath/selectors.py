@@ -21,6 +21,7 @@ from .exceptions import JSONPathTypeError
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
     from .filter import BooleanExpression
+    from .filter import FilterExpression
     from .match import JSONPathMatch
     from .token import Token
 
@@ -621,6 +622,20 @@ class Filter(JSONPathSelector):
                         )
                         match.add_child(_match)
                         yield _match
+
+    def walk(self) -> Iterable[FilterExpression]:
+        """Walk this filter's expression tree."""
+
+        def _walk(expr: FilterExpression) -> Iterable[FilterExpression]:
+            yield expr
+            for child in expr.children():
+                yield from _walk(child)
+
+        return _walk(self.expression)
+
+    def is_volatile(self) -> bool:
+        """Return `True` if this filter is volatile and should not be cached."""
+        return any(expr.volatile for expr in self.walk())
 
 
 class FilterContext:

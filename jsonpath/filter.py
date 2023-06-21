@@ -15,6 +15,7 @@ from typing import TypeVar
 
 from .exceptions import JSONPathTypeError
 from .match import NodeList
+from .selectors import Filter as FilterSelector
 
 if TYPE_CHECKING:
     from .path import JSONPath
@@ -25,6 +26,9 @@ if TYPE_CHECKING:
 
 class FilterExpression(ABC):
     """Base class for all filter expression nodes."""
+
+    volatile: bool = False
+    """If `True`, indicates that this filter expression should not be cached."""
 
     @abstractmethod
     def evaluate(self, context: FilterContext) -> object:
@@ -41,6 +45,10 @@ class FilterExpression(ABC):
     @abstractmethod
     async def evaluate_async(self, context: FilterContext) -> object:
         """An async version of `evaluate`."""
+
+    @abstractmethod
+    def children(self) -> List[FilterExpression]:
+        """Return a list of direct child expressions."""
 
 
 class Nil(FilterExpression):
@@ -65,6 +73,9 @@ class Nil(FilterExpression):
 
     async def evaluate_async(self, _: FilterContext) -> None:
         return None
+
+    def children(self) -> List[FilterExpression]:
+        return []
 
 
 NIL = Nil()
@@ -98,6 +109,9 @@ class Undefined(FilterExpression):
     async def evaluate_async(self, _: FilterContext) -> object:
         return UNDEFINED
 
+    def children(self) -> List[FilterExpression]:
+        return []
+
 
 UNDEFINED_LITERAL = Undefined()
 
@@ -126,6 +140,9 @@ class Literal(FilterExpression, Generic[LITERAL_EXPRESSION_T]):
 
     async def evaluate_async(self, _: FilterContext) -> LITERAL_EXPRESSION_T:
         return self.value
+
+    def children(self) -> List[FilterExpression]:
+        return []
 
 
 class BooleanLiteral(Literal[bool]):
@@ -199,6 +216,9 @@ class RegexArgument(FilterExpression):
     async def evaluate_async(self, _: FilterContext) -> object:
         return self.pattern
 
+    def children(self) -> List[FilterExpression]:
+        return []
+
 
 class ListLiteral(FilterExpression):
     """A list literal."""
@@ -220,6 +240,9 @@ class ListLiteral(FilterExpression):
 
     async def evaluate_async(self, context: FilterContext) -> object:
         return [await item.evaluate_async(context) for item in self.items]
+
+    def children(self) -> List[FilterExpression]:
+        return self.items
 
 
 class PrefixExpression(FilterExpression):
@@ -251,6 +274,9 @@ class PrefixExpression(FilterExpression):
 
     async def evaluate_async(self, context: FilterContext) -> object:
         return self._evaluate(context, await self.right.evaluate_async(context))
+
+    def children(self) -> List[FilterExpression]:
+        return [self.right]
 
 
 class InfixExpression(FilterExpression):
@@ -293,6 +319,9 @@ class InfixExpression(FilterExpression):
         right = await self.right.evaluate_async(context)
         return context.env.compare(left, self.operator, right)
 
+    def children(self) -> List[FilterExpression]:
+        return [self.left, self.right]
+
 
 class BooleanExpression(FilterExpression):
     """An expression that always evaluates to `True` or `False`."""
@@ -316,6 +345,9 @@ class BooleanExpression(FilterExpression):
     async def evaluate_async(self, context: FilterContext) -> bool:
         return context.env.is_truthy(await self.expression.evaluate_async(context))
 
+    def children(self) -> List[FilterExpression]:
+        return [self.expression]
+
 
 class Path(FilterExpression, ABC):
     """Base expression for all _sub paths_ found in filter expressions."""
@@ -325,9 +357,16 @@ class Path(FilterExpression, ABC):
     def __init__(self, path: JSONPath) -> None:
         self.path = path
 
+    def children(self) -> List[FilterExpression]:
+        return [
+            s.expression for s in self.path.selectors if isinstance(s, FilterSelector)
+        ]
+
 
 class SelfPath(Path):
     """A JSONPath starting at the current node."""
+
+    volatile = True
 
     def __str__(self) -> str:
         return "@" + str(self.path)[1:]
@@ -461,6 +500,9 @@ class FunctionExtension(FilterExpression):
             for obj in args
         ]
 
+    def children(self) -> List[FilterExpression]:
+        return list(self.args)
+
 
 class CurrentKey(FilterExpression):
     """The key/property or index associated with the current object."""
@@ -474,6 +516,9 @@ class CurrentKey(FilterExpression):
 
     async def evaluate_async(self, context: FilterContext) -> object:
         return self.evaluate(context)
+
+    def children(self) -> List[FilterExpression]:
+        return []
 
 
 CURRENT_KEY = CurrentKey()
