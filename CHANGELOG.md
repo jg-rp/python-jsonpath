@@ -17,7 +17,7 @@
 - Added `jsonpath.resolve()`, a convenience function for resolving a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901).
 - Added `jsonpath.match()`, which returns a `JSONPathMatch` instance for the first match of a path, or `None` if there were no matches.
 - All selectors now use `env.match_class` to instantiate new `JSONPathMatch` objects. This allows for subclassing of `JSONPathMatch`.
-- Added `walk()` and `is_volatile()` to `jsonpath.selectors.Filter`. This will help us inspect filter expression when implementing expression caching and static analysis.
+- Added `jsonpath.filter.walk()` and `jsonpath.filter.is_volatile()`, for the benefit of expression caching and static analysis.
 
 ## Version 0.7.1
 

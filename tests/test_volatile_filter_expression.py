@@ -38,6 +38,11 @@ TEST_CASES = [
         want=True,
     ),
     Case(
+        description="self path as filter function argument",
+        path="$some.thing[?match(@.foo, '^bar.+')]",
+        want=True,
+    ),
+    Case(
         description="boolean root path",
         path="$some.thing[?$.foo]",
         want=False,
