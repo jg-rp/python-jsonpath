@@ -347,14 +347,7 @@ class CompoundJSONPath:
                 an incompatible way.
         """
         try:
-            return next(
-                iter(
-                    self.finditer(
-                        data,
-                        filter_context=filter_context,
-                    )
-                )
-            )
+            return next(iter(self.finditer(data, filter_context=filter_context)))
         except StopIteration:
             return None
 

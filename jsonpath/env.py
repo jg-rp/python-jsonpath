@@ -69,9 +69,11 @@ class JSONPathEnvironment:
 
     ## Class attributes
 
-    Attributes:
+    Arguments:
         filter_caching (bool): If `True`, filter expressions will be cached where
             possible.
+
+    Attributes:
         filter_context_token (str): The pattern used to select extra filter context
             data. Defaults to `"_"`.
         intersection_token (str): The pattern used as the intersection operator.
@@ -106,14 +108,14 @@ class JSONPathEnvironment:
     max_int_index = (2**53) - 1
     min_int_index = -(2**53) + 1
 
-    filter_caching = False
-
     # Override these to customize path tokenization and parsing.
     lexer_class: Type[Lexer] = Lexer
     parser_class: Type[Parser] = Parser
     match_class: Type[JSONPathMatch] = JSONPathMatch
 
-    def __init__(self) -> None:
+    def __init__(self, *, filter_caching: bool = False) -> None:
+        self.filter_caching = filter_caching
+
         self.lexer: Lexer = self.lexer_class(env=self)
         """The lexer bound to this environment."""
 
