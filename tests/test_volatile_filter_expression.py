@@ -5,6 +5,7 @@ import operator
 import pytest
 
 import jsonpath
+from jsonpath import JSONPathEnvironment
 from jsonpath.filter import is_volatile
 from jsonpath.selectors import Filter as FilterSelector
 
@@ -61,3 +62,34 @@ def test_is_volatile(case: Case) -> None:
 
     assert len(filter_selectors) == 1
     assert is_volatile(filter_selectors[0].expression) is case.want
+
+
+def test_cache_root_path() -> None:
+    # TODO:
+    pass
+
+
+def test_cache_context_path() -> None:
+    # TODO:
+    pass
+
+
+def test_cache_infix_expression() -> None:
+    # TODO:
+    pass
+
+
+class CachingJSONPathEnvironment(JSONPathEnvironment):
+    filter_caching = True
+
+
+def test_cache_expires() -> None:
+    env = CachingJSONPathEnvironment()
+    path = env.compile("$.some.thing[?@.other < 10]")
+    assert path.findall(
+        {"some": {"thing": [{"other": 1}, {"other": 2}, {"other": 3}]}}
+    ) == [{"other": 1}, {"other": 2}, {"other": 3}]
+    assert (
+        path.findall({"some": {"thing": [{"other": 10}, {"other": 20}, {"other": 30}]}})
+        == []
+    )

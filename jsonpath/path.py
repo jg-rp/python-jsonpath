@@ -248,6 +248,7 @@ class CompoundJSONPath:
     def findall(
         self,
         data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """Find all objects in `data` matching the given JSONPath `path`.
@@ -285,6 +286,7 @@ class CompoundJSONPath:
     def finditer(
         self,
         data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> Iterable[JSONPathMatch]:
         """Generate `JSONPathMatch` objects for each match.
@@ -345,13 +347,21 @@ class CompoundJSONPath:
                 an incompatible way.
         """
         try:
-            return next(iter(self.finditer(data, filter_context=filter_context)))
+            return next(
+                iter(
+                    self.finditer(
+                        data,
+                        filter_context=filter_context,
+                    )
+                )
+            )
         except StopIteration:
             return None
 
     async def findall_async(
         self,
         data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """An async version of `findall()`."""
@@ -370,6 +380,7 @@ class CompoundJSONPath:
     async def finditer_async(
         self,
         data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:
         """An async version of `finditer()`."""

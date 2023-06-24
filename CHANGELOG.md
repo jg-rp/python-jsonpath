@@ -5,7 +5,7 @@
 **Breaking changes**
 
 - Changed the `JSONPathMatch.parts` representation of the non-standard _keys_ selector (default `~`) to be `~` followed by the key name. It used to be two "parts", `~` and key index.
-- All `FilterExpression` instances must now define a `children()` method, returning any child `FilterExpression`s. This helps us inspect filter expressions for potential caching.
+- All `FilterExpression` instances must now define a `children()` and `set_children()` methods. These methods facilitate the caching of filter expressions.
 
 **Fixes**
 

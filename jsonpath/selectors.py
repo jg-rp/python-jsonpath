@@ -508,6 +508,9 @@ class Filter(JSONPathSelector):
     def resolve(  # noqa: PLR0912
         self, matches: Iterable[JSONPathMatch]
     ) -> Iterable[JSONPathMatch]:
+        expr = (
+            self.expression.cache_tree() if self.env.filter_caching else self.expression
+        )
         for match in matches:
             if isinstance(match.obj, Mapping):
                 for key, val in match.obj.items():
@@ -519,7 +522,7 @@ class Filter(JSONPathSelector):
                         current_key=key,
                     )
                     try:
-                        if self.expression.evaluate(context):
+                        if expr.evaluate(context):
                             _match = self.env.match_class(
                                 filter_context=match.filter_context(),
                                 obj=val,
@@ -545,7 +548,7 @@ class Filter(JSONPathSelector):
                         current_key=i,
                     )
                     try:
-                        if self.expression.evaluate(context):
+                        if expr.evaluate(context):
                             _match = self.env.match_class(
                                 filter_context=match.filter_context(),
                                 obj=obj,
@@ -564,6 +567,9 @@ class Filter(JSONPathSelector):
     async def resolve_async(  # noqa: PLR0912
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
+        expr = (
+            self.expression.cache_tree() if self.env.filter_caching else self.expression
+        )
         async for match in matches:
             if isinstance(match.obj, Mapping):
                 for key, val in match.obj.items():
@@ -576,7 +582,7 @@ class Filter(JSONPathSelector):
                     )
 
                     try:
-                        result = await self.expression.evaluate_async(context)
+                        result = await expr.evaluate_async(context)
                     except JSONPathTypeError as err:
                         if not err.token:
                             err.token = self.token
@@ -605,7 +611,7 @@ class Filter(JSONPathSelector):
                     )
 
                     try:
-                        result = await self.expression.evaluate_async(context)
+                        result = await expr.evaluate_async(context)
                     except JSONPathTypeError as err:
                         if not err.token:
                             err.token = self.token
@@ -626,7 +632,14 @@ class Filter(JSONPathSelector):
 class FilterContext:
     """A filter expression context."""
 
-    __slots__ = ("current", "current_key", "env", "root", "extra_context")
+    __slots__ = (
+        "caching",
+        "current_key",
+        "current",
+        "env",
+        "extra_context",
+        "root",
+    )
 
     def __init__(
         self,
