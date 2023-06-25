@@ -381,6 +381,8 @@ class BooleanExpression(FilterExpression):
         super().__init__()
 
     def cache_tree(self) -> BooleanExpression:
+        """Return a copy of _self.expression_ augmented with caching nodes."""
+
         def _cache_tree(expr: FilterExpression) -> FilterExpression:
             children = expr.children()
             if expr.volatile:
@@ -393,6 +395,13 @@ class BooleanExpression(FilterExpression):
             return _expr
 
         return BooleanExpression(_cache_tree(copy.copy(self.expression)))
+
+    def cacheable_nodes(self) -> bool:
+        """Return `True` if there are any cacheable nodes in this expression tree."""
+        return any(
+            isinstance(node, CachingFilterExpression)
+            for node in walk(self.cache_tree())
+        )
 
     def __str__(self) -> str:
         return str(self.expression)
