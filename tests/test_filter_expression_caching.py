@@ -8,6 +8,7 @@ from jsonpath.filter import CachingFilterExpression
 from jsonpath.filter import FilterContextPath
 from jsonpath.filter import FilterExpression
 from jsonpath.filter import InfixExpression
+from jsonpath.filter import IntegerLiteral
 from jsonpath.filter import RootPath
 from jsonpath.filter import SelfPath
 from jsonpath.selectors import Filter as FilterSelector
@@ -20,6 +21,7 @@ def test_cache_root_path() -> None:
     assert isinstance(path, JSONPath)
     filter_selector = path.selectors[1]
     assert isinstance(filter_selector, FilterSelector)
+    assert filter_selector.cacheable_nodes is True
 
     # The original expression tree without caching nodes.
     expr: FilterExpression = filter_selector.expression
@@ -72,6 +74,7 @@ def test_cache_context_path() -> None:
     assert isinstance(path, JSONPath)
     filter_selector = path.selectors[1]
     assert isinstance(filter_selector, FilterSelector)
+    assert filter_selector.cacheable_nodes is True
 
     # The original expression tree without caching nodes.
     expr: FilterExpression = filter_selector.expression
@@ -131,3 +134,25 @@ def test_cache_expires() -> None:
     }
     assert path.findall(some_data) == [{"other": 1}, {"other": 2}, {"other": 3}]
     assert path.findall(other_data) == []
+
+
+def test_uncacheable_filter() -> None:
+    """Test that we don't waste time caching uncacheable expressions."""
+    env = JSONPathEnvironment(filter_caching=True)
+    path = env.compile("$.some[?@.a > 2 and @.b < 4].a")
+    assert isinstance(path, JSONPath)
+    filter_selector = path.selectors[1]
+    assert isinstance(filter_selector, FilterSelector)
+    assert filter_selector.cacheable_nodes is False
+
+    # The original expression tree without caching nodes.
+    expr: FilterExpression = filter_selector.expression
+    assert isinstance(expr, BooleanExpression)
+    expr = expr.expression
+    assert isinstance(expr, InfixExpression)
+    assert isinstance(expr.left, InfixExpression)
+    assert isinstance(expr.right, InfixExpression)
+    assert isinstance(expr.left.left, SelfPath)
+    assert isinstance(expr.left.right, IntegerLiteral)
+    assert isinstance(expr.right.left, SelfPath)
+    assert isinstance(expr.right.right, IntegerLiteral)
