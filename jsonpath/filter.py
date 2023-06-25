@@ -678,8 +678,3 @@ def walk(expr: FilterExpression) -> Iterable[FilterExpression]:
     yield expr
     for child in expr.children():
         yield from walk(child)
-
-
-def is_volatile(expr: FilterExpression) -> bool:
-    """Return `True` if _expr_ is volatile and should not be cached."""
-    return any(expr.volatile for expr in walk(expr))

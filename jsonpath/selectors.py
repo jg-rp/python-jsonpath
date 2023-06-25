@@ -633,7 +633,6 @@ class FilterContext:
     """A filter expression context."""
 
     __slots__ = (
-        "caching",
         "current_key",
         "current",
         "env",

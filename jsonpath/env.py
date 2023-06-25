@@ -113,7 +113,7 @@ class JSONPathEnvironment:
     parser_class: Type[Parser] = Parser
     match_class: Type[JSONPathMatch] = JSONPathMatch
 
-    def __init__(self, *, filter_caching: bool = False) -> None:
+    def __init__(self, *, filter_caching: bool = True) -> None:
         self.filter_caching = filter_caching
 
         self.lexer: Lexer = self.lexer_class(env=self)
