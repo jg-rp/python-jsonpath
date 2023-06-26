@@ -490,7 +490,7 @@ class ListSelector(JSONPathSelector):
 class Filter(JSONPathSelector):
     """A filter selector."""
 
-    __slots__ = ("expression",)
+    __slots__ = ("expression", "cacheable_nodes")
 
     def __init__(
         self,
@@ -501,6 +501,8 @@ class Filter(JSONPathSelector):
     ) -> None:
         super().__init__(env=env, token=token)
         self.expression = expression
+        # Compile-time check for cacheable nodes.
+        self.cacheable_nodes = self.expression.cacheable_nodes()
 
     def __str__(self) -> str:
         return f"[?({self.expression})]"
@@ -508,6 +510,11 @@ class Filter(JSONPathSelector):
     def resolve(  # noqa: PLR0912
         self, matches: Iterable[JSONPathMatch]
     ) -> Iterable[JSONPathMatch]:
+        if self.cacheable_nodes and self.env.filter_caching:
+            expr = self.expression.cache_tree()
+        else:
+            expr = self.expression
+
         for match in matches:
             if isinstance(match.obj, Mapping):
                 for key, val in match.obj.items():
@@ -519,7 +526,7 @@ class Filter(JSONPathSelector):
                         current_key=key,
                     )
                     try:
-                        if self.expression.evaluate(context):
+                        if expr.evaluate(context):
                             _match = self.env.match_class(
                                 filter_context=match.filter_context(),
                                 obj=val,
@@ -545,7 +552,7 @@ class Filter(JSONPathSelector):
                         current_key=i,
                     )
                     try:
-                        if self.expression.evaluate(context):
+                        if expr.evaluate(context):
                             _match = self.env.match_class(
                                 filter_context=match.filter_context(),
                                 obj=obj,
@@ -564,6 +571,11 @@ class Filter(JSONPathSelector):
     async def resolve_async(  # noqa: PLR0912
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
+        if self.cacheable_nodes and self.env.filter_caching:
+            expr = self.expression.cache_tree()
+        else:
+            expr = self.expression
+
         async for match in matches:
             if isinstance(match.obj, Mapping):
                 for key, val in match.obj.items():
@@ -576,7 +588,7 @@ class Filter(JSONPathSelector):
                     )
 
                     try:
-                        result = await self.expression.evaluate_async(context)
+                        result = await expr.evaluate_async(context)
                     except JSONPathTypeError as err:
                         if not err.token:
                             err.token = self.token
@@ -605,7 +617,7 @@ class Filter(JSONPathSelector):
                     )
 
                     try:
-                        result = await self.expression.evaluate_async(context)
+                        result = await expr.evaluate_async(context)
                     except JSONPathTypeError as err:
                         if not err.token:
                             err.token = self.token
@@ -626,7 +638,13 @@ class Filter(JSONPathSelector):
 class FilterContext:
     """A filter expression context."""
 
-    __slots__ = ("current", "current_key", "env", "root", "extra_context")
+    __slots__ = (
+        "current_key",
+        "current",
+        "env",
+        "extra_context",
+        "root",
+    )
 
     def __init__(
         self,

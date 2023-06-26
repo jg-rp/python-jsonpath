@@ -3,9 +3,8 @@
 ::: jsonpath.token.Token
     handler: python
 
-## jsonpath.filter.FilterExpression
-
-TODO:
+::: jsonpath.filter.FilterExpression
+    handler: python
 
 ## jsonpath.lex.Lexer
 

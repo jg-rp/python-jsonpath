@@ -5,6 +5,7 @@
 **Breaking changes**
 
 - Changed the `JSONPathMatch.parts` representation of the non-standard _keys_ selector (default `~`) to be `~` followed by the key name. It used to be two "parts", `~` and key index.
+- All `FilterExpression` subclasses must now implement `children()` and `set_children()`. These methods facilitate filter expression inspection and caching.
 
 **Fixes**
 
@@ -13,9 +14,11 @@
 **Features**
 
 - Added the `JSONPointer` class and methods for converting a `JSONPathMatch` to a `JSONPointer`.
-- Added `jsonpath.resolve()`, a convenience function for resolving a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901).
-- Added `jsonpath.match()`, which returns a `JSONPathMatch` instance for the first match of a path, or `None` if there were no matches.
+- Added `jsonpath.pointer.resolve()`, a function for resolving a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901).
+- Added `jsonpath.match()`, a convenience function returning a `JSONPathMatch` instance for the first match of a path, or `None` if there were no matches.
+- Added filter expression caching. Controlled with the `filter_caching` argument to `JSONPathEnvironment`, filter expression caching is enabled by default. See [#14]
 - All selectors now use `env.match_class` to instantiate new `JSONPathMatch` objects. This allows for subclassing of `JSONPathMatch`.
+- Added `jsonpath.filter.walk()` for the benefit of filter expression static analysis.
 
 ## Version 0.7.1
 

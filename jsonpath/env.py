@@ -69,6 +69,10 @@ class JSONPathEnvironment:
 
     ## Class attributes
 
+    Arguments:
+        filter_caching (bool): If `True`, filter expressions will be cached where
+            possible.
+
     Attributes:
         filter_context_token (str): The pattern used to select extra filter context
             data. Defaults to `"_"`.
@@ -109,7 +113,9 @@ class JSONPathEnvironment:
     parser_class: Type[Parser] = Parser
     match_class: Type[JSONPathMatch] = JSONPathMatch
 
-    def __init__(self) -> None:  # noqa: D107
+    def __init__(self, *, filter_caching: bool = True) -> None:
+        self.filter_caching = filter_caching
+
         self.lexer: Lexer = self.lexer_class(env=self)
         """The lexer bound to this environment."""
 
