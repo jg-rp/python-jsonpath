@@ -42,7 +42,7 @@ class FilterExpression(ABC):
 
         Arguments:
             context: Contextual information the expression might choose
-              use during evaluation.
+                use during evaluation.
 
         Returns:
             The result of evaluating the expression.
