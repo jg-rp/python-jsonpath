@@ -30,8 +30,10 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 """
+import copy
 import dataclasses
 from operator import attrgetter
+from typing import Dict
 from typing import MutableMapping
 from typing import MutableSequence
 from typing import Union
@@ -48,6 +50,7 @@ class Case:
     description: str
     data: Union[MutableSequence[object], MutableMapping[str, object]]
     patch: JSONPatch
+    op: Dict[str, object]
     want: Union[MutableSequence[object], MutableMapping[str, object]]
 
 
@@ -56,66 +59,77 @@ TEST_CASES = [
         description="add an object member",
         data={"foo": "bar"},
         patch=JSONPatch().add(path="/baz", value="qux"),
+        op={"op": "add", "path": "/baz", "value": "qux"},
         want={"foo": "bar", "baz": "qux"},
     ),
     Case(
         description="add an array element",
         data={"foo": ["bar", "baz"]},
         patch=JSONPatch().add(path="/foo/1", value="qux"),
+        op={"op": "add", "path": "/foo/1", "value": "qux"},
         want={"foo": ["bar", "qux", "baz"]},
     ),
     Case(
         description="append to an array",
         data={"foo": ["bar", "baz"]},
         patch=JSONPatch().add(path="/foo/-", value="qux"),
+        op={"op": "add", "path": "/foo/-", "value": "qux"},
         want={"foo": ["bar", "baz", "qux"]},
     ),
     Case(
         description="add to the root",
         data={"foo": "bar"},
         patch=JSONPatch().add(path="", value={"some": "thing"}),
+        op={"op": "add", "path": "", "value": {"some": "thing"}},
         want={"some": "thing"},
     ),
     Case(
         description="remove an object member",
         data={"baz": "qux", "foo": "bar"},
         patch=JSONPatch().remove(path="/baz"),
+        op={"op": "remove", "path": "/baz"},
         want={"foo": "bar"},
     ),
     Case(
         description="remove an array element",
         data={"foo": ["bar", "qux", "baz"]},
         patch=JSONPatch().remove(path="/foo/1"),
+        op={"op": "remove", "path": "/foo/1"},
         want={"foo": ["bar", "baz"]},
     ),
     Case(
         description="replace an object member",
         data={"baz": "qux", "foo": "bar"},
         patch=JSONPatch().replace(path="/baz", value="boo"),
+        op={"op": "replace", "path": "/baz", "value": "boo"},
         want={"baz": "boo", "foo": "bar"},
     ),
     Case(
         description="replace an array element",
         data={"foo": [1, 2, 3]},
         patch=JSONPatch().replace(path="/foo/0", value=9),
+        op={"op": "replace", "path": "/foo/0", "value": 9},
         want={"foo": [9, 2, 3]},
     ),
     Case(
         description="move a value",
         data={"foo": {"bar": "baz", "waldo": "fred"}, "qux": {"corge": "grault"}},
         patch=JSONPatch().move(from_="/foo/waldo", path="/qux/thud"),
+        op={"op": "move", "from": "/foo/waldo", "path": "/qux/thud"},
         want={"foo": {"bar": "baz"}, "qux": {"corge": "grault", "thud": "fred"}},
     ),
     Case(
         description="move an array element",
         data={"foo": ["all", "grass", "cows", "eat"]},
         patch=JSONPatch().move(from_="/foo/1", path="/foo/3"),
+        op={"op": "move", "from": "/foo/1", "path": "/foo/3"},
         want={"foo": ["all", "cows", "eat", "grass"]},
     ),
     Case(
         description="copy a value",
         data={"foo": {"bar": "baz", "waldo": "fred"}, "qux": {"corge": "grault"}},
         patch=JSONPatch().copy(from_="/foo/waldo", path="/qux/thud"),
+        op={"op": "copy", "from": "/foo/waldo", "path": "/qux/thud"},
         want={
             "foo": {"bar": "baz", "waldo": "fred"},
             "qux": {"corge": "grault", "thud": "fred"},
@@ -125,24 +139,28 @@ TEST_CASES = [
         description="copy an array element",
         data={"foo": ["all", "grass", "cows", "eat"]},
         patch=JSONPatch().copy(from_="/foo/1", path="/foo/3"),
+        op={"op": "copy", "path": "/foo/3", "from": "/foo/1"},
         want={"foo": ["all", "grass", "cows", "grass", "eat"]},
     ),
     Case(
         description="test a value",
         data={"baz": "qux", "foo": ["a", 2, "c"]},
         patch=JSONPatch().test(path="/baz", value="qux").test(path="/foo/1", value=2),
+        op={"op": "test", "path": "/baz", "value": "qux"},
         want={"baz": "qux", "foo": ["a", 2, "c"]},
     ),
     Case(
         description="add a nested member object",
         data={"foo": "bar"},
         patch=JSONPatch().add(path="/child", value={"grandchild": {}}),
+        op={"op": "add", "path": "/child", "value": {"grandchild": {}}},
         want={"foo": "bar", "child": {"grandchild": {}}},
     ),
     Case(
         description="add an array value",
         data={"foo": ["bar"]},
         patch=JSONPatch().add(path="/foo/-", value=["abc", "def"]),
+        op={"op": "add", "path": "/foo/-", "value": ["abc", "def"]},
         want={"foo": ["bar", ["abc", "def"]]},
     ),
 ]
@@ -150,7 +168,7 @@ TEST_CASES = [
 
 @pytest.mark.parametrize("case", TEST_CASES, ids=attrgetter("description"))
 def test_rfc6902_examples(case: Case) -> None:
-    assert case.patch.apply(case.data) == case.want
+    assert case.patch.apply(copy.deepcopy(case.data)) == case.want
 
 
 def test_test_op_failure() -> None:
@@ -169,3 +187,10 @@ def test_add_array_index_out_of_range() -> None:
     patch = JSONPatch().add(path="/foo/7", value=99)
     with pytest.raises(JSONPatchError):
         patch.apply({"foo": [1, 2, 3]})
+
+
+@pytest.mark.parametrize("case", TEST_CASES, ids=attrgetter("description"))
+def test_json_patch_constructor(case: Case) -> None:
+    patch = JSONPatch([case.op])
+    assert len(patch.ops) == 1
+    assert patch.apply(copy.deepcopy(case.data)) == case.want

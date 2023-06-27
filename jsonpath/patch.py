@@ -7,6 +7,9 @@ from abc import ABC
 from abc import abstractmethod
 from functools import reduce
 from io import IOBase
+from typing import Iterable
+from typing import List
+from typing import Mapping
 from typing import MutableMapping
 from typing import MutableSequence
 from typing import TypeVar
@@ -241,13 +244,104 @@ class JSONPatch:
 
     def __init__(
         self,
-        *ops: Op,
+        ops: Union[str, IOBase, Iterable[Mapping[str, object]], None] = None,
+        *,
         unicode_escape: bool = True,
         uri_decode: bool = False,
     ) -> None:
-        self.ops = list(ops)
+        self.ops: List[Op] = []
         self.unicode_escape = unicode_escape
         self.uri_decode = uri_decode
+        if ops:
+            self._build(self._load(ops))
+
+    def _load(
+        self, patch: Union[str, IOBase, Iterable[Mapping[str, object]]]
+    ) -> List[Mapping[str, object]]:
+        if isinstance(patch, IOBase):
+            _patch = json.loads(patch.read())
+        elif isinstance(patch, str):
+            _patch = json.loads(patch)
+        else:
+            _patch = patch
+
+        if not isinstance(_patch, list):
+            raise JSONPatchError(
+                "expected an array of patch operations, "
+                f"found {_patch.__class__.__name__}"
+            )
+
+        return _patch
+
+    def _build(self, patch: Iterable[Mapping[str, object]]) -> None:
+        for i, operation in enumerate(patch):
+            try:
+                op = operation["op"]
+            except KeyError as err:
+                raise JSONPatchError(f"missing 'op' member at op {i}") from err
+
+            if op == "add":
+                self.add(
+                    path=self._op_pointer(operation, "path", "add", i),
+                    value=self._op_value(operation, "value", "add", i),
+                )
+            elif op == "remove":
+                self.remove(path=self._op_pointer(operation, "path", "add", i))
+            elif op == "replace":
+                self.replace(
+                    path=self._op_pointer(operation, "path", "replace", i),
+                    value=self._op_value(operation, "value", "replace", i),
+                )
+            elif op == "move":
+                self.move(
+                    from_=self._op_pointer(operation, "from", "move", i),
+                    path=self._op_pointer(operation, "path", "move", i),
+                )
+            elif op == "copy":
+                self.copy(
+                    from_=self._op_pointer(operation, "from", "copy", i),
+                    path=self._op_pointer(operation, "path", "copy", i),
+                )
+            elif op == "test":
+                self.test(
+                    path=self._op_pointer(operation, "path", "test", i),
+                    value=self._op_value(operation, "value", "test", i),
+                )
+            else:
+                raise JSONPatchError(
+                    "expected 'op' to be one of 'add', 'remove', 'replace', "
+                    f"'move', 'copy' or 'test' at op {i}, found {op!r}"
+                )
+
+    def _op_pointer(
+        self, operation: Mapping[str, object], key: str, op: str, i: int
+    ) -> JSONPointer:
+        try:
+            pointer = operation[key]
+        except KeyError as err:
+            raise JSONPatchError(
+                f"missing property {op!r} for op {op!r} at {i}"
+            ) from err
+
+        if not isinstance(pointer, str):
+            raise JSONPatchError(
+                f"expected a JSON Pointer string for op {op!r} at {i}, "
+                f"found {pointer.__class__.__name__}"
+            )
+
+        return JSONPointer(
+            pointer, unicode_escape=self.unicode_escape, uri_decode=self.uri_decode
+        )
+
+    def _op_value(
+        self, operation: Mapping[str, object], key: str, op: str, i: int
+    ) -> object:
+        try:
+            return operation[key]
+        except KeyError as err:
+            raise JSONPatchError(
+                f"missing property {op!r} for op {op!r} at {i}"
+            ) from err
 
     def _ensure_pointer(self, path: Path) -> JSONPointer:
         if isinstance(path, str):
