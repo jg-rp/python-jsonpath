@@ -181,7 +181,7 @@ This is a list of things that you might find in other JSONPath implementation th
 - We don't support extension functions of the form `selector.func()`.
 - We always return a list of matches from `jsonpath.findall()`, never a scalar value.
 - We do not support arithmetic in filter expression.
-- Python JSONPath is strictly read only. There are no update "selectors", although a Python API for working with `JSONPathMatch`s may well be added in the future.
+- Python JSONPath is strictly read only. There are no update "selectors", but we do provide methods for converting `JSONPathMatch` instances to `JSONPointer`s, and a `JSONPatch` builder API for modifying JSON-like data structures using said pointers.
 
 And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-13).
 

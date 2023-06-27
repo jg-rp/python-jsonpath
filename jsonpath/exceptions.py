@@ -100,6 +100,14 @@ class JSONPointerTypeError(JSONPointerResolutionError, TypeError):
     """An exception raised when a pointer resolves a string against a sequence."""
 
 
+class JSONPatchError(Exception):
+    """Base class for all JSON Patch errors."""
+
+
+class JSONPatchTestFailure(JSONPatchError):  # noqa: N818
+    """An exception raised when a JSON Patch _test_ op fails."""
+
+
 def _truncate_message(value: str, num: int, end: str = "...") -> str:
     if len(value) < num:
         return value

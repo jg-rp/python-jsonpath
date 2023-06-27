@@ -275,6 +275,16 @@ class JSONPointer:
             uri_decode=False,
         )
 
+    def is_relative_to(self, other: JSONPointer) -> bool:
+        """Return _True_ if this pointer points to a child of _other_."""
+        return (
+            len(other.parts) < len(self.parts)
+            and self.parts[: len(other.parts)] == other.parts
+        )
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, JSONPointer) and self.parts == other.parts
+
 
 def resolve(
     pointer: Union[str, Iterable[Union[str, int]]],
