@@ -119,7 +119,7 @@ class JSONPointer:
                 try:
                     return getitem(obj, str(key))
                 except KeyError:
-                    raise JSONPointerKeyError(str(err)) from err
+                    raise JSONPointerKeyError(key) from err
             # Handle non-standard keys selector
             if (
                 isinstance(key, str)
@@ -128,7 +128,7 @@ class JSONPointer:
                 and key[1:] in obj
             ):
                 return key[1:]
-            raise JSONPointerKeyError(str(err)) from err
+            raise JSONPointerKeyError(key) from err
         except TypeError as err:
             if isinstance(obj, Sequence):
                 if key == "-":
@@ -143,10 +143,10 @@ class JSONPointer:
                         try:
                             return getitem(obj, int(key))
                         except IndexError as index_err:
-                            raise JSONPointerIndexError(str(index_err)) from index_err
+                            raise JSONPointerIndexError(int(key)) from index_err
             raise JSONPointerTypeError(str(err)) from err
         except IndexError as err:
-            raise JSONPointerIndexError(str(err)) from err
+            raise JSONPointerIndexError(int(key)) from err
 
     def resolve(
         self,

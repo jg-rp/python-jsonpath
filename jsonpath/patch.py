@@ -5,7 +5,6 @@ import copy
 import json
 from abc import ABC
 from abc import abstractmethod
-from functools import reduce
 from io import IOBase
 from typing import Iterable
 from typing import List
@@ -18,14 +17,17 @@ from typing import Union
 from .exceptions import JSONPatchError
 from .exceptions import JSONPatchTestFailure
 from .exceptions import JSONPointerError
+from .exceptions import JSONPointerIndexError
+from .exceptions import JSONPointerKeyError
+from .exceptions import JSONPointerTypeError
 from .pointer import UNDEFINED
 from .pointer import JSONPointer
-
-# TODO: review all error messages
 
 
 class Op(ABC):
     """One of the JSON Patch operations."""
+
+    name = "base"
 
     @abstractmethod
     def apply(
@@ -38,6 +40,8 @@ class OpAdd(Op):
     """The JSON Patch _add_ operation."""
 
     __slots__ = ("path", "value")
+
+    name = "add"
 
     def __init__(self, path: JSONPointer, value: object) -> None:
         self.path = path
@@ -66,7 +70,7 @@ class OpAdd(Op):
             parent[target] = self.value
         else:
             raise JSONPatchError(
-                f"unexpected add operation on {parent.__class__.__name__!r}"
+                f"unexpected operation on {parent.__class__.__name__!r}"
             )
         return data
 
@@ -75,6 +79,8 @@ class OpRemove(Op):
     """The JSON Patch _remove_ operation."""
 
     __slots__ = ("path",)
+
+    name = "remove"
 
     def __init__(self, path: JSONPointer) -> None:
         self.path = path
@@ -96,9 +102,7 @@ class OpRemove(Op):
                 raise JSONPatchError("can't remove nonexistent property")
             del parent[self.path.parts[-1]]
         else:
-            raise JSONPatchError(
-                f"unexpected remove operation on {parent.__class__.__name__}"
-            )
+            raise JSONPatchError(f"unexpected operation on {parent.__class__.__name__}")
         return data
 
 
@@ -106,6 +110,8 @@ class OpReplace(Op):
     """The JSON Patch _replace_ operation."""
 
     __slots__ = ("path", "value")
+
+    name = "replace"
 
     def __init__(self, path: JSONPointer, value: object) -> None:
         self.path = path
@@ -121,16 +127,14 @@ class OpReplace(Op):
 
         if isinstance(parent, MutableSequence):
             if obj is UNDEFINED:
-                raise JSONPatchError("can't remove nonexistent item")
+                raise JSONPatchError("can't replace nonexistent item")
             parent[int(self.path.parts[-1])] = self.value
         elif isinstance(parent, MutableMapping):
             if obj is UNDEFINED:
-                raise JSONPatchError("can't remove nonexistent property")
+                raise JSONPatchError("can't replace nonexistent property")
             parent[self.path.parts[-1]] = self.value
         else:
-            raise JSONPatchError(
-                f"unexpected remove operation on {parent.__class__.__name__}"
-            )
+            raise JSONPatchError(f"unexpected operation on {parent.__class__.__name__}")
         return data
 
 
@@ -138,6 +142,8 @@ class OpMove(Op):
     """The JSON Patch _move_ operation."""
 
     __slots__ = ("source", "dest")
+
+    name = "move"
 
     def __init__(self, from_: JSONPointer, path: JSONPointer) -> None:
         self.source = from_
@@ -172,7 +178,7 @@ class OpMove(Op):
             dest_parent[self.dest.parts[-1]] = source_obj
         else:
             raise JSONPatchError(
-                f"unexpected move operation on {dest_parent.__class__.__name__!r}"
+                f"unexpected operation on {dest_parent.__class__.__name__!r}"
             )
 
         return data
@@ -182,6 +188,8 @@ class OpCopy(Op):
     """The JSON Patch _copy_ operation."""
 
     __slots__ = ("source", "dest")
+
+    name = "copy"
 
     def __init__(self, from_: JSONPointer, path: JSONPointer) -> None:
         self.source = from_
@@ -208,7 +216,7 @@ class OpCopy(Op):
             dest_parent[self.dest.parts[-1]] = copy.deepcopy(source_obj)
         else:
             raise JSONPatchError(
-                f"unexpected copy operation on {dest_parent.__class__.__name__!r}"
+                f"unexpected operation on {dest_parent.__class__.__name__!r}"
             )
 
         return data
@@ -218,6 +226,8 @@ class OpTest(Op):
     """The JSON Patch _test_ operation."""
 
     __slots__ = ("path", "value")
+
+    name = "test"
 
     def __init__(self, path: JSONPointer, value: object) -> None:
         self.path = path
@@ -240,7 +250,23 @@ Self = TypeVar("Self", bound="JSONPatch")
 
 
 class JSONPatch:
-    """A JSON Patch, as per RFC 6902."""
+    """Modify JSON-like data with JSON Patch.
+
+    RFC 6902 defines operations to manipulate a JSON document. `JSONPatch`
+    supports parsing and applying standard JSON Patch formatted operations,
+    and provides a Python builder API following the same semantics as RFC 6902.
+
+    Arguments:
+        ops: A JSON Patch formatted document or equivalent Python objects.
+        unicode_escape: If `True`, UTF-16 escape sequences will be decoded
+            before parsing JSON pointers.
+        uri_decode: If `True`, JSON pointers will be unescaped using _urllib_
+            before being parsed.
+
+    Raises:
+        JSONPatchError: If _ops_ is given and any of the provided operations
+            is malformed.
+    """
 
     def __init__(
         self,
@@ -263,7 +289,7 @@ class JSONPatch:
         elif isinstance(patch, str):
             _patch = json.loads(patch)
         else:
-            _patch = patch
+            _patch = list(patch)
 
         if not isinstance(_patch, list):
             raise JSONPatchError(
@@ -310,7 +336,7 @@ class JSONPatch:
             else:
                 raise JSONPatchError(
                     "expected 'op' to be one of 'add', 'remove', 'replace', "
-                    f"'move', 'copy' or 'test' at op {i}, found {op!r}"
+                    f"'move', 'copy' or 'test' ({op}:{i})"
                 )
 
     def _op_pointer(
@@ -319,14 +345,13 @@ class JSONPatch:
         try:
             pointer = operation[key]
         except KeyError as err:
-            raise JSONPatchError(
-                f"missing property {op!r} for op {op!r} at {i}"
-            ) from err
+            raise JSONPatchError(f"missing property {key!r} ({op}:{i})") from err
 
         if not isinstance(pointer, str):
             raise JSONPatchError(
-                f"expected a JSON Pointer string for op {op!r} at {i}, "
-                f"found {pointer.__class__.__name__}"
+                "expected a JSON Pointer string,"
+                f"found {pointer.__class__.__name__} "
+                f"({op}:{i})"
             )
 
         return JSONPointer(
@@ -339,9 +364,7 @@ class JSONPatch:
         try:
             return operation[key]
         except KeyError as err:
-            raise JSONPatchError(
-                f"missing property {op!r} for op {op!r} at {i}"
-            ) from err
+            raise JSONPatchError(f"missing property {op!r} ({op}:{i})") from err
 
     def _ensure_pointer(self, path: Path) -> JSONPointer:
         if isinstance(path, str):
@@ -354,15 +377,7 @@ class JSONPatch:
         return path
 
     def add(self: Self, path: Path, value: object) -> Self:
-        """Add _value_ to _path_.
-
-        If _path_ specifies an index into an array-like object, _value_ will
-        be inserted into the array at that index. All other items in the array
-        will be shifted to the right.
-
-        If _path_ specifies a JSON object property, _value_ will be assigned to
-        that property, potentially overwriting a value if the property already
-        exists.
+        """Append an _add_ operation to this patch.
 
         Arguments:
             path: A string representation of a JSON Pointer, or one that has
@@ -378,7 +393,7 @@ class JSONPatch:
         return self
 
     def remove(self: Self, path: Path) -> Self:
-        """Remove the value at _path_.
+        """Append a _remove_ operation to this patch.
 
         Arguments:
             path: A string representation of a JSON Pointer, or one that has
@@ -393,7 +408,7 @@ class JSONPatch:
         return self
 
     def replace(self: Self, path: Path, value: object) -> Self:
-        """Replace the object at _path_ with _value_.
+        """Append a _replace_ operation to this patch.
 
         Arguments:
             path: A string representation of a JSON Pointer, or one that has
@@ -409,7 +424,7 @@ class JSONPatch:
         return self
 
     def move(self: Self, from_: Path, path: Path) -> Self:
-        """Move the object at _source_ to _dest_.
+        """Append a _move_ operation to this patch.
 
         Arguments:
             from_: A string representation of a JSON Pointer, or one that has
@@ -427,7 +442,7 @@ class JSONPatch:
         return self
 
     def copy(self: Self, from_: Path, path: Path) -> Self:
-        """Copy the object from _source_ to _dest_.
+        """Append a _copy_ operation to this patch.
 
         Arguments:
             from_: A string representation of a JSON Pointer, or one that has
@@ -445,7 +460,7 @@ class JSONPatch:
         return self
 
     def test(self: Self, path: Path, value: object) -> Self:
-        """Check that the object at _path_ is equal to _value_.
+        """Append a test operation to this patch.
 
         Arguments:
             path: A string representation of a JSON Pointer, or one that has
@@ -466,12 +481,13 @@ class JSONPatch:
     ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
         """Apply all operations from this patch to _data_.
 
-        _data_ is modified in-place. You should make a copy before calling
-        _apply()_ if you need to retain original data.
+        If _data_ is a string or file-like object, it will be loaded with
+        _json.loads_. Otherwise _data_ should be a JSON-like data structure and
+        will be modified in-place.
 
-        Even though _data_ is modified in-place, we return modified data too.
-        This is to allow for replacing _data's_ root element, which is allowed
-        by some patch operations.
+        When modifying _data_ in-place, we return modified data too. This is
+        to allow for replacing _data's_ root element, which is allowed by some
+        patch operations.
 
         Arguments:
             data: The target JSON "document" or equivalent Python objects.
@@ -493,13 +509,64 @@ class JSONPatch:
         else:
             _data = data
 
-        def _apply(
-            _dat: Union[MutableSequence[object], MutableMapping[str, object]],
-            op: Op,
-        ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
-            return op.apply(_dat)
+        for i, op in enumerate(self.ops):
+            try:
+                _data = op.apply(_data)
+            except JSONPatchTestFailure as err:
+                raise JSONPatchTestFailure(f"test failed ({op.name}:{i})") from err
+            except JSONPointerKeyError as err:
+                raise JSONPatchError(
+                    f"pointer key error {err} ({op.name}:{i})"
+                ) from err
+            except JSONPointerIndexError as err:
+                raise JSONPatchError(
+                    f"pointer index error {err} ({op.name}:{i})"
+                ) from err
+            except JSONPointerTypeError as err:
+                raise JSONPatchError(
+                    f"pointer type error {err} ({op.name}:{i})"
+                ) from err
+            except (JSONPointerError, JSONPatchError) as err:
+                raise JSONPatchError(f"{err} ({op.name}:{i})") from err
+        return _data
 
-        try:
-            return reduce(_apply, self.ops, _data)
-        except JSONPointerError as err:
-            raise JSONPatchError(str(err)) from err
+
+def apply(
+    patch: Union[str, IOBase, Iterable[Mapping[str, object]], None],
+    data: Union[str, IOBase, MutableSequence[object], MutableMapping[str, object]],
+    *,
+    unicode_escape: bool = True,
+    uri_decode: bool = False,
+) -> object:
+    """Apply the JSON Patch _patch_ to _data_.
+
+    If _data_ is a string or file-like object, it will be loaded with
+    _json.loads_. Otherwise _data_ should be a JSON-like data structure and
+    will be **modified in-place**.
+
+    When modifying _data_ in-place, we return modified data too. This is
+    to allow for replacing _data's_ root element, which is allowed by some
+    patch operations.
+
+    Arguments:
+        patch: A JSON Patch formatted document or equivalent Python objects.
+        data: The target JSON "document" or equivalent Python objects.
+        unicode_escape: If `True`, UTF-16 escape sequences will be decoded
+            before parsing JSON pointers.
+        uri_decode: If `True`, JSON pointers will be unescaped using _urllib_
+            before being parsed.
+
+    Returns:
+        Modified input data.
+
+    Raises:
+        JSONPatchError: When a patch operation fails.
+        JSONPatchTestFailure: When a _test_ operation does not pass.
+            `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
+
+    """
+    return JSONPatch(
+        patch,
+        unicode_escape=unicode_escape,
+        uri_decode=uri_decode,
+    ).apply(data)

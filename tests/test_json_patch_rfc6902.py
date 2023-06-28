@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 """
 import copy
 import dataclasses
+import re
 from operator import attrgetter
 from typing import Dict
 from typing import MutableMapping
@@ -173,19 +174,21 @@ def test_rfc6902_examples(case: Case) -> None:
 
 def test_test_op_failure() -> None:
     patch = JSONPatch().test(path="/baz", value="bar")
-    with pytest.raises(JSONPatchTestFailure):
+    with pytest.raises(JSONPatchTestFailure, match=re.escape("test failed (test:0)")):
         patch.apply({"baz": "qux"})
 
 
 def test_add_to_nonexistent_target() -> None:
     patch = JSONPatch().add(path="/baz/bat", value="qux")
-    with pytest.raises(JSONPatchError):
+    with pytest.raises(
+        JSONPatchError, match=re.escape("pointer key error 'baz' (add:0)")
+    ):
         patch.apply({"foo": "bar"})
 
 
 def test_add_array_index_out_of_range() -> None:
     patch = JSONPatch().add(path="/foo/7", value=99)
-    with pytest.raises(JSONPatchError):
+    with pytest.raises(JSONPatchError, match=re.escape("index out of range (add:0)")):
         patch.apply({"foo": [1, 2, 3]})
 
 
