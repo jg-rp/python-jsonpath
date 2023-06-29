@@ -14,7 +14,7 @@ from jsonpath import patch
 from jsonpath.exceptions import JSONPatchError
 
 
-class MockMapping(Mapping[str, str]):
+class MockMapping(Mapping):  # type: ignore
     def __getitem__(self, __key: Any) -> Any:
         return "foo"
 
