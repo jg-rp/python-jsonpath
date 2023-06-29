@@ -6,6 +6,7 @@ import json
 from abc import ABC
 from abc import abstractmethod
 from io import IOBase
+from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Mapping
@@ -23,8 +24,6 @@ from .exceptions import JSONPointerTypeError
 from .pointer import UNDEFINED
 from .pointer import JSONPointer
 
-# TODO: to_json()
-
 
 class Op(ABC):
     """One of the JSON Patch operations."""
@@ -36,6 +35,10 @@ class Op(ABC):
         self, data: Union[MutableSequence[object], MutableMapping[str, object]]
     ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
         """Apply this patch operation to _data_."""
+
+    @abstractmethod
+    def asdict(self) -> Dict[str, object]:
+        """Return a dictionary representation of this operation."""
 
 
 class OpAdd(Op):
@@ -76,6 +79,10 @@ class OpAdd(Op):
             )
         return data
 
+    def asdict(self) -> Dict[str, object]:
+        """Return a dictionary representation of this operation."""
+        return {"op": self.name, "path": str(self.path), "value": self.value}
+
 
 class OpRemove(Op):
     """The JSON Patch _remove_ operation."""
@@ -108,6 +115,10 @@ class OpRemove(Op):
                 f"unexpected operation on {parent.__class__.__name__!r}"
             )
         return data
+
+    def asdict(self) -> Dict[str, object]:
+        """Return a dictionary representation of this operation."""
+        return {"op": self.name, "path": str(self.path)}
 
 
 class OpReplace(Op):
@@ -142,6 +153,10 @@ class OpReplace(Op):
                 f"unexpected operation on {parent.__class__.__name__!r}"
             )
         return data
+
+    def asdict(self) -> Dict[str, object]:
+        """Return a dictionary representation of this operation."""
+        return {"op": self.name, "path": str(self.path), "value": self.value}
 
 
 class OpMove(Op):
@@ -189,6 +204,10 @@ class OpMove(Op):
 
         return data
 
+    def asdict(self) -> Dict[str, object]:
+        """Return a dictionary representation of this operation."""
+        return {"op": self.name, "from": str(self.source), "path": str(self.dest)}
+
 
 class OpCopy(Op):
     """The JSON Patch _copy_ operation."""
@@ -227,6 +246,10 @@ class OpCopy(Op):
 
         return data
 
+    def asdict(self) -> Dict[str, object]:
+        """Return a dictionary representation of this operation."""
+        return {"op": self.name, "from": str(self.source), "path": str(self.dest)}
+
 
 class OpTest(Op):
     """The JSON Patch _test_ operation."""
@@ -247,6 +270,10 @@ class OpTest(Op):
         if not obj == self.value:
             raise JSONPatchTestFailure
         return data
+
+    def asdict(self) -> Dict[str, object]:
+        """Return a dictionary representation of this operation."""
+        return {"op": self.name, "path": str(self.path), "value": self.value}
 
 
 Path = Union[str, JSONPointer]
@@ -533,6 +560,10 @@ class JSONPatch:
             except (JSONPointerError, JSONPatchError) as err:
                 raise JSONPatchError(f"{err} ({op.name}:{i})") from err
         return _data
+
+    def asdicts(self) -> List[Dict[str, object]]:
+        """Return a list of this patch's operations as dictionaries."""
+        return [op.asdict() for op in self.ops]
 
 
 def apply(

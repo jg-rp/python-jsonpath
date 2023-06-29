@@ -248,3 +248,17 @@ def test_apply_to_file_like() -> None:
 
     data_doc = StringIO(json.dumps({}))
     assert patch.apply(patch_doc, data_doc) == {"foo": {"bar": [1]}}
+
+
+def test_asdict() -> None:
+    patch_doc = [
+        {"op": "add", "path": "/foo/bar", "value": "foo"},
+        {"op": "remove", "path": "/foo/bar"},
+        {"op": "replace", "path": "/foo/bar", "value": "foo"},
+        {"op": "move", "from": "/baz/foo", "path": "/foo/bar"},
+        {"op": "copy", "from": "/baz/foo", "path": "/foo/bar"},
+        {"op": "test", "path": "/foo/bar", "value": "foo"},
+    ]
+
+    patch = JSONPatch(patch_doc)
+    assert patch.asdicts() == patch_doc
