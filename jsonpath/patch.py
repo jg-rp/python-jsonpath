@@ -23,6 +23,8 @@ from .exceptions import JSONPointerTypeError
 from .pointer import UNDEFINED
 from .pointer import JSONPointer
 
+# TODO: to_json()
+
 
 class Op(ABC):
     """One of the JSON Patch operations."""
@@ -102,7 +104,9 @@ class OpRemove(Op):
                 raise JSONPatchError("can't remove nonexistent property")
             del parent[self.path.parts[-1]]
         else:
-            raise JSONPatchError(f"unexpected operation on {parent.__class__.__name__}")
+            raise JSONPatchError(
+                f"unexpected operation on {parent.__class__.__name__!r}"
+            )
         return data
 
 
@@ -134,7 +138,9 @@ class OpReplace(Op):
                 raise JSONPatchError("can't replace nonexistent property")
             parent[self.path.parts[-1]] = self.value
         else:
-            raise JSONPatchError(f"unexpected operation on {parent.__class__.__name__}")
+            raise JSONPatchError(
+                f"unexpected operation on {parent.__class__.__name__!r}"
+            )
         return data
 
 
@@ -159,7 +165,7 @@ class OpMove(Op):
         source_parent, source_obj = self.source.resolve_parent(data)
 
         if source_obj is UNDEFINED:
-            raise JSONPatchError("source does not exist")
+            raise JSONPatchError("source object does not exist")
 
         if isinstance(source_parent, MutableSequence):
             del source_parent[int(self.source.parts[-1])]
@@ -202,7 +208,7 @@ class OpCopy(Op):
         source_parent, source_obj = self.source.resolve_parent(data)
 
         if source_obj is UNDEFINED:
-            raise JSONPatchError("source does not exist")
+            raise JSONPatchError("source object does not exist")
 
         dest_parent, dest_obj = self.dest.resolve_parent(data)
 
@@ -279,25 +285,23 @@ class JSONPatch:
         self.unicode_escape = unicode_escape
         self.uri_decode = uri_decode
         if ops:
-            self._build(self._load(ops))
+            self._load(ops)
 
-    def _load(
-        self, patch: Union[str, IOBase, Iterable[Mapping[str, object]]]
-    ) -> List[Mapping[str, object]]:
+    def _load(self, patch: Union[str, IOBase, Iterable[Mapping[str, object]]]) -> None:
         if isinstance(patch, IOBase):
             _patch = json.loads(patch.read())
         elif isinstance(patch, str):
             _patch = json.loads(patch)
         else:
-            _patch = list(patch)
+            _patch = patch
 
-        if not isinstance(_patch, list):
+        try:
+            self._build(_patch)
+        except TypeError as err:
             raise JSONPatchError(
-                "expected an array of patch operations, "
-                f"found {_patch.__class__.__name__}"
-            )
-
-        return _patch
+                "expected a sequence of patch operations, "
+                f"found {_patch.__class__.__name__!r}"
+            ) from err
 
     def _build(self, patch: Iterable[Mapping[str, object]]) -> None:
         for i, operation in enumerate(patch):
@@ -349,8 +353,8 @@ class JSONPatch:
 
         if not isinstance(pointer, str):
             raise JSONPatchError(
-                "expected a JSON Pointer string,"
-                f"found {pointer.__class__.__name__} "
+                f"expected a JSON Pointer string for {key!r}, "
+                f"found {pointer.__class__.__name__!r} "
                 f"({op}:{i})"
             )
 
@@ -364,7 +368,7 @@ class JSONPatch:
         try:
             return operation[key]
         except KeyError as err:
-            raise JSONPatchError(f"missing property {op!r} ({op}:{i})") from err
+            raise JSONPatchError(f"missing property {key!r} ({op}:{i})") from err
 
     def _ensure_pointer(self, path: Path) -> JSONPointer:
         if isinstance(path, str):

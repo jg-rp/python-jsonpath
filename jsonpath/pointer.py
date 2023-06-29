@@ -144,8 +144,10 @@ class JSONPointer:
                             return getitem(obj, int(key))
                         except IndexError as index_err:
                             raise JSONPointerIndexError(int(key)) from index_err
+            # TODO: include key and truncated obj
             raise JSONPointerTypeError(str(err)) from err
         except IndexError as err:
+            # TODO: include obj name/type
             raise JSONPointerIndexError(int(key)) from err
 
     def resolve(
