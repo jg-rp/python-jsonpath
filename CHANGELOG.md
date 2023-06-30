@@ -13,8 +13,10 @@
 
 **Features**
 
-- Added the `JSONPointer` class and methods for converting a `JSONPathMatch` to a `JSONPointer`.
-- Added `jsonpath.pointer.resolve()`, a function for resolving a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901).
+- Added the `JSONPointer` class and methods for converting a `JSONPathMatch` to a `JSONPointer`. `JSONPointer` is compliant with [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901).
+- Added the `JSONPatch` class. `JSONPatch` implements [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902).
+- Added `jsonpath.pointer.resolve()`, a convenience function for resolving a JSON Pointer.
+- Added `jsonpath.patch.apply()`, a convenience function for applying a JSON Patch.
 - Added `jsonpath.match()`, a convenience function returning a `JSONPathMatch` instance for the first match of a path, or `None` if there were no matches.
 - Added filter expression caching. Controlled with the `filter_caching` argument to `JSONPathEnvironment`, filter expression caching is enabled by default. See [#14]
 - All selectors now use `env.match_class` to instantiate new `JSONPathMatch` objects. This allows for subclassing of `JSONPathMatch`.

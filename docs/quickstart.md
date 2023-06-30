@@ -4,7 +4,7 @@ This page gets you started using JSONPath wih Python, see [JSONPath Syntax](synt
 
 ## `findall(path, data)`
 
-Find all objects matching a JSONPath with [`jsonpath.findall()`](api.md#jsonpath.env.JSONPathEnvironment.findall). It takes, as arguments, a JSONPath string and some _data_ object. It always returns a list of objects selected from the given data.
+Find all objects matching a JSONPath with [`jsonpath.findall()`](api.md#jsonpath.env.JSONPathEnvironment.findall). It takes, as arguments, a JSONPath string and some _data_ object. It always returns a list of objects selected from _data_, never a scalar value.
 
 _data_ can be a file-like object or string containing JSON formatted data, or a Python [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) or [`Sequence`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence), like a dictionary or list. In this example we select user names from a dictionary containing a list of user dictionaries.
 
@@ -52,7 +52,7 @@ with open("users.json") as fd:
 
 ## `finditer(path, data)`
 
-Use [`jsonpath.finditer()`](api.md#jsonpath.env.JSONPathEnvironment.finditer) to create an iterator which yields instances of [`jsonpath.JSONPathMatch`](api.md#jsonpath.JSONPathMatch) for every object in some data that matches a JSONPath. It accepts the same arguments as [`findall()`](#findall), a path string and _data_ from which to select matches.
+Use [`jsonpath.finditer()`](api.md#jsonpath.env.JSONPathEnvironment.finditer) to iterate over instances of [`jsonpath.JSONPathMatch`](api.md#jsonpath.JSONPathMatch) for every object in _data_ that matches _path_. It accepts the same arguments as [`findall()`](#findall), a path string and data from which to select matches.
 
 ```python
 import jsonpath
@@ -169,11 +169,11 @@ if match:
     print(match.obj)  # Sue
 ```
 
-## `resolve(pointer, data)`
+## `pointer.resolve(pointer, data)`
 
 **_New in version 0.8.0_**
 
-Resolve a [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901). A JSON Pointer references a single object on a specific "path" in a JSON document. Here, _pointer_ can be a string representation of a JSON Pointer, or a list of parts that make up a pointer. _data_ can be a file-like object or string containing JSON formatted data, or equivalent Python objects.
+Resolve a JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) against some data. A JSON Pointer references a single object on a specific "path" in a JSON document. Here, _pointer_ can be a string representation of a JSON Pointer or a list of parts that make up a pointer. _data_ can be a file-like object or string containing JSON formatted data, or equivalent Python objects.
 
 ```python
 from jsonpath import pointer
@@ -229,6 +229,68 @@ print(sue_score)  # 0
 ```
 
 See also [`JSONPathMatch.pointer()`](api.md#jsonpath.match.JSONPathMatch.pointer), which builds a [`JSONPointer`](api.md#jsonpath.JSONPointer) from a `JSONPathMatch`.
+
+## `patch.apply(patch, data)`
+
+**_New in version 0.8.0_**
+
+Apply a JSON Patch ([RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)) to some data. A JSON Patch defines update operation to perform on a JSON document.
+
+_patch_ can be a string or file-like object containing a valid JSON Patch document, or an iterable of dictionaries.
+
+_data_ is the target JSON document to modify. It can be a file-like object or string containing JSON formatted data, or equivalent Python objects. **_data_ is modified in-place**.
+
+```python
+from jsonpath import patch
+
+patch_operations = [
+    {"op": "add", "path": "/some/foo", "value": {"foo": {}}},
+    {"op": "add", "path": "/some/foo", "value": {"bar": []}},
+    {"op": "copy", "from": "/some/other", "path": "/some/foo/else"},
+    {"op": "add", "path": "/some/foo/bar/-", "value": 1},
+]
+
+data = {"some": {"other": "thing"}}
+patch.apply(patch_operations, data)
+print(data) # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}}
+```
+
+Use the [JSONPatch](api.md#jsonpath.JSONPatch) class to create a patch for repeated application.
+
+```python
+from jsonpath import JSONPatch
+
+patch = JSONPatch(
+    [
+        {"op": "add", "path": "/some/foo", "value": {"foo": {}}},
+        {"op": "add", "path": "/some/foo", "value": {"bar": []}},
+        {"op": "copy", "from": "/some/other", "path": "/some/foo/else"},
+        {"op": "add", "path": "/some/foo/bar/-", "value": 1},
+    ]
+)
+
+data = {"some": {"other": "thing"}}
+patch.apply(data)
+print(data)  # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}}
+```
+
+[JSONPatch](api.md#jsonpath.JSONPatch) also offers a builder API for constructing JSON patch documents. We use strings as JSON Pointers in this example, but existing [JSONPointer](api.md#jsonpath.JSONPointer) instances are OK too.
+
+```python
+from jsonpath import JSONPatch
+
+patch = (
+    JSONPatch()
+    .add("/some/foo", {"foo": []})
+    .add("/some/foo", {"bar": []})
+    .copy("/some/other", "/some/foo/else")
+    .add("/some/foo/bar/-", "/some/foo/else")
+)
+
+data = {"some": {"other": "thing"}}
+patch.apply(data)
+print(data)  # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}}
+```
 
 ## What's Next?
 

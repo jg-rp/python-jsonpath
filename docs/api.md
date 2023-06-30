@@ -13,3 +13,6 @@
 
 ::: jsonpath.JSONPointer
     handler: python
+
+::: jsonpath.JSONPatch
+    handler: python

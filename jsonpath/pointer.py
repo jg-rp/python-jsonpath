@@ -27,7 +27,7 @@ UNDEFINED = object()
 
 
 class JSONPointer:
-    """A JSON Pointer, as per RFC 6901.
+    """Identify a single, specific value in JSON-like data, as per RFC 6901.
 
     Args:
         pointer: A string representation of a JSON Pointer.
@@ -119,7 +119,7 @@ class JSONPointer:
                 try:
                     return getitem(obj, str(key))
                 except KeyError:
-                    raise JSONPointerKeyError(str(err)) from err
+                    raise JSONPointerKeyError(key) from err
             # Handle non-standard keys selector
             if (
                 isinstance(key, str)
@@ -128,7 +128,7 @@ class JSONPointer:
                 and key[1:] in obj
             ):
                 return key[1:]
-            raise JSONPointerKeyError(str(err)) from err
+            raise JSONPointerKeyError(key) from err
         except TypeError as err:
             if isinstance(obj, Sequence):
                 if key == "-":
@@ -143,10 +143,12 @@ class JSONPointer:
                         try:
                             return getitem(obj, int(key))
                         except IndexError as index_err:
-                            raise JSONPointerIndexError(str(index_err)) from index_err
+                            raise JSONPointerIndexError(int(key)) from index_err
+            # TODO: include key and truncated obj
             raise JSONPointerTypeError(str(err)) from err
         except IndexError as err:
-            raise JSONPointerIndexError(str(err)) from err
+            # TODO: include obj name/type
+            raise JSONPointerIndexError(int(key)) from err
 
     def resolve(
         self,
@@ -274,6 +276,16 @@ class JSONPointer:
             unicode_escape=False,
             uri_decode=False,
         )
+
+    def is_relative_to(self, other: JSONPointer) -> bool:
+        """Return _True_ if this pointer points to a child of _other_."""
+        return (
+            len(other.parts) < len(self.parts)
+            and self.parts[: len(other.parts)] == other.parts
+        )
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, JSONPointer) and self.parts == other.parts
 
 
 def resolve(

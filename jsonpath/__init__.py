@@ -17,6 +17,7 @@ from .filter import UNDEFINED
 from .lex import Lexer
 from .match import JSONPathMatch
 from .parse import Parser
+from .patch import JSONPatch
 from .path import CompoundJSONPath
 from .path import JSONPath
 from .pointer import JSONPointer
@@ -29,6 +30,7 @@ __all__ = (
     "findall",
     "finditer_async",
     "finditer",
+    "JSONPatch",
     "JSONPath",
     "JSONPathEnvironment",
     "JSONPathError",
