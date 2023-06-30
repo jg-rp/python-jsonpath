@@ -4,7 +4,7 @@ This page gets you started using JSONPath wih Python, see [JSONPath Syntax](synt
 
 ## `findall(path, data)`
 
-Find all objects matching a JSONPath with [`jsonpath.findall()`](api.md#jsonpath.env.JSONPathEnvironment.findall). It takes, as arguments, a JSONPath string and some _data_ object. It always returns a list of objects selected from the given data.
+Find all objects matching a JSONPath with [`jsonpath.findall()`](api.md#jsonpath.env.JSONPathEnvironment.findall). It takes, as arguments, a JSONPath string and some _data_ object. It always returns a list of objects selected from _data_, never a scalar value.
 
 _data_ can be a file-like object or string containing JSON formatted data, or a Python [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) or [`Sequence`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence), like a dictionary or list. In this example we select user names from a dictionary containing a list of user dictionaries.
 
@@ -274,7 +274,7 @@ patch.apply(data)
 print(data)  # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}}
 ```
 
-[JSONPatch](api.md#jsonpath.JSONPatch) also offers a builder API for constructing JSON patch documents. We use strings as JSON Pointers in this example, but existing [JSONPointer](api.md#jsonpath.JSONPointer)s are OK too.
+[JSONPatch](api.md#jsonpath.JSONPatch) also offers a builder API for constructing JSON patch documents. We use strings as JSON Pointers in this example, but existing [JSONPointer](api.md#jsonpath.JSONPointer) instances are OK too.
 
 ```python
 from jsonpath import JSONPatch
