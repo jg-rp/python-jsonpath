@@ -43,6 +43,12 @@ Or [Pipenv](https://pipenv.pypa.io/en/latest/):
 pipenv install -u python-jsonpath
 ```
 
+Or from [conda-forge](https://anaconda.org/conda-forge/python-jsonpath):
+
+```console
+conda install -c conda-forge python-jsonpath
+```
+
 ## Links
 
 - Documentation: https://jg-rp.github.io/python-jsonpath/.

@@ -20,6 +20,12 @@ Or [Pipenv](https://pipenv.pypa.io/en/latest/):
 pipenv install python-jsonpath
 ```
 
+Or from [conda-forge](https://anaconda.org/conda-forge/python-jsonpath):
+
+```console
+conda install -c conda-forge python-jsonpath
+```
+
 ## Example
 
 ```python
