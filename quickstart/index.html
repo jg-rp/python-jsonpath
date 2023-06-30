@@ -19,7 +19,7 @@
         <link rel="next" href="../advanced/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.12">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
     
     
       
@@ -27,10 +27,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.26e3688c.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.a6bdf11c.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -351,6 +351,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#matchpath-data" class="md-nav__link">
+    match(path, data)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pointerresolvepointer-data" class="md-nav__link">
+    pointer.resolve(pointer, data)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#patchapplypatch-data" class="md-nav__link">
+    patch.apply(patch, data)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#whats-next" class="md-nav__link">
     What's Next?
   </a>
@@ -592,6 +613,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#matchpath-data" class="md-nav__link">
+    match(path, data)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pointerresolvepointer-data" class="md-nav__link">
+    pointer.resolve(pointer, data)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#patchapplypatch-data" class="md-nav__link">
+    patch.apply(patch, data)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#whats-next" class="md-nav__link">
     What's Next?
   </a>
@@ -616,7 +658,7 @@
 <h1 id="quick-start">Quick Start</h1>
 <p>This page gets you started using JSONPath wih Python, see <a href="../syntax/">JSONPath Syntax</a> for information on JSONPath selector syntax.</p>
 <h2 id="findallpath-data"><code>findall(path, data)</code></h2>
-<p>Find all objects matching a JSONPath with <a href="../api/#jsonpath.env.JSONPathEnvironment.findall"><code>jsonpath.findall()</code></a>. It takes, as arguments, a JSONPath string and some <em>data</em> object. It always returns a list of objects selected from the given data.</p>
+<p>Find all objects matching a JSONPath with <a href="../api/#jsonpath.env.JSONPathEnvironment.findall"><code>jsonpath.findall()</code></a>. It takes, as arguments, a JSONPath string and some <em>data</em> object. It always returns a list of objects selected from <em>data</em>, never a scalar value.</p>
 <p><em>data</em> can be a file-like object or string containing JSON formatted data, or a Python <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping"><code>Mapping</code></a> or <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence"><code>Sequence</code></a>, like a dictionary or list. In this example we select user names from a dictionary containing a list of user dictionaries.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
@@ -653,7 +695,7 @@
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">user_names</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;$.users.*.name&quot;</span><span class="p">,</span> <span class="n">fd</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="finditerpath-data"><code>finditer(path, data)</code></h2>
-<p>Use <a href="../api/#jsonpath.env.JSONPathEnvironment.finditer"><code>jsonpath.finditer()</code></a> to create an iterator which yields instances of <a href="../api/#jsonpath.JSONPathMatch"><code>jsonpath.JSONPathMatch</code></a> for every object in some data that matches a JSONPath. It accepts the same arguments as <a href="#findall"><code>findall()</code></a>, a path string and <em>data</em> from which to select matches.</p>
+<p>Use <a href="../api/#jsonpath.env.JSONPathEnvironment.finditer"><code>jsonpath.finditer()</code></a> to iterate over instances of <a href="../api/#jsonpath.JSONPathMatch"><code>jsonpath.JSONPathMatch</code></a> for every object in <em>data</em> that matches <em>path</em>. It accepts the same arguments as <a href="#findall"><code>findall()</code></a>, a path string and data from which to select matches.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
@@ -723,10 +765,142 @@
 </span><span id="__span-5-31"><a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="n">some_users</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">some_data</span><span class="p">)</span>
 </span><span id="__span-5-32"><a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="n">other_users</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">other_data</span><span class="p">)</span>
 </span></code></pre></div>
+<h2 id="matchpath-data"><code>match(path, data)</code></h2>
+<p><strong><em>New in version 0.8.0</em></strong></p>
+<p>Get a <a href="../api/#jsonpath.JSONPathMatch"><code>jsonpath.JSONPathMatch</code></a> instance for the first match found in <em>data</em>. If there are no matches, <code>None</code> is returned. <code>match()</code> accepts the same arguments as <a href="#findall"><code>findall()</code></a>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>        <span class="p">{</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sue&quot;</span><span class="p">,</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>        <span class="p">},</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>        <span class="p">{</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">,</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">86</span><span class="p">,</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>        <span class="p">},</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>        <span class="p">{</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sally&quot;</span><span class="p">,</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">84</span><span class="p">,</span>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>        <span class="p">},</span>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>        <span class="p">{</span>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Jane&quot;</span><span class="p">,</span>
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">55</span><span class="p">,</span>
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>        <span class="p">},</span>
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>    <span class="p">]</span>
+</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="p">}</span>
+</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>
+</span><span id="__span-6-24"><a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="n">match</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;$.users[?@.score &gt; 85].name&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span id="__span-6-25"><a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+</span><span id="__span-6-26"><a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>  <span class="c1"># &#39;Sue&#39; @ $[&#39;users&#39;][0][&#39;name&#39;]</span>
+</span><span id="__span-6-27"><a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>  <span class="c1"># Sue</span>
+</span></code></pre></div>
+<h2 id="pointerresolvepointer-data"><code>pointer.resolve(pointer, data)</code></h2>
+<p><strong><em>New in version 0.8.0</em></strong></p>
+<p>Resolve a JSON Pointer (<a href="https://datatracker.ietf.org/doc/html/rfc6901">RFC 6901</a>) against some data. A JSON Pointer references a single object on a specific "path" in a JSON document. Here, <em>pointer</em> can be a string representation of a JSON Pointer or a list of parts that make up a pointer. <em>data</em> can be a file-like object or string containing JSON formatted data, or equivalent Python objects.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span> <span class="nn">jsonpath</span> <span class="kn">import</span> <span class="n">pointer</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        <span class="p">{</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sue&quot;</span><span class="p">,</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>        <span class="p">},</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>        <span class="p">{</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">,</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">86</span><span class="p">,</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>        <span class="p">},</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>        <span class="p">{</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sally&quot;</span><span class="p">,</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">84</span><span class="p">,</span>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>        <span class="p">},</span>
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>        <span class="p">{</span>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Jane&quot;</span><span class="p">,</span>
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">55</span><span class="p">,</span>
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>        <span class="p">},</span>
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>    <span class="p">]</span>
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="p">}</span>
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>
+</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="n">sue_score</span> <span class="o">=</span> <span class="n">pointer</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="s2">&quot;/users/0/score&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="nb">print</span><span class="p">(</span><span class="n">sue_score</span><span class="p">)</span>  <span class="c1"># 100</span>
+</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>
+</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="n">jane_score</span> <span class="o">=</span> <span class="n">pointer</span><span class="o">.</span><span class="n">resolve</span><span class="p">([</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">)</span>
+</span><span id="__span-7-28"><a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a><span class="nb">print</span><span class="p">(</span><span class="n">jane_score</span><span class="p">)</span>  <span class="c1"># 55</span>
+</span></code></pre></div>
+<p>If the pointer can't be resolved against the target JSON document - due to missing keys/properties or out of range indices - a <code>JSONPointerIndexError</code>, <code>JSONPointerKeyError</code> or <code>JSONPointerTypeError</code> will be raised, each of which inherit from <code>JSONPointerResolutionError</code>. A default value can be given, which will be returned in the event of a <code>JSONPointerResolutionError</code>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span> <span class="nn">jsonpath</span> <span class="kn">import</span> <span class="n">pointer</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>        <span class="p">{</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sue&quot;</span><span class="p">,</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>        <span class="p">},</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>        <span class="p">{</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">,</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">86</span><span class="p">,</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>        <span class="p">},</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>    <span class="p">]</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="p">}</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="n">sue_score</span> <span class="o">=</span> <span class="n">pointer</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="s2">&quot;/users/99/score&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">sue_score</span><span class="p">)</span>  <span class="c1"># 0</span>
+</span></code></pre></div>
+<p>See also <a href="../api/#jsonpath.match.JSONPathMatch.pointer"><code>JSONPathMatch.pointer()</code></a>, which builds a <a href="../api/#jsonpath.JSONPointer"><code>JSONPointer</code></a> from a <code>JSONPathMatch</code>.</p>
+<h2 id="patchapplypatch-data"><code>patch.apply(patch, data)</code></h2>
+<p><strong><em>New in version 0.8.0</em></strong></p>
+<p>Apply a JSON Patch (<a href="https://datatracker.ietf.org/doc/html/rfc6902">RFC 6902</a>) to some data. A JSON Patch defines update operation to perform on a JSON document.</p>
+<p><em>patch</em> can be a string or file-like object containing a valid JSON Patch document, or an iterable of dictionaries.</p>
+<p><em>data</em> is the target JSON document to modify. It can be a file-like object or string containing JSON formatted data, or equivalent Python objects. <strong><em>data</em> is modified in-place</strong>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span> <span class="nn">jsonpath</span> <span class="kn">import</span> <span class="n">patch</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">patch_operations</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/foo&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">{}}},</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/foo&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="p">[]}},</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/other&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/foo/else&quot;</span><span class="p">},</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/foo/bar/-&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="p">]</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="s2">&quot;thing&quot;</span><span class="p">}}</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="n">patch</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">patch_operations</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1"># {&#39;some&#39;: {&#39;other&#39;: &#39;thing&#39;, &#39;foo&#39;: {&#39;bar&#39;: [1], &#39;else&#39;: &#39;thing&#39;}}}</span>
+</span></code></pre></div>
+<p>Use the <a href="../api/#jsonpath.JSONPatch">JSONPatch</a> class to create a patch for repeated application.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span> <span class="nn">jsonpath</span> <span class="kn">import</span> <span class="n">JSONPatch</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">patch</span> <span class="o">=</span> <span class="n">JSONPatch</span><span class="p">(</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="p">[</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>        <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/foo&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">{}}},</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>        <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/foo&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="p">[]}},</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>        <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/other&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/foo/else&quot;</span><span class="p">},</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>        <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/foo/bar/-&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>    <span class="p">]</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="p">)</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="s2">&quot;thing&quot;</span><span class="p">}}</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="n">patch</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># {&#39;some&#39;: {&#39;other&#39;: &#39;thing&#39;, &#39;foo&#39;: {&#39;bar&#39;: [1], &#39;else&#39;: &#39;thing&#39;}}}</span>
+</span></code></pre></div>
+<p><a href="../api/#jsonpath.JSONPatch">JSONPatch</a> also offers a builder API for constructing JSON patch documents. We use strings as JSON Pointers in this example, but existing <a href="../api/#jsonpath.JSONPointer">JSONPointer</a> instances are OK too.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span> <span class="nn">jsonpath</span> <span class="kn">import</span> <span class="n">JSONPatch</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">patch</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="n">JSONPatch</span><span class="p">()</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;/some/foo&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">[]})</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;/some/foo&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="p">[]})</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>    <span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;/some/other&quot;</span><span class="p">,</span> <span class="s2">&quot;/some/foo/else&quot;</span><span class="p">)</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;/some/foo/bar/-&quot;</span><span class="p">,</span> <span class="s2">&quot;/some/foo/else&quot;</span><span class="p">)</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="p">)</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="s2">&quot;thing&quot;</span><span class="p">}}</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="n">patch</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># {&#39;some&#39;: {&#39;other&#39;: &#39;thing&#39;, &#39;foo&#39;: {&#39;bar&#39;: [1], &#39;else&#39;: &#39;thing&#39;}}}</span>
+</span></code></pre></div>
 <h2 id="whats-next">What's Next?</h2>
 <p>Read about user-defined filter functions at <a href="../advanced/#function-extensions">Function Extensions</a>, or see how to make extra data available to filters with <a href="../advanced/#extra-filter-context">Extra Filter Context</a>.</p>
 <p><code>findall()</code>, <code>finditer()</code> and <code>compile()</code> are shortcuts that use the default<a href="../api/#jsonpath.JSONPathEnvironment"><code>JSONPathEnvironment</code></a>. <code>jsonpath.findall(path, data)</code> is equivalent to:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">jsonpath</span><span class="o">.</span><span class="n">JSONPathEnvironment</span><span class="p">()</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">jsonpath</span><span class="o">.</span><span class="n">JSONPathEnvironment</span><span class="p">()</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </span></code></pre></div>
 <p>If you would like to customize Python JSONPath, see <a href="../advanced/#custom-environments">Advanced Usage</a>.</p>
 
@@ -769,7 +943,7 @@
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.c2be25ad.min.js"></script>
+      <script src="../assets/javascripts/bundle.a51614de.min.js"></script>
       
     
   </body>

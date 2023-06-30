@@ -19,7 +19,7 @@
         <link rel="next" href="../exceptions/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.12">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
     
     
       
@@ -27,10 +27,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.26e3688c.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.a6bdf11c.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -508,9 +508,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#jsonpathfilterfilterexpression" class="md-nav__link">
-    jsonpath.filter.FilterExpression
+  <a href="#jsonpath.filter.FilterExpression" class="md-nav__link">
+    FilterExpression
   </a>
+  
+    <nav class="md-nav" aria-label="FilterExpression">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.filter.FilterExpression.children" class="md-nav__link">
+    children()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.filter.FilterExpression.evaluate" class="md-nav__link">
+    evaluate()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.filter.FilterExpression.evaluate_async" class="md-nav__link">
+    evaluate_async()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.filter.FilterExpression.set_children" class="md-nav__link">
+    set_children()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -618,9 +652,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#jsonpathfilterfilterexpression" class="md-nav__link">
-    jsonpath.filter.FilterExpression
+  <a href="#jsonpath.filter.FilterExpression" class="md-nav__link">
+    FilterExpression
   </a>
+  
+    <nav class="md-nav" aria-label="FilterExpression">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.filter.FilterExpression.children" class="md-nav__link">
+    children()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.filter.FilterExpression.evaluate" class="md-nav__link">
+    evaluate()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.filter.FilterExpression.evaluate_async" class="md-nav__link">
+    evaluate_async()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.filter.FilterExpression.set_children" class="md-nav__link">
+    set_children()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -697,8 +765,10 @@
         <tr>
           <td><code>kind</code></td>
           <td class="doc-attribute-details">
-            <p>The token's type. It is always one of the constants defined
+            <div class="doc-md-description">
+              <p>The token's type. It is always one of the constants defined
 in <em>jsonpath.token.py</em>.</p>
+            </div>
             <p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
@@ -710,7 +780,9 @@ in <em>jsonpath.token.py</em>.</p>
         <tr>
           <td><code>value</code></td>
           <td class="doc-attribute-details">
-            <p>The <em>path</em> substring containing text for the token.</p>
+            <div class="doc-md-description">
+              <p>The <em>path</em> substring containing text for the token.</p>
+            </div>
             <p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
@@ -722,7 +794,9 @@ in <em>jsonpath.token.py</em>.</p>
         <tr>
           <td><code>index</code></td>
           <td class="doc-attribute-details">
-            <p>The index at which <em>value</em> starts in <em>path</em>.</p>
+            <div class="doc-md-description">
+              <p>The index at which <em>value</em> starts in <em>path</em>.</p>
+            </div>
             <p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
@@ -734,8 +808,10 @@ in <em>jsonpath.token.py</em>.</p>
         <tr>
           <td><code>path</code></td>
           <td class="doc-attribute-details">
-            <p>A reference to the complete JSONPath string from which this
+            <div class="doc-md-description">
+              <p>A reference to the complete JSONPath string from which this
 token derives.</p>
+            </div>
             <p>
                 <span class="doc-attribute-annotation">
                   <b>TYPE:</b>
@@ -787,9 +863,195 @@ token derives.</p>
 
   </div>
 
-</div><h2 id="jsonpathfilterfilterexpression">jsonpath.filter.FilterExpression</h2>
-<p>TODO:</p>
-<h2 id="jsonpathlexlexer">jsonpath.lex.Lexer</h2>
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="jsonpath.filter.FilterExpression" class="doc doc-heading">
+        <span class="doc doc-object-name doc-class-name">jsonpath.filter.FilterExpression</span>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><span title="abc.ABC">ABC</span></code></p>
+
+  
+      <p>Base class for all filter expression nodes.</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="jsonpath.filter.FilterExpression.children" class="doc doc-heading">
+        <span class="doc doc-object-name doc-function-name">children</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">children</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">FilterExpression</span><span class="p">]</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Return a list of direct child expressions.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="jsonpath.filter.FilterExpression.evaluate" class="doc doc-heading">
+        <span class="doc doc-object-name doc-function-name">evaluate</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">evaluate</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">FilterContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Resolve the filter expression in the given <em>context</em>.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>context</code></td>
+          <td class="doc-param-details">
+            <div class="doc-md-description">
+              <p>Contextual information the expression might choose
+use during evaluation.</p>
+            </div>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="jsonpath.selectors.FilterContext">FilterContext</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>RETURNS</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+              <span class="doc-returns-annotation">
+                  <code>object</code>
+              </span>
+          </td>
+          <td class="doc-returns-details">
+            <div class="doc-md-description">
+              <p>The result of evaluating the expression.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="jsonpath.filter.FilterExpression.evaluate_async" class="doc doc-heading">
+        <span class="doc doc-object-name doc-function-name">evaluate_async</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">evaluate_async</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">FilterContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>An async version of <code>evaluate</code>.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="jsonpath.filter.FilterExpression.set_children" class="doc doc-heading">
+        <span class="doc doc-object-name doc-function-name">set_children</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">set_children</span><span class="p">(</span><span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FilterExpression</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Update this expression's child expressions.</p>
+<p><em>children</em> is assumed to have the same number of items as is returned
+by <em>self.children</em>, and in the same order.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div><h2 id="jsonpathlexlexer">jsonpath.lex.Lexer</h2>
 <p>TODO:</p>
 <h2 id="jsonpathparseparser">jsonpath.parse.Parser</h2>
 <p>TODO:</p>
@@ -837,7 +1099,7 @@ token derives.</p>
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.c2be25ad.min.js"></script>
+      <script src="../assets/javascripts/bundle.a51614de.min.js"></script>
       
     
   </body>

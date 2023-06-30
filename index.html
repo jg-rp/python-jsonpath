@@ -17,7 +17,7 @@
         <link rel="next" href="quickstart/">
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.12">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
     
     
       
@@ -25,10 +25,10 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.26e3688c.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.a6bdf11c.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -598,6 +598,7 @@
 <h1 id="python-jsonpath">Python JSONPath</h1>
 <p>JSONPath is a mini language for selecting objects from data formatted in JavaScript Object Notation, or equivalent Python objects, like dictionaries and lists.</p>
 <p>Python JSONPath is a non-evaluating, read-only implementation of JSONPath, suitable for situations where JSONPath query authors are untrusted. We follow most of the <a href="https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-13">IETF JSONPath draft</a>. See <a href="syntax/#notable-differences">Notable differences</a> for a list of areas where we deviate from the standard.</p>
+<p>Since version 0.8.0, we also include implementations of <a href="api/#jsonpath.JSONPointer">JSON Pointer</a> (<a href="https://datatracker.ietf.org/doc/html/rfc6901">RFC 6901</a>) and <a href="api/#jsonpath.JSONPatch">JSON Patch</a> (<a href="https://datatracker.ietf.org/doc/html/rfc6902">RFC 6902</a>), plus methods for converting a <a href="api/#jsonpath.JSONPathMatch">JSONPathMatch</a> to a <code>JSONPointer</code>.</p>
 <h2 id="install">Install</h2>
 <p>Install Python JSONPath using <a href="https://pip.pypa.io/en/stable/getting-started/">pip</a>:</p>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="go">pip install python-jsonpath</span>
@@ -605,89 +606,92 @@
 <p>Or <a href="https://pipenv.pypa.io/en/latest/">Pipenv</a>:</p>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="go">pipenv install python-jsonpath</span>
 </span></code></pre></div>
+<p>Or from <a href="https://anaconda.org/conda-forge/python-jsonpath">conda-forge</a>:</p>
+<div class="language-console highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="go">conda install -c conda-forge python-jsonpath</span>
+</span></code></pre></div>
 <h2 id="example">Example</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">example_data</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="p">[</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>        <span class="p">{</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;footwear&quot;</span><span class="p">,</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>            <span class="s2">&quot;products&quot;</span><span class="p">:</span> <span class="p">[</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>                <span class="p">{</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Trainers&quot;</span><span class="p">,</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Fashionable trainers.&quot;</span><span class="p">,</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>                    <span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mf">89.99</span><span class="p">,</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>                <span class="p">},</span>
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>                <span class="p">{</span>
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Barefoot Trainers&quot;</span><span class="p">,</span>
-</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Running trainers.&quot;</span><span class="p">,</span>
-</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>                    <span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mf">130.00</span><span class="p">,</span>
-</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>                <span class="p">},</span>
-</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>            <span class="p">],</span>
-</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>        <span class="p">},</span>
-</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>        <span class="p">{</span>
-</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;headwear&quot;</span><span class="p">,</span>
-</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>            <span class="s2">&quot;products&quot;</span><span class="p">:</span> <span class="p">[</span>
-</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>                <span class="p">{</span>
-</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Cap&quot;</span><span class="p">,</span>
-</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Baseball cap&quot;</span><span class="p">,</span>
-</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>                    <span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mf">15.00</span><span class="p">,</span>
-</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>                <span class="p">},</span>
-</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>                <span class="p">{</span>
-</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Beanie&quot;</span><span class="p">,</span>
-</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Winter running hat.&quot;</span><span class="p">,</span>
-</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>                    <span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mf">9.00</span><span class="p">,</span>
-</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>                <span class="p">},</span>
-</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>            <span class="p">],</span>
-</span><span id="__span-2-34"><a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>        <span class="p">},</span>
-</span><span id="__span-2-35"><a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>    <span class="p">],</span>
-</span><span id="__span-2-36"><a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>    <span class="s2">&quot;price_cap&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-</span><span id="__span-2-37"><a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="p">}</span>
-</span><span id="__span-2-38"><a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a>
-</span><span id="__span-2-39"><a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="n">products</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;$..products.*&quot;</span><span class="p">,</span> <span class="n">example_data</span><span class="p">)</span>
-</span><span id="__span-2-40"><a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="nb">print</span><span class="p">(</span><span class="n">products</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">example_data</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        <span class="p">{</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;footwear&quot;</span><span class="p">,</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>            <span class="s2">&quot;products&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>                <span class="p">{</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Trainers&quot;</span><span class="p">,</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Fashionable trainers.&quot;</span><span class="p">,</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>                    <span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mf">89.99</span><span class="p">,</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>                <span class="p">},</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>                <span class="p">{</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Barefoot Trainers&quot;</span><span class="p">,</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Running trainers.&quot;</span><span class="p">,</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>                    <span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mf">130.00</span><span class="p">,</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>                <span class="p">},</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>            <span class="p">],</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>        <span class="p">},</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>        <span class="p">{</span>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;headwear&quot;</span><span class="p">,</span>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>            <span class="s2">&quot;products&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>                <span class="p">{</span>
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Cap&quot;</span><span class="p">,</span>
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Baseball cap&quot;</span><span class="p">,</span>
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>                    <span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mf">15.00</span><span class="p">,</span>
+</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>                <span class="p">},</span>
+</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>                <span class="p">{</span>
+</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Beanie&quot;</span><span class="p">,</span>
+</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Winter running hat.&quot;</span><span class="p">,</span>
+</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>                    <span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mf">9.00</span><span class="p">,</span>
+</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>                <span class="p">},</span>
+</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>            <span class="p">],</span>
+</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>        <span class="p">},</span>
+</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>    <span class="p">],</span>
+</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>    <span class="s2">&quot;price_cap&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+</span><span id="__span-3-37"><a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a><span class="p">}</span>
+</span><span id="__span-3-38"><a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>
+</span><span id="__span-3-39"><a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a><span class="n">products</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;$..products.*&quot;</span><span class="p">,</span> <span class="n">example_data</span><span class="p">)</span>
+</span><span id="__span-3-40"><a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a><span class="nb">print</span><span class="p">(</span><span class="n">products</span><span class="p">)</span>
 </span></code></pre></div>
 <p>Which results in a list of all products from all categories:</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">[</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="p">{</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Trainers&quot;</span><span class="p">,</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Fashionable trainers.&quot;</span><span class="p">,</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">89.99</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">  </span><span class="p">},</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="p">{</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Barefoot Trainers&quot;</span><span class="p">,</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Running trainers.&quot;</span><span class="p">,</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">130.0</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">  </span><span class="p">},</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">  </span><span class="p">{</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cap&quot;</span><span class="p">,</span>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Baseball cap&quot;</span><span class="p">,</span>
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">15.0</span>
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">  </span><span class="p">},</span>
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">  </span><span class="p">{</span>
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Beanie&quot;</span><span class="p">,</span>
-</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Winter running hat.&quot;</span><span class="p">,</span>
-</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">    </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">9.0</span>
-</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="w">  </span><span class="p">}</span>
-</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="p">]</span>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">[</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Trainers&quot;</span><span class="p">,</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Fashionable trainers.&quot;</span><span class="p">,</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">89.99</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="p">},</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Barefoot Trainers&quot;</span><span class="p">,</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Running trainers.&quot;</span><span class="p">,</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">130.0</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span><span class="p">},</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cap&quot;</span><span class="p">,</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Baseball cap&quot;</span><span class="p">,</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">    </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">15.0</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">  </span><span class="p">},</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Beanie&quot;</span><span class="p">,</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Winter running hat.&quot;</span><span class="p">,</span>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">    </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">9.0</span>
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="p">]</span>
 </span></code></pre></div>
 <p>Or, reading data from a JSON formatted file:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;some.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">products</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;$..products.*&quot;</span><span class="p">,</span> <span class="n">fd</span><span class="p">)</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">products</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;some.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">products</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;$..products.*&quot;</span><span class="p">,</span> <span class="n">fd</span><span class="p">)</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">products</span><span class="p">)</span>
 </span></code></pre></div>
 <p>You could use Python JSONPath on data read from a YAML formatted file too, or any data format that can be loaded into dictionaries and lists. If you have <a href="https://pyyaml.org/wiki/PyYAML">PyYAML</a> installed:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">import</span> <span class="nn">yaml</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;some.yaml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">products</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;$..products.*&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">products</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">import</span> <span class="nn">yaml</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;some.yaml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">products</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;$..products.*&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">products</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="next-steps">Next Steps</h2>
 <p>Have a read through the <a href="quickstart/">Quick Start</a> and <a href="api/">High Level API Reference</a>, or the default <a href="syntax/">JSONPath Syntax</a> supported by Python JSONPath.</p>
@@ -732,7 +736,7 @@
     <script id="__config" type="application/json">{"base": ".", "features": ["navigation.sections", "content.code.copy"], "search": "assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.c2be25ad.min.js"></script>
+      <script src="assets/javascripts/bundle.a51614de.min.js"></script>
       
     
   </body>
