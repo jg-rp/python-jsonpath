@@ -27,7 +27,7 @@ UNDEFINED = object()
 
 
 class JSONPointer:
-    """A JSON Pointer, as per RFC 6901.
+    """Identify a single, specific value in JSON-like data, as per RFC 6901.
 
     Args:
         pointer: A string representation of a JSON Pointer.
