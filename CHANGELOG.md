@@ -13,11 +13,11 @@
 
 **Features**
 
-- Added the `JSONPointer` class and methods for converting a `JSONPathMatch` to a `JSONPointer`. `JSONPointer` is compliant with [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901).
-- Added the `JSONPatch` class. `JSONPatch` implements [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902).
-- Added `jsonpath.pointer.resolve()`, a convenience function for resolving a JSON Pointer.
-- Added `jsonpath.patch.apply()`, a convenience function for applying a JSON Patch.
-- Added `jsonpath.match()`, a convenience function returning a `JSONPathMatch` instance for the first match of a path, or `None` if there were no matches.
+- Added the `JSONPointer` class and methods for converting a `JSONPathMatch` to a `JSONPointer`. `JSONPointer` is compliant with [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) ([docs](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPointer)).
+- Added the `JSONPatch` class. `JSONPatch` implements [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902) ([docs](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch)).
+- Added `jsonpath.pointer.resolve()`, a convenience function for resolving a JSON Pointer ([docs](https://jg-rp.github.io/python-jsonpath/quickstart/#pointerresolvepointer-data)).
+- Added `jsonpath.patch.apply()`, a convenience function for applying a JSON Patch ([docs](https://jg-rp.github.io/python-jsonpath/quickstart/#patchapplypatch-data)).
+- Added `jsonpath.match()`, a convenience function returning a `JSONPathMatch` instance for the first match of a path, or `None` if there were no matches ([docs](https://jg-rp.github.io/python-jsonpath/quickstart/#matchpath-data)).
 - Added filter expression caching. Controlled with the `filter_caching` argument to `JSONPathEnvironment`, filter expression caching is enabled by default. See [#14]
 - All selectors now use `env.match_class` to instantiate new `JSONPathMatch` objects. This allows for subclassing of `JSONPathMatch`.
 - Added `jsonpath.filter.walk()` for the benefit of filter expression static analysis.
