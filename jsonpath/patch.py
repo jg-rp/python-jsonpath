@@ -276,9 +276,6 @@ class OpTest(Op):
         return {"op": self.name, "path": str(self.path), "value": self.value}
 
 
-Path = Union[str, JSONPointer]
-"""A string representation of a JSON Pointer, or one that has already been parsed."""
-
 Self = TypeVar("Self", bound="JSONPatch")
 
 
@@ -397,7 +394,7 @@ class JSONPatch:
         except KeyError as err:
             raise JSONPatchError(f"missing property {key!r} ({op}:{i})") from err
 
-    def _ensure_pointer(self, path: Path) -> JSONPointer:
+    def _ensure_pointer(self, path: Union[str, JSONPointer]) -> JSONPointer:
         if isinstance(path, str):
             return JSONPointer(
                 path,
@@ -407,7 +404,7 @@ class JSONPatch:
         assert isinstance(path, JSONPointer)
         return path
 
-    def add(self: Self, path: Path, value: object) -> Self:
+    def add(self: Self, path: Union[str, JSONPointer], value: object) -> Self:
         """Append an _add_ operation to this patch.
 
         Arguments:
@@ -423,7 +420,7 @@ class JSONPatch:
         self.ops.append(OpAdd(path=pointer, value=value))
         return self
 
-    def remove(self: Self, path: Path) -> Self:
+    def remove(self: Self, path: Union[str, JSONPointer]) -> Self:
         """Append a _remove_ operation to this patch.
 
         Arguments:
@@ -438,7 +435,7 @@ class JSONPatch:
         self.ops.append(OpRemove(path=pointer))
         return self
 
-    def replace(self: Self, path: Path, value: object) -> Self:
+    def replace(self: Self, path: Union[str, JSONPointer], value: object) -> Self:
         """Append a _replace_ operation to this patch.
 
         Arguments:
@@ -454,7 +451,9 @@ class JSONPatch:
         self.ops.append(OpReplace(path=pointer, value=value))
         return self
 
-    def move(self: Self, from_: Path, path: Path) -> Self:
+    def move(
+        self: Self, from_: Union[str, JSONPointer], path: Union[str, JSONPointer]
+    ) -> Self:
         """Append a _move_ operation to this patch.
 
         Arguments:
@@ -472,7 +471,9 @@ class JSONPatch:
         self.ops.append(OpMove(from_=source_pointer, path=dest_pointer))
         return self
 
-    def copy(self: Self, from_: Path, path: Path) -> Self:
+    def copy(
+        self: Self, from_: Union[str, JSONPointer], path: Union[str, JSONPointer]
+    ) -> Self:
         """Append a _copy_ operation to this patch.
 
         Arguments:
@@ -490,7 +491,7 @@ class JSONPatch:
         self.ops.append(OpCopy(from_=source_pointer, path=dest_pointer))
         return self
 
-    def test(self: Self, path: Path, value: object) -> Self:
+    def test(self: Self, path: Union[str, JSONPointer], value: object) -> Self:
         """Append a test operation to this patch.
 
         Arguments:
