@@ -515,9 +515,9 @@ class JSONPatch:
 
         If _data_ is a string or file-like object, it will be loaded with
         _json.loads_. Otherwise _data_ should be a JSON-like data structure and
-        will be modified in-place.
+        will be modified in place.
 
-        When modifying _data_ in-place, we return modified data too. This is
+        When modifying _data_ in place, we return modified data too. This is
         to allow for replacing _data's_ root element, which is allowed by some
         patch operations.
 

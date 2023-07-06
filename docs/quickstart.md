@@ -1,6 +1,6 @@
 # Quick Start
 
-This page gets you started using JSONPath wih Python, see [JSONPath Syntax](syntax.md) for information on JSONPath selector syntax.
+This page gets you started using JSONPath, JSON Pointer and JSON Patch wih Python, see [JSONPath Syntax](syntax.md) for information on JSONPath selector syntax.
 
 ## `findall(path, data)`
 
@@ -238,7 +238,7 @@ Apply a JSON Patch ([RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)) t
 
 _patch_ can be a string or file-like object containing a valid JSON Patch document, or an iterable of dictionaries.
 
-_data_ is the target JSON document to modify. It can be a file-like object or string containing JSON formatted data, or equivalent Python objects. **_data_ is modified in-place**.
+_data_ is the target JSON document to modify. If _data_ is a string or file-like object, it will be loaded with _json.loads_. Otherwise _data_ should be a JSON-like data structure and will be **modified in place**.
 
 ```python
 from jsonpath import patch
