@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 0.8.1
+
+**Fixes**
+
+- Fixed the string representation of a `JSONPointer` when built using `JSONPointer.from_parts()` and pointing to the document root. See [#21](https://github.com/jg-rp/python-jsonpath/issues/21).
+
 ## Version 0.8.0
 
 **Breaking changes**
