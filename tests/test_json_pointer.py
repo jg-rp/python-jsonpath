@@ -170,6 +170,18 @@ def test_pointer_from_parts() -> None:
     assert str(pointer) == "/some/thing/0"
 
 
+def test_pointer_from_empty_parts() -> None:
+    parts: List[Union[str, int]] = []
+    pointer = JSONPointer.from_parts(parts)
+    assert str(pointer) == ""
+
+
+def test_pointer_from_only_empty_string_parts() -> None:
+    parts: List[Union[str, int]] = [""]
+    pointer = JSONPointer.from_parts(parts)
+    assert str(pointer) == "/"
+
+
 def test_pointer_from_uri_encoded_parts() -> None:
     parts: List[Union[str, int]] = ["some%20thing", "else", 0]
     pointer = JSONPointer.from_parts(parts, uri_decode=True)

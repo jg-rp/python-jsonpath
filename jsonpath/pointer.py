@@ -232,11 +232,16 @@ class JSONPointer:
     ) -> JSONPointer:
         """Return a JSON Pointer for the path from a JSONPathMatch instance."""
         # A rfc6901 string representation of match.parts.
-        return cls(
-            "/"
-            + "/".join(
+        if not match.parts:
+            # This should not happen, unless the JSONPathMatch has been tampered with.
+            pointer = ""
+        else:
+            pointer = "/" + "/".join(
                 str(p).replace("~", "~0").replace("/", "~1") for p in match.parts
-            ),
+            )
+
+        return cls(
+            pointer,
             parts=match.parts,
             unicode_escape=False,
             uri_decode=False,
@@ -269,9 +274,18 @@ class JSONPointer:
                 .decode("utf-16")
                 for p in _parts
             )
+
         __parts = tuple(_parts)
+
+        if __parts:
+            pointer = "/" + "/".join(
+                p.replace("~", "~0").replace("/", "~1") for p in __parts
+            )
+        else:
+            pointer = ""
+
         return cls(
-            "/" + "/".join(p.replace("~", "~0").replace("/", "~1") for p in __parts),
+            pointer,
             parts=__parts,
             unicode_escape=False,
             uri_decode=False,
