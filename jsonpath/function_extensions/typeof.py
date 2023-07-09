@@ -3,8 +3,8 @@
 from typing import Mapping
 from typing import Sequence
 
-from ..filter import UNDEFINED
-from ..filter import UNDEFINED_LITERAL
+from jsonpath.filter import UNDEFINED
+from jsonpath.filter import UNDEFINED_LITERAL
 
 
 class TypeOf:

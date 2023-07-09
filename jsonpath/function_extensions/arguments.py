@@ -6,10 +6,10 @@ from typing import Callable
 from typing import List
 
 if TYPE_CHECKING:
-    from ..env import JSONPathEnvironment
-    from ..token import Token
+    from jsonpath.env import JSONPathEnvironment
+    from jsonpath.token import Token
 
-from ..exceptions import JSONPathTypeError
+from jsonpath.exceptions import JSONPathTypeError
 
 
 def validate(

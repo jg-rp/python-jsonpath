@@ -4,14 +4,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from typing import List
 
-from ..exceptions import JSONPathTypeError
-from ..filter import Literal
-from ..filter import Nil
+from jsonpath.exceptions import JSONPathTypeError
+from jsonpath.filter import Literal
+from jsonpath.filter import Nil
 
 if TYPE_CHECKING:
-    from ..env import JSONPathEnvironment
-    from ..match import NodeList
-    from ..token import Token
+    from jsonpath.env import JSONPathEnvironment
+    from jsonpath.match import NodeList
+    from jsonpath.token import Token
 
 
 class Count:
