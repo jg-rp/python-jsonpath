@@ -6,13 +6,13 @@ from typing import List
 from typing import Pattern
 from typing import Union
 
-from ..exceptions import JSONPathTypeError
-from ..filter import RegexArgument
-from ..filter import StringLiteral
+from jsonpath.exceptions import JSONPathTypeError
+from jsonpath.filter import RegexArgument
+from jsonpath.filter import StringLiteral
 
 if TYPE_CHECKING:
-    from ..env import JSONPathEnvironment
-    from ..token import Token
+    from jsonpath.env import JSONPathEnvironment
+    from jsonpath.token import Token
 
 
 class Match:

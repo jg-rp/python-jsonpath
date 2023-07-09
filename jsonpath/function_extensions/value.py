@@ -1,7 +1,7 @@
 """The standard `value` function extension."""
 from typing import Sequence
 
-from ..filter import UNDEFINED
+from jsonpath.filter import UNDEFINED
 
 
 def value(obj: object) -> object:
