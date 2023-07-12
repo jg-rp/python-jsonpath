@@ -144,7 +144,7 @@ Use [json COMMAND --help] for command specific help.
 
 Usage Examples:
   Find objects in source.json matching a JSONPath, write them to result.json.
-  $ json path -q "$.foo['bar'][?@.baz > 1]" -f source.json -o results.json
+  $ json path -q "$.foo['bar'][?@.baz > 1]" -f source.json -o result.json
 
   Resolve a JSON Pointer against source.json, pretty print the result to stdout.
   $ json --pretty pointer -p "/foo/bar/0" -f source.json
@@ -185,7 +185,7 @@ def setup_parser() -> argparse.ArgumentParser:  # noqa: D103
         "-v",
         "--version",
         action="version",
-        version=f"python-jsonpath version {__version__}",
+        version=f"python-jsonpath, version {__version__}",
         help="Show the version and exit.",
     )
 
@@ -258,6 +258,11 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
 
     try:
         matches = path.findall(target)
+    except json.JSONDecodeError as err:
+        if args.debug:
+            raise
+        sys.stderr.write(f"target document json decode error: {err}\n")
+        sys.exit(1)
     except JSONPathTypeError as err:
         if args.debug:
             raise
@@ -279,6 +284,8 @@ def handle_pointer_command(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     pointer = args.pointer or args.pointer_file.read()
+    if args.pointer_file:
+        args.pointer_file.close()
 
     # TODO: default value or exist with non-zero
     try:
