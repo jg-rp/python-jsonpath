@@ -137,6 +137,11 @@ class JSONPathEnvironment:
             A `JSONPath` or `CompoundJSONPath`, ready to match against some data.
                 Expect a `CompoundJSONPath` if the path string uses the _union_ or
                 _intersection_ operators.
+
+        Raises:
+            JSONPathSyntaxError: If _path_ is invalid.
+            JSONPathTypeError: If filter functions are given arguments of an
+                unacceptable type.
         """
         tokens = self.lexer.tokenize(path)
         stream = TokenStream(tokens)
