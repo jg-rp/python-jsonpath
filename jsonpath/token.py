@@ -122,4 +122,4 @@ class Token:
         """Return the line and column number for the start of this token."""
         line_number = self.value.count("\n", 0, self.index) + 1
         column_number = self.index - self.value.rfind("\n", 0, self.index)
-        return (line_number, column_number)
+        return (line_number, column_number - 1)
