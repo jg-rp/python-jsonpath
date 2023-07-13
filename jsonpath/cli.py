@@ -231,14 +231,6 @@ def setup_parser() -> argparse.ArgumentParser:  # noqa: D103
 def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
     """Handle the `path` sub command."""
     try:
-        target = json.load(args.file)
-    except json.JSONDecodeError as err:
-        if args.debug:
-            raise
-        sys.stderr.write(f"target document json decode error: {err}\n")
-        sys.exit(1)
-
-    try:
         path = jsonpath.compile(args.query or args.path_file.read())
     except JSONPathSyntaxError as err:
         if args.debug:
@@ -257,13 +249,14 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
         sys.exit(1)
 
     try:
-        matches = path.findall(target)
+        matches = path.findall(args.file)
     except json.JSONDecodeError as err:
         if args.debug:
             raise
         sys.stderr.write(f"target document json decode error: {err}\n")
         sys.exit(1)
     except JSONPathTypeError as err:
+        # Type errors are currently only occurring are compile-time.
         if args.debug:
             raise
         sys.stderr.write(f"json path type error: {err}\n")
@@ -275,26 +268,21 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
 
 def handle_pointer_command(args: argparse.Namespace) -> None:
     """Handle the `pointer` sub command."""
-    try:
-        target = json.load(args.file)
-    except json.JSONDecodeError as err:
-        if args.debug:
-            raise
-        sys.stderr.write(f"target document json decode error: {err}\n")
-        sys.exit(1)
-
     pointer = args.pointer or args.pointer_file.read()
-    if args.pointer_file:
-        args.pointer_file.close()
 
     # TODO: default value or exist with non-zero
     try:
         match = jsonpath.pointer.resolve(
             pointer,
-            target,
-            unicode_escape=args.no_unicode_escape,
+            args.file,
+            unicode_escape=not args.no_unicode_escape,
             uri_decode=args.uri_decode,
         )
+    except json.JSONDecodeError as err:
+        if args.debug:
+            raise
+        sys.stderr.write(f"target document json decode error: {err}\n")
+        sys.exit(1)
     except JSONPointerResolutionError as err:
         if args.debug:
             raise
@@ -308,14 +296,6 @@ def handle_pointer_command(args: argparse.Namespace) -> None:
 def handle_patch_command(args: argparse.Namespace) -> None:
     """Handle the `patch` sub command."""
     try:
-        target = json.load(args.file)
-    except json.JSONDecodeError as err:
-        if args.debug:
-            raise
-        sys.stderr.write(f"target document json decode error: {err}\n")
-        sys.exit(1)
-
-    try:
         patch = json.load(args.patch)
     except json.JSONDecodeError as err:
         if args.debug:
@@ -323,8 +303,24 @@ def handle_patch_command(args: argparse.Namespace) -> None:
         sys.stderr.write(f"patch document json decode error: {err}\n")
         sys.exit(1)
 
+    if not isinstance(patch, list):
+        sys.stderr.write(
+            "error: patch file does not look like an array of patch operations"
+        )
+        sys.exit(1)
+
     try:
-        patched = jsonpath.patch.apply(patch, target)
+        patched = jsonpath.patch.apply(
+            patch,
+            args.file,
+            unicode_escape=not args.no_unicode_escape,
+            uri_decode=args.uri_decode,
+        )
+    except json.JSONDecodeError as err:
+        if args.debug:
+            raise
+        sys.stderr.write(f"target document json decode error: {err}\n")
+        sys.exit(1)
     except JSONPatchError as err:
         if args.debug:
             raise

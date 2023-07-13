@@ -6,11 +6,16 @@ import pathlib
 import pytest
 
 from jsonpath.__about__ import __version__
+from jsonpath.cli import handle_patch_command
 from jsonpath.cli import handle_path_command
+from jsonpath.cli import handle_pointer_command
 from jsonpath.cli import setup_parser
+from jsonpath.exceptions import JSONPatchTestFailure
 from jsonpath.exceptions import JSONPathIndexError
 from jsonpath.exceptions import JSONPathSyntaxError
 from jsonpath.exceptions import JSONPathTypeError
+from jsonpath.exceptions import JSONPointerResolutionError
+from jsonpath.patch import JSONPatch
 
 
 @pytest.fixture()
@@ -243,3 +248,229 @@ def test_json_path(
 
     with open(outfile, "r") as fd:
         assert len(json.load(fd)) == 4  # noqa: PLR2004
+
+
+def test_pointer_command_invalid_target(
+    parser: argparse.ArgumentParser,
+    invalid_target: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Test that we handle invalid JSON with the _pointer_ command."""
+    args = parser.parse_args(["pointer", "-p", "/foo/bar", "-f", invalid_target])
+
+    with pytest.raises(SystemExit) as err:
+        handle_pointer_command(args)
+
+    captured = capsys.readouterr()
+    assert err.value.code == 1
+    assert captured.err.startswith("target document json decode error:")
+
+
+def test_pointer_command_invalid_target_debug(
+    parser: argparse.ArgumentParser,
+    invalid_target: str,
+) -> None:
+    """Test that we handle invalid JSON with the _pointer_ command."""
+    args = parser.parse_args(
+        ["--debug", "pointer", "-p", "/foo/bar", "-f", invalid_target]
+    )
+    with pytest.raises(json.JSONDecodeError):
+        handle_pointer_command(args)
+
+
+def test_pointer_command_resolution_error(
+    parser: argparse.ArgumentParser,
+    sample_target: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Test that we handle pointer resolution errors."""
+    args = parser.parse_args(["pointer", "-p", "/foo/bar", "-f", sample_target])
+
+    with pytest.raises(SystemExit) as err:
+        handle_pointer_command(args)
+
+    captured = capsys.readouterr()
+    assert err.value.code == 1
+    assert captured.err.startswith("pointer key error 'foo'")
+
+
+def test_pointer_command_resolution_error_debug(
+    parser: argparse.ArgumentParser, sample_target: str
+) -> None:
+    """Test that we handle pointer resolution errors."""
+    args = parser.parse_args(
+        ["--debug", "pointer", "-p", "/foo/bar", "-f", sample_target]
+    )
+    with pytest.raises(JSONPointerResolutionError):
+        handle_pointer_command(args)
+
+
+def test_json_pointer(
+    parser: argparse.ArgumentParser, sample_target: str, outfile: str
+) -> None:
+    """Test a valid JSON Pointer."""
+    args = parser.parse_args(
+        ["pointer", "-p", "/categories/0/name", "-f", sample_target, "-o", outfile]
+    )
+
+    handle_pointer_command(args)
+    args.output.flush()
+
+    with open(outfile, "r") as fd:
+        assert json.load(fd) == "footwear"
+
+
+def test_patch_command_invalid_patch(
+    parser: argparse.ArgumentParser,
+    sample_target: str,
+    invalid_target: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Test that we handle invalid patch JSON."""
+    args = parser.parse_args(["patch", invalid_target, "-f", sample_target])
+
+    with pytest.raises(SystemExit) as err:
+        handle_patch_command(args)
+
+    captured = capsys.readouterr()
+    assert err.value.code == 1
+    assert captured.err.startswith("patch document json decode error:")
+
+
+def test_patch_command_invalid_patch_debug(
+    parser: argparse.ArgumentParser,
+    sample_target: str,
+    invalid_target: str,
+) -> None:
+    """Test that we handle invalid patch JSON."""
+    args = parser.parse_args(["--debug", "patch", invalid_target, "-f", sample_target])
+    with pytest.raises(json.JSONDecodeError):
+        handle_patch_command(args)
+
+
+def test_patch_not_an_array(
+    parser: argparse.ArgumentParser,
+    tmp_path: pathlib.Path,
+    sample_target: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Test that we handle a patch that is not an array."""
+    mock_patch_path = tmp_path / "patch.json"
+    with mock_patch_path.open("w") as fd:
+        json.dump({"foo": "bar"}, fd)
+
+    args = parser.parse_args(["patch", str(mock_patch_path), "-f", sample_target])
+
+    with pytest.raises(SystemExit) as err:
+        handle_patch_command(args)
+
+    captured = capsys.readouterr()
+    assert err.value.code == 1
+    assert captured.err == (
+        "error: patch file does not look like an array of patch operations"
+    )
+
+
+def test_patch_command_invalid_target(
+    parser: argparse.ArgumentParser,
+    tmp_path: pathlib.Path,
+    invalid_target: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Test that we handle invalid JSON with the _patch_ command."""
+    mock_patch_path = tmp_path / "patch.json"
+    with mock_patch_path.open("w") as fd:
+        json.dump([], fd)
+
+    args = parser.parse_args(["patch", str(mock_patch_path), "-f", invalid_target])
+
+    with pytest.raises(SystemExit) as err:
+        handle_patch_command(args)
+
+    captured = capsys.readouterr()
+    assert err.value.code == 1
+    assert captured.err.startswith("target document json decode error:")
+
+
+def test_patch_command_invalid_target_debug(
+    parser: argparse.ArgumentParser,
+    tmp_path: pathlib.Path,
+    invalid_target: str,
+) -> None:
+    """Test that we handle invalid JSON with the _patch_ command."""
+    mock_patch_path = tmp_path / "patch.json"
+    with mock_patch_path.open("w") as fd:
+        json.dump([], fd)
+
+    args = parser.parse_args(
+        ["--debug", "patch", str(mock_patch_path), "-f", invalid_target]
+    )
+
+    with pytest.raises(json.JSONDecodeError):
+        handle_patch_command(args)
+
+
+def test_patch_error(
+    parser: argparse.ArgumentParser,
+    tmp_path: pathlib.Path,
+    sample_target: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Test that we handle patch errors."""
+    mock_patch_path = tmp_path / "patch.json"
+    patch = JSONPatch().test("/categories/0/name", "foo")
+    with mock_patch_path.open("w") as fd:
+        json.dump(patch.asdicts(), fd)
+
+    args = parser.parse_args(["patch", str(mock_patch_path), "-f", sample_target])
+
+    with pytest.raises(SystemExit) as err:
+        handle_patch_command(args)
+
+    captured = capsys.readouterr()
+    assert err.value.code == 1
+    assert captured.err.startswith("test failed")
+
+
+def test_patch_error_debug(
+    parser: argparse.ArgumentParser,
+    tmp_path: pathlib.Path,
+    sample_target: str,
+) -> None:
+    """Test that we handle patch errors."""
+    mock_patch_path = tmp_path / "patch.json"
+    patch = JSONPatch().test("/categories/0/name", "foo")
+    with mock_patch_path.open("w") as fd:
+        json.dump(patch.asdicts(), fd)
+
+    args = parser.parse_args(
+        ["--debug", "patch", str(mock_patch_path), "-f", sample_target]
+    )
+
+    with pytest.raises(JSONPatchTestFailure):
+        handle_patch_command(args)
+
+
+def test_json_patch(
+    parser: argparse.ArgumentParser,
+    tmp_path: pathlib.Path,
+    sample_target: str,
+    outfile: str,
+) -> None:
+    """Test a valid JSON patch."""
+    mock_patch_path = tmp_path / "patch.json"
+    patch = JSONPatch().replace("/categories/0/name", "foo")
+    with mock_patch_path.open("w") as fd:
+        json.dump(patch.asdicts(), fd)
+
+    args = parser.parse_args(
+        ["patch", str(mock_patch_path), "-f", sample_target, "-o", outfile]
+    )
+
+    handle_patch_command(args)
+    args.output.flush()
+
+    with open(outfile, "r") as fd:
+        patched = json.load(fd)
+
+    assert patched["categories"][0]["name"] == "foo"
