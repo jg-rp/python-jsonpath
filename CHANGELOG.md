@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 0.9.0 (unreleased)
+
+**Features**
+
+- Added a command line interface, exposing JSONPath, JSON Pointer and JSON Patch features.
+
 ## Version 0.8.1
 
 **Fixes**

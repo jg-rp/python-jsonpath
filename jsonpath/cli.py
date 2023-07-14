@@ -11,6 +11,8 @@ from jsonpath.exceptions import JSONPathSyntaxError
 from jsonpath.exceptions import JSONPathTypeError
 from jsonpath.exceptions import JSONPointerResolutionError
 
+INDENT = 2
+
 
 def path_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     parser.set_defaults(func=handle_path_command)
@@ -25,7 +27,7 @@ def path_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     group.add_argument(
         "-r",
         "--path-file",
-        type=argparse.FileType(mode="rb"),
+        type=argparse.FileType(mode="r"),
         help="Text file containing a JSONPath query.",
     )
 
@@ -65,7 +67,7 @@ def pointer_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     group.add_argument(
         "-r",
         "--pointer-file",
-        type=argparse.FileType(mode="rb"),
+        type=argparse.FileType(mode="r"),
         help="Text file containing an RFC 6901 formatted JSON Pointer string.",
     )
 
@@ -262,7 +264,7 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
         sys.stderr.write(f"json path type error: {err}\n")
         sys.exit(1)
 
-    indent = 2 if args.pretty else None
+    indent = INDENT if args.pretty else None
     json.dump(matches, args.output, indent=indent)
 
 
@@ -289,7 +291,7 @@ def handle_pointer_command(args: argparse.Namespace) -> None:
         sys.stderr.write(str(err) + "\n")
         sys.exit(1)
 
-    indent = 2 if args.pretty else None
+    indent = INDENT if args.pretty else None
     json.dump(match, args.output, indent=indent)
 
 
@@ -327,7 +329,7 @@ def handle_patch_command(args: argparse.Namespace) -> None:
         sys.stderr.write(str(err) + "\n")
         sys.exit(1)
 
-    indent = 2 if args.pretty else None
+    indent = INDENT if args.pretty else None
     json.dump(patched, args.output, indent=indent)
 
 

@@ -43,6 +43,7 @@ nav:
   - Usage:
       - Quick Start: "quickstart.md"
       - Advanced Usage: "advanced.md"
+      - Command Line Interface: "cli.md"
   - Guides:
       - JSONPath Syntax: "syntax.md"
       - Filter Functions: "functions.md"
