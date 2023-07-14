@@ -17,6 +17,42 @@ from jsonpath.exceptions import JSONPathTypeError
 from jsonpath.exceptions import JSONPointerResolutionError
 from jsonpath.patch import JSONPatch
 
+SAMPLE_DATA = {
+    "categories": [
+        {
+            "name": "footwear",
+            "products": [
+                {
+                    "title": "Trainers",
+                    "description": "Fashionable trainers.",
+                    "price": 89.99,
+                },
+                {
+                    "title": "Barefoot Trainers",
+                    "description": "Running trainers.",
+                    "price": 130.00,
+                },
+            ],
+        },
+        {
+            "name": "headwear",
+            "products": [
+                {
+                    "title": "Cap",
+                    "description": "Baseball cap",
+                    "price": 15.00,
+                },
+                {
+                    "title": "Beanie",
+                    "description": "Winter running hat.",
+                    "price": 9.00,
+                },
+            ],
+        },
+    ],
+    "price_cap": 10,
+}
+
 
 @pytest.fixture()
 def parser() -> argparse.ArgumentParser:
@@ -39,45 +75,9 @@ def outfile(tmp_path: pathlib.Path) -> str:
 
 @pytest.fixture()
 def sample_target(tmp_path: pathlib.Path) -> str:
-    sample_data = {
-        "categories": [
-            {
-                "name": "footwear",
-                "products": [
-                    {
-                        "title": "Trainers",
-                        "description": "Fashionable trainers.",
-                        "price": 89.99,
-                    },
-                    {
-                        "title": "Barefoot Trainers",
-                        "description": "Running trainers.",
-                        "price": 130.00,
-                    },
-                ],
-            },
-            {
-                "name": "headwear",
-                "products": [
-                    {
-                        "title": "Cap",
-                        "description": "Baseball cap",
-                        "price": 15.00,
-                    },
-                    {
-                        "title": "Beanie",
-                        "description": "Winter running hat.",
-                        "price": 9.00,
-                    },
-                ],
-            },
-        ],
-        "price_cap": 10,
-    }
-
     target_path = tmp_path / "source.json"
     with open(target_path, "w") as fd:
-        json.dump(sample_data, fd)
+        json.dump(SAMPLE_DATA, fd)
     return str(target_path)
 
 
@@ -318,6 +318,41 @@ def test_json_pointer(
 
     with open(outfile, "r") as fd:
         assert json.load(fd) == "footwear"
+
+
+def test_json_pointer_empty_string(
+    parser: argparse.ArgumentParser, sample_target: str, outfile: str
+) -> None:
+    """Test an empty JSON Pointer is valid."""
+    args = parser.parse_args(["pointer", "-p", "", "-f", sample_target, "-o", outfile])
+
+    handle_pointer_command(args)
+    args.output.flush()
+
+    with open(outfile, "r") as fd:
+        assert json.load(fd) == SAMPLE_DATA
+
+
+def test_read_pointer_from_file(
+    parser: argparse.ArgumentParser,
+    sample_target: str,
+    outfile: str,
+    tmp_path: pathlib.Path,
+) -> None:
+    """Test an empty JSON Pointer is valid."""
+    pointer_file_path = tmp_path / "pointer.txt"
+    with pointer_file_path.open("w") as fd:
+        fd.write("/price_cap")
+
+    args = parser.parse_args(
+        ["pointer", "-r", str(pointer_file_path), "-f", sample_target, "-o", outfile]
+    )
+
+    handle_pointer_command(args)
+    args.output.flush()
+
+    with open(outfile, "r") as fd:
+        assert json.load(fd) == SAMPLE_DATA["price_cap"]
 
 
 def test_patch_command_invalid_patch(

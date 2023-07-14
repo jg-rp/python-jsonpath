@@ -270,9 +270,13 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
 
 def handle_pointer_command(args: argparse.Namespace) -> None:
     """Handle the `pointer` sub command."""
-    pointer = args.pointer or args.pointer_file.read()
+    # Empty string is OK.
+    if args.pointer is not None:
+        pointer = args.pointer
+    else:
+        # TODO: is a property with a trailing newline OK?
+        pointer = args.pointer_file.read().strip()
 
-    # TODO: default value or exist with non-zero
     try:
         match = jsonpath.pointer.resolve(
             pointer,

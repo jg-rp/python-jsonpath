@@ -131,6 +131,10 @@ One of the subcommands `path`, `pointer` or `patch` must be specified, depending
 
 Find objects in a JSON document given a JSONPath. One of `-q`/`--query` or `-r`/`--path-file` must be given. `-q` being a JSONPath given on the command line as a string, `-r` being the path to a file containing a JSONPath.
 
+```
+json path [-h] (-q QUERY | -r PATH_FILE) [-f FILE] [-o OUTPUT]
+```
+
 #### `-q` / `--query`
 
 The JSONPath as a string.
@@ -172,17 +176,129 @@ $ json path -q "$.price_cap" --file /tmp/source.json
 The path to a file to write resulting objects to, as a JSON array. If omitted or a hyphen (`-`) is given, results will be written to the standard output stream.
 
 ```console
-$ json path -q "$.price_cap" -f /tmp/source.json -o /result.json
+$ json path -q "$.price_cap" -f /tmp/source.json -o result.json
 ```
 
 ```console
-$ json path -q "$.price_cap" -f /tmp/source.json --output /result.json
+$ json path -q "$.price_cap" -f /tmp/source.json --output result.json
 ```
 
 ### `pointer`
 
-TODO:
+Resolve a JSON Pointer against a JSON document. One of `-p`/`--pointer` or `-r`/`--pointer-file` must be given. `-p` being a JSON Pointer given on the command line as a string, `-r` being the path to a file containing a JSON Pointer.
+
+```
+json pointer [-h] (-p POINTER | -r POINTER_FILE) [-f FILE] [-o OUTPUT] [-u]
+```
+
+#### `-p` / `--pointer`
+
+An RFC 6901 formatted JSON Pointer string.
+
+```console
+$ json pointer -p "/categories/0/name" -f /tmp/source.json
+```
+
+```console
+$ json pointer --pointer "/categories/0/name" -f /tmp/source.json
+```
+
+#### `-r` / `--pointer-file`
+
+The path to a file containing a JSON Pointer.
+
+```console
+$ json pointer -r /tmp/pointer.txt -f /tmp/source.json
+```
+
+```console
+$ json pointer --pointer-file /tmp/pointer.txt -f /tmp/source.json
+```
+
+#### `-f` / `--file`
+
+The path to a file containing the target JSON document. If omitted or a hyphen (`-`), the target JSON document will be read from the standard input stream.
+
+```console
+$ json pointer -p "/categories/0/name" -f /tmp/source.json
+```
+
+```console
+$ json pointer -p "/categories/0/name" --file /tmp/source.json
+```
+
+#### `-o` / `--output`
+
+The path to a file to write the resulting object to. If omitted or a hyphen (`-`) is given, results will be written to the standard output stream.
+
+```console
+$ json pointer -p "/categories/0/name" -f /tmp/source.json -o result.json
+```
+```console
+$ json pointer -p "/categories/0/name" -f /tmp/source.json --output result.json
+```
+
+#### `-u` / `--uri-decode`
+
+Enable URI decoding of the JSON Pointer. In this example, we would look for a property called "hello world" in the root of the target document.
+
+```console
+$ json pointer -p "/hello%20world" -f /tmp/source.json -u
+```
+
+```console
+$ json pointer -p "/hello%20world" -f /tmp/source.json --uri-decode
+```
 
 ### `patch`
 
-TODO:
+Apply a JSON Patch to a JSON document. Unlike `path` and `pointer` commands, a patch can't be given as a string argument. `PATCH` is a positional argument that should be a file path to a JSON Patch document or a hyphen (`-`), which means the patch document will be read from the standard input stream.
+
+```
+json patch [-h] [-f FILE] [-o OUTPUT] [-u] PATCH
+```
+
+These examples read the patch from `patch.json` and the document to modify from `target.json`
+
+```console
+$ json patch /tmp/patch.json -f /tmp/target.json
+```
+
+```console
+$ cat /tmp/patch.json | json patch - -f /tmp/target.json
+```
+
+#### `-f` / `--file`
+
+The path to a file containing the target JSON document. If omitted or a hyphen (`-`), the target JSON document will be read from the standard input stream.
+
+```console
+$ json patch /tmp/patch.json -f /tmp/target.json
+```
+
+```console
+$ json patch /tmp/patch.json --file /tmp/target.json
+```
+
+#### `-o` / `--output`
+
+The path to a file to write the resulting object to. If omitted or a hyphen (`-`) is given, results will be written to the standard output stream.
+
+```console
+$ json patch /tmp/patch.json -f /tmp/target.json -o result.json
+```
+```console
+$ json patch /tmp/patch.json -f /tmp/target.json --output result.json
+```
+
+#### `-u` / `--uri-decode`
+
+Enable URI decoding of JSON Pointers in the patch document.
+
+```console
+$ json patch /tmp/patch.json -f /tmp/target.json -u
+```
+
+```console
+$ json patch /tmp/patch.json -f /tmp/target.json --uri-decode
+```

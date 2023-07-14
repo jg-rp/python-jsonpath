@@ -93,6 +93,8 @@ class JSONPointer:
                 .decode("utf-16")
             )
 
+        # TODO: lstrip pointer
+        # TODO: handle pointer without leading slash and not empty string
         return tuple(
             self._index(p.replace("~1", "/").replace("~0", "~")) for p in s.split("/")
         )[1:]
