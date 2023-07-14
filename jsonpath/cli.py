@@ -232,8 +232,14 @@ def setup_parser() -> argparse.ArgumentParser:  # noqa: D103
 
 def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
     """Handle the `path` sub command."""
+    # Empty string is OK.
+    if args.query is not None:
+        path = args.query
+    else:
+        path = args.query_file.read().strip()
+
     try:
-        path = jsonpath.compile(args.query or args.path_file.read())
+        path = jsonpath.compile(path)
     except JSONPathSyntaxError as err:
         if args.debug:
             raise
