@@ -4,11 +4,12 @@
 
 **Fixes**
 
-- Fixed a bug with the parsing of JSON Pointers. When given an arbitrary string without slashes, `JSONPointer` would resolve to the document root. The empty string is the only valid pointer that should resolve to the document root. See [#27](https://github.com/jg-rp/python-jsonpath/issues/27).
+- Fixed a bug with the parsing of JSON Pointers. When given an arbitrary string without slashes, `JSONPointer` would resolve to the document root. The empty string is the only valid pointer that should resolve to the document root. We now raise a `JSONPointerError` in such cases. See [#27](https://github.com/jg-rp/python-jsonpath/issues/27).
 
 **Features**
 
 - Added a command line interface, exposing JSONPath, JSON Pointer and JSON Patch features.
+- Added `JSONPointer.parent()`, a method that returns a the parent of the pointer, as a new `JSONPointer`.
 
 ## Version 0.8.1
 

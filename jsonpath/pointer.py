@@ -69,7 +69,7 @@ class JSONPointer:
             unicode_escape=unicode_escape,
             uri_decode=uri_decode,
         )
-        self._s = pointer
+        self._s = self._encode(self.parts)
 
     def __str__(self) -> str:
         return self._s
@@ -215,7 +215,7 @@ class JSONPointer:
             JSONPointerTypeError: When attempting to resolve a non-index string
                 path part against a sequence.
         """
-        if not len(self.parts):
+        if not self.parts:
             return (None, self.resolve(data))
 
         if isinstance(data, str):
@@ -232,6 +232,14 @@ class JSONPointer:
         except (JSONPointerIndexError, JSONPointerKeyError):
             return (parent, UNDEFINED)
 
+    @staticmethod
+    def _encode(parts: Iterable[Union[int, str]]) -> str:
+        if parts:
+            return "/" + "/".join(
+                str(p).replace("~", "~0").replace("/", "~1") for p in parts
+            )
+        return ""
+
     @classmethod
     def from_match(
         cls,
@@ -239,13 +247,11 @@ class JSONPointer:
     ) -> JSONPointer:
         """Return a JSON Pointer for the path from a JSONPathMatch instance."""
         # A rfc6901 string representation of match.parts.
-        if not match.parts:
+        if match.parts:
+            pointer = cls._encode(match.parts)
+        else:
             # This should not happen, unless the JSONPathMatch has been tampered with.
             pointer = ""
-        else:
-            pointer = "/" + "/".join(
-                str(p).replace("~", "~0").replace("/", "~1") for p in match.parts
-            )
 
         return cls(
             pointer,
@@ -285,9 +291,7 @@ class JSONPointer:
         __parts = tuple(_parts)
 
         if __parts:
-            pointer = "/" + "/".join(
-                p.replace("~", "~0").replace("/", "~1") for p in __parts
-            )
+            pointer = cls._encode(__parts)
         else:
             pointer = ""
 
@@ -307,6 +311,21 @@ class JSONPointer:
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, JSONPointer) and self.parts == other.parts
+
+    def parent(self) -> JSONPointer:
+        """Return this pointer's parent, as a new `JSONPointer`.
+
+        If this pointer points to the document root, self is returned.
+        """
+        if not self.parts:
+            return self
+        parent_parts = self.parts[:-1]
+        return JSONPointer(
+            self._encode(parent_parts),
+            parts=parent_parts,
+            unicode_escape=False,
+            uri_decode=False,
+        )
 
 
 def resolve(

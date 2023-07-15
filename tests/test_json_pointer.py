@@ -219,3 +219,26 @@ def test_pointer_with_leading_whitespace() -> None:
     data = {"some": {"thing": [1, 2, 3]}}
     pointer = JSONPointer("   /some/thing/0")
     assert pointer.resolve(data) == 1
+    assert str(pointer) == "/some/thing/0"
+
+
+def test_pointer_parent() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    pointer = JSONPointer("/some/thing/0")
+    assert pointer.resolve(data) == 1
+
+    parent = pointer.parent()
+    assert str(parent) == "/some/thing"
+    assert parent.resolve(data) == [1, 2, 3]
+
+    parent = parent.parent()
+    assert str(parent) == "/some"
+    assert parent.resolve(data) == {"thing": [1, 2, 3]}
+
+    parent = parent.parent()
+    assert str(parent) == ""
+    assert parent.resolve(data) == {"some": {"thing": [1, 2, 3]}}
+
+    parent = parent.parent()
+    assert str(parent) == ""
+    assert parent.resolve(data) == {"some": {"thing": [1, 2, 3]}}
