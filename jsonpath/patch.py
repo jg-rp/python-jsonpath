@@ -382,9 +382,12 @@ class JSONPatch:
                 f"({op}:{i})"
             )
 
-        return JSONPointer(
-            pointer, unicode_escape=self.unicode_escape, uri_decode=self.uri_decode
-        )
+        try:
+            return JSONPointer(
+                pointer, unicode_escape=self.unicode_escape, uri_decode=self.uri_decode
+            )
+        except JSONPointerError as err:
+            raise JSONPatchError(f"{err} ({op}:{i})") from err
 
     def _op_value(
         self, operation: Mapping[str, object], key: str, op: str, i: int

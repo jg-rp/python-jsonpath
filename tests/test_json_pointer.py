@@ -7,6 +7,7 @@ import pytest
 
 import jsonpath
 from jsonpath import JSONPointer
+from jsonpath import JSONPointerError
 from jsonpath import JSONPointerIndexError
 from jsonpath import JSONPointerResolutionError
 from jsonpath import JSONPointerTypeError
@@ -117,9 +118,9 @@ def test_resolve_with_missing_parent() -> None:
 
 def test_resolve_with_missing_target() -> None:
     data = {"some": {"thing": [1, 2, 3]}}
-    pointer = JSONPointer("some/other")
+    pointer = JSONPointer("/some/other")
     parent, rv = pointer.resolve_parent(data)
-    assert parent == data
+    assert parent == data["some"]
     assert rv == UNDEFINED
 
 
@@ -204,3 +205,17 @@ def test_index_with_leading_zero() -> None:
     pointer = JSONPointer("/some/thing/01")
     with pytest.raises(JSONPointerTypeError):
         pointer.resolve_parent(data)
+
+
+def test_pointer_without_leading_slash() -> None:
+    with pytest.raises(JSONPointerError):
+        JSONPointer("some/thing/01")
+
+    with pytest.raises(JSONPointerError):
+        JSONPointer("nosuchthing")
+
+
+def test_pointer_with_leading_whitespace() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    pointer = JSONPointer("   /some/thing/0")
+    assert pointer.resolve(data) == 1

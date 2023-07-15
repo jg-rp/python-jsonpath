@@ -15,6 +15,7 @@ from typing import Tuple
 from typing import Union
 from urllib.parse import unquote
 
+from .exceptions import JSONPointerError
 from .exceptions import JSONPointerIndexError
 from .exceptions import JSONPointerKeyError
 from .exceptions import JSONPointerResolutionError
@@ -93,8 +94,12 @@ class JSONPointer:
                 .decode("utf-16")
             )
 
-        # TODO: lstrip pointer
-        # TODO: handle pointer without leading slash and not empty string
+        s = s.lstrip()
+        if s and not s.startswith("/"):
+            raise JSONPointerError(
+                "pointer must start with a slash or be the empty string"
+            )
+
         return tuple(
             self._index(p.replace("~1", "/").replace("~0", "~")) for p in s.split("/")
         )[1:]

@@ -9,7 +9,7 @@ from jsonpath.exceptions import JSONPatchError
 from jsonpath.exceptions import JSONPathIndexError
 from jsonpath.exceptions import JSONPathSyntaxError
 from jsonpath.exceptions import JSONPathTypeError
-from jsonpath.exceptions import JSONPointerResolutionError
+from jsonpath.exceptions import JSONPointerError
 
 INDENT = 2
 
@@ -295,7 +295,7 @@ def handle_pointer_command(args: argparse.Namespace) -> None:
             raise
         sys.stderr.write(f"target document json decode error: {err}\n")
         sys.exit(1)
-    except JSONPointerResolutionError as err:
+    except JSONPointerError as err:
         if args.debug:
             raise
         sys.stderr.write(str(err) + "\n")
