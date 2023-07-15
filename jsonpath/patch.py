@@ -547,17 +547,11 @@ class JSONPatch:
             except JSONPatchTestFailure as err:
                 raise JSONPatchTestFailure(f"test failed ({op.name}:{i})") from err
             except JSONPointerKeyError as err:
-                raise JSONPatchError(
-                    f"pointer key error {err} ({op.name}:{i})"
-                ) from err
+                raise JSONPatchError(f"{err} ({op.name}:{i})") from err
             except JSONPointerIndexError as err:
-                raise JSONPatchError(
-                    f"pointer index error {err} ({op.name}:{i})"
-                ) from err
+                raise JSONPatchError(f"{err} ({op.name}:{i})") from err
             except JSONPointerTypeError as err:
-                raise JSONPatchError(
-                    f"pointer type error {err} ({op.name}:{i})"
-                ) from err
+                raise JSONPatchError(f"{err} ({op.name}:{i})") from err
             except (JSONPointerError, JSONPatchError) as err:
                 raise JSONPatchError(f"{err} ({op.name}:{i})") from err
         return _data

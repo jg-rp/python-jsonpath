@@ -91,13 +91,22 @@ class JSONPointerResolutionError(JSONPointerError):
 class JSONPointerIndexError(JSONPointerResolutionError, IndexError):
     """An exception raised when an array index is out of range."""
 
+    def __str__(self) -> str:
+        return f"pointer index error {super().__str__()}"
+
 
 class JSONPointerKeyError(JSONPointerResolutionError, KeyError):
     """An exception raised when a pointer references a mapping with a missing key."""
 
+    def __str__(self) -> str:
+        return f"pointer key error {super().__str__()}"
+
 
 class JSONPointerTypeError(JSONPointerResolutionError, TypeError):
     """An exception raised when a pointer resolves a string against a sequence."""
+
+    def __str__(self) -> str:
+        return f"pointer type error {super().__str__()}"
 
 
 class JSONPatchError(Exception):

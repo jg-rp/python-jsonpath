@@ -93,6 +93,8 @@ class JSONPointer:
                 .decode("utf-16")
             )
 
+        # TODO: lstrip pointer
+        # TODO: handle pointer without leading slash and not empty string
         return tuple(
             self._index(p.replace("~1", "/").replace("~0", "~")) for p in s.split("/")
         )[1:]
@@ -143,12 +145,12 @@ class JSONPointer:
                         try:
                             return getitem(obj, int(key))
                         except IndexError as index_err:
-                            raise JSONPointerIndexError(int(key)) from index_err
-            # TODO: include key and truncated obj
-            raise JSONPointerTypeError(str(err)) from err
+                            raise JSONPointerIndexError(
+                                f"index out of range: {key}"
+                            ) from index_err
+            raise JSONPointerTypeError(f"pointer type error: {key}: {err}") from err
         except IndexError as err:
-            # TODO: include obj name/type
-            raise JSONPointerIndexError(int(key)) from err
+            raise JSONPointerIndexError(f"index out of range: {key}") from err
 
     def resolve(
         self,

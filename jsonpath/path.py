@@ -79,14 +79,8 @@ class JSONPath:
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
         """
-        if isinstance(data, str):
-            _data = json.loads(data)
-        elif isinstance(data, IOBase):
-            _data = json.loads(data.read())
-        else:
-            _data = data
         return [
-            match.obj for match in self.finditer(_data, filter_context=filter_context)
+            match.obj for match in self.finditer(data, filter_context=filter_context)
         ]
 
     def finditer(
@@ -114,6 +108,8 @@ class JSONPath:
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
         """
+        # TODO: _load_data()
+        #  - possibly a scalar value
         if isinstance(data, str):
             _data = json.loads(data)
         elif isinstance(data, IOBase):
@@ -144,16 +140,10 @@ class JSONPath:
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
         """An async version of `findall()`."""
-        if isinstance(data, str):
-            _data = json.loads(data)
-        elif isinstance(data, IOBase):
-            _data = json.loads(data.read())
-        else:
-            _data = data
         return [
             match.obj
             async for match in await self.finditer_async(
-                _data, filter_context=filter_context
+                data, filter_context=filter_context
             )
         ]
 

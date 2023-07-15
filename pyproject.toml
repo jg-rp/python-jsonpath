@@ -34,6 +34,9 @@ Source = "https://github.com/jg-rp/python-jsonpath"
 [tool.hatch.version]
 path = "jsonpath/__about__.py"
 
+[project.scripts]
+json = "jsonpath.cli:main"
+
 [tool.hatch.build.targets.sdist]
 include = ["/jsonpath"]
 
@@ -130,7 +133,7 @@ select = [
   "TID",
   "YTT",
 ]
-ignore = ["S105", "S101", "D107", "D105", "PLR0913"]
+ignore = ["S105", "S101", "D107", "D105", "PLR0913", "SIM108"]
 
 fixable = ["I"]
 unfixable = []
