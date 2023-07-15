@@ -1,6 +1,8 @@
 # Command Line Interface
 
-Python JSONPath includes a script called `json`, exposing [JSONPath](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-13), [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901) and [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902) features on the command line. Use the `--version` argument to check the current version of Python JSONPath, and the `--help` argument to display command information.
+**_New in version 0.9.0_**
+
+Python JSONPath includes a script called `json`, exposing [JSONPath](quickstart.md#findallpath-data), [JSON Pointer](quickstart.md#pointerresolvepointer-data) and [JSON Patch](quickstart.md#patchapplypatch-data) features on the command line. Use the `--version` argument to check the current version of Python JSONPath, and the `--help` argument to display command information.
 
 
 ```console
@@ -64,7 +66,7 @@ optional arguments:
 
 ## Global Options
 
-These arguments apply to any subcommand, and must be listed before the command.
+These arguments apply to any subcommand and must be listed before the command.
 
 ### `--debug`
 
@@ -97,7 +99,7 @@ jsonpath.exceptions.JSONPathSyntaxError: unexpected token '1', line 1, column 2
 
 ### `--pretty`
 
-Enable pretty formatting when outputting JSON. Add's newlines and indentation to output specified with the `-o` or `--output` option. Without the `--pretty` option, the following example output is on one line.
+Enable pretty formatting when outputting JSON. Adds newlines and indentation to output specified with the `-o` or `--output` option. Without the `--pretty` option, the following example output is on one line.
 
 ```console
 $ json pointer -p "/categories/1/products/0" -f /tmp/source.json 
