@@ -83,16 +83,8 @@ class JSONPointer:
     ) -> Tuple[Union[int, str], ...]:
         if uri_decode:
             s = unquote(s)
-
         if unicode_escape:
-            # UTF-16 escape sequences - possibly surrogate pairs - inside UTF-8
-            # encoded strings. As per https://datatracker.ietf.org/doc/html/rfc4627
-            # section 2.5.
-            s = (
-                codecs.decode(s.replace("\\/", "/"), "unicode-escape")
-                .encode("utf-16", "surrogatepass")
-                .decode("utf-16")
-            )
+            s = self._unicode_escape(s)
 
         s = s.lstrip()
         if s and not s.startswith("/"):
@@ -240,6 +232,16 @@ class JSONPointer:
             )
         return ""
 
+    def _unicode_escape(self, s: str) -> str:
+        # UTF-16 escape sequences - possibly surrogate pairs - inside UTF-8
+        # encoded strings. As per https://datatracker.ietf.org/doc/html/rfc4627
+        # section 2.5.
+        return (
+            codecs.decode(s.replace("\\/", "/"), "unicode-escape")
+            .encode("utf-16", "surrogatepass")
+            .decode("utf-16")
+        )
+
     @classmethod
     def from_match(
         cls,
@@ -312,10 +314,13 @@ class JSONPointer:
     def __eq__(self, other: object) -> bool:
         return isinstance(other, JSONPointer) and self.parts == other.parts
 
+    def __repr__(self) -> str:
+        return f"JSONPointer({self._s!r})"
+
     def parent(self) -> JSONPointer:
         """Return this pointer's parent, as a new `JSONPointer`.
 
-        If this pointer points to the document root, self is returned.
+        If this pointer points to the document root, _self_ is returned.
         """
         if not self.parts:
             return self
@@ -325,6 +330,34 @@ class JSONPointer:
             parts=parent_parts,
             unicode_escape=False,
             uri_decode=False,
+        )
+
+    def __truediv__(self, other: object) -> JSONPointer:
+        """Join this path with _other_.
+
+        _other_ is expected to be a JSON Pointer string, possibly without a
+        leading slash. If _other_ does have a leading slash, the previous
+        pointer is ignored and a new JSONPath is returns from _other_.
+
+        _other_ should not be a "Relative JSON Pointer".
+        """
+        if not isinstance(other, str):
+            raise TypeError(
+                "unsupported operand type for /: "
+                f"{self.__class__.__name__!r} and {other.__class__.__name__!r}"
+            )
+
+        other = self._unicode_escape(other.lstrip())
+        if other.startswith("/"):
+            return JSONPointer(other, unicode_escape=False, uri_decode=False)
+
+        parts = self.parts + tuple(
+            self._index(p.replace("~1", "/").replace("~0", "~"))
+            for p in other.split("/")
+        )
+
+        return JSONPointer(
+            self._encode(parts), parts=parts, unicode_escape=False, uri_decode=False
         )
 
 

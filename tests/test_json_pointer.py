@@ -242,3 +242,17 @@ def test_pointer_parent() -> None:
     parent = parent.parent()
     assert str(parent) == ""
     assert parent.resolve(data) == {"some": {"thing": [1, 2, 3]}}
+
+
+def test_join_pointers() -> None:
+    """Test that we can join a pointer to a relative path with the `/` operator."""
+    pointer = JSONPointer("/foo")
+    assert str(pointer) == "/foo"
+    assert str(pointer / "bar") == "/foo/bar"
+    assert str(pointer / "baz") == "/foo/baz"
+    assert str(pointer / "bar/baz") == "/foo/bar/baz"
+    assert str(pointer / "bar/baz" / "0") == "/foo/bar/baz/0"
+    assert str(pointer / "/bar") == "/bar"
+
+    with pytest.raises(TypeError):
+        pointer / 0
