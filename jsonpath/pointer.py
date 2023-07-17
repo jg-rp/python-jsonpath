@@ -278,6 +278,9 @@ class JSONPointer:
                 before parsing the pointer.
             uri_decode: If `True`, the pointer will be unescaped using _urllib_
                 before being parsed.
+
+        Returns:
+            A new `JSONPointer` built from _parts_.
         """
         _parts = (str(p) for p in parts)
         if uri_decode:
@@ -316,6 +319,29 @@ class JSONPointer:
 
     def __repr__(self) -> str:
         return f"JSONPointer({self._s!r})"
+
+    def exists(
+        self, data: Union[str, IOBase, Sequence[object], Mapping[str, object]]
+    ) -> bool:
+        """Return _True_ if this pointer can be resolved against _data_.
+
+        Note that `JSONPointer.resolve()` can return legitimate falsy values
+        that form part of the target JSON document. This method will return
+        `True` if a falsy value is found.
+
+        Args:
+            data: The target JSON "document" or equivalent Python objects.
+
+        Returns:
+            _True_ if this pointer can be resolved against _data_, or _False_
+                otherwise.
+
+        """
+        try:
+            self.resolve(data)
+        except JSONPointerResolutionError:
+            return False
+        return True
 
     def parent(self) -> JSONPointer:
         """Return this pointer's parent, as a new `JSONPointer`.

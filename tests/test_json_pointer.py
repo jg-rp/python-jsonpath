@@ -256,3 +256,10 @@ def test_join_pointers() -> None:
 
     with pytest.raises(TypeError):
         pointer / 0
+
+
+def test_pointer_exists() -> None:
+    data = {"some": {"thing": [1, 2, 3]}, "other": None}
+    assert JSONPointer("/some/thing").exists(data) is True
+    assert JSONPointer("/other").exists(data) is True
+    assert JSONPointer("/nosuchthing").exists(data) is False
