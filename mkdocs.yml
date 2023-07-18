@@ -47,6 +47,7 @@ nav:
   - Guides:
       - JSONPath Syntax: "syntax.md"
       - Filter Functions: "functions.md"
+      - JSON Pointers: "pointers.md"
       - Async Support: "async.md"
   - API Reference:
       - High Level API: "api.md"

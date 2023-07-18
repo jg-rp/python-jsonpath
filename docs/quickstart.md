@@ -230,23 +230,6 @@ print(sue_score)  # 0
 
 See also [`JSONPathMatch.pointer()`](api.md#jsonpath.match.JSONPathMatch.pointer), which builds a [`JSONPointer`](api.md#jsonpath.JSONPointer) from a `JSONPathMatch`.
 
-### Slash Operator
-
-**_New in version 0.9.0_**
-
-The slash operator allows you to create pointers that are children of an existing pointer.
-
-```python
-from jsonpath import JSONPointer
-
-pointer = JSONPointer("/users")
-child_pointer = pointer / "score" / "0"
-another_child_pointer = pointer / "score/1"
-
-print(child_pointer)  # "/users/score/0"
-print(another_child_pointer)  # "/users/score/1"
-```
-
 ## `patch.apply(patch, data)`
 
 **_New in version 0.8.0_**
