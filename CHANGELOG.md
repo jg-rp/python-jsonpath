@@ -9,8 +9,9 @@
 **Features**
 
 - Added a command line interface, exposing JSONPath, JSON Pointer and JSON Patch features.
-- Added `JSONPointer.parent()`, a method that returns a the parent of the pointer, as a new `JSONPointer`.
-- Implemented `JSONPointer.__truediv__()` to allow creation of child pointers from an existing pointer.
+- Added `JSONPointer.parent()`, a method that returns the parent of the pointer, as a new `JSONPointer`.
+- Implemented `JSONPointer.__truediv__()` to allow creation of child pointers from an existing pointer using the slash (`/`) operator.
+- Added `JSONPointer.join()`, a method for creating child pointers. This is equivalent to using the slash (`/`) operator for each argument given to `join()`.
 - Added `JSONPointer.exists()`, a method that returns `True` if a the pointer can be resolved against some data, or `False` otherwise.
 
 ## Version 0.8.1

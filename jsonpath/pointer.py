@@ -24,7 +24,13 @@ from .exceptions import JSONPointerTypeError
 if TYPE_CHECKING:
     from .match import JSONPathMatch
 
-UNDEFINED = object()
+
+class _Undefined:
+    def __str__(self) -> str:
+        return "<jsonpath.pointer.UNDEFINED>"
+
+
+UNDEFINED = _Undefined()
 
 
 class JSONPointer:
@@ -195,8 +201,8 @@ class JSONPointer:
         Returns:
             A `(parent, object)` tuple, where parent will be `None` if this
                 pointer points to the root node in the document. If the parent
-                exists but the last object does not, `(parent, None)` will be
-                returned.
+                exists but the last object does not, `(parent, UNDEFINED)` will
+                be returned.
 
         Raises:
             JSONPointerIndexError: When attempting to access a sequence by
@@ -336,6 +342,7 @@ class JSONPointer:
             _True_ if this pointer can be resolved against _data_, or _False_
                 otherwise.
 
+        **_New in version 0.9.0_**
         """
         try:
             self.resolve(data)
@@ -347,6 +354,8 @@ class JSONPointer:
         """Return this pointer's parent, as a new `JSONPointer`.
 
         If this pointer points to the document root, _self_ is returned.
+
+        **_New in version 0.9.0_**
         """
         if not self.parts:
             return self
@@ -359,11 +368,11 @@ class JSONPointer:
         )
 
     def __truediv__(self, other: object) -> JSONPointer:
-        """Join this path with _other_.
+        """Join this pointer with _other_.
 
         _other_ is expected to be a JSON Pointer string, possibly without a
         leading slash. If _other_ does have a leading slash, the previous
-        pointer is ignored and a new JSONPath is returns from _other_.
+        pointer is ignored and a new JSONPath is returned from _other_.
 
         _other_ should not be a "Relative JSON Pointer".
         """
@@ -385,6 +394,19 @@ class JSONPointer:
         return JSONPointer(
             self._encode(parts), parts=parts, unicode_escape=False, uri_decode=False
         )
+
+    def join(self, *parts: str) -> JSONPointer:
+        """Join this pointer with _parts_.
+
+        Each part is expected to be a JSON Pointer string, possibly without a
+        leading slash. If a part does have a leading slash, the previous
+        pointer is ignored and a new `JSONPath` is created, and processing of
+        remaining parts continues.
+        """
+        pointer = self
+        for part in parts:
+            pointer = pointer / part
+        return pointer
 
 
 def resolve(
