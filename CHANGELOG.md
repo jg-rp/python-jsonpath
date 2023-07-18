@@ -2,6 +2,10 @@
 
 ## Version 0.9.0 (unreleased)
 
+**Breaking Changes**
+
+- `CompoundJSONPath` instances are no longer updated in-place when using `.union()` and `.intersection()`. Instead, a new `CompoundJSONPath` is returned. `CompoundJSONPath.paths` is now a tuple instead of a list.
+
 **Fixes**
 
 - Fixed a bug with the parsing of JSON Pointers. When given an arbitrary string without slashes, `JSONPointer` would resolve to the document root. The empty string is the only valid pointer that should resolve to the document root. We now raise a `JSONPointerError` in such cases. See [#27](https://github.com/jg-rp/python-jsonpath/issues/27).

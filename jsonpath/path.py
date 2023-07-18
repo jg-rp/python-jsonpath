@@ -223,10 +223,11 @@ class CompoundJSONPath:
         *,
         env: JSONPathEnvironment,
         path: Union[JSONPath, CompoundJSONPath],
+        paths: Iterable[Tuple[str, JSONPath]] = (),
     ) -> None:
         self.env = env
         self.path = path
-        self.paths: List[Tuple[(str, JSONPath)]] = []
+        self.paths = tuple(paths)
 
     def __str__(self) -> str:
         buf: List[str] = [str(self.path)]
@@ -381,14 +382,20 @@ class CompoundJSONPath:
         return matches
 
     def union(self, path: JSONPath) -> CompoundJSONPath:
-        """In-place union of this path and another path."""
-        self.paths.append((self.env.union_token, path))
-        return self
+        """Union of this path and another path."""
+        return self.__class__(
+            env=self.env,
+            path=self.path,
+            paths=self.paths + ((self.env.union_token, path),),
+        )
 
     def intersection(self, path: JSONPath) -> CompoundJSONPath:
-        """In-place intersection of this path and another path."""
-        self.paths.append((self.env.intersection_token, path))
-        return self
+        """Intersection of this path and another path."""
+        return self.__class__(
+            env=self.env,
+            path=self.path,
+            paths=self.paths + ((self.env.intersection_token, path),),
+        )
 
 
 T = TypeVar("T")
