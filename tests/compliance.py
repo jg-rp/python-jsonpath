@@ -55,15 +55,6 @@ SKIP = {
     "functions, match, result cannot be compared": "ignore",
     "functions, search, result cannot be compared": "ignore",
     "functions, value, result must be compared": "ignore",
-    "whitespace, selectors, space between root and bracket": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, newline between root and bracket": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, tab between root and bracket": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, return between root and bracket": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, space between bracket and bracket": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, space between root and dot": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, newline between root and dot": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, tab between root and dot": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, return between root and dot": "flexible whitespace policy",  # noqa: E501
     "whitespace, selectors, space between dot and name": "flexible whitespace policy",  # noqa: E501
     "whitespace, selectors, newline between dot and name": "flexible whitespace policy",  # noqa: E501
     "whitespace, selectors, tab between dot and name": "flexible whitespace policy",  # noqa: E501
