@@ -161,7 +161,7 @@ class JSONPathEnvironment:
 
                 if stream.current.kind == TOKEN_UNION:
                     stream.next_token()
-                    _path.union(
+                    _path = _path.union(
                         JSONPath(
                             env=self,
                             selectors=self.parser.parse(stream),
@@ -169,7 +169,7 @@ class JSONPathEnvironment:
                     )
                 elif stream.current.kind == TOKEN_INTERSECTION:
                     stream.next_token()
-                    _path.intersection(
+                    _path = _path.intersection(
                         JSONPath(
                             env=self,
                             selectors=self.parser.parse(stream),
