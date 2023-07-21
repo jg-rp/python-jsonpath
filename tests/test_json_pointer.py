@@ -297,3 +297,9 @@ def test_non_standard_index_pointer() -> None:
     assert JSONPointer("/foo/bar/#1").resolve(data) == 1
     with pytest.raises(JSONPointerIndexError):
         JSONPointer("/foo/bar/#9").resolve(data)
+
+
+def test_trailing_slash() -> None:
+    data = {"foo": {"": [1, 2, 3], " ": [4, 5, 6]}}
+    assert JSONPointer("/foo/").resolve(data) == [1, 2, 3]
+    assert JSONPointer("/foo/ ").resolve(data) == [4, 5, 6]
