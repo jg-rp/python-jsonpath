@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "python-jsonpath"
-description = 'Another JSONPath implementation for Python.'
+description = 'JSONPath, JSON Pointer and JSON Patch for Python.'
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
