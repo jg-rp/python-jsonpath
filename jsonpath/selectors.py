@@ -65,6 +65,16 @@ class PropertySelector(JSONPathSelector):
     def __str__(self) -> str:
         return f"['{self.name}']"
 
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, PropertySelector)
+            and self.name == __value.name
+            and self.token == __value.token
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.token))
+
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
             if not isinstance(match.obj, Mapping):
@@ -123,6 +133,16 @@ class IndexSelector(JSONPathSelector):
 
     def __str__(self) -> str:
         return f"[{self.index}]"
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, IndexSelector)
+            and self.index == __value.index
+            and self.token == __value.token
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.index, self.token))
 
     def _normalized_index(self, obj: Sequence[object]) -> int:
         if self.index < 0 and len(obj) >= abs(self.index):
@@ -198,6 +218,12 @@ class KeysSelector(JSONPathSelector):
     def __str__(self) -> str:
         return f"[{self.env.keys_selector_token}]"
 
+    def __eq__(self, __value: object) -> bool:
+        return isinstance(__value, KeysSelector) and self.token == __value.token
+
+    def __hash__(self) -> int:
+        return hash(self.token)
+
     def _keys(self, match: JSONPathMatch) -> Iterable[JSONPathMatch]:
         if isinstance(match.obj, Mapping):
             for i, key in enumerate(match.obj.keys()):
@@ -247,6 +273,16 @@ class SliceSelector(JSONPathSelector):
         start = self.slice.start if self.slice.start is not None else ""
         step = self.slice.step if self.slice.step is not None else "1"
         return f"[{start}:{stop}:{step}]"
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, SliceSelector)
+            and self.slice == __value.slice
+            and self.token == __value.token
+        )
+
+    def __hash__(self) -> int:
+        return hash((str(self), self.token))
 
     def _check_range(self, *indices: Optional[int]) -> None:
         for i in indices:
@@ -310,6 +346,12 @@ class WildSelector(JSONPathSelector):
 
     def __str__(self) -> str:
         return "[*]"
+
+    def __eq__(self, __value: object) -> bool:
+        return isinstance(__value, WildSelector) and self.token == __value.token
+
+    def __hash__(self) -> int:
+        return hash(self.token)
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
@@ -375,6 +417,15 @@ class RecursiveDescentSelector(JSONPathSelector):
 
     def __str__(self) -> str:
         return ".."
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, RecursiveDescentSelector)
+            and self.token == __value.token
+        )
+
+    def __hash__(self) -> int:
+        return hash(self.token)
 
     def _expand(self, match: JSONPathMatch) -> Iterable[JSONPathMatch]:
         if isinstance(match.obj, Mapping):
@@ -453,7 +504,7 @@ class ListSelector(JSONPathSelector):
         ],
     ) -> None:
         super().__init__(env=env, token=token)
-        self.items = items
+        self.items = tuple(items)
 
     def __str__(self) -> str:
         buf: List[str] = []
@@ -472,6 +523,16 @@ class ListSelector(JSONPathSelector):
             else:
                 buf.append(str(item.index))
         return f"[{', '.join(buf)}]"
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, ListSelector)
+            and self.items == __value.items
+            and self.token == __value.token
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.items, self.token))
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         _matches = list(matches)
@@ -506,6 +567,16 @@ class Filter(JSONPathSelector):
 
     def __str__(self) -> str:
         return f"[?({self.expression})]"
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, Filter)
+            and self.expression == __value.expression
+            and self.token == __value.token
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.expression, self.token))
 
     def resolve(  # noqa: PLR0912
         self, matches: Iterable[JSONPathMatch]

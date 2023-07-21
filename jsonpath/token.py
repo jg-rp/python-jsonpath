@@ -118,6 +118,9 @@ class Token:
             and self.path == other.path
         )
 
+    def __hash__(self) -> int:
+        return hash((self.kind, self.value, self.index, self.path))
+
     def position(self) -> Tuple[int, int]:
         """Return the line and column number for the start of this token."""
         line_number = self.value.count("\n", 0, self.index) + 1

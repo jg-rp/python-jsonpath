@@ -53,6 +53,12 @@ class JSONPath:
             str(selector) for selector in self.selectors
         )
 
+    def __eq__(self, __value: object) -> bool:
+        return isinstance(__value, JSONPath) and self.selectors == __value.selectors
+
+    def __hash__(self) -> int:
+        return hash(self.selectors)
+
     def findall(
         self,
         data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
@@ -235,6 +241,16 @@ class CompoundJSONPath:
             buf.append(f" {op} ")
             buf.append(str(path))
         return "".join(buf)
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, CompoundJSONPath)
+            and self.path == __value.path
+            and self.paths == __value.paths
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.path, self.paths))
 
     def findall(
         self,
