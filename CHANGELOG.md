@@ -17,7 +17,7 @@
 - Implemented `JSONPointer.__truediv__()` to allow creation of child pointers from an existing pointer using the slash (`/`) operator.
 - Added `JSONPointer.join()`, a method for creating child pointers. This is equivalent to using the slash (`/`) operator for each argument given to `join()`.
 - Added `JSONPointer.exists()`, a method that returns `True` if a the pointer can be resolved against some data, or `False` otherwise.
-- Added the `RelativeJSONPointer` class for building new `JSONPointer` instances from Relative JSON Pointer Syntax.
+- Added the `RelativeJSONPointer` class for building new `JSONPointer` instances from Relative JSON Pointer syntax.
 - Added support for a non-standard index/property pointer using `#<property or index>`. This is to support Relative JSON Pointer's use of hash (`#`) when building `JSONPointer` instances from relative JSON Pointers.
 
 ## Version 0.8.1

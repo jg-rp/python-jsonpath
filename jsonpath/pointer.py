@@ -450,7 +450,7 @@ class JSONPointer:
 
 
 RE_RELATIVE_POINTER = re.compile(
-    r"(?P<ORIGIN>\d)(?P<INDEX_G>(?P<SIGN>[+\-])(?P<INDEX>\d))?(?P<POINTER>.*)",
+    r"(?P<ORIGIN>\d+)(?P<INDEX_G>(?P<SIGN>[+\-])(?P<INDEX>\d))?(?P<POINTER>.*)",
     re.DOTALL,
 )
 
@@ -507,7 +507,8 @@ class RelativeJSONPointer:
         # Optional index manipulation
         if match.group("INDEX_G"):
             index = self._zero_or_positive(match.group("INDEX"), rel)
-            # TODO: raise if index is 0
+            if index == 0:
+                raise RelativeJSONPointerSyntaxError("index offset can't be zero", rel)
             if match.group("SIGN") == "-":
                 index = -index
         else:
@@ -537,6 +538,15 @@ class RelativeJSONPointer:
             raise RelativeJSONPointerSyntaxError(
                 "expected positive int or zero", rel
             ) from err
+
+    def _int_like(self, obj: Any) -> bool:
+        if isinstance(obj, int):
+            return True
+        try:
+            int(obj)
+        except ValueError:
+            return False
+        return True
 
     def to(
         self,
@@ -573,7 +583,12 @@ class RelativeJSONPointer:
             parts = list(_pointer.parts[: -self.origin])
 
         # Array index offset
-        if self.index and parts and _int_like(parts[-1]):
+        if self.index and parts and self._int_like(parts[-1]):
+            new_index = int(parts[-1]) + self.index
+            if new_index < 0:
+                raise RelativeJSONPointerIndexError(
+                    f"index offset out of range {new_index}"
+                )
             parts[-1] = int(parts[-1]) + self.index
 
         # Pointer or index/property
@@ -586,16 +601,6 @@ class RelativeJSONPointer:
         return JSONPointer.from_parts(
             parts, unicode_escape=unicode_escape, uri_decode=uri_decode
         )
-
-
-def _int_like(obj: Any) -> bool:
-    if isinstance(obj, int):
-        return True
-    try:
-        int(obj)
-    except ValueError:
-        return False
-    return True
 
 
 def resolve(
