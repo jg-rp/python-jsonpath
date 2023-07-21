@@ -13,6 +13,9 @@ from .exceptions import JSONPointerIndexError
 from .exceptions import JSONPointerKeyError
 from .exceptions import JSONPointerResolutionError
 from .exceptions import JSONPointerTypeError
+from .exceptions import RelativeJSONPointerError
+from .exceptions import RelativeJSONPointerIndexError
+from .exceptions import RelativeJSONPointerSyntaxError
 from .filter import UNDEFINED
 from .lex import Lexer
 from .match import JSONPathMatch
@@ -21,6 +24,7 @@ from .patch import JSONPatch
 from .path import CompoundJSONPath
 from .path import JSONPath
 from .pointer import JSONPointer
+from .pointer import RelativeJSONPointer
 from .pointer import resolve
 
 __all__ = (
@@ -48,6 +52,10 @@ __all__ = (
     "Lexer",
     "match",
     "Parser",
+    "RelativeJSONPointer",
+    "RelativeJSONPointerError",
+    "RelativeJSONPointerIndexError",
+    "RelativeJSONPointerSyntaxError",
     "resolve",
     "UNDEFINED",
 )

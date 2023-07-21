@@ -100,6 +100,12 @@ def test_hyphen_index() -> None:
         pointer.resolve(data)
 
 
+def test_negative_index() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    pointer = JSONPointer("/some/thing/-2")
+    assert pointer.resolve(data) == 2  # noqa: PLR2004
+
+
 def test_resolve_with_parent() -> None:
     data = {"some": {"thing": [1, 2, 3]}}
     pointer = JSONPointer("/some/thing")
@@ -278,3 +284,16 @@ def test_pointer_exists() -> None:
     assert JSONPointer("/some/thing").exists(data) is True
     assert JSONPointer("/other").exists(data) is True
     assert JSONPointer("/nosuchthing").exists(data) is False
+
+
+def test_non_standard_property_pointer() -> None:
+    data = {"foo": {"bar": [1, 2, 3], "#baz": "hello"}}
+    assert JSONPointer("/foo/#bar").resolve(data) == "bar"
+    assert JSONPointer("/foo/#baz").resolve(data) == "hello"
+
+
+def test_non_standard_index_pointer() -> None:
+    data = {"foo": {"bar": [1, 2, 3], "#baz": "hello"}}
+    assert JSONPointer("/foo/bar/#1").resolve(data) == 1
+    with pytest.raises(JSONPointerIndexError):
+        JSONPointer("/foo/bar/#9").resolve(data)

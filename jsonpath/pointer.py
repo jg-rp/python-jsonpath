@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import codecs
 import json
+import re
 from functools import reduce
 from io import IOBase
 from operator import getitem
@@ -15,11 +16,13 @@ from typing import Tuple
 from typing import Union
 from urllib.parse import unquote
 
-from .exceptions import JSONPointerError
-from .exceptions import JSONPointerIndexError
-from .exceptions import JSONPointerKeyError
-from .exceptions import JSONPointerResolutionError
-from .exceptions import JSONPointerTypeError
+from jsonpath.exceptions import JSONPointerError
+from jsonpath.exceptions import JSONPointerIndexError
+from jsonpath.exceptions import JSONPointerKeyError
+from jsonpath.exceptions import JSONPointerResolutionError
+from jsonpath.exceptions import JSONPointerTypeError
+from jsonpath.exceptions import RelativeJSONPointerIndexError
+from jsonpath.exceptions import RelativeJSONPointerSyntaxError
 
 if TYPE_CHECKING:
     from .match import JSONPathMatch
@@ -125,22 +128,30 @@ class JSONPointer:
                     return getitem(obj, str(key))
                 except KeyError:
                     raise JSONPointerKeyError(key) from err
-            # Handle non-standard keys selector
+            # Handle non-standard keys/property selector/pointer.
             if (
                 isinstance(key, str)
                 and isinstance(obj, Mapping)
-                and key.startswith(self.keys_selector)
+                and key.startswith((self.keys_selector, "#"))
                 and key[1:] in obj
             ):
                 return key[1:]
+            # Handle non-standard index/property pointer (`#`)
             raise JSONPointerKeyError(key) from err
         except TypeError as err:
-            if isinstance(obj, Sequence):
+            if isinstance(obj, Sequence) and not isinstance(obj, str):
                 if key == "-":
                     # "-" is a valid index when appending to a JSON array
                     # with JSON Patch, but not when resolving a JSON Pointer.
                     raise JSONPointerIndexError("index out of range") from None
-
+                # Handle non-standard index pointer.
+                if isinstance(key, str) and key.startswith("#"):
+                    _index = int(key[1:])
+                    if _index >= len(obj):
+                        raise JSONPointerIndexError(
+                            f"index out of range: {_index}"
+                        ) from err
+                    return _index
                 # Try int index. Reject non-zero ints that start with a zero.
                 if isinstance(key, str):
                     index = self._index(key)
@@ -151,7 +162,7 @@ class JSONPointer:
                             raise JSONPointerIndexError(
                                 f"index out of range: {key}"
                             ) from index_err
-            raise JSONPointerTypeError(f"pointer type error: {key}: {err}") from err
+            raise JSONPointerTypeError(f"{key}: {err}") from err
         except IndexError as err:
             raise JSONPointerIndexError(f"index out of range: {key}") from err
 
@@ -407,6 +418,189 @@ class JSONPointer:
         for part in parts:
             pointer = pointer / part
         return pointer
+
+    def to(
+        self,
+        rel: Union[RelativeJSONPointer, str],
+        *,
+        unicode_escape: bool = True,
+        uri_decode: bool = False,
+    ) -> JSONPointer:
+        """Return a new pointer relative to this pointer.
+
+        Args:
+            rel: A `RelativeJSONPointer` or a string following "Relative JSON
+                Pointer" syntax.
+            unicode_escape: If `True`, UTF-16 escape sequences will be decoded
+                before parsing the pointer.
+            uri_decode: If `True`, the pointer will be unescaped using _urllib_
+                before being parsed.
+
+        See https://www.ietf.org/id/draft-hha-relative-json-pointer-00.html
+        """
+        relative_pointer = (
+            RelativeJSONPointer(
+                rel, unicode_escape=unicode_escape, uri_decode=uri_decode
+            )
+            if isinstance(rel, str)
+            else rel
+        )
+
+        return relative_pointer.to(self)
+
+
+RE_RELATIVE_POINTER = re.compile(
+    r"(?P<ORIGIN>\d+)(?P<INDEX_G>(?P<SIGN>[+\-])(?P<INDEX>\d))?(?P<POINTER>.*)",
+    re.DOTALL,
+)
+
+
+class RelativeJSONPointer:
+    """A Relative JSON Pointer.
+
+    See https://www.ietf.org/id/draft-hha-relative-json-pointer-00.html
+
+    Args:
+        rel: A string following Relative JSON Pointer syntax.
+        unicode_escape: If `True`, UTF-16 escape sequences will be decoded
+            before parsing the pointer.
+        uri_decode: If `True`, the pointer will be unescaped using _urllib_
+            before being parsed.
+    """
+
+    __slots__ = ("origin", "index", "pointer")
+
+    def __init__(
+        self,
+        rel: str,
+        *,
+        unicode_escape: bool = True,
+        uri_decode: bool = False,
+    ) -> None:
+        self.origin, self.index, self.pointer = self._parse(
+            rel, unicode_escape=unicode_escape, uri_decode=uri_decode
+        )
+
+    def __str__(self) -> str:
+        sign = "+" if self.index > 0 else ""
+        index = "" if self.index == 0 else f"{sign}{self.index}"
+        return f"{self.origin}{index}{self.pointer}"
+
+    def __eq__(self, __value: object) -> bool:
+        return isinstance(__value, RelativeJSONPointer) and str(self) == str(__value)
+
+    def _parse(
+        self,
+        rel: str,
+        *,
+        unicode_escape: bool = True,
+        uri_decode: bool = False,
+    ) -> Tuple[int, int, Union[JSONPointer, str]]:
+        rel = rel.lstrip()
+        match = RE_RELATIVE_POINTER.match(rel)
+        if not match:
+            raise RelativeJSONPointerSyntaxError("", rel)
+
+        # Steps to move
+        origin = self._zero_or_positive(match.group("ORIGIN"), rel)
+
+        # Optional index manipulation
+        if match.group("INDEX_G"):
+            index = self._zero_or_positive(match.group("INDEX"), rel)
+            if index == 0:
+                raise RelativeJSONPointerSyntaxError("index offset can't be zero", rel)
+            if match.group("SIGN") == "-":
+                index = -index
+        else:
+            index = 0
+
+        # Pointer or '#'. Empty string is OK.
+        _pointer = match.group("POINTER").strip()
+        pointer = (
+            JSONPointer(
+                _pointer,
+                unicode_escape=unicode_escape,
+                uri_decode=uri_decode,
+            )
+            if _pointer != "#"
+            else _pointer
+        )
+
+        return (origin, index, pointer)
+
+    def _zero_or_positive(self, s: str, rel: str) -> int:
+        # TODO: accept start and stop index for better error messages
+        if s.startswith("0") and len(s) > 1:
+            raise RelativeJSONPointerSyntaxError("unexpected leading zero", rel)
+        try:
+            return int(s)
+        except ValueError as err:
+            raise RelativeJSONPointerSyntaxError(
+                "expected positive int or zero", rel
+            ) from err
+
+    def _int_like(self, obj: Any) -> bool:
+        if isinstance(obj, int):
+            return True
+        try:
+            int(obj)
+        except ValueError:
+            return False
+        return True
+
+    def to(
+        self,
+        pointer: Union[JSONPointer, str],
+        *,
+        unicode_escape: bool = True,
+        uri_decode: bool = False,
+    ) -> JSONPointer:
+        """Return a new JSONPointer relative to _pointer_.
+
+        Args:
+            pointer: A `JSONPointer` instance or a string following JSON
+                Pointer syntax.
+            unicode_escape: If `True`, UTF-16 escape sequences will be decoded
+                before parsing the pointer.
+            uri_decode: If `True`, the pointer will be unescaped using _urllib_
+                before being parsed.
+        """
+        _pointer = (
+            JSONPointer(pointer, unicode_escape=unicode_escape, uri_decode=uri_decode)
+            if isinstance(pointer, str)
+            else pointer
+        )
+
+        # Move to origin
+        if self.origin > len(_pointer.parts):
+            raise RelativeJSONPointerIndexError(
+                f"origin ({self.origin}) exceeds root ({len(_pointer.parts)})"
+            )
+
+        if self.origin < 1:
+            parts = list(_pointer.parts)
+        else:
+            parts = list(_pointer.parts[: -self.origin])
+
+        # Array index offset
+        if self.index and parts and self._int_like(parts[-1]):
+            new_index = int(parts[-1]) + self.index
+            if new_index < 0:
+                raise RelativeJSONPointerIndexError(
+                    f"index offset out of range {new_index}"
+                )
+            parts[-1] = int(parts[-1]) + self.index
+
+        # Pointer or index/property
+        if isinstance(self.pointer, JSONPointer):
+            parts.extend(self.pointer.parts)
+        else:
+            assert self.pointer == "#"
+            parts[-1] = f"#{parts[-1]}"
+
+        return JSONPointer.from_parts(
+            parts, unicode_escape=unicode_escape, uri_decode=uri_decode
+        )
 
 
 def resolve(
