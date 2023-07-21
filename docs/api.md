@@ -14,5 +14,8 @@
 ::: jsonpath.JSONPointer
     handler: python
 
+::: jsonpath.RelativeJSONPointer
+    handler: python
+
 ::: jsonpath.JSONPatch
     handler: python

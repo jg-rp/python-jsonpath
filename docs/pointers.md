@@ -85,7 +85,7 @@ print(pointer.join("baz", "0"))  # /foo/bar/baz/0
 
 **_New in version 0.9.0_**
 
-Return this pointer's parent, as a new `JSONPointer`. If this pointer points to the document root, _self_ is returned.
+Return this pointer's parent as a new `JSONPointer`. If this pointer points to the document root, _self_ is returned.
 
 ```python
 from jsonpath import JSONPointer
@@ -97,7 +97,7 @@ print(pointer.parent())  # /foo
 
 ## `is_relative_to(pointer)`
 
-Return _True_ if this pointer points to a child of the argument pointer, which must be a `JSONPointer` instance, or _False_ otherwise
+Return _True_ if this pointer points to a child of the argument pointer, which must be a `JSONPointer` instance.
 
 ```python
 from jsonpath import JSONPointer
@@ -111,11 +111,38 @@ another_pointer = JSONPointer("/foo/baz")
 print(another_pointer.is_relative_to(pointer))  # False
 ```
 
-## `to(relative_pointer)`
+## `to(rel)`
 
 **_New in version 0.9.0_**
 
-TODO:
+Return a new `JSONPointer` relative to this pointer. _rel_ should be a [`RelativeJSONPointer`](api.md#jsonpath.RelativeJSONPointer) instance or a string following [Relative JSON Pointer](https://www.ietf.org/id/draft-hha-relative-json-pointer-00.html) syntax.
+
+```python
+from jsonpath import JSONPointer
+
+data = {"foo": {"bar": [1, 2, 3], "baz": [4, 5, 6]}}
+pointer = JSONPointer("/foo/bar/2")
+
+print(pointer.resolve(data))  # 3
+print(pointer.to("0-1").resolve(data))  # 2
+print(pointer.to("2/baz/2").resolve(data))  # 6
+```
+
+A `RelativeJSONPointer` can be instantiated for repeated application to multiple different pointers.
+
+```python
+from jsonpath import JSONPointer
+from jsonpath import RelativeJSONPointer
+
+data = {"foo": {"bar": [1, 2, 3], "baz": [4, 5, 6], "some": "thing"}}
+
+some_pointer = JSONPointer("/foo/bar/0")
+another_pointer = JSONPointer("/foo/baz/2")
+rel = RelativeJSONPointer("2/some")
+
+print(rel.to(some_pointer).resolve(data))  # thing
+print(rel.to(another_pointer).resolve(data))  # thing
+```
 
 ## Slash Operator
 
