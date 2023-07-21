@@ -21,6 +21,7 @@ from .patch import JSONPatch
 from .path import CompoundJSONPath
 from .path import JSONPath
 from .pointer import JSONPointer
+from .pointer import RelativeJSONPointer
 from .pointer import resolve
 
 __all__ = (
@@ -48,6 +49,7 @@ __all__ = (
     "Lexer",
     "match",
     "Parser",
+    "RelativeJSONPointer",
     "resolve",
     "UNDEFINED",
 )

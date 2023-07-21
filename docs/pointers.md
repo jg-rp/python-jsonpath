@@ -111,7 +111,7 @@ another_pointer = JSONPointer("/foo/baz")
 print(another_pointer.is_relative_to(pointer))  # False
 ```
 
-## `relative(relative_pointer)`
+## `to(relative_pointer)`
 
 **_New in version 0.9.0_**
 

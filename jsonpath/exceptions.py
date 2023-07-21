@@ -109,6 +109,31 @@ class JSONPointerTypeError(JSONPointerResolutionError, TypeError):
         return f"pointer type error {super().__str__()}"
 
 
+class RelativeJSONPointerError(Exception):
+    """Base class for all Relative JSON Pointer errors."""
+
+
+class RelativeJSONPointerIndexError(RelativeJSONPointerError):
+    """An exception raised when modifying a pointer index out of range."""
+
+
+class RelativeJSONPointerSyntaxError(RelativeJSONPointerError):
+    """An exception raised when we fail to parse a relative JSON Pointer."""
+
+    def __init__(self, msg: str, rel: str) -> None:
+        super().__init__(msg)
+        self.rel = rel
+
+    def __str__(self) -> str:
+        if not self.rel:
+            return super().__str__()
+
+        msg = self.rel[:7]
+        if len(msg) == 6:  # noqa: PLR2004
+            msg += ".."
+        return f"{super().__str__()} {msg!r}"
+
+
 class JSONPatchError(Exception):
     """Base class for all JSON Patch errors."""
 
