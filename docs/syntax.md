@@ -183,6 +183,7 @@ This is a list of things that you might find in other JSONPath implementation th
 - We do not support arithmetic in filter expression.
 - We don't allow dotted array indices. An array index must be surrounded by square brackets.
 - Python JSONPath is strictly read only. There are no update "selectors", but we do provide methods for converting `JSONPathMatch` instances to `JSONPointer`s, and a `JSONPatch` builder API for modifying JSON-like data structures using said pointers.
+- We don't attempt to handle JSON documents without a top-level array or object (or equivalent Python objects).
 
 And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-13).
 
