@@ -1,7 +1,7 @@
 <h1 align="center">Python JSONPath</h1>
 
 <p align="center">
-A flexible JSONPath engine for Python.
+A flexible JSONPath engine for Python with JSON Pointer and JSON Patch.
 </p>
 
 <p align="center">
@@ -92,29 +92,17 @@ print(user_names) # ['John', 'Sally', 'Jane']
 
 ### JSON Pointer
 
-Since version 0.8.0, we also include an [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) compliant implementation of JSON Pointer.
+Since version 0.8.0, we include an [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) compliant implementation of JSON Pointer. See JSON Pointer [quick start](https://jg-rp.github.io/python-jsonpath/quickstart/#pointerresolvepointer-data), [guide](https://jg-rp.github.io/python-jsonpath/pointers/) and [API reference](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPointer)
 
 ```python
 from jsonpath import pointer
 
 data = {
     "users": [
-        {
-            "name": "Sue",
-            "score": 100,
-        },
-        {
-            "name": "John",
-            "score": 86,
-        },
-        {
-            "name": "Sally",
-            "score": 84,
-        },
-        {
-            "name": "Jane",
-            "score": 55,
-        },
+        {"name": "Sue", "score": 100},
+        {"name": "John", "score": 86},
+        {"name": "Sally", "score": 84},
+        {"name": "Jane", "score": 55},
     ]
 }
 
@@ -123,6 +111,26 @@ print(sue_score)  # 100
 
 jane_score = pointer.resolve(["users", 3, "score"], data)
 print(jane_score)  # 55
+```
+
+### JSON Patch
+
+Since version 0.8.0, we also include an [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902) compliant implementation of JSON Patch. See JSON Patch [quick start](https://jg-rp.github.io/python-jsonpath/quickstart/#patchapplypatch-data) and [API reference](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch)
+
+```python
+from jsonpath import patch
+
+patch_operations = [
+    {"op": "add", "path": "/some/foo", "value": {"foo": {}}},
+    {"op": "add", "path": "/some/foo", "value": {"bar": []}},
+    {"op": "copy", "from": "/some/other", "path": "/some/foo/else"},
+    {"op": "add", "path": "/some/foo/bar/-", "value": 1},
+]
+
+data = {"some": {"other": "thing"}}
+patch.apply(patch_operations, data)
+print(data) # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}}
+
 ```
 
 ## License
