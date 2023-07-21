@@ -107,6 +107,19 @@ $.categories[?typeof(@.length) == 'number']
 
 `type()` is and alias for `typeof()`.
 
+`jsonpath.function_extensions.TypeOf` takes a `single_number_type` argument, which controls the behavior of `typeof()` when given and int or float. By default, `single_number_type` is `True` and `"number"` is returned. Register a new instance of `TypeOf` with a `JSONPathEnvironment` with `single_number_type` set to `False` and `"int"` and `"float"` will be returned when given integers and floats, respectively.
+
+| instance              | type string                                            |
+| --------------------- | ------------------------------------------------------ |
+| UNDEFINED             | "undefined"                                            |
+| None                  | "null"                                                 |
+| str                   | "string"                                               |
+| Sequence (array-like) | "array"                                                |
+| Mapping (dict-like)   | "object"                                               |
+| bool                  | "boolean"                                              |
+| int                   | "number" or "int" if `single_number_type` is `False`   |
+| float                 | "number" or "float" if `single_number_type` is `False` |
+
 ## `value()`
 
 ```
