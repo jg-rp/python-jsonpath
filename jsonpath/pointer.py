@@ -190,10 +190,7 @@ class JSONPointer:
             JSONPointerTypeError: When attempting to resolve a non-index string
                 path part against a sequence, unless a default is given.
         """
-        if isinstance(data, str):
-            data = json.loads(data)
-        elif isinstance(data, IOBase):
-            data = json.loads(data.read())
+        data = _load_data(data)
         try:
             return reduce(self._getitem, self.parts, data)
         except JSONPointerResolutionError:
@@ -227,13 +224,7 @@ class JSONPointer:
         if not self.parts:
             return (None, self.resolve(data))
 
-        if isinstance(data, str):
-            _data = json.loads(data)
-        elif isinstance(data, IOBase):
-            _data = json.loads(data.read())
-        else:
-            _data = data
-
+        _data = _load_data(data)
         parent = reduce(self._getitem, self.parts[:-1], _data)
 
         try:
@@ -601,6 +592,19 @@ class RelativeJSONPointer:
         return JSONPointer.from_parts(
             parts, unicode_escape=unicode_escape, uri_decode=uri_decode
         )
+
+
+def _load_data(data: Union[int, str, IOBase, Sequence[Any], Mapping[str, Any]]) -> Any:
+    if isinstance(data, str):
+        try:
+            return json.loads(data)
+        except json.JSONDecodeError:
+            data = data.strip()
+            if data.startswith('"') and data.endswith('"'):
+                return data
+    if isinstance(data, IOBase):
+        return json.loads(data.read())
+    return data
 
 
 def resolve(

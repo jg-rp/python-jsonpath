@@ -164,7 +164,7 @@ class IndexSelector(JSONPathSelector):
                     )
                     match.add_child(_match)
                     yield _match
-            elif isinstance(match.obj, Sequence):
+            elif isinstance(match.obj, Sequence) and not isinstance(match.obj, str):
                 norm_index = self._normalized_index(match.obj)
                 with suppress(IndexError):
                     _match = self.env.match_class(
@@ -195,7 +195,7 @@ class IndexSelector(JSONPathSelector):
                     )
                     match.add_child(_match)
                     yield _match
-            elif isinstance(match.obj, Sequence):
+            elif isinstance(match.obj, Sequence) and not isinstance(match.obj, str):
                 norm_index = self._normalized_index(match.obj)
                 with suppress(IndexError):
                     _match = self.env.match_class(

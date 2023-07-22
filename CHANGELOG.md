@@ -9,6 +9,7 @@
 **Fixes**
 
 - Fixed a bug with the parsing of JSON Pointers. When given an arbitrary string without slashes, `JSONPointer` would resolve to the document root. The empty string is the only valid pointer that should resolve to the document root. We now raise a `JSONPointerError` in such cases. See [#27](https://github.com/jg-rp/python-jsonpath/issues/27).
+- Fixed handling of JSON documents containing only a top-level string.
 
 **Features**
 

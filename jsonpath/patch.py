@@ -6,12 +6,14 @@ import json
 from abc import ABC
 from abc import abstractmethod
 from io import IOBase
+from typing import Any
 from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Mapping
 from typing import MutableMapping
 from typing import MutableSequence
+from typing import Sequence
 from typing import TypeVar
 from typing import Union
 
@@ -513,7 +515,7 @@ class JSONPatch:
     def apply(
         self,
         data: Union[str, IOBase, MutableSequence[object], MutableMapping[str, object]],
-    ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
+    ) -> object:
         """Apply all operations from this patch to _data_.
 
         If _data_ is a string or file-like object, it will be loaded with
@@ -535,14 +537,7 @@ class JSONPatch:
             JSONPatchTestFailure: When a _test_ operation does not pass.
                 `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
         """
-        if isinstance(data, str):
-            _data: Union[
-                MutableSequence[object], MutableMapping[str, object]
-            ] = json.loads(data)
-        elif isinstance(data, IOBase):
-            _data = json.loads(data.read())
-        else:
-            _data = data
+        _data = _load_data(data)
 
         for i, op in enumerate(self.ops):
             try:
@@ -603,3 +598,18 @@ def apply(
         unicode_escape=unicode_escape,
         uri_decode=uri_decode,
     ).apply(data)
+
+
+def _load_data(
+    data: Union[int, str, IOBase, Sequence[Any], MutableMapping[str, Any]]
+) -> Any:
+    if isinstance(data, str):
+        try:
+            return json.loads(data)
+        except json.JSONDecodeError:
+            data = data.strip()
+            if data.startswith('"') and data.endswith('"'):
+                return data
+    if isinstance(data, IOBase):
+        return json.loads(data.read())
+    return data

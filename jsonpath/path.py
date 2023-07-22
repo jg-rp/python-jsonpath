@@ -114,15 +114,7 @@ class JSONPath:
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
         """
-        # TODO: _load_data()
-        #  - possibly a scalar value
-        if isinstance(data, str):
-            _data = json.loads(data)
-        elif isinstance(data, IOBase):
-            _data = json.loads(data.read())
-        else:
-            _data = data
-
+        _data = _load_data(data)
         matches: Iterable[JSONPathMatch] = [
             JSONPathMatch(
                 filter_context=filter_context or {},
@@ -160,12 +152,7 @@ class JSONPath:
         filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:
         """An async version of `finditer()`."""
-        if isinstance(data, str):
-            _data = json.loads(data)
-        elif isinstance(data, IOBase):
-            _data = json.loads(data.read())
-        else:
-            _data = data
+        _data = _load_data(data)
 
         async def root_iter() -> AsyncIterable[JSONPathMatch]:
             yield self.env.match_class(
@@ -421,3 +408,16 @@ async def _achain(*iterables: AsyncIterable[T]) -> AsyncIterable[T]:
     for it in iterables:
         async for element in it:
             yield element
+
+
+def _load_data(data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]]) -> Any:
+    if isinstance(data, str):
+        try:
+            return json.loads(data)
+        except json.JSONDecodeError:
+            data = data.strip()
+            if data.startswith('"') and data.endswith('"'):
+                return data
+    if isinstance(data, IOBase):
+        return json.loads(data.read())
+    return data

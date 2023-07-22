@@ -45,7 +45,6 @@ RENAME_MAP = {
 
 SKIP = {
     "bracket_notation_with_number_on_object": "Bad consensus",
-    "bracket_notation_with_number_on_string": "Invalid document",
     "dot_notation_with_number_-1": "Unexpected token",
     "dot_notation_with_number_on_object": "conflict with compliance",
 }
