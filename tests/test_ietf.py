@@ -383,3 +383,9 @@ def test_find_ieft_async(env: JSONPathEnvironment, case: Case) -> None:
         return await path.findall_async(case.data)
 
     assert asyncio.run(coro()) == case.want
+
+
+@pytest.mark.parametrize("case", TEST_CASES, ids=operator.attrgetter("description"))
+def test_hash_path(env: JSONPathEnvironment, case: Case) -> None:
+    """Test that paths are hashable."""
+    hash(env.compile(case.path))

@@ -576,7 +576,7 @@ class Filter(JSONPathSelector):
         )
 
     def __hash__(self) -> int:
-        return hash((self.expression, self.token))
+        return hash((str(self.expression), self.token))
 
     def resolve(  # noqa: PLR0912
         self, matches: Iterable[JSONPathMatch]
