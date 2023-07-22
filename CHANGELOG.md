@@ -1,6 +1,6 @@
 # Python JSONPath Change Log
 
-## Version 0.9.0 (unreleased)
+## Version 0.9.0
 
 **Breaking Changes**
 
@@ -13,12 +13,12 @@
 
 **Features**
 
-- Added a command line interface, exposing JSONPath, JSON Pointer and JSON Patch features.
-- Added `JSONPointer.parent()`, a method that returns the parent of the pointer, as a new `JSONPointer`.
-- Implemented `JSONPointer.__truediv__()` to allow creation of child pointers from an existing pointer using the slash (`/`) operator.
-- Added `JSONPointer.join()`, a method for creating child pointers. This is equivalent to using the slash (`/`) operator for each argument given to `join()`.
-- Added `JSONPointer.exists()`, a method that returns `True` if a the pointer can be resolved against some data, or `False` otherwise.
-- Added the `RelativeJSONPointer` class for building new `JSONPointer` instances from Relative JSON Pointer syntax.
+- Added a command line interface, exposing JSONPath, JSON Pointer and JSON Patch features ([docs](https://jg-rp.github.io/python-jsonpath/cli/), [source](https://github.com/jg-rp/python-jsonpath/blob/main/jsonpath/cli.py)).
+- Added `JSONPointer.parent()`, a method that returns the parent of the pointer, as a new `JSONPointer` ([docs](https://jg-rp.github.io/python-jsonpath/pointers/#parent)).
+- Implemented `JSONPointer.__truediv__()` to allow creation of child pointers from an existing pointer using the slash (`/`) operator ([docs](https://jg-rp.github.io/python-jsonpath/pointers/#slash-operator)).
+- Added `JSONPointer.join()`, a method for creating child pointers. This is equivalent to using the slash (`/`) operator for each argument given to `join()` ([docs](https://jg-rp.github.io/python-jsonpath/pointers/#joinparts)).
+- Added `JSONPointer.exists()`, a method that returns `True` if a the pointer can be resolved against some data, or `False` otherwise ([docs](https://jg-rp.github.io/python-jsonpath/pointers/#existsdata)).
+- Added the `RelativeJSONPointer` class for building new `JSONPointer` instances from Relative JSON Pointer syntax ([docs](https://jg-rp.github.io/python-jsonpath/pointers/#torel), [API](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.RelativeJSONPointer)).
 - Added support for a non-standard index/property pointer using `#<property or index>`. This is to support Relative JSON Pointer's use of hash (`#`) when building `JSONPointer` instances from relative JSON Pointers.
 - Added the `unicode_escape` argument to `JSONPathEnvironment`. When `True` (the default), UTF-16 escaped sequences found in JSONPath string literals will be decoded.
 

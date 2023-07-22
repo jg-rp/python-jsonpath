@@ -1,6 +1,6 @@
 # Quick Start
 
-This page gets you started using JSONPath, JSON Pointer and JSON Patch wih Python, see [JSONPath Syntax](syntax.md) for information on JSONPath selector syntax.
+This page gets you started using JSONPath, JSON Pointer and JSON Patch wih Python. See [JSONPath Syntax](syntax.md) for information on JSONPath selector syntax.
 
 ## `findall(path, data)`
 
