@@ -2,10 +2,8 @@
 from __future__ import annotations
 
 import codecs
-import json
 import re
 from functools import reduce
-from io import IOBase
 from operator import getitem
 from typing import TYPE_CHECKING
 from typing import Any
@@ -16,6 +14,7 @@ from typing import Tuple
 from typing import Union
 from urllib.parse import unquote
 
+from jsonpath._data import load_data
 from jsonpath.exceptions import JSONPointerError
 from jsonpath.exceptions import JSONPointerIndexError
 from jsonpath.exceptions import JSONPointerKeyError
@@ -25,6 +24,8 @@ from jsonpath.exceptions import RelativeJSONPointerIndexError
 from jsonpath.exceptions import RelativeJSONPointerSyntaxError
 
 if TYPE_CHECKING:
+    from io import IOBase
+
     from .match import JSONPathMatch
 
 
@@ -190,7 +191,7 @@ class JSONPointer:
             JSONPointerTypeError: When attempting to resolve a non-index string
                 path part against a sequence, unless a default is given.
         """
-        data = _load_data(data)
+        data = load_data(data)
         try:
             return reduce(self._getitem, self.parts, data)
         except JSONPointerResolutionError:
@@ -224,7 +225,7 @@ class JSONPointer:
         if not self.parts:
             return (None, self.resolve(data))
 
-        _data = _load_data(data)
+        _data = load_data(data)
         parent = reduce(self._getitem, self.parts[:-1], _data)
 
         try:
@@ -592,19 +593,6 @@ class RelativeJSONPointer:
         return JSONPointer.from_parts(
             parts, unicode_escape=unicode_escape, uri_decode=uri_decode
         )
-
-
-def _load_data(data: Union[int, str, IOBase, Sequence[Any], Mapping[str, Any]]) -> Any:
-    if isinstance(data, str):
-        try:
-            return json.loads(data)
-        except json.JSONDecodeError:
-            data = data.strip()
-            if data.startswith('"') and data.endswith('"'):
-                return data
-    if isinstance(data, IOBase):
-        return json.loads(data.read())
-    return data
 
 
 def resolve(

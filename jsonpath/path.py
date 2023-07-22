@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 import itertools
-import json
-from io import IOBase
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import AsyncIterable
@@ -16,10 +14,13 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
-from .match import FilterContextVars
-from .match import JSONPathMatch
+from jsonpath._data import load_data
+from jsonpath.match import FilterContextVars
+from jsonpath.match import JSONPathMatch
 
 if TYPE_CHECKING:
+    from io import IOBase
+
     from .env import JSONPathEnvironment
     from .selectors import JSONPathSelector
 
@@ -114,7 +115,7 @@ class JSONPath:
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
         """
-        _data = _load_data(data)
+        _data = load_data(data)
         matches: Iterable[JSONPathMatch] = [
             JSONPathMatch(
                 filter_context=filter_context or {},
@@ -152,7 +153,7 @@ class JSONPath:
         filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:
         """An async version of `finditer()`."""
-        _data = _load_data(data)
+        _data = load_data(data)
 
         async def root_iter() -> AsyncIterable[JSONPathMatch]:
             yield self.env.match_class(
@@ -408,16 +409,3 @@ async def _achain(*iterables: AsyncIterable[T]) -> AsyncIterable[T]:
     for it in iterables:
         async for element in it:
             yield element
-
-
-def _load_data(data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]]) -> Any:
-    if isinstance(data, str):
-        try:
-            return json.loads(data)
-        except json.JSONDecodeError:
-            data = data.strip()
-            if data.startswith('"') and data.endswith('"'):
-                return data
-    if isinstance(data, IOBase):
-        return json.loads(data.read())
-    return data

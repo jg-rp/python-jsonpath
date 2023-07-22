@@ -6,25 +6,24 @@ import json
 from abc import ABC
 from abc import abstractmethod
 from io import IOBase
-from typing import Any
 from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Mapping
 from typing import MutableMapping
 from typing import MutableSequence
-from typing import Sequence
 from typing import TypeVar
 from typing import Union
 
-from .exceptions import JSONPatchError
-from .exceptions import JSONPatchTestFailure
-from .exceptions import JSONPointerError
-from .exceptions import JSONPointerIndexError
-from .exceptions import JSONPointerKeyError
-from .exceptions import JSONPointerTypeError
-from .pointer import UNDEFINED
-from .pointer import JSONPointer
+from jsonpath._data import load_data
+from jsonpath.exceptions import JSONPatchError
+from jsonpath.exceptions import JSONPatchTestFailure
+from jsonpath.exceptions import JSONPointerError
+from jsonpath.exceptions import JSONPointerIndexError
+from jsonpath.exceptions import JSONPointerKeyError
+from jsonpath.exceptions import JSONPointerTypeError
+from jsonpath.pointer import UNDEFINED
+from jsonpath.pointer import JSONPointer
 
 
 class Op(ABC):
@@ -537,7 +536,7 @@ class JSONPatch:
             JSONPatchTestFailure: When a _test_ operation does not pass.
                 `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
         """
-        _data = _load_data(data)
+        _data = load_data(data)
 
         for i, op in enumerate(self.ops):
             try:
@@ -598,18 +597,3 @@ def apply(
         unicode_escape=unicode_escape,
         uri_decode=uri_decode,
     ).apply(data)
-
-
-def _load_data(
-    data: Union[int, str, IOBase, Sequence[Any], MutableMapping[str, Any]]
-) -> Any:
-    if isinstance(data, str):
-        try:
-            return json.loads(data)
-        except json.JSONDecodeError:
-            data = data.strip()
-            if data.startswith('"') and data.endswith('"'):
-                return data
-    if isinstance(data, IOBase):
-        return json.loads(data.read())
-    return data
