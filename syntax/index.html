@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://jg-rp.github.io/python-jsonpath/syntax/">
       
       
-        <link rel="prev" href="../advanced/">
+        <link rel="prev" href="../cli/">
       
       
         <link rel="next" href="../functions/">
@@ -316,6 +316,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        Command Line Interface
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -501,6 +515,20 @@
     <li class="md-nav__item">
       <a href="../functions/" class="md-nav__link">
         Filter Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pointers/" class="md-nav__link">
+        JSON Pointers
       </a>
     </li>
   
@@ -833,10 +861,11 @@
 <li>We do not support arithmetic in filter expression.</li>
 <li>We don't allow dotted array indices. An array index must be surrounded by square brackets.</li>
 <li>Python JSONPath is strictly read only. There are no update "selectors", but we do provide methods for converting <code>JSONPathMatch</code> instances to <code>JSONPointer</code>s, and a <code>JSONPatch</code> builder API for modifying JSON-like data structures using said pointers.</li>
+<li>We don't attempt to handle JSON documents without a top-level array or object (or equivalent Python objects).</li>
 </ul>
 <p>And this is a list of areas where we deviate from the <a href="https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-13">IETF JSONPath draft</a>.</p>
 <ul>
-<li>We don't yet follow all "non-singular query" rules when evaluating a filter comparison.</li>
+<li>We don't follow all "singular query" rules when evaluating a filter comparison. Note that we support membership operators <code>in</code> and <code>contains</code>, plus list literals, so testing non-singular queries for membership is OK.</li>
 <li>We don't yet force the result of some filter functions to be compared.</li>
 <li>Whitespace is mostly insignificant unless inside quotes.</li>
 <li>The root token (default <code>$</code>) is optional.</li>

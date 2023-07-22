@@ -401,6 +401,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        Command Line Interface
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -460,6 +474,20 @@
     <li class="md-nav__item">
       <a href="../functions/" class="md-nav__link">
         Filter Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pointers/" class="md-nav__link">
+        JSON Pointers
       </a>
     </li>
   
@@ -656,7 +684,7 @@
 
 
 <h1 id="quick-start">Quick Start</h1>
-<p>This page gets you started using JSONPath, JSON Pointer and JSON Patch wih Python, see <a href="../syntax/">JSONPath Syntax</a> for information on JSONPath selector syntax.</p>
+<p>This page gets you started using JSONPath, JSON Pointer and JSON Patch wih Python. See <a href="../syntax/">JSONPath Syntax</a> for information on JSONPath selector syntax.</p>
 <h2 id="findallpath-data"><code>findall(path, data)</code></h2>
 <p>Find all objects matching a JSONPath with <a href="../api/#jsonpath.env.JSONPathEnvironment.findall"><code>jsonpath.findall()</code></a>. It takes, as arguments, a JSONPath string and some <em>data</em> object. It always returns a list of objects selected from <em>data</em>, never a scalar value.</p>
 <p><em>data</em> can be a file-like object or string containing JSON formatted data, or a Python <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping"><code>Mapping</code></a> or <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence"><code>Sequence</code></a>, like a dictionary or list. In this example we select user names from a dictionary containing a list of user dictionaries.</p>

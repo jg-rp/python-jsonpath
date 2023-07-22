@@ -16,7 +16,7 @@
         <link rel="prev" href="../syntax/">
       
       
-        <link rel="next" href="../async/">
+        <link rel="next" href="../pointers/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.18">
@@ -316,6 +316,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        Command Line Interface
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -461,6 +475,20 @@
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pointers/" class="md-nav__link">
+        JSON Pointers
+      </a>
     </li>
   
 
@@ -746,6 +774,49 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$.categories[?typeof(@.length) == &#39;number&#39;]
 </span></code></pre></div>
 <p><code>type()</code> is and alias for <code>typeof()</code>.</p>
+<p><code>jsonpath.function_extensions.TypeOf</code> takes a <code>single_number_type</code> argument, which controls the behavior of <code>typeof()</code> when given and int or float. By default, <code>single_number_type</code> is <code>True</code> and <code>"number"</code> is returned. Register a new instance of <code>TypeOf</code> with a <code>JSONPathEnvironment</code> with <code>single_number_type</code> set to <code>False</code> and <code>"int"</code> and <code>"float"</code> will be returned when given integers and floats, respectively.</p>
+<table>
+<thead>
+<tr>
+<th>instance</th>
+<th>type string</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNDEFINED</td>
+<td>"undefined"</td>
+</tr>
+<tr>
+<td>None</td>
+<td>"null"</td>
+</tr>
+<tr>
+<td>str</td>
+<td>"string"</td>
+</tr>
+<tr>
+<td>Sequence (array-like)</td>
+<td>"array"</td>
+</tr>
+<tr>
+<td>Mapping (dict-like)</td>
+<td>"object"</td>
+</tr>
+<tr>
+<td>bool</td>
+<td>"boolean"</td>
+</tr>
+<tr>
+<td>int</td>
+<td>"number" or "int" if <code>single_number_type</code> is <code>False</code></td>
+</tr>
+<tr>
+<td>float</td>
+<td>"number" or "float" if <code>single_number_type</code> is <code>False</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="value"><code>value()</code></h2>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>value(nodes: object) -&gt; object | undefined
 </span></code></pre></div>
