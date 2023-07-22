@@ -187,7 +187,7 @@ This is a list of things that you might find in other JSONPath implementation th
 
 And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-13).
 
-- We don't yet follow all "non-singular query" rules when evaluating a filter comparison.
+- We don't follow all "singular query" rules when evaluating a filter comparison. Note that we support membership operators `in` and `contains`, plus list literals, so testing non-singular queries for membership is OK.
 - We don't yet force the result of some filter functions to be compared.
 - Whitespace is mostly insignificant unless inside quotes.
 - The root token (default `$`) is optional.
