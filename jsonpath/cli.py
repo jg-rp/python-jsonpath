@@ -239,7 +239,9 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
         path = args.query_file.read().strip()
 
     try:
-        path = jsonpath.compile(path)
+        path = jsonpath.JSONPathEnvironment(
+            unicode_escape=not args.no_unicode_escape
+        ).compile(path)
     except JSONPathSyntaxError as err:
         if args.debug:
             raise

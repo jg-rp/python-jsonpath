@@ -347,7 +347,7 @@ class Parser:
             step=step,
         )
 
-    def parse_selector_list(self, stream: TokenStream) -> ListSelector:
+    def parse_selector_list(self, stream: TokenStream) -> ListSelector:  # noqa: PLR0912
         """Parse a comma separated list JSONPath selectors from a stream of tokens."""
         tok = stream.next_token()
         list_items: List[
@@ -391,13 +391,16 @@ class Parser:
                         token=stream.current,
                     )
 
-                name = (
-                    codecs.decode(
-                        stream.current.value.replace("\\/", "/"), "unicode-escape"
+                if self.env.unicode_escape:
+                    name = (
+                        codecs.decode(
+                            stream.current.value.replace("\\/", "/"), "unicode-escape"
+                        )
+                        .encode("utf-16", "surrogatepass")
+                        .decode("utf-16")
                     )
-                    .encode("utf-16", "surrogatepass")
-                    .decode("utf-16")
-                )
+                else:
+                    name = stream.current.value
 
                 list_items.append(
                     PropertySelector(

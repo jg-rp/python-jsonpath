@@ -20,6 +20,7 @@
 - Added `JSONPointer.exists()`, a method that returns `True` if a the pointer can be resolved against some data, or `False` otherwise.
 - Added the `RelativeJSONPointer` class for building new `JSONPointer` instances from Relative JSON Pointer syntax.
 - Added support for a non-standard index/property pointer using `#<property or index>`. This is to support Relative JSON Pointer's use of hash (`#`) when building `JSONPointer` instances from relative JSON Pointers.
+- Added the `unicode_escape` argument to `JSONPathEnvironment`. When `True` (the default), UTF-16 escaped sequences found in JSONPath string literals will be decoded.
 
 ## Version 0.8.1
 

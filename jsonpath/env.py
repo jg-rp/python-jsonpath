@@ -70,8 +70,10 @@ class JSONPathEnvironment:
     ## Class attributes
 
     Arguments:
-        filter_caching (bool): If `True`, filter expressions will be cached where
-            possible.
+        filter_caching (bool): If `True`, filter expressions will be cached
+            where possible.
+        unicode_escape: If `True`, decode UTF-16 escape sequences found in
+            JSONPath string literals.
 
     Attributes:
         filter_context_token (str): The pattern used to select extra filter context
@@ -113,8 +115,18 @@ class JSONPathEnvironment:
     parser_class: Type[Parser] = Parser
     match_class: Type[JSONPathMatch] = JSONPathMatch
 
-    def __init__(self, *, filter_caching: bool = True) -> None:
-        self.filter_caching = filter_caching
+    def __init__(
+        self,
+        *,
+        filter_caching: bool = True,
+        unicode_escape: bool = True,
+    ) -> None:
+        self.filter_caching: bool = filter_caching
+        """Enable or disable filter expression caching."""
+
+        self.unicode_escape: bool = unicode_escape
+        """Enable or disable decoding of UTF-16 escape sequences found in
+        JSONPath string literals."""
 
         self.lexer: Lexer = self.lexer_class(env=self)
         """The lexer bound to this environment."""

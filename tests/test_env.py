@@ -145,3 +145,16 @@ def test_no_match_compound_path(env: JSONPathEnvironment) -> None:
     """Test that we get `None` if there are no matches in a compound path."""
     match = env.match("$.other | $.foo", {"some": 1, "thing": 2})
     assert match is None
+
+
+def test_no_unicode_escape() -> None:
+    """Test that we can disable decoding of UTF-16 escape sequences."""
+    document = {"𝄞": "A"}
+    selector = '$["\\uD834\\uDD1E"]'
+
+    env = JSONPathEnvironment(unicode_escape=True)
+    assert env.findall(selector, document) == ["A"]
+
+    env = JSONPathEnvironment(unicode_escape=False)
+    assert env.findall(selector, document) == []
+    assert env.findall(selector, {"\\uD834\\uDD1E": "B"}) == ["B"]
