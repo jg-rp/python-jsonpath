@@ -257,7 +257,7 @@ class JSONPointer:
         match: JSONPathMatch,
     ) -> JSONPointer:
         """Return a JSON Pointer for the path from a JSONPathMatch instance."""
-        # A rfc6901 string representation of match.parts.
+        # An RFC 6901 string representation of match.parts.
         if match.parts:
             pointer = cls._encode(match.parts)
         else:
@@ -403,7 +403,7 @@ class JSONPointer:
 
         Each part is expected to be a JSON Pointer string, possibly without a
         leading slash. If a part does have a leading slash, the previous
-        pointer is ignored and a new `JSONPath` is created, and processing of
+        pointer is ignored and a new `JSONPointer` is created, and processing of
         remaining parts continues.
         """
         pointer = self

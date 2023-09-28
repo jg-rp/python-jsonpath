@@ -501,7 +501,7 @@ class JSONPatch:
         Arguments:
             path: A string representation of a JSON Pointer, or one that has
                 already been parsed.
-            value: The object to add.
+            value: The object to test.
 
         Returns:
             This `JSONPatch` instance, so we can build a JSON Patch by chaining

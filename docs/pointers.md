@@ -58,20 +58,20 @@ from jsonpath import JSONPointer
 example_data = {"foo": {"bar": [1, 2, 3]}, "baz": False}
 
 pointer = JSONPointer("/foo/bar/0")
-print(pointer.exists())  # True
+print(pointer.exists(example_data))  # True
 
 pointer = JSONPointer("/foo/bar/9")
-print(pointer.exists())  # False
+print(pointer.exists(example_data))  # False
 
 pointer = JSONPointer("/baz")
-print(pointer.exists())  # True
+print(pointer.exists(example_data))  # True
 ```
 
 ## `join(*parts)`
 
 **_New in version 0.9.0_**
 
-Join this pointer with _parts_. Each part is expected to be a JSON Pointer string, possibly without a leading slash. If a part does have a leading slash, the previous pointer is ignored and a new `JSONPath` is created, and processing of remaining parts continues.
+Join this pointer with _parts_. Each part is expected to be a JSON Pointer string, possibly without a leading slash. If a part does have a leading slash, the previous pointer is ignored and a new `JSONPointer` is created, and processing of remaining parts continues.
 
 `join()` is equivalent to using the slash (`/`) operator for each argument.
 
