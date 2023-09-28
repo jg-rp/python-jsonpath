@@ -1,12 +1,7 @@
 """Test Python JSONPath against the JSONPath Compliance Test Suite.
 
-Assumes a version of the test suite is available in the current working
-directory as "cts.json".
-
-See https://github.com/jsonpath-standard/jsonpath-compliance-test-suite.
-
-We've deliberately named this file so as to exclude it when running `pytest`
-or `hatch run test`. Target it specifically using `pytest tests/compliance.py`.
+The CTS is a submodule located in /tests/cts. After a git clone, run
+`git submodule update --init` from the root of the repository.
 """
 import asyncio
 import json
@@ -46,10 +41,51 @@ SKIP = {
     "name selector, double quotes, incomplete escape": "ignore",
     "name selector, single quotes, invalid escaped double quote": "ignore",
     "name selector, single quotes, incomplete escape": "ignore",
-    "filter, non-singular query in comparison, slice": "ignore",
-    "filter, non-singular query in comparison, all children": "ignore",
-    "filter, non-singular query in comparison, descendants": "ignore",
-    "filter, non-singular query in comparison, combined": "ignore",
+    "filter, non-singular query in comparison, slice": "TODO",
+    "filter, non-singular query in comparison, all children": "TODO",
+    "filter, non-singular query in comparison, descendants": "TODO",
+    "filter, non-singular query in comparison, combined": "TODO",
+    "filter, relative non-singular query, index, equal": "TODO",
+    "filter, relative non-singular query, index, not equal": "TODO",
+    "filter, relative non-singular query, index, less-or-equal": "TODO",
+    "filter, relative non-singular query, name, equal": "TODO",
+    "filter, relative non-singular query, name, not equal": "TODO",
+    "filter, relative non-singular query, name, less-or-equal": "TODO",
+    "filter, relative non-singular query, combined, equal": "TODO",
+    "filter, relative non-singular query, combined, not equal": "TODO",
+    "filter, relative non-singular query, combined, less-or-equal": "TODO",
+    "filter, relative non-singular query, wildcard, equal": "TODO",
+    "filter, relative non-singular query, wildcard, not equal": "TODO",
+    "filter, relative non-singular query, wildcard, less-or-equal": "TODO",
+    "filter, relative non-singular query, slice, equal": "TODO",
+    "filter, relative non-singular query, slice, not equal": "TODO",
+    "filter, relative non-singular query, slice, less-or-equal": "TODO",
+    "filter, absolute non-singular query, index, equal": "TODO",
+    "filter, absolute non-singular query, index, not equal": "TODO",
+    "filter, absolute non-singular query, index, less-or-equal": "TODO",
+    "filter, absolute non-singular query, name, equal": "TODO",
+    "filter, absolute non-singular query, name, not equal": "TODO",
+    "filter, absolute non-singular query, name, less-or-equal": "TODO",
+    "filter, absolute non-singular query, combined, equal": "TODO",
+    "filter, absolute non-singular query, combined, not equal": "TODO",
+    "filter, absolute non-singular query, combined, less-or-equal": "TODO",
+    "filter, absolute non-singular query, wildcard, equal": "TODO",
+    "filter, absolute non-singular query, wildcard, not equal": "TODO",
+    "filter, absolute non-singular query, wildcard, less-or-equal": "TODO",
+    "filter, absolute non-singular query, slice, equal": "TODO",
+    "filter, absolute non-singular query, slice, not equal": "TODO",
+    "filter, absolute non-singular query, slice, less-or-equal": "TODO",
+    "filter, multiple selectors": "TODO",
+    "filter, multiple selectors, comparison": "TODO",
+    "filter, multiple selectors, overlapping": "TODO",
+    "filter, multiple selectors, filter and index": "TODO",
+    "filter, multiple selectors, filter and wildcard": "TODO",
+    "filter, multiple selectors, filter and slice": "TODO",
+    "filter, multiple selectors, comparison filter, index and slice": "TODO",
+    "filter, equals number, exponent": "TODO",
+    "filter, equals number, positive exponent": "TODO",
+    "filter, equals number, negative exponent": "TODO",
+    "filter, equals number, decimal fraction, no fractional digit": "TODO",
     "functions, length, result must be compared": "ignore",
     "functions, count, result must be compared": "ignore",
     "functions, match, result cannot be compared": "ignore",
@@ -67,7 +103,7 @@ SKIP = {
 
 
 def cases() -> List[Case]:
-    with open("cts.json", encoding="utf8") as fd:
+    with open("tests/cts/cts.json", encoding="utf8") as fd:
         data = json.load(fd)
     return [Case(**case) for case in data["tests"]]
 
