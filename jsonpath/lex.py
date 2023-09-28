@@ -139,7 +139,7 @@ class Lexer:
             (TOKEN_BRACKET_PROPERTY, self.bracketed_property_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
             (TOKEN_FLOAT, r"-?\d+\.\d*(?:e[+-]?\d+)?"),
-            (TOKEN_INT, r"-?\d+(?:e[+\-]?\d+)?\b"),
+            (TOKEN_INT, r"-?\d+(?P<G_EXP>e[+\-]?\d+)?\b"),
             (TOKEN_DDOT, r"\.\."),
             (TOKEN_AND, self.bool_and_pattern),
             (TOKEN_OR, self.bool_or_pattern),
@@ -265,6 +265,19 @@ class Lexer:
                     value=match.group("G_SQUOTE"),
                     index=match.start("G_SQUOTE"),
                 )
+            elif kind == TOKEN_INT:
+                if match.group("G_EXP") and match.group("G_EXP")[1] == "-":
+                    yield _token(
+                        kind=TOKEN_FLOAT,
+                        value=match.group(),
+                        index=match.start(),
+                    )
+                else:
+                    yield _token(
+                        kind=TOKEN_INT,
+                        value=match.group(),
+                        index=match.start(),
+                    )
             elif kind == TOKEN_RE_PATTERN:
                 yield _token(
                     kind=TOKEN_RE_PATTERN,

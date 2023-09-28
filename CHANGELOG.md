@@ -10,6 +10,7 @@
 **Fixes**
 
 - We no longer silently ignore invalid escape sequences in JSONPath string literals. For example, `$['\"']` used to be OK, it now raises a `JSONPathSyntaxError`.
+- Fixed parsing of JSONPath integer literals that use scientific notation.
 
 ## Version 0.9.0
 

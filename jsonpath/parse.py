@@ -454,7 +454,8 @@ class Parser:
         return StringLiteral(value=self._decode_string_literal(stream.current))
 
     def parse_integer_literal(self, stream: TokenStream) -> FilterExpression:
-        return IntegerLiteral(value=int(stream.current.value))
+        # Convert to float first to handle scientific notation.
+        return IntegerLiteral(value=int(float(stream.current.value)))
 
     def parse_float_literal(self, stream: TokenStream) -> FilterExpression:
         return FloatLiteral(value=float(stream.current.value))
