@@ -1,7 +1,7 @@
 """The default JSONPath parser."""
 from __future__ import annotations
 
-import codecs
+import json
 import re
 from typing import TYPE_CHECKING
 from typing import Callable
@@ -45,6 +45,7 @@ from .token import TOKEN_BARE_PROPERTY
 from .token import TOKEN_COMMA
 from .token import TOKEN_CONTAINS
 from .token import TOKEN_DDOT
+from .token import TOKEN_DOUBLE_QUOTE_STRING
 from .token import TOKEN_EOF
 from .token import TOKEN_EQ
 from .token import TOKEN_FALSE
@@ -81,14 +82,15 @@ from .token import TOKEN_RE_PATTERN
 from .token import TOKEN_ROOT
 from .token import TOKEN_RPAREN
 from .token import TOKEN_SELF
+from .token import TOKEN_SINGLE_QUOTE_STRING
 from .token import TOKEN_SLICE_START
 from .token import TOKEN_SLICE_STEP
 from .token import TOKEN_SLICE_STOP
-from .token import TOKEN_STRING
 from .token import TOKEN_TRUE
 from .token import TOKEN_UNDEFINED
 from .token import TOKEN_UNION
 from .token import TOKEN_WILD
+from .token import Token
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
@@ -212,7 +214,8 @@ class Parser:
             TOKEN_ROOT: self.parse_root_path,
             TOKEN_SELF: self.parse_self_path,
             TOKEN_FILTER_CONTEXT: self.parse_filter_context_path,
-            TOKEN_STRING: self.parse_string_literal,
+            TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
+            TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
             TOKEN_UNDEFINED: self.parse_undefined,
             TOKEN_FUNCTION: self.parse_function_extension,
@@ -225,7 +228,8 @@ class Parser:
             TOKEN_NIL: self.parse_nil,
             TOKEN_NONE: self.parse_nil,
             TOKEN_NULL: self.parse_nil,
-            TOKEN_STRING: self.parse_string_literal,
+            TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
+            TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
         }
 
@@ -239,7 +243,8 @@ class Parser:
             TOKEN_NIL: self.parse_nil,
             TOKEN_NONE: self.parse_nil,
             TOKEN_NULL: self.parse_nil,
-            TOKEN_STRING: self.parse_string_literal,
+            TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
+            TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
             TOKEN_ROOT: self.parse_root_path,
             TOKEN_SELF: self.parse_self_path,
@@ -384,29 +389,21 @@ class Parser:
                         token=stream.current,
                     )
                 )
-            elif stream.current.kind == TOKEN_STRING:
+            elif stream.current.kind in (
+                TOKEN_DOUBLE_QUOTE_STRING,
+                TOKEN_SINGLE_QUOTE_STRING,
+            ):
                 if self.RE_INVALID_NAME_SELECTOR.search(stream.current.value):
                     raise JSONPathSyntaxError(
                         f"invalid name selector {stream.current.value!r}",
                         token=stream.current,
                     )
 
-                if self.env.unicode_escape:
-                    name = (
-                        codecs.decode(
-                            stream.current.value.replace("\\/", "/"), "unicode-escape"
-                        )
-                        .encode("utf-16", "surrogatepass")
-                        .decode("utf-16")
-                    )
-                else:
-                    name = stream.current.value
-
                 list_items.append(
                     PropertySelector(
                         env=self.env,
                         token=stream.current,
-                        name=name,
+                        name=self._decode_string_literal(stream.current),
                     ),
                 )
             elif stream.current.kind == TOKEN_SLICE_START:
@@ -454,7 +451,7 @@ class Parser:
         return UNDEFINED_LITERAL
 
     def parse_string_literal(self, stream: TokenStream) -> FilterExpression:
-        return StringLiteral(value=stream.current.value)
+        return StringLiteral(value=self._decode_string_literal(stream.current))
 
     def parse_integer_literal(self, stream: TokenStream) -> FilterExpression:
         return IntegerLiteral(value=int(stream.current.value))
@@ -611,3 +608,18 @@ class Parser:
             left = self.parse_infix_expression(stream, left)
 
         return left
+
+    def _decode_string_literal(self, token: Token) -> str:
+        if self.env.unicode_escape:
+            if token.kind == TOKEN_SINGLE_QUOTE_STRING:
+                value = token.value.replace('"', '\\"').replace("\\'", "'")
+            else:
+                value = token.value
+            try:
+                rv = json.loads(f'"{value}"')
+                assert isinstance(rv, str)
+                return rv
+            except json.JSONDecodeError as err:
+                raise JSONPathSyntaxError(str(err).split(":")[1], token=token) from None
+
+        return token.value

@@ -188,6 +188,9 @@ class StringLiteral(Literal[str]):
 
     __slots__ = ()
 
+    def __str__(self) -> str:
+        return json.dumps(self.value)
+
 
 class IntegerLiteral(Literal[int]):
     """An integer literal."""

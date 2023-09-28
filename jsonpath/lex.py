@@ -60,7 +60,6 @@ from .token import TOKEN_SLICE
 from .token import TOKEN_SLICE_START
 from .token import TOKEN_SLICE_STEP
 from .token import TOKEN_SLICE_STOP
-from .token import TOKEN_STRING
 from .token import TOKEN_TRUE
 from .token import TOKEN_UNDEFINED
 from .token import TOKEN_UNION
@@ -256,13 +255,13 @@ class Lexer:
                 )
             elif kind == TOKEN_DOUBLE_QUOTE_STRING:
                 yield _token(
-                    kind=TOKEN_STRING,
+                    kind=TOKEN_DOUBLE_QUOTE_STRING,
                     value=match.group("G_DQUOTE"),
                     index=match.start("G_DQUOTE"),
                 )
             elif kind == TOKEN_SINGLE_QUOTE_STRING:
                 yield _token(
-                    kind=TOKEN_STRING,
+                    kind=TOKEN_SINGLE_QUOTE_STRING,
                     value=match.group("G_SQUOTE"),
                     index=match.start("G_SQUOTE"),
                 )

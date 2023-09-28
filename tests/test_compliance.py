@@ -37,10 +37,6 @@ SKIP = {
     "functions, match, filter, match function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
     "functions, search, filter, search function, unicode char class, uppercase": "\\p not supported",  # noqa: E501
     "functions, search, filter, search function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
-    "name selector, double quotes, invalid escaped single quote": "ignore",
-    "name selector, double quotes, incomplete escape": "ignore",
-    "name selector, single quotes, invalid escaped double quote": "ignore",
-    "name selector, single quotes, incomplete escape": "ignore",
     "filter, non-singular query in comparison, slice": "TODO",
     "filter, non-singular query in comparison, all children": "TODO",
     "filter, non-singular query in comparison, descendants": "TODO",

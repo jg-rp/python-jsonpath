@@ -1,5 +1,16 @@
 # Python JSONPath Change Log
 
+## Version 0.10.0 (unreleased)
+
+**Breaking Changes**
+
+- The JSONPath lexer now yields distinct tokens for single and double quoted string literals. This is so the parser can do a better job of detecting invalid escape sequences.
+- Changed the canonical representation of a JSONPath string literal to use double quotes instead of single quotes.
+
+**Fixes**
+
+- We no longer silently ignore invalid escape sequences in JSONPath string literals. For example, `$['\"']` used to be OK, it now raises a `JSONPathSyntaxError`.
+
 ## Version 0.9.0
 
 **Breaking Changes**
