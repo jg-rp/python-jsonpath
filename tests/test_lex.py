@@ -10,6 +10,7 @@ from jsonpath.token import TOKEN_AND
 from jsonpath.token import TOKEN_BARE_PROPERTY
 from jsonpath.token import TOKEN_COMMA
 from jsonpath.token import TOKEN_DDOT
+from jsonpath.token import TOKEN_DOUBLE_QUOTE_STRING
 from jsonpath.token import TOKEN_EQ
 from jsonpath.token import TOKEN_FALSE
 from jsonpath.token import TOKEN_FILTER_END
@@ -35,10 +36,10 @@ from jsonpath.token import TOKEN_RE_PATTERN
 from jsonpath.token import TOKEN_ROOT
 from jsonpath.token import TOKEN_RPAREN
 from jsonpath.token import TOKEN_SELF
+from jsonpath.token import TOKEN_SINGLE_QUOTE_STRING
 from jsonpath.token import TOKEN_SLICE_START
 from jsonpath.token import TOKEN_SLICE_STEP
 from jsonpath.token import TOKEN_SLICE_STOP
-from jsonpath.token import TOKEN_STRING
 from jsonpath.token import TOKEN_TRUE
 from jsonpath.token import TOKEN_UNION
 from jsonpath.token import TOKEN_WILD
@@ -84,7 +85,9 @@ TEST_CASES = [
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path='$["some"]'),
             Token(kind=TOKEN_LIST_START, value="[", index=1, path='$["some"]'),
-            Token(kind=TOKEN_STRING, value="some", index=3, path='$["some"]'),
+            Token(
+                kind=TOKEN_DOUBLE_QUOTE_STRING, value="some", index=3, path='$["some"]'
+            ),
             Token(kind=TOKEN_RBRACKET, value="]", index=8, path='$["some"]'),
         ],
     ),
@@ -94,7 +97,9 @@ TEST_CASES = [
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$['some']"),
             Token(kind=TOKEN_LIST_START, value="[", index=1, path="$['some']"),
-            Token(kind=TOKEN_STRING, value="some", index=3, path="$['some']"),
+            Token(
+                kind=TOKEN_SINGLE_QUOTE_STRING, value="some", index=3, path="$['some']"
+            ),
             Token(kind=TOKEN_RBRACKET, value="]", index=8, path="$['some']"),
         ],
     ),
@@ -754,7 +759,10 @@ TEST_CASES = [
                 kind=TOKEN_COMMA, value=",", index=16, path="[?(@.thing in [1, '1'])]"
             ),
             Token(
-                kind=TOKEN_STRING, value="1", index=19, path="[?(@.thing in [1, '1'])]"
+                kind=TOKEN_SINGLE_QUOTE_STRING,
+                value="1",
+                index=19,
+                path="[?(@.thing in [1, '1'])]",
             ),
             Token(
                 kind=TOKEN_RBRACKET,
@@ -1010,10 +1018,18 @@ TEST_CASES = [
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$['some', 'thing']"),
             Token(kind=TOKEN_LIST_START, value="[", index=1, path="$['some', 'thing']"),
-            Token(kind=TOKEN_STRING, value="some", index=3, path="$['some', 'thing']"),
+            Token(
+                kind=TOKEN_SINGLE_QUOTE_STRING,
+                value="some",
+                index=3,
+                path="$['some', 'thing']",
+            ),
             Token(kind=TOKEN_COMMA, value=",", index=8, path="$['some', 'thing']"),
             Token(
-                kind=TOKEN_STRING, value="thing", index=11, path="$['some', 'thing']"
+                kind=TOKEN_SINGLE_QUOTE_STRING,
+                value="thing",
+                index=11,
+                path="$['some', 'thing']",
             ),
             Token(kind=TOKEN_RBRACKET, value="]", index=17, path="$['some', 'thing']"),
         ],

@@ -1,7 +1,7 @@
 """The default JSONPath parser."""
 from __future__ import annotations
 
-import codecs
+import json
 import re
 from typing import TYPE_CHECKING
 from typing import Callable
@@ -45,6 +45,7 @@ from .token import TOKEN_BARE_PROPERTY
 from .token import TOKEN_COMMA
 from .token import TOKEN_CONTAINS
 from .token import TOKEN_DDOT
+from .token import TOKEN_DOUBLE_QUOTE_STRING
 from .token import TOKEN_EOF
 from .token import TOKEN_EQ
 from .token import TOKEN_FALSE
@@ -81,10 +82,10 @@ from .token import TOKEN_RE_PATTERN
 from .token import TOKEN_ROOT
 from .token import TOKEN_RPAREN
 from .token import TOKEN_SELF
+from .token import TOKEN_SINGLE_QUOTE_STRING
 from .token import TOKEN_SLICE_START
 from .token import TOKEN_SLICE_STEP
 from .token import TOKEN_SLICE_STOP
-from .token import TOKEN_STRING
 from .token import TOKEN_TRUE
 from .token import TOKEN_UNDEFINED
 from .token import TOKEN_UNION
@@ -212,7 +213,8 @@ class Parser:
             TOKEN_ROOT: self.parse_root_path,
             TOKEN_SELF: self.parse_self_path,
             TOKEN_FILTER_CONTEXT: self.parse_filter_context_path,
-            TOKEN_STRING: self.parse_string_literal,
+            TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
+            TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
             TOKEN_UNDEFINED: self.parse_undefined,
             TOKEN_FUNCTION: self.parse_function_extension,
@@ -225,7 +227,8 @@ class Parser:
             TOKEN_NIL: self.parse_nil,
             TOKEN_NONE: self.parse_nil,
             TOKEN_NULL: self.parse_nil,
-            TOKEN_STRING: self.parse_string_literal,
+            TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
+            TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
         }
 
@@ -239,7 +242,8 @@ class Parser:
             TOKEN_NIL: self.parse_nil,
             TOKEN_NONE: self.parse_nil,
             TOKEN_NULL: self.parse_nil,
-            TOKEN_STRING: self.parse_string_literal,
+            TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
+            TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
             TOKEN_ROOT: self.parse_root_path,
             TOKEN_SELF: self.parse_self_path,
@@ -384,7 +388,10 @@ class Parser:
                         token=stream.current,
                     )
                 )
-            elif stream.current.kind == TOKEN_STRING:
+            elif stream.current.kind in (
+                TOKEN_DOUBLE_QUOTE_STRING,
+                TOKEN_SINGLE_QUOTE_STRING,
+            ):
                 if self.RE_INVALID_NAME_SELECTOR.search(stream.current.value):
                     raise JSONPathSyntaxError(
                         f"invalid name selector {stream.current.value!r}",
@@ -392,13 +399,18 @@ class Parser:
                     )
 
                 if self.env.unicode_escape:
-                    name = (
-                        codecs.decode(
-                            stream.current.value.replace("\\/", "/"), "unicode-escape"
+                    if stream.current.kind == TOKEN_SINGLE_QUOTE_STRING:
+                        value = stream.current.value.replace('"', '\\"').replace(
+                            "\\'", "'"
                         )
-                        .encode("utf-16", "surrogatepass")
-                        .decode("utf-16")
-                    )
+                    else:
+                        value = stream.current.value
+                    try:
+                        name = json.loads(f'"{value}"')
+                    except json.JSONDecodeError as err:
+                        raise JSONPathSyntaxError(
+                            str(err).split(":")[1], token=stream.current
+                        ) from None
                 else:
                     name = stream.current.value
 
