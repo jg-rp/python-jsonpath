@@ -90,6 +90,7 @@ from .token import TOKEN_TRUE
 from .token import TOKEN_UNDEFINED
 from .token import TOKEN_UNION
 from .token import TOKEN_WILD
+from .token import Token
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
@@ -398,27 +399,11 @@ class Parser:
                         token=stream.current,
                     )
 
-                if self.env.unicode_escape:
-                    if stream.current.kind == TOKEN_SINGLE_QUOTE_STRING:
-                        value = stream.current.value.replace('"', '\\"').replace(
-                            "\\'", "'"
-                        )
-                    else:
-                        value = stream.current.value
-                    try:
-                        name = json.loads(f'"{value}"')
-                    except json.JSONDecodeError as err:
-                        raise JSONPathSyntaxError(
-                            str(err).split(":")[1], token=stream.current
-                        ) from None
-                else:
-                    name = stream.current.value
-
                 list_items.append(
                     PropertySelector(
                         env=self.env,
                         token=stream.current,
-                        name=name,
+                        name=self._decode_string_literal(stream.current),
                     ),
                 )
             elif stream.current.kind == TOKEN_SLICE_START:
@@ -466,7 +451,7 @@ class Parser:
         return UNDEFINED_LITERAL
 
     def parse_string_literal(self, stream: TokenStream) -> FilterExpression:
-        return StringLiteral(value=stream.current.value)
+        return StringLiteral(value=self._decode_string_literal(stream.current))
 
     def parse_integer_literal(self, stream: TokenStream) -> FilterExpression:
         return IntegerLiteral(value=int(stream.current.value))
@@ -623,3 +608,18 @@ class Parser:
             left = self.parse_infix_expression(stream, left)
 
         return left
+
+    def _decode_string_literal(self, token: Token) -> str:
+        if self.env.unicode_escape:
+            if token.kind == TOKEN_SINGLE_QUOTE_STRING:
+                value = token.value.replace('"', '\\"').replace("\\'", "'")
+            else:
+                value = token.value
+            try:
+                rv = json.loads(f'"{value}"')
+                assert isinstance(rv, str)
+                return rv
+            except json.JSONDecodeError as err:
+                raise JSONPathSyntaxError(str(err).split(":")[1], token=token) from None
+
+        return token.value

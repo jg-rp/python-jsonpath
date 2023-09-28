@@ -5,6 +5,7 @@
 **Breaking Changes**
 
 - The JSONPath lexer now yields distinct tokens for single and double quoted string literals. This is so the parser can do a better job of detecting invalid escape sequences.
+- Changed the canonical representation of a JSONPath string literal to use double quotes instead of single quotes.
 
 **Fixes**
 

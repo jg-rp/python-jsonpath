@@ -108,7 +108,7 @@ TEST_CASES = [
     Case(
         description="filter with list membership test",
         path="$.some[?(@.thing in ['foo', 'bar', 42])]",
-        want="$['some'][?(@['thing'] in ['foo', 'bar', 42])]",
+        want="$['some'][?(@['thing'] in [\"foo\", \"bar\", 42])]",
     ),
     Case(
         description="filter with boolean literals",
@@ -143,7 +143,7 @@ TEST_CASES = [
     Case(
         description="filter with string literal",
         path="$.some[?(@.thing == 'foo')]",
-        want="$['some'][?(@['thing'] == 'foo')]",
+        want="$['some'][?(@['thing'] == \"foo\")]",
     ),
     Case(
         description="filter with integer literal",
@@ -169,6 +169,16 @@ TEST_CASES = [
         description="keys selector",
         path="$.some.~",
         want="$['some'][~]",
+    ),
+    Case(
+        description="comparison to single quoted string literal with escape",
+        path="$[?@.foo == 'ba\\'r']",
+        want="$[?(@['foo'] == \"ba'r\")]",
+    ),
+    Case(
+        description="comparison to double quoted string literal with escape",
+        path='$[?@.foo == "ba\\"r"]',
+        want='$[?(@[\'foo\'] == "ba\\"r")]',
     ),
 ]
 
