@@ -212,7 +212,7 @@ class JSONPath:
     def singular_query(self) -> bool:
         """Return `True` if this JSONPath query is a singular query."""
         for selector in self.selectors:
-            if isinstance(selector, PropertySelector):
+            if isinstance(selector, (PropertySelector, IndexSelector)):
                 continue
             if (
                 isinstance(selector, ListSelector)

@@ -13,7 +13,7 @@ class Match(FilterFunction):
     return_type = ExpressionType.LOGICAL
 
     def __call__(self, string: str, pattern: str) -> bool:
-        """Return `True` if _s_ matches _pattern_, or `False` otherwise."""
+        """Return `True` if _string_ matches _pattern_, or `False` otherwise."""
         try:
             # re.fullmatch caches compiled patterns internally
             return bool(re.fullmatch(pattern, string))

@@ -4,8 +4,11 @@
 
 **Breaking Changes**
 
+- `JSONPathEnvironment` (and the convenience functions that use the default environment) is now "well-typed" by default. That is, filter functions are checked for well-typedness at JSONPath compile time. The IETF JSONPath Draft spec defines a type system for filter functions, and requires that we check function expressions are well-typed. This can be disabled in Python JSONPath by setting the `well_typed` argument to `JSONPathEnvironment` to `False`.
 - The JSONPath lexer now yields distinct tokens for single and double quoted string literals. This is so the parser can do a better job of detecting invalid escape sequences.
 - Changed the canonical representation of a JSONPath string literal to use double quotes instead of single quotes.
+- The built-in implementation of the standard `length()` filter function is now a class and is renamed to `jsonpath.function_extensions.Length`.
+- The built-in implementation of the standard `value()` filter function is now a class and is renamed to `jsonpath.function_extensions.Value()`.
 
 **Fixes**
 

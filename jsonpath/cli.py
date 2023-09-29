@@ -53,6 +53,8 @@ def path_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
         ),
     )
 
+    # TODO: add well-typed argument
+
 
 def pointer_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     parser.set_defaults(func=handle_pointer_command)

@@ -5,9 +5,12 @@ from typing import Sequence
 
 from jsonpath.filter import UNDEFINED
 from jsonpath.filter import UNDEFINED_LITERAL
+from jsonpath.function_extensions import ExpressionType
+from jsonpath.function_extensions import FilterFunction
+from jsonpath.match import NodeList
 
 
-class TypeOf:
+class TypeOf(FilterFunction):
     """A non-standard "typeof" filter function.
 
     Arguments:
@@ -15,15 +18,24 @@ class TypeOf:
             otherwise we'll use "int" and "float" respectively. Defaults to `True`.
     """
 
+    arg_types = [ExpressionType.NODES]
+    return_type = ExpressionType.VALUE
+    with_node_lists = True
+
     def __init__(self, *, single_number_type: bool = True) -> None:
         self.single_number_type = single_number_type
 
-    def __call__(self, obj: object) -> str:  # noqa: PLR0911
+    def __call__(self, nodes: NodeList) -> str:  # noqa: PLR0911
         """Return the type of _obj_ as a string.
 
         The strings returned from this function use JSON terminology, much
         like the result of JavaScript's `typeof` operator.
         """
+        if not nodes:
+            return "undefined"
+
+        obj = nodes.values_or_singular()
+
         if obj is UNDEFINED or obj is UNDEFINED_LITERAL:
             return "undefined"
         if obj is None:

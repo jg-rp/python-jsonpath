@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Collection
 from operator import getitem
 from typing import TYPE_CHECKING
 from typing import Any
@@ -82,6 +81,9 @@ class JSONPathEnvironment:
             where possible.
         unicode_escape: If `True`, decode UTF-16 escape sequences found in
             JSONPath string literals.
+        well_typed: Control well-typedness checks on filter function expressions.
+            If `True` (the default), JSONPath expressions are checked for
+            well-typedness as compile time.
 
     Attributes:
         filter_context_token (str): The pattern used to select extra filter context
@@ -323,11 +325,11 @@ class JSONPathEnvironment:
     def setup_function_extensions(self) -> None:
         """Initialize function extensions."""
         self.function_extensions["keys"] = function_extensions.keys
-        self.function_extensions["length"] = function_extensions.length
+        self.function_extensions["length"] = function_extensions.Length()
         self.function_extensions["count"] = function_extensions.Count()
         self.function_extensions["match"] = function_extensions.Match()
         self.function_extensions["search"] = function_extensions.Search()
-        self.function_extensions["value"] = function_extensions.value
+        self.function_extensions["value"] = function_extensions.Value()
         self.function_extensions["isinstance"] = function_extensions.IsInstance()
         self.function_extensions["is"] = self.function_extensions["isinstance"]
         self.function_extensions["typeof"] = function_extensions.TypeOf()
@@ -382,10 +384,8 @@ class JSONPathEnvironment:
             if typ == ExpressionType.VALUE:
                 if not (
                     isinstance(arg, VALUE_TYPE_EXPRESSIONS)
-                    or (
-                        (isinstance(arg, Path) and arg.path.singular_query())
-                        or (self._function_return_type(arg) == ExpressionType.VALUE)
-                    )
+                    or (isinstance(arg, Path) and arg.path.singular_query())
+                    or (self._function_return_type(arg) == ExpressionType.VALUE)
                 ):
                     raise JSONPathTypeError(
                         f"{token.value}() argument {idx} must be of ValueType",
@@ -451,10 +451,10 @@ class JSONPathEnvironment:
         Returns:
             `True` if the object exists and is not `False` or `0`.
         """
+        if isinstance(obj, NodeList) and len(obj) == 0:
+            return False
         if obj is UNDEFINED:
             return False
-        if isinstance(obj, Collection):
-            return True
         if obj is None:
             return True
         return bool(obj)
@@ -475,15 +475,16 @@ class JSONPathEnvironment:
             `True` if the comparison between _left_ and _right_, with the
             given _operator_, is truthy. `False` otherwise.
         """
-        if isinstance(left, NodeList):
-            left = left.values_or_singular()
-        if isinstance(right, NodeList):
-            right = right.values_or_singular()
-
+        # TODO: refactor
         if operator == "&&":
             return self.is_truthy(left) and self.is_truthy(right)
         if operator == "||":
             return self.is_truthy(left) or self.is_truthy(right)
+
+        if isinstance(left, NodeList):
+            left = left.values_or_singular()
+        if isinstance(right, NodeList):
+            right = right.values_or_singular()
 
         if operator == "==":
             return bool(left == right)
