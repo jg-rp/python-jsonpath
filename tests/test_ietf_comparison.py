@@ -56,6 +56,8 @@ class Case:
 
 DATA = {"obj": {"x": "y"}, "arr": [2, 3]}
 
+# TODO: test with empty node lists in place of undefined
+
 TEST_CASES = [
     Case(
         description="$.absent1 == $.absent2",
