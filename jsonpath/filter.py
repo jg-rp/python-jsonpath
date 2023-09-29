@@ -690,3 +690,13 @@ def walk(expr: FilterExpression) -> Iterable[FilterExpression]:
     yield expr
     for child in expr.children():
         yield from walk(child)
+
+
+VALUE_TYPE_EXPRESSIONS = (
+    Nil,
+    Undefined,
+    Literal,
+    RegexArgument,
+    ListLiteral,
+    CurrentKey,
+)

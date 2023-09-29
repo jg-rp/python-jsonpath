@@ -17,6 +17,9 @@ from typing import Union
 from jsonpath._data import load_data
 from jsonpath.match import FilterContextVars
 from jsonpath.match import JSONPathMatch
+from jsonpath.selectors import IndexSelector
+from jsonpath.selectors import ListSelector
+from jsonpath.selectors import PropertySelector
 
 if TYPE_CHECKING:
     from io import IOBase
@@ -205,6 +208,20 @@ class JSONPath:
     def empty(self) -> bool:
         """Return `True` if this path has no selectors."""
         return not bool(self.selectors)
+
+    def singular_query(self) -> bool:
+        """Return `True` if this JSONPath query is a singular query."""
+        for selector in self.selectors:
+            if isinstance(selector, PropertySelector):
+                continue
+            if (
+                isinstance(selector, ListSelector)
+                and len(selector.items) == 1
+                and isinstance(selector.items[0], (PropertySelector, IndexSelector))
+            ):
+                continue
+            return False
+        return True
 
 
 class CompoundJSONPath:

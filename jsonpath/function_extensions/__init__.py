@@ -1,6 +1,8 @@
 # noqa: D104
 from .arguments import validate
 from .count import Count
+from .filter_function import ExpressionType
+from .filter_function import FilterFunction
 from .is_instance import IsInstance
 from .keys import keys
 from .length import length
@@ -11,6 +13,8 @@ from .value import value
 
 __all__ = (
     "Count",
+    "ExpressionType",
+    "FilterFunction",
     "IsInstance",
     "keys",
     "length",
