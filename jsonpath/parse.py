@@ -591,14 +591,23 @@ class Parser:
 
         while stream.current.kind != TOKEN_RPAREN:
             try:
-                function_arguments.append(
-                    self.function_argument_map[stream.current.kind](stream)
-                )
+                func = self.function_argument_map[stream.current.kind]
             except KeyError as err:
                 raise JSONPathSyntaxError(
                     f"unexpected {stream.current.value!r}",
                     token=stream.current,
                 ) from err
+
+            expr = func(stream)
+
+            # The argument could be a comparison or logical expression
+            peek_kind = stream.peek.kind
+            while peek_kind in self.BINARY_OPERATORS:
+                stream.next_token()
+                expr = self.parse_infix_expression(stream, expr)
+                peek_kind = stream.peek.kind
+
+            function_arguments.append(expr)
 
             if stream.peek.kind != TOKEN_RPAREN:
                 if stream.peek.kind == TOKEN_FILTER_END:
@@ -608,10 +617,10 @@ class Parser:
 
             stream.next_token()
 
-        function_arguments = self.env.validate_function_extension_signature(
-            tok, function_arguments
+        return FunctionExtension(
+            tok.value,
+            self.env.validate_function_extension_signature(tok, function_arguments),
         )
-        return FunctionExtension(tok.value, function_arguments)
 
     def parse_filter_selector(
         self, stream: TokenStream, precedence: int = PRECEDENCE_LOWEST

@@ -5,7 +5,7 @@ internet draft, draft-ietf-jsonpath-base-11. In accordance with
 https://trustee.ietf.org/license-info, Revised BSD License text
 is included bellow.
 
-See https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11
+See https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-20
 
 Copyright (c) 2023 IETF Trust and the persons identified as authors
 of the code. All rights reserved.Redistribution and use in source and
