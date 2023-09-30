@@ -20,7 +20,6 @@ class TypeOf(FilterFunction):
 
     arg_types = [ExpressionType.NODES]
     return_type = ExpressionType.VALUE
-    with_node_lists = True
 
     def __init__(self, *, single_number_type: bool = True) -> None:
         self.single_number_type = single_number_type

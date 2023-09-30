@@ -15,7 +15,6 @@ class IsInstance(FilterFunction):
 
     arg_types = [ExpressionType.NODES, ExpressionType.VALUE]
     return_type = ExpressionType.LOGICAL
-    with_node_lists = True
 
     def __call__(self, nodes: NodeList, t: str) -> bool:  # noqa: PLR0911
         """Return `True` if the type of _obj_ matches _t_.
