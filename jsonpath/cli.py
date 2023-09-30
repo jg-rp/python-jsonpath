@@ -53,7 +53,11 @@ def path_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
         ),
     )
 
-    # TODO: add well-typed argument
+    parser.add_argument(
+        "--no-type-checks",
+        action="store_true",
+        help="Disables filter expression well-typedness checks.",
+    )
 
 
 def pointer_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
@@ -236,14 +240,15 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
     """Handle the `path` sub command."""
     # Empty string is OK.
     if args.query is not None:
-        path = args.query
+        query = args.query
     else:
-        path = args.query_file.read().strip()
+        query = args.query_file.read().strip()
 
     try:
         path = jsonpath.JSONPathEnvironment(
-            unicode_escape=not args.no_unicode_escape
-        ).compile(path)
+            unicode_escape=not args.no_unicode_escape,
+            well_typed=not args.no_type_checks,
+        ).compile(query)
     except JSONPathSyntaxError as err:
         if args.debug:
             raise

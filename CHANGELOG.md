@@ -4,8 +4,7 @@
 
 **Breaking Changes**
 
-- We now enforce JSONPath filter function "well-typedness" by default. That is, filter expression that use functions are checked at JSONPath compile time. The IETF JSONPath Draft spec defines a type system for filter functions, and requires that we check function expressions are well-typed. This can be disabled in Python JSONPath by setting the `well_typed` argument to `JSONPathEnvironment` to `False`.
-- We now enforce JSONPath non-singular query rules by default. When a relative or absolute JSONPath query appears in a filter expression, it follows the restriction described by the IETF JSONPath draft. This can be disabled in Python JSONPath by setting the `well_typed` argument to `JSONPathEnvironment` to `False`.
+- We now enforce JSONPath filter expression "well-typedness" by default. That is, filter expression that use functions are checked at JSONPath compile time. The IETF JSONPath Draft spec defines a type system for filter functions, and requires that we check function expressions are well-typed. This can be disabled in Python JSONPath by setting the `well_typed` argument to `JSONPathEnvironment` to `False`, or using `--no-type-checks` on the command line.
 - The JSONPath lexer now yields distinct tokens for single and double quoted string literals. This is so the parser can do a better job of detecting invalid escape sequences.
 - Changed the canonical representation of a JSONPath string literal to use double quotes instead of single quotes.
 - The built-in implementation of the standard `length()` filter function is now a class and is renamed to `jsonpath.function_extensions.Length`.

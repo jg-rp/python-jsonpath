@@ -4,7 +4,6 @@
 
 Python JSONPath includes a script called `json`, exposing [JSONPath](quickstart.md#findallpath-data), [JSON Pointer](quickstart.md#pointerresolvepointer-data) and [JSON Patch](quickstart.md#patchapplypatch-data) features on the command line. Use the `--version` argument to check the current version of Python JSONPath, and the `--help` argument to display command information.
 
-
 ```console
 $ json --version
 python-jsonpath, version 0.9.0
@@ -62,6 +61,7 @@ optional arguments:
   -o OUTPUT, --output OUTPUT
                         File to write resulting objects to, as a JSON array. Defaults to the standard
                         output stream.
+  --no-type-checks      Disables filter expression well-typedness checks.
 ```
 
 ## Global Options
@@ -73,14 +73,14 @@ These arguments apply to any subcommand and must be listed before the command.
 Enable debugging. Display full stack traces, if available, when errors occur. Without the `--debug` option, the following example shows a short "json path syntax error" message.
 
 ```console
-$ json path -q "$.1" -f /tmp/source.json 
+$ json path -q "$.1" -f /tmp/source.json
 json path syntax error: unexpected token '1', line 1, column 2
 ```
 
 With the `--debug` option, we get the stack trace triggered by `JSONPathSyntaxError`.
 
 ```console
-$ json --debug path -q "$.1" -f /tmp/source.json 
+$ json --debug path -q "$.1" -f /tmp/source.json
 Traceback (most recent call last):
   File "/home/james/.local/share/virtualenvs/jsonpath_cli-8Tb3e-ir/bin/json", line 8, in <module>
     sys.exit(main())
@@ -102,14 +102,14 @@ jsonpath.exceptions.JSONPathSyntaxError: unexpected token '1', line 1, column 2
 Enable pretty formatting when outputting JSON. Adds newlines and indentation to output specified with the `-o` or `--output` option. Without the `--pretty` option, the following example output is on one line.
 
 ```console
-$ json pointer -p "/categories/1/products/0" -f /tmp/source.json 
+$ json pointer -p "/categories/1/products/0" -f /tmp/source.json
 {"title": "Cap", "description": "Baseball cap", "price": 15.0}
 ```
 
 With the `--pretty` option, we get nicely formatted JSON output.
 
 ```console
-$ json --pretty pointer -p "/categories/1/products/0" -f /tmp/source.json 
+$ json --pretty pointer -p "/categories/1/products/0" -f /tmp/source.json
 {
   "title": "Cap",
   "description": "Baseball cap",
@@ -122,7 +122,7 @@ $ json --pretty pointer -p "/categories/1/products/0" -f /tmp/source.json
 Disable decoding of UTF-16 escape sequences, including surrogate paris. This can improve performance if you know your paths and pointers don't contain UTF-16 escape sequences.
 
 ```console
-$ json --no-unicode-escape path -q "$.price_cap" -f /tmp/source.json 
+$ json --no-unicode-escape path -q "$.price_cap" -f /tmp/source.json
 ```
 
 ## Commands
@@ -185,6 +185,12 @@ $ json path -q "$.price_cap" -f /tmp/source.json -o result.json
 $ json path -q "$.price_cap" -f /tmp/source.json --output result.json
 ```
 
+#### `--no-type-checks`
+
+**_New in version 0.10.0_**
+
+Disables JSONPath filter expression well-typedness checks. The well-typedness of a filter expression is defined by the IETF JSONPath Draft specification.
+
 ### `pointer`
 
 Resolve a JSON Pointer against a JSON document. One of `-p`/`--pointer` or `-r`/`--pointer-file` must be given. `-p` being a JSON Pointer given on the command line as a string, `-r` being the path to a file containing a JSON Pointer.
@@ -236,6 +242,7 @@ The path to a file to write the resulting object to. If omitted or a hyphen (`-`
 ```console
 $ json pointer -p "/categories/0/name" -f /tmp/source.json -o result.json
 ```
+
 ```console
 $ json pointer -p "/categories/0/name" -f /tmp/source.json --output result.json
 ```
@@ -289,6 +296,7 @@ The path to a file to write the resulting object to. If omitted or a hyphen (`-`
 ```console
 $ json patch /tmp/patch.json -f /tmp/target.json -o result.json
 ```
+
 ```console
 $ json patch /tmp/patch.json -f /tmp/target.json --output result.json
 ```
