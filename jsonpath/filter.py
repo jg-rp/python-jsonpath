@@ -106,6 +106,13 @@ NIL = Nil()
 class _Undefined:
     __slots__ = ()
 
+    def __eq__(self, other: object) -> bool:
+        return (
+            other is UNDEFINED_LITERAL
+            or other is UNDEFINED
+            or (isinstance(other, NodeList) and other.empty())
+        )
+
     def __str__(self) -> str:
         return "<UNDEFINED>"
 
@@ -113,6 +120,7 @@ class _Undefined:
         return "<UNDEFINED>"
 
 
+# This is equivalent to the spec's special `Nothing` value.
 UNDEFINED = _Undefined()
 
 
@@ -333,17 +341,25 @@ class InfixExpression(FilterExpression):
         )
 
     def evaluate(self, context: FilterContext) -> bool:
-        if isinstance(self.left, Undefined) and isinstance(self.right, Undefined):
-            return True
         left = self.left.evaluate(context)
+        if isinstance(left, NodeList) and len(left) == 1:
+            left = left[0].obj
+
         right = self.right.evaluate(context)
+        if isinstance(right, NodeList) and len(right) == 1:
+            right = right[0].obj
+
         return context.env.compare(left, self.operator, right)
 
     async def evaluate_async(self, context: FilterContext) -> bool:
-        if isinstance(self.left, Undefined) and isinstance(self.right, Undefined):
-            return True
         left = await self.left.evaluate_async(context)
+        if isinstance(left, NodeList) and len(left) == 1:
+            left = left[0].obj
+
         right = await self.right.evaluate_async(context)
+        if isinstance(right, NodeList) and len(right) == 1:
+            right = right[0].obj
+
         return context.env.compare(left, self.operator, right)
 
     def children(self) -> List[FilterExpression]:

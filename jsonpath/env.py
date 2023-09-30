@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+from decimal import Decimal
 from operator import getitem
 from typing import TYPE_CHECKING
 from typing import Any
@@ -459,8 +460,9 @@ class JSONPathEnvironment:
             return True
         return bool(obj)
 
-    # ruff: noqa: PLR0912, PLR0911
-    def compare(self, left: object, operator: str, right: object) -> bool:
+    def compare(  # noqa: PLR0911
+        self, left: object, operator: str, right: object
+    ) -> bool:
         """Object comparison within JSONPath filters.
 
         Override this to customize filter expression comparison operator
@@ -475,72 +477,62 @@ class JSONPathEnvironment:
             `True` if the comparison between _left_ and _right_, with the
             given _operator_, is truthy. `False` otherwise.
         """
-        # TODO: refactor
         if operator == "&&":
             return self.is_truthy(left) and self.is_truthy(right)
         if operator == "||":
             return self.is_truthy(left) or self.is_truthy(right)
-
-        if isinstance(left, NodeList):
-            left = left.values_or_singular()
-        if isinstance(right, NodeList):
-            right = right.values_or_singular()
-
         if operator == "==":
-            return bool(left == right)
-        if operator in ("!=", "<>"):
-            return bool(left != right)
-
-        if isinstance(right, Sequence) and operator == "in":
+            return self._eq(left, right)
+        if operator == "!=":
+            return not self._eq(left, right)
+        if operator == "<":
+            return self._lt(left, right)
+        if operator == ">":
+            return self._lt(right, left)
+        if operator == ">=":
+            return self._lt(right, left) or self._eq(left, right)
+        if operator == "<=":
+            return self._lt(left, right) or self._eq(left, right)
+        if operator == "in" and isinstance(right, Sequence):
             return left in right
-
-        if isinstance(left, Sequence) and operator == "contains":
+        if operator == "contains" and isinstance(left, Sequence):
             return right in left
-
-        if left is UNDEFINED or right is UNDEFINED:
-            return operator == "<="
-
         if operator == "=~" and isinstance(right, re.Pattern) and isinstance(left, str):
             return bool(right.fullmatch(left))
+        return False
 
-        if isinstance(left, str) and isinstance(right, str):
-            if operator == "<=":
-                return left <= right
-            if operator == ">=":
-                return left >= right
-            if operator == "<":
-                return left < right
+    def _eq(self, left: object, right: object) -> bool:  # noqa: PLR0911
+        if isinstance(right, NodeList):
+            left, right = right, left
 
-            assert operator == ">"
-            return left > right
+        if isinstance(left, NodeList):
+            if isinstance(right, NodeList):
+                return left == right
+            if left.empty():
+                return right is UNDEFINED
+            if len(left) == 1:
+                return left[0] == right
+            return False
 
-        # This will catch booleans too.
-        if isinstance(left, (int, float)) and isinstance(right, (int, float)):
-            if operator == "<=":
-                return left <= right
-            if operator == ">=":
-                return left >= right
-            if operator == "<":
-                return left < right
-
-            assert operator == ">"
-            return left > right
-
-        if (
-            isinstance(left, Mapping)
-            and isinstance(right, Mapping)
-            and operator == "<="
-        ):
-            return left == right
-
-        if (
-            isinstance(left, Sequence)
-            and isinstance(right, Sequence)
-            and operator == "<="
-        ):
-            return left == right
-
-        if left is None and right is None and operator in ("<=", ">="):
+        if left is UNDEFINED and right is UNDEFINED:
             return True
+
+        # Remember 1 == True and 0 == False in Python
+        if isinstance(right, bool):
+            left, right = right, left
+
+        if isinstance(left, bool):
+            return isinstance(right, bool) and left == right
+
+        return left == right
+
+    def _lt(self, left: object, right: object) -> bool:
+        if isinstance(left, str) and isinstance(right, str):
+            return left < right
+
+        if isinstance(left, (int, float, Decimal)) and isinstance(
+            right, (int, float, Decimal)
+        ):
+            return left < right
 
         return False
