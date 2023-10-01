@@ -86,6 +86,8 @@ class JSONPathEnvironment:
             If `True` (the default), JSONPath expressions are checked for
             well-typedness as compile time.
 
+            **New in version 0.10.0**
+
     Attributes:
         filter_context_token (str): The pattern used to select extra filter context
             data. Defaults to `"_"`.

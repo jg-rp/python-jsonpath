@@ -7,6 +7,7 @@ JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) is a st
 JSON Pointers are a fundamental part of JSON Patch ([RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)). Each patch operation must have at least one pointer, identifying the target value.
 
 !!! note
+
     We have extended RFC 6901 to handle our non-standard JSONPath [keys selector](syntax.md#keys-or) and index/property pointers from [Relative JSON Pointer](#torel).
 
 ## `resolve(data)`
