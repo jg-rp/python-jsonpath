@@ -50,7 +50,7 @@ class JSONPathSelector(ABC):
 class PropertySelector(JSONPathSelector):
     """A JSONPath property."""
 
-    __slots__ = ("name",)
+    __slots__ = ("name", "shorthand")
 
     def __init__(
         self,
@@ -58,12 +58,14 @@ class PropertySelector(JSONPathSelector):
         env: JSONPathEnvironment,
         token: Token,
         name: str,
+        shorthand: bool,
     ) -> None:
         super().__init__(env=env, token=token)
         self.name = name
+        self.shorthand = shorthand
 
     def __str__(self) -> str:
-        return f"['{self.name}']"
+        return f"['{self.name}']" if self.shorthand else f"'{self.name}'"
 
     def __eq__(self, __value: object) -> bool:
         return (
@@ -132,7 +134,7 @@ class IndexSelector(JSONPathSelector):
         self._as_key = str(self.index)
 
     def __str__(self) -> str:
-        return f"[{self.index}]"
+        return str(self.index)
 
     def __eq__(self, __value: object) -> bool:
         return (
@@ -213,10 +215,20 @@ class IndexSelector(JSONPathSelector):
 class KeysSelector(JSONPathSelector):
     """Select an mapping's keys/properties."""
 
-    __slots__ = ()
+    __slots__ = ("shorthand",)
+
+    def __init__(
+        self, *, env: JSONPathEnvironment, token: Token, shorthand: bool
+    ) -> None:
+        super().__init__(env=env, token=token)
+        self.shorthand = shorthand
 
     def __str__(self) -> str:
-        return f"[{self.env.keys_selector_token}]"
+        return (
+            f"[{self.env.keys_selector_token}]"
+            if self.shorthand
+            else self.env.keys_selector_token
+        )
 
     def __eq__(self, __value: object) -> bool:
         return isinstance(__value, KeysSelector) and self.token == __value.token
@@ -272,7 +284,7 @@ class SliceSelector(JSONPathSelector):
         stop = self.slice.stop if self.slice.stop is not None else ""
         start = self.slice.start if self.slice.start is not None else ""
         step = self.slice.step if self.slice.step is not None else "1"
-        return f"[{start}:{stop}:{step}]"
+        return f"{start}:{stop}:{step}"
 
     def __eq__(self, __value: object) -> bool:
         return (
@@ -344,8 +356,16 @@ class SliceSelector(JSONPathSelector):
 class WildSelector(JSONPathSelector):
     """Wildcard expansion selector."""
 
+    __slots__ = ("shorthand",)
+
+    def __init__(
+        self, *, env: JSONPathEnvironment, token: Token, shorthand: bool
+    ) -> None:
+        super().__init__(env=env, token=token)
+        self.shorthand = shorthand
+
     def __str__(self) -> str:
-        return "[*]"
+        return "[*]" if self.shorthand else "*"
 
     def __eq__(self, __value: object) -> bool:
         return isinstance(__value, WildSelector) and self.token == __value.token
@@ -500,6 +520,7 @@ class ListSelector(JSONPathSelector):
                 IndexSelector,
                 PropertySelector,
                 WildSelector,
+                Filter,
             ]
         ],
     ) -> None:
@@ -507,22 +528,7 @@ class ListSelector(JSONPathSelector):
         self.items = tuple(items)
 
     def __str__(self) -> str:
-        buf: List[str] = []
-        for item in self.items:
-            if isinstance(item, SliceSelector):
-                stop = item.slice.stop if item.slice.stop is not None else ""
-                start = item.slice.start if item.slice.start is not None else ""
-                step = item.slice.step if item.slice.step is not None else "1"
-                buf.append(f"{start}:{stop}:{step}")
-            elif isinstance(item, PropertySelector):
-                buf.append(f"'{item.name}'")
-            elif isinstance(item, WildSelector):
-                buf.append("*")
-            elif isinstance(item, KeysSelector):
-                buf.append(self.env.keys_selector_token)
-            else:
-                buf.append(str(item.index))
-        return f"[{', '.join(buf)}]"
+        return f"[{', '.join(str(itm) for itm in self.items)}]"
 
     def __eq__(self, __value: object) -> bool:
         return (
@@ -566,7 +572,7 @@ class Filter(JSONPathSelector):
         self.cacheable_nodes = self.expression.cacheable_nodes()
 
     def __str__(self) -> str:
-        return f"[?({self.expression})]"
+        return f"?{self.expression}"
 
     def __eq__(self, __value: object) -> bool:
         return (
