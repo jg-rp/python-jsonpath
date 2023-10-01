@@ -11,6 +11,12 @@
 ::: jsonpath.CompoundJSONPath
     handler: python
 
+::: jsonpath.function_extensions.FilterFunction
+    handler: python
+
+::: jsonpath.function_extensions.ExpressionType
+    handler: python
+
 ::: jsonpath.JSONPointer
     handler: python
 

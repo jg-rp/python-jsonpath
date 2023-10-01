@@ -98,3 +98,10 @@ class NodeList(List[JSONPathMatch]):
         if len(self) == 1:
             return self[0].obj
         return [match.obj for match in self]
+
+    def empty(self) -> bool:
+        """Return `True` if this node list is empty."""
+        return not bool(self)
+
+    def __str__(self) -> str:
+        return f"NodeList{super().__str__()}"

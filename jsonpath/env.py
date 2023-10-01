@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Collection
+from decimal import Decimal
 from operator import getitem
 from typing import TYPE_CHECKING
 from typing import Any
@@ -20,7 +20,15 @@ from typing import Union
 from . import function_extensions
 from .exceptions import JSONPathNameError
 from .exceptions import JSONPathSyntaxError
+from .exceptions import JSONPathTypeError
 from .filter import UNDEFINED
+from .filter import VALUE_TYPE_EXPRESSIONS
+from .filter import FilterExpression
+from .filter import FunctionExtension
+from .filter import InfixExpression
+from .filter import Path
+from .function_extensions import ExpressionType
+from .function_extensions import FilterFunction
 from .function_extensions import validate
 from .lex import Lexer
 from .match import JSONPathMatch
@@ -74,6 +82,11 @@ class JSONPathEnvironment:
             where possible.
         unicode_escape: If `True`, decode UTF-16 escape sequences found in
             JSONPath string literals.
+        well_typed: Control well-typedness checks on filter function expressions.
+            If `True` (the default), JSONPath expressions are checked for
+            well-typedness as compile time.
+
+            **New in version 0.10.0**
 
     Attributes:
         filter_context_token (str): The pattern used to select extra filter context
@@ -120,6 +133,7 @@ class JSONPathEnvironment:
         *,
         filter_caching: bool = True,
         unicode_escape: bool = True,
+        well_typed: bool = True,
     ) -> None:
         self.filter_caching: bool = filter_caching
         """Enable or disable filter expression caching."""
@@ -127,6 +141,9 @@ class JSONPathEnvironment:
         self.unicode_escape: bool = unicode_escape
         """Enable or disable decoding of UTF-16 escape sequences found in
         JSONPath string literals."""
+
+        self.well_typed: bool = well_typed
+        """Control well-typedness checks on filter function expressions."""
 
         self.lexer: Lexer = self.lexer_class(env=self)
         """The lexer bound to this environment."""
@@ -311,11 +328,11 @@ class JSONPathEnvironment:
     def setup_function_extensions(self) -> None:
         """Initialize function extensions."""
         self.function_extensions["keys"] = function_extensions.keys
-        self.function_extensions["length"] = function_extensions.length
+        self.function_extensions["length"] = function_extensions.Length()
         self.function_extensions["count"] = function_extensions.Count()
         self.function_extensions["match"] = function_extensions.Match()
         self.function_extensions["search"] = function_extensions.Search()
-        self.function_extensions["value"] = function_extensions.value
+        self.function_extensions["value"] = function_extensions.Value()
         self.function_extensions["isinstance"] = function_extensions.IsInstance()
         self.function_extensions["is"] = self.function_extensions["isinstance"]
         self.function_extensions["typeof"] = function_extensions.TypeOf()
@@ -336,11 +353,74 @@ class JSONPathEnvironment:
                 f"function {token.value!r} is not defined", token=token
             ) from err
 
+        # Type-aware function extensions use the spec's type system.
+        if self.well_typed and isinstance(func, FilterFunction):
+            self.check_well_typedness(token, func, args)
+            return args
+
+        # A callable with a `validate` method?
         if hasattr(func, "validate"):
             args = func.validate(self, args, token)
             assert isinstance(args, list)
             return args
+
+        # Generic validation using introspection.
         return validate(self, func, args, token)
+
+    def check_well_typedness(
+        self,
+        token: Token,
+        func: FilterFunction,
+        args: List[FilterExpression],
+    ) -> None:
+        """Check the well-typedness of a function's arguments at compile-time."""
+        # Correct number of arguments?
+        if len(args) != len(func.arg_types):
+            raise JSONPathTypeError(
+                f"{token.value!r}() requires {len(func.arg_types)} arguments",
+                token=token,
+            )
+
+        # Argument types
+        for idx, typ in enumerate(func.arg_types):
+            arg = args[idx]
+            if typ == ExpressionType.VALUE:
+                if not (
+                    isinstance(arg, VALUE_TYPE_EXPRESSIONS)
+                    or (isinstance(arg, Path) and arg.path.singular_query())
+                    or (self._function_return_type(arg) == ExpressionType.VALUE)
+                ):
+                    raise JSONPathTypeError(
+                        f"{token.value}() argument {idx} must be of ValueType",
+                        token=token,
+                    )
+            elif typ == ExpressionType.LOGICAL:
+                if not isinstance(arg, (Path, InfixExpression)):
+                    raise JSONPathTypeError(
+                        f"{token.value}() argument {idx} must be of LogicalType",
+                        token=token,
+                    )
+            elif typ == ExpressionType.NODES and not (
+                isinstance(arg, Path)
+                or self._function_return_type(arg) == ExpressionType.NODES
+            ):
+                raise JSONPathTypeError(
+                    f"{token.value}() argument {idx} must be of NodesType",
+                    token=token,
+                )
+
+    def _function_return_type(self, expr: FilterExpression) -> Optional[ExpressionType]:
+        """Return the type returned from a filter function.
+
+        If _expr_ is not a `FunctionExtension` or the registered function definition is
+        not type-aware, return `None`.
+        """
+        if not isinstance(expr, FunctionExtension):
+            return None
+        func = self.function_extensions.get(expr.name)
+        if isinstance(func, FilterFunction):
+            return func.return_type
+        return None
 
     def getitem(self, obj: Any, key: Any) -> Any:
         """Sequence and mapping item getter used throughout JSONPath resolution.
@@ -374,16 +454,17 @@ class JSONPathEnvironment:
         Returns:
             `True` if the object exists and is not `False` or `0`.
         """
+        if isinstance(obj, NodeList) and len(obj) == 0:
+            return False
         if obj is UNDEFINED:
             return False
-        if isinstance(obj, Collection):
-            return True
         if obj is None:
             return True
         return bool(obj)
 
-    # ruff: noqa: PLR0912, PLR0911
-    def compare(self, left: object, operator: str, right: object) -> bool:
+    def compare(  # noqa: PLR0911
+        self, left: object, operator: str, right: object
+    ) -> bool:
         """Object comparison within JSONPath filters.
 
         Override this to customize filter expression comparison operator
@@ -398,71 +479,62 @@ class JSONPathEnvironment:
             `True` if the comparison between _left_ and _right_, with the
             given _operator_, is truthy. `False` otherwise.
         """
-        if isinstance(left, NodeList):
-            left = left.values_or_singular()
-        if isinstance(right, NodeList):
-            right = right.values_or_singular()
-
         if operator == "&&":
             return self.is_truthy(left) and self.is_truthy(right)
         if operator == "||":
             return self.is_truthy(left) or self.is_truthy(right)
-
         if operator == "==":
-            return bool(left == right)
-        if operator in ("!=", "<>"):
-            return bool(left != right)
-
-        if isinstance(right, Sequence) and operator == "in":
+            return self._eq(left, right)
+        if operator == "!=":
+            return not self._eq(left, right)
+        if operator == "<":
+            return self._lt(left, right)
+        if operator == ">":
+            return self._lt(right, left)
+        if operator == ">=":
+            return self._lt(right, left) or self._eq(left, right)
+        if operator == "<=":
+            return self._lt(left, right) or self._eq(left, right)
+        if operator == "in" and isinstance(right, Sequence):
             return left in right
-
-        if isinstance(left, Sequence) and operator == "contains":
+        if operator == "contains" and isinstance(left, Sequence):
             return right in left
-
-        if left is UNDEFINED or right is UNDEFINED:
-            return operator == "<="
-
         if operator == "=~" and isinstance(right, re.Pattern) and isinstance(left, str):
             return bool(right.fullmatch(left))
+        return False
 
-        if isinstance(left, str) and isinstance(right, str):
-            if operator == "<=":
-                return left <= right
-            if operator == ">=":
-                return left >= right
-            if operator == "<":
-                return left < right
+    def _eq(self, left: object, right: object) -> bool:  # noqa: PLR0911
+        if isinstance(right, NodeList):
+            left, right = right, left
 
-            assert operator == ">"
-            return left > right
+        if isinstance(left, NodeList):
+            if isinstance(right, NodeList):
+                return left == right
+            if left.empty():
+                return right is UNDEFINED
+            if len(left) == 1:
+                return left[0] == right
+            return False
 
-        # This will catch booleans too.
-        if isinstance(left, (int, float)) and isinstance(right, (int, float)):
-            if operator == "<=":
-                return left <= right
-            if operator == ">=":
-                return left >= right
-            if operator == "<":
-                return left < right
-
-            assert operator == ">"
-            return left > right
-
-        if (
-            isinstance(left, Mapping)
-            and isinstance(right, Mapping)
-            and operator == "<="
-        ):
-            return left == right
-
-        if (
-            isinstance(left, Sequence)
-            and isinstance(right, Sequence)
-            and operator == "<="
-        ):
-            return left == right
-
-        if left is None and right is None and operator in ("<=", ">="):
+        if left is UNDEFINED and right is UNDEFINED:
             return True
+
+        # Remember 1 == True and 0 == False in Python
+        if isinstance(right, bool):
+            left, right = right, left
+
+        if isinstance(left, bool):
+            return isinstance(right, bool) and left == right
+
+        return left == right
+
+    def _lt(self, left: object, right: object) -> bool:
+        if isinstance(left, str) and isinstance(right, str):
+            return left < right
+
+        if isinstance(left, (int, float, Decimal)) and isinstance(
+            right, (int, float, Decimal)
+        ):
+            return left < right
 
         return False

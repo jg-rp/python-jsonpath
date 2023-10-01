@@ -187,15 +187,16 @@ This is a list of things that you might find in other JSONPath implementation th
 
 And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-13).
 
-- We don't follow all "singular query" rules when evaluating a filter comparison. Note that we support membership operators `in` and `contains`, plus list literals, so testing non-singular queries for membership is OK.
-- We don't yet force the result of some filter functions to be compared.
+- The root token (default `$`) is optional and paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.
 - Whitespace is mostly insignificant unless inside quotes.
-- The root token (default `$`) is optional.
-- Paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.
 - The built-in `match()` and `search()` filter functions use Python's standard library `re` module, which, at least, doesn't support Unicode properties. We might add an implementation of `match()` and `search()` using the third party [regex](https://pypi.org/project/regex/) package in the future.
+- We don't require property names to be quoted inside a bracketed selection, unless the name contains reserved characters.
+- We don't require the recursive descent segment to have a selector. `$..` is equivalent to `$..*`.
+- We support explicit comparisons to `undefined` as well as implicit existence tests.
 
 And this is a list of features that are uncommon or unique to Python JSONPath.
 
+- We support membership operators `in` and `contains`, plus list/array literals.
 - `|` is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.
 - `&` is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.
 - `#` is the current key/property or index identifier when filtering a mapping or sequence.

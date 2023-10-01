@@ -7,6 +7,8 @@ import re
 from abc import ABC
 from abc import abstractmethod
 from typing import TYPE_CHECKING
+from typing import Any
+from typing import Callable
 from typing import Generic
 from typing import Iterable
 from typing import List
@@ -15,7 +17,10 @@ from typing import Pattern
 from typing import Sequence
 from typing import TypeVar
 
+from jsonpath.function_extensions.filter_function import ExpressionType
+
 from .exceptions import JSONPathTypeError
+from .function_extensions import FilterFunction
 from .match import NodeList
 from .selectors import Filter as FilterSelector
 
@@ -101,6 +106,13 @@ NIL = Nil()
 class _Undefined:
     __slots__ = ()
 
+    def __eq__(self, other: object) -> bool:
+        return (
+            other is UNDEFINED_LITERAL
+            or other is UNDEFINED
+            or (isinstance(other, NodeList) and other.empty())
+        )
+
     def __str__(self) -> str:
         return "<UNDEFINED>"
 
@@ -108,6 +120,7 @@ class _Undefined:
         return "<UNDEFINED>"
 
 
+# This is equivalent to the spec's special `Nothing` value.
 UNDEFINED = _Undefined()
 
 
@@ -117,7 +130,11 @@ class Undefined(FilterExpression):
     __slots__ = ()
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, Undefined) or other is UNDEFINED
+        return (
+            isinstance(other, Undefined)
+            or other is UNDEFINED
+            or (isinstance(other, NodeList) and len(other) == 0)
+        )
 
     def __str__(self) -> str:
         return "undefined"
@@ -228,34 +245,6 @@ class RegexLiteral(Literal[Pattern[str]]):
         return f"/{pattern}/{''.join(flags)}"
 
 
-class RegexArgument(FilterExpression):
-    """A compiled regex."""
-
-    __slots__ = ("pattern",)
-
-    def __init__(self, pattern: Pattern[str]) -> None:
-        self.pattern = pattern
-        super().__init__()
-
-    def __eq__(self, other: object) -> bool:
-        return isinstance(other, RegexArgument) and other.pattern == self.pattern
-
-    def __str__(self) -> str:
-        return repr(self.pattern.pattern)
-
-    def evaluate(self, _: FilterContext) -> object:
-        return self.pattern
-
-    async def evaluate_async(self, _: FilterContext) -> object:
-        return self.pattern
-
-    def children(self) -> List[FilterExpression]:
-        return []
-
-    def set_children(self, children: List[FilterExpression]) -> None:  # noqa: ARG002
-        return
-
-
 class ListLiteral(FilterExpression):
     """A list literal."""
 
@@ -352,17 +341,25 @@ class InfixExpression(FilterExpression):
         )
 
     def evaluate(self, context: FilterContext) -> bool:
-        if isinstance(self.left, Undefined) and isinstance(self.right, Undefined):
-            return True
         left = self.left.evaluate(context)
+        if isinstance(left, NodeList) and len(left) == 1:
+            left = left[0].obj
+
         right = self.right.evaluate(context)
+        if isinstance(right, NodeList) and len(right) == 1:
+            right = right[0].obj
+
         return context.env.compare(left, self.operator, right)
 
     async def evaluate_async(self, context: FilterContext) -> bool:
-        if isinstance(self.left, Undefined) and isinstance(self.right, Undefined):
-            return True
         left = await self.left.evaluate_async(context)
+        if isinstance(left, NodeList) and len(left) == 1:
+            left = left[0].obj
+
         right = await self.right.evaluate_async(context)
+        if isinstance(right, NodeList) and len(right) == 1:
+            right = right[0].obj
+
         return context.env.compare(left, self.operator, right)
 
     def children(self) -> List[FilterExpression]:
@@ -494,48 +491,31 @@ class SelfPath(Path):
     def __str__(self) -> str:
         return "@" + str(self.path)[1:]
 
-    def evaluate(self, context: FilterContext) -> object:  # noqa: PLR0911
-        if isinstance(context.current, str):
+    def evaluate(self, context: FilterContext) -> object:
+        if isinstance(context.current, str):  # TODO: refactor
             if self.path.empty():
                 return context.current
-            return UNDEFINED
+            return NodeList()
         if not isinstance(context.current, (Sequence, Mapping)):
             if self.path.empty():
                 return context.current
-            return UNDEFINED
+            return NodeList()
 
-        try:
-            matches = NodeList(self.path.finditer(context.current))
-        except json.JSONDecodeError:  # this should never happen
-            return UNDEFINED
+        return NodeList(self.path.finditer(context.current))
 
-        if not matches:
-            return UNDEFINED
-        return matches
-
-    async def evaluate_async(self, context: FilterContext) -> object:  # noqa: PLR0911
-        if isinstance(context.current, str):
+    async def evaluate_async(self, context: FilterContext) -> object:
+        if isinstance(context.current, str):  # TODO: refactor
             if self.path.empty():
                 return context.current
-            return UNDEFINED
+            return NodeList()
         if not isinstance(context.current, (Sequence, Mapping)):
             if self.path.empty():
                 return context.current
-            return UNDEFINED
+            return NodeList()
 
-        try:
-            matches = NodeList(
-                [
-                    match
-                    async for match in await self.path.finditer_async(context.current)
-                ]
-            )
-        except json.JSONDecodeError:
-            return UNDEFINED
-
-        if not matches:
-            return UNDEFINED
-        return matches
+        return NodeList(
+            [match async for match in await self.path.finditer_async(context.current)]
+        )
 
 
 class RootPath(Path):
@@ -553,18 +533,12 @@ class RootPath(Path):
         return str(self.path)
 
     def evaluate(self, context: FilterContext) -> object:
-        matches = NodeList(self.path.finditer(context.root))
-        if not matches:
-            return UNDEFINED
-        return matches
+        return NodeList(self.path.finditer(context.root))
 
     async def evaluate_async(self, context: FilterContext) -> object:
-        matches = NodeList(
+        return NodeList(
             [match async for match in await self.path.finditer_async(context.root)]
         )
-        if not matches:
-            return UNDEFINED
-        return matches
 
 
 class FilterContextPath(Path):
@@ -583,21 +557,15 @@ class FilterContextPath(Path):
         return "_" + path_repr[1:]
 
     def evaluate(self, context: FilterContext) -> object:
-        matches = NodeList(self.path.finditer(context.extra_context))
-        if not matches:
-            return UNDEFINED
-        return matches
+        return NodeList(self.path.finditer(context.extra_context))
 
     async def evaluate_async(self, context: FilterContext) -> object:
-        matches = NodeList(
+        return NodeList(
             [
                 match
                 async for match in await self.path.finditer_async(context.extra_context)
             ]
         )
-        if not matches:
-            return UNDEFINED
-        return matches
 
 
 class FunctionExtension(FilterExpression):
@@ -625,23 +593,36 @@ class FunctionExtension(FilterExpression):
         try:
             func = context.env.function_extensions[self.name]
         except KeyError:
-            return UNDEFINED
+            return UNDEFINED  # TODO: should probably raise an exception
         args = [arg.evaluate(context) for arg in self.args]
-        if getattr(func, "with_node_lists", False):
-            return func(*args)
-        return func(*self._unpack_node_lists(args))
+        return func(*self._unpack_node_lists(func, args))
 
     async def evaluate_async(self, context: FilterContext) -> object:
         try:
             func = context.env.function_extensions[self.name]
         except KeyError:
-            return UNDEFINED
+            return UNDEFINED  # TODO: should probably raise an exception
         args = [await arg.evaluate_async(context) for arg in self.args]
-        if getattr(func, "with_node_lists", False):
-            return func(*args)
-        return func(*self._unpack_node_lists(args))
+        return func(*self._unpack_node_lists(func, args))
 
-    def _unpack_node_lists(self, args: List[object]) -> List[object]:
+    def _unpack_node_lists(
+        self, func: Callable[..., Any], args: List[object]
+    ) -> List[object]:
+        if isinstance(func, FilterFunction):
+            _args: List[object] = []
+            for idx, arg in enumerate(args):
+                if func.arg_types[idx] != ExpressionType.NODES and isinstance(
+                    arg, NodeList
+                ):
+                    _args.append(arg.values_or_singular())
+                else:
+                    _args.append(arg)
+            return _args
+
+        # Legacy way to indicate that a filter function wants node lists as arguments.
+        if getattr(func, "with_node_lists", False):
+            return args
+
         return [
             obj.values_or_singular() if isinstance(obj, NodeList) else obj
             for obj in args
@@ -690,3 +671,12 @@ def walk(expr: FilterExpression) -> Iterable[FilterExpression]:
     yield expr
     for child in expr.children():
         yield from walk(child)
+
+
+VALUE_TYPE_EXPRESSIONS = (
+    Nil,
+    Undefined,
+    Literal,
+    ListLiteral,
+    CurrentKey,
+)

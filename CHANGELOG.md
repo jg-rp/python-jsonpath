@@ -4,13 +4,18 @@
 
 **Breaking Changes**
 
+- We now enforce JSONPath filter expression "well-typedness" by default. That is, filter expressions are checked at compile time according to the IETF JSONPath Draft function extension type system and rules regarding non-singular query usage. If an expression is deemed to not be well-typed, a `JSONPathTypeError` is raised. This can be disabled in Python JSONPath by setting the `well_typed` argument to `JSONPathEnvironment` to `False`, or using `--no-type-checks` on the command line.
 - The JSONPath lexer now yields distinct tokens for single and double quoted string literals. This is so the parser can do a better job of detecting invalid escape sequences.
 - Changed the canonical representation of a JSONPath string literal to use double quotes instead of single quotes.
+- The built-in implementation of the standard `length()` filter function is now a class and is renamed to `jsonpath.function_extensions.Length`.
+- The built-in implementation of the standard `value()` filter function is now a class and is renamed to `jsonpath.function_extensions.Value`.
 
 **Fixes**
 
 - We no longer silently ignore invalid escape sequences in JSONPath string literals. For example, `$['\"']` used to be OK, it now raises a `JSONPathSyntaxError`.
-- Fixed parsing of JSONPath integer literals that use scientific notation.
+- Fixed parsing of JSONPath integer literals that use scientific notation. Previously we raised a `JSONPathSyntaxError` for literals such as `1e2`.
+- Fixed parsing of JSONPath comparison and logical expressions as filter function arguments. Previously we raised a `JSONPathSyntaxError` if a comparison or logical expression appeared as a filter function argument. Note that none of the built-in, standard filter functions accept arguments of `LogicalType`.
+- Fixed parsing of nested JSONPath filter functions, where a function is used as an argument to another.
 
 ## Version 0.9.0
 

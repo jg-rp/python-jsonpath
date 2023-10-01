@@ -178,7 +178,7 @@ def test_json_path_type_error(
     sample_target: str,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """Test that we handle a JSONPath with a syntax error."""
+    """Test that we handle a JSONPath with a type error."""
     args = parser.parse_args(
         ["path", "-q", "$.foo[?count(@.bar, 'baz')]", "-f", sample_target]
     )
@@ -195,13 +195,54 @@ def test_json_path_type_error_debug(
     parser: argparse.ArgumentParser,
     sample_target: str,
 ) -> None:
-    """Test that we handle a JSONPath with a syntax error."""
+    """Test that we handle a JSONPath with a type error."""
     args = parser.parse_args(
         ["--debug", "path", "-q", "$.foo[?count(@.bar, 'baz')]", "-f", sample_target]
     )
 
     with pytest.raises(JSONPathTypeError):
         handle_path_command(args)
+
+
+def test_json_path_no_well_typed_checks(
+    parser: argparse.ArgumentParser,
+    sample_target: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Test that we can disable well-typedness checks."""
+    # `count()` must be compared
+    query = "$[?count(@..*)]"
+
+    args = parser.parse_args(
+        [
+            "path",
+            "-q",
+            query,
+            "-f",
+            sample_target,
+        ]
+    )
+
+    with pytest.raises(SystemExit) as err:
+        handle_path_command(args)
+
+    captured = capsys.readouterr()
+    assert err.value.code == 1
+    assert captured.err.startswith("json path type error")
+
+    args = parser.parse_args(
+        [
+            "path",
+            "-q",
+            query,
+            "--no-type-checks",
+            "-f",
+            sample_target,
+        ]
+    )
+
+    # does not raise
+    handle_path_command(args)
 
 
 def test_json_path_index_error(

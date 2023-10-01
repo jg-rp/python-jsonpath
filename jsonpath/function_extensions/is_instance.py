@@ -5,19 +5,34 @@ from typing import Sequence
 
 from jsonpath.filter import UNDEFINED
 from jsonpath.filter import UNDEFINED_LITERAL
+from jsonpath.function_extensions import ExpressionType
+from jsonpath.function_extensions import FilterFunction
+from jsonpath.match import NodeList
 
 
-class IsInstance:
+class IsInstance(FilterFunction):
     """A non-standard "isinstance" filter function."""
 
-    def __call__(self, obj: object, t: str) -> bool:  # noqa: PLR0911
+    arg_types = [ExpressionType.NODES, ExpressionType.VALUE]
+    return_type = ExpressionType.LOGICAL
+
+    def __call__(self, nodes: NodeList, t: str) -> bool:  # noqa: PLR0911
         """Return `True` if the type of _obj_ matches _t_.
 
         This function allows _t_ to be one of several aliases for the real
         Python "type". Some of these aliases follow JavaScript/JSON semantics.
         """
-        if obj is UNDEFINED or obj is UNDEFINED_LITERAL:
+        if not nodes:
             return t in ("undefined", "missing")
+
+        obj = nodes.values_or_singular()
+        if (
+            obj is UNDEFINED
+            or obj is UNDEFINED_LITERAL
+            or (isinstance(obj, NodeList) and len(obj) == 0)
+        ):
+            return t in ("undefined", "missing")
+
         if obj is None:
             return t in ("null", "nil", "None", "none")
         if isinstance(obj, str):

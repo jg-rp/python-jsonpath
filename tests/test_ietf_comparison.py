@@ -43,6 +43,7 @@ import pytest
 
 from jsonpath import JSONPathEnvironment
 from jsonpath.filter import UNDEFINED
+from jsonpath.match import NodeList
 
 
 @dataclasses.dataclass
@@ -56,12 +57,34 @@ class Case:
 
 DATA = {"obj": {"x": "y"}, "arr": [2, 3]}
 
+
 TEST_CASES = [
     Case(
         description="$.absent1 == $.absent2",
         left=UNDEFINED,
         op="==",
         right=UNDEFINED,
+        want=True,
+    ),
+    Case(
+        description="$.absent1 == $.absent2, empty node lists",
+        left=NodeList(),
+        op="==",
+        right=NodeList(),
+        want=True,
+    ),
+    Case(
+        description="$.absent1 == $.absent2, empty node list and undefined",
+        left=NodeList(),
+        op="==",
+        right=UNDEFINED,
+        want=True,
+    ),
+    Case(
+        description="$.absent1 == $.absent2, undefined and empty node list",
+        left=UNDEFINED,
+        op="==",
+        right=NodeList(),
         want=True,
     ),
     Case(
