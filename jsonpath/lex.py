@@ -10,7 +10,6 @@ from typing import Pattern
 from .exceptions import JSONPathSyntaxError
 from .token import TOKEN_AND
 from .token import TOKEN_BARE_PROPERTY
-from .token import TOKEN_BRACKET_PROPERTY
 from .token import TOKEN_COMMA
 from .token import TOKEN_CONTAINS
 from .token import TOKEN_DDOT
@@ -80,17 +79,11 @@ class Lexer:
         # .thing
         self.dot_property_pattern = rf"\.(?P<G_PROP>{self.key_pattern})"
 
-        # TODO: remove [thing]
-        self.bracketed_property_pattern = rf"\[\s*(?P<G_BPROP>{self.key_pattern})\s*]"
-
         self.slice_list_pattern = (
             r"(?P<G_LSLICE_START>\-?\d*)\s*"
             r":\s*(?P<G_LSLICE_STOP>\-?\d*)\s*"
             r"(?::\s*(?P<G_LSLICE_STEP>\-?\d*))?"
         )
-
-        # .* or [*] or .[*]
-        self.wild_pattern = r"\.?(?:\[\s*\*\s*]|\*)"  # TODO: shorthand only
 
         # `not` or !
         self.logical_not_pattern = r"(?:not|!)"
@@ -115,11 +108,10 @@ class Lexer:
             (TOKEN_DOUBLE_QUOTE_STRING, self.double_quote_pattern),
             (TOKEN_SINGLE_QUOTE_STRING, self.single_quote_pattern),
             (TOKEN_RE_PATTERN, self.re_pattern),
-            (TOKEN_WILD, self.wild_pattern),
+            (TOKEN_WILD, r"\*"),
             (TOKEN_LIST_SLICE, self.slice_list_pattern),
             (TOKEN_FILTER, r"\?"),
             (TOKEN_FUNCTION, self.function_pattern),
-            (TOKEN_BRACKET_PROPERTY, self.bracketed_property_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
             (TOKEN_FLOAT, r"-?\d+\.\d*(?:e[+-]?\d+)?"),
             (TOKEN_INT, r"-?\d+(?P<G_EXP>e[+\-]?\d+)?\b"),
@@ -179,12 +171,6 @@ class Lexer:
                     kind=TOKEN_PROPERTY,
                     value=match.group("G_PROP"),
                     index=match.start("G_PROP"),
-                )
-            elif kind == TOKEN_BRACKET_PROPERTY:
-                yield _token(
-                    kind=TOKEN_PROPERTY,
-                    value=match.group("G_BPROP"),
-                    index=match.start("G_BPROP"),
                 )
             elif kind == TOKEN_BARE_PROPERTY:
                 yield _token(

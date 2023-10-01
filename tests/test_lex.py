@@ -74,8 +74,16 @@ TEST_CASES = [
         path="$[some][thing]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$[some][thing]"),
-            Token(kind=TOKEN_PROPERTY, value="some", index=2, path="$[some][thing]"),
-            Token(kind=TOKEN_PROPERTY, value="thing", index=8, path="$[some][thing]"),
+            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$[some][thing]"),
+            Token(
+                kind=TOKEN_BARE_PROPERTY, value="some", index=2, path="$[some][thing]"
+            ),
+            Token(kind=TOKEN_RBRACKET, value="]", index=6, path="$[some][thing]"),
+            Token(kind=TOKEN_LIST_START, value="[", index=7, path="$[some][thing]"),
+            Token(
+                kind=TOKEN_BARE_PROPERTY, value="thing", index=8, path="$[some][thing]"
+            ),
+            Token(kind=TOKEN_RBRACKET, value="]", index=13, path="$[some][thing]"),
         ],
     ),
     Case(
@@ -107,8 +115,16 @@ TEST_CASES = [
         path="$.[some][thing]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.[some][thing]"),
-            Token(kind=TOKEN_PROPERTY, value="some", index=3, path="$.[some][thing]"),
-            Token(kind=TOKEN_PROPERTY, value="thing", index=9, path="$.[some][thing]"),
+            Token(kind=TOKEN_LIST_START, value="[", index=2, path="$.[some][thing]"),
+            Token(
+                kind=TOKEN_BARE_PROPERTY, value="some", index=3, path="$.[some][thing]"
+            ),
+            Token(kind=TOKEN_RBRACKET, value="]", index=7, path="$.[some][thing]"),
+            Token(kind=TOKEN_LIST_START, value="[", index=8, path="$.[some][thing]"),
+            Token(
+                kind=TOKEN_BARE_PROPERTY, value="thing", index=9, path="$.[some][thing]"
+            ),
+            Token(kind=TOKEN_RBRACKET, value="]", index=14, path="$.[some][thing]"),
         ],
     ),
     Case(
@@ -202,7 +218,7 @@ TEST_CASES = [
         path="$.*",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.*"),
-            Token(kind=TOKEN_WILD, value=".*", index=1, path="$.*"),
+            Token(kind=TOKEN_WILD, value="*", index=2, path="$.*"),
         ],
     ),
     Case(
@@ -210,7 +226,9 @@ TEST_CASES = [
         path="$[*]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$[*]"),
-            Token(kind=TOKEN_WILD, value="[*]", index=1, path="$[*]"),
+            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$[*]"),
+            Token(kind=TOKEN_WILD, value="*", index=2, path="$[*]"),
+            Token(kind=TOKEN_RBRACKET, value="]", index=3, path="$[*]"),
         ],
     ),
     Case(
@@ -218,7 +236,9 @@ TEST_CASES = [
         path="$.[*]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.[*]"),
-            Token(kind=TOKEN_WILD, value=".[*]", index=1, path="$.[*]"),
+            Token(kind=TOKEN_LIST_START, value="[", index=2, path="$.[*]"),
+            Token(kind=TOKEN_WILD, value="*", index=3, path="$.[*]"),
+            Token(kind=TOKEN_RBRACKET, value="]", index=4, path="$.[*]"),
         ],
     ),
     Case(
