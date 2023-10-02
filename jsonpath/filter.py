@@ -23,6 +23,7 @@ from .exceptions import JSONPathTypeError
 from .function_extensions import FilterFunction
 from .match import NodeList
 from .selectors import Filter as FilterSelector
+from .selectors import ListSelector
 
 if TYPE_CHECKING:
     from .path import JSONPath
@@ -330,6 +331,8 @@ class InfixExpression(FilterExpression):
         super().__init__()
 
     def __str__(self) -> str:
+        if self.operator in ("&&", "||"):
+            return f"({self.left} {self.operator} {self.right})"
         return f"{self.left} {self.operator} {self.right}"
 
     def __eq__(self, other: object) -> bool:
@@ -470,9 +473,15 @@ class Path(FilterExpression, ABC):
         return isinstance(other, Path) and str(self) == str(other)
 
     def children(self) -> List[FilterExpression]:
-        return [
-            s.expression for s in self.path.selectors if isinstance(s, FilterSelector)
-        ]
+        _children: List[FilterExpression] = []
+        for segment in self.path.selectors:
+            if isinstance(segment, ListSelector):
+                _children.extend(
+                    selector.expression
+                    for selector in segment.items
+                    if isinstance(selector, FilterSelector)
+                )
+        return _children
 
     def set_children(self, children: List[FilterExpression]) -> None:  # noqa: ARG002
         # self.path has its own cache

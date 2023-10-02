@@ -68,92 +68,92 @@ TEST_CASES = [
     Case(
         description="filter self dot property",
         path="[?(@.thing)]",
-        want="$[?(@['thing'])]",
+        want="$[?@['thing']]",
     ),
     Case(
         description="filter root dot property",
         path="$.some[?($.thing)]",
-        want="$['some'][?($['thing'])]",
+        want="$['some'][?$['thing']]",
     ),
     Case(
         description="filter with equality test",
         path="$.some[?(@.thing == 7)]",
-        want="$['some'][?(@['thing'] == 7)]",
+        want="$['some'][?@['thing'] == 7]",
     ),
     Case(
         description="filter with >=",
         path="$.some[?(@.thing >= 7)]",
-        want="$['some'][?(@['thing'] >= 7)]",
+        want="$['some'][?@['thing'] >= 7]",
     ),
     Case(
         description="filter with >=",
         path="$.some[?(@.thing >= 7)]",
-        want="$['some'][?(@['thing'] >= 7)]",
+        want="$['some'][?@['thing'] >= 7]",
     ),
     Case(
         description="filter with !=",
         path="$.some[?(@.thing != 7)]",
-        want="$['some'][?(@['thing'] != 7)]",
+        want="$['some'][?@['thing'] != 7]",
     ),
     Case(
         description="filter with <>",
         path="$.some[?(@.thing != 7)]",
-        want="$['some'][?(@['thing'] != 7)]",
+        want="$['some'][?@['thing'] != 7]",
     ),
     Case(
         description="filter with regex",
         path="$.some[?(@.thing =~ /(foo|bar)/i)]",
-        want="$['some'][?(@['thing'] =~ /(foo|bar)/i)]",
+        want="$['some'][?@['thing'] =~ /(foo|bar)/i]",
     ),
     Case(
         description="filter with list membership test",
         path="$.some[?(@.thing in ['foo', 'bar', 42])]",
-        want="$['some'][?(@['thing'] in [\"foo\", \"bar\", 42])]",
+        want="$['some'][?@['thing'] in [\"foo\", \"bar\", 42]]",
     ),
     Case(
         description="filter with boolean literals",
         path="$.some[?(true == false)]",
-        want="$['some'][?(true == false)]",
+        want="$['some'][?true == false]",
     ),
     Case(
         description="filter with nil literal",
         path="$.some[?(@.thing == nil)]",
-        want="$['some'][?(@['thing'] == nil)]",
+        want="$['some'][?@['thing'] == nil]",
     ),
     Case(
         description="null is the same as nil",
         path="$.some[?(@.thing == null)]",
-        want="$['some'][?(@['thing'] == nil)]",
+        want="$['some'][?@['thing'] == nil]",
     ),
     Case(
         description="none is the same as nil",
         path="$.some[?(@.thing == none)]",
-        want="$['some'][?(@['thing'] == nil)]",
+        want="$['some'][?@['thing'] == nil]",
     ),
     Case(
         description="filter with test for undefined",
         path="$.some[?(@.thing == undefined)]",
-        want="$['some'][?(@['thing'] == undefined)]",
+        want="$['some'][?@['thing'] == undefined]",
     ),
     Case(
         description="missing is the same as undefined",
         path="$.some[?(@.thing == missing)]",
-        want="$['some'][?(@['thing'] == undefined)]",
+        want="$['some'][?@['thing'] == undefined]",
     ),
     Case(
         description="filter with string literal",
         path="$.some[?(@.thing == 'foo')]",
-        want="$['some'][?(@['thing'] == \"foo\")]",
+        want="$['some'][?@['thing'] == \"foo\"]",
     ),
     Case(
         description="filter with integer literal",
         path="$.some[?(@.thing == 1)]",
-        want="$['some'][?(@['thing'] == 1)]",
+        want="$['some'][?@['thing'] == 1]",
     ),
     Case(
         description="filter with float literal",
         path="$.some[?(@.thing == 1.1)]",
-        want="$['some'][?(@['thing'] == 1.1)]",
+        want="$['some'][?@['thing'] == 1.1]",
     ),
     Case(
         description="filter with logical not",
@@ -163,7 +163,7 @@ TEST_CASES = [
     Case(
         description="filter with grouped expression",
         path="$.some[?(@.thing > 1 and ($.foo or $.bar))]",
-        want="$['some'][?(@['thing'] > 1 && $['foo'] || $['bar'])]",
+        want="$['some'][?(@['thing'] > 1 && ($['foo'] || $['bar']))]",
     ),
     Case(
         description="keys selector",
@@ -173,12 +173,12 @@ TEST_CASES = [
     Case(
         description="comparison to single quoted string literal with escape",
         path="$[?@.foo == 'ba\\'r']",
-        want="$[?(@['foo'] == \"ba'r\")]",
+        want="$[?@['foo'] == \"ba'r\"]",
     ),
     Case(
         description="comparison to double quoted string literal with escape",
         path='$[?@.foo == "ba\\"r"]',
-        want='$[?(@[\'foo\'] == "ba\\"r")]',
+        want='$[?@[\'foo\'] == "ba\\"r"]',
     ),
 ]
 

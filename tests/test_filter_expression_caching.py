@@ -12,6 +12,7 @@ from jsonpath.filter import IntegerLiteral
 from jsonpath.filter import RootPath
 from jsonpath.filter import SelfPath
 from jsonpath.selectors import Filter as FilterSelector
+from jsonpath.selectors import ListSelector
 
 
 def test_cache_root_path() -> None:
@@ -19,7 +20,9 @@ def test_cache_root_path() -> None:
     env = JSONPathEnvironment()
     path = env.compile("$.some[?@.a < $.thing].a")
     assert isinstance(path, JSONPath)
-    filter_selector = path.selectors[1]
+    selection_list = path.selectors[1]
+    assert isinstance(selection_list, ListSelector)
+    filter_selector = selection_list.items[0]
     assert isinstance(filter_selector, FilterSelector)
     assert filter_selector.cacheable_nodes is True
 
@@ -72,7 +75,9 @@ def test_cache_context_path() -> None:
     env = JSONPathEnvironment()
     path = env.compile("$.some[?_.thing > @.a].a")
     assert isinstance(path, JSONPath)
-    filter_selector = path.selectors[1]
+    selection_list = path.selectors[1]
+    assert isinstance(selection_list, ListSelector)
+    filter_selector = selection_list.items[0]
     assert isinstance(filter_selector, FilterSelector)
     assert filter_selector.cacheable_nodes is True
 
@@ -141,7 +146,9 @@ def test_uncacheable_filter() -> None:
     env = JSONPathEnvironment(filter_caching=True)
     path = env.compile("$.some[?@.a > 2 and @.b < 4].a")
     assert isinstance(path, JSONPath)
-    filter_selector = path.selectors[1]
+    selection_list = path.selectors[1]
+    assert isinstance(selection_list, ListSelector)
+    filter_selector = selection_list.items[0]
     assert isinstance(filter_selector, FilterSelector)
     assert filter_selector.cacheable_nodes is False
 

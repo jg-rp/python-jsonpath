@@ -37,13 +37,6 @@ SKIP = {
     "functions, match, filter, match function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
     "functions, search, filter, search function, unicode char class, uppercase": "\\p not supported",  # noqa: E501
     "functions, search, filter, search function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
-    "filter, multiple selectors": "TODO",
-    "filter, multiple selectors, comparison": "TODO",
-    "filter, multiple selectors, overlapping": "TODO",
-    "filter, multiple selectors, filter and index": "TODO",
-    "filter, multiple selectors, filter and wildcard": "TODO",
-    "filter, multiple selectors, filter and slice": "TODO",
-    "filter, multiple selectors, comparison filter, index and slice": "TODO",
     "filter, equals number, decimal fraction, no fractional digit": "TODO",
     "whitespace, selectors, space between dot and name": "flexible whitespace policy",  # noqa: E501
     "whitespace, selectors, newline between dot and name": "flexible whitespace policy",  # noqa: E501
