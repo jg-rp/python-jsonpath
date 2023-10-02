@@ -193,6 +193,7 @@ And this is a list of areas where we deviate from the [IETF JSONPath draft](http
 - We don't require property names to be quoted inside a bracketed selection, unless the name contains reserved characters.
 - We don't require the recursive descent segment to have a selector. `$..` is equivalent to `$..*`.
 - We support explicit comparisons to `undefined` as well as implicit existence tests.
+- Float literals without a fractional digit are OK. `1.` is equivalent to `1.0`.
 
 And this is a list of features that are uncommon or unique to Python JSONPath.
 
