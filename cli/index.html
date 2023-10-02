@@ -435,6 +435,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#-no-type-checks" class="md-nav__link">
+    --no-type-checks
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -818,6 +825,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#-no-type-checks" class="md-nav__link">
+    --no-type-checks
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -979,16 +993,17 @@
 </span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="go">  -o OUTPUT, --output OUTPUT</span>
 </span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="go">                        File to write resulting objects to, as a JSON array. Defaults to the standard</span>
 </span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="go">                        output stream.</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="go">  --no-type-checks      Disables filter expression well-typedness checks.</span>
 </span></code></pre></div>
 <h2 id="global-options">Global Options</h2>
 <p>These arguments apply to any subcommand and must be listed before the command.</p>
 <h3 id="-debug"><code>--debug</code></h3>
 <p>Enable debugging. Display full stack traces, if available, when errors occur. Without the <code>--debug</code> option, the following example shows a short "json path syntax error" message.</p>
-<div class="language-console highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gp">$ </span>json<span class="w"> </span>path<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;</span>$<span class="s2">.1&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json<span class="w"> </span>
+<div class="language-console highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gp">$ </span>json<span class="w"> </span>path<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;</span>$<span class="s2">.1&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="go">json path syntax error: unexpected token &#39;1&#39;, line 1, column 2</span>
 </span></code></pre></div>
 <p>With the <code>--debug</code> option, we get the stack trace triggered by <code>JSONPathSyntaxError</code>.</p>
-<div class="language-console highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gp">$ </span>json<span class="w"> </span>--debug<span class="w"> </span>path<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;</span>$<span class="s2">.1&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json<span class="w"> </span>
+<div class="language-console highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gp">$ </span>json<span class="w"> </span>--debug<span class="w"> </span>path<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;</span>$<span class="s2">.1&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="go">Traceback (most recent call last):</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="go">  File &quot;/home/james/.local/share/virtualenvs/jsonpath_cli-8Tb3e-ir/bin/json&quot;, line 8, in &lt;module&gt;</span>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="go">    sys.exit(main())</span>
@@ -1006,11 +1021,11 @@
 </span></code></pre></div>
 <h3 id="-pretty"><code>--pretty</code></h3>
 <p>Enable pretty formatting when outputting JSON. Adds newlines and indentation to output specified with the <code>-o</code> or <code>--output</code> option. Without the <code>--pretty</code> option, the following example output is on one line.</p>
-<div class="language-console highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>json<span class="w"> </span>pointer<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/categories/1/products/0&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json<span class="w"> </span>
+<div class="language-console highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>json<span class="w"> </span>pointer<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/categories/1/products/0&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="go">{&quot;title&quot;: &quot;Cap&quot;, &quot;description&quot;: &quot;Baseball cap&quot;, &quot;price&quot;: 15.0}</span>
 </span></code></pre></div>
 <p>With the <code>--pretty</code> option, we get nicely formatted JSON output.</p>
-<div class="language-console highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="gp">$ </span>json<span class="w"> </span>--pretty<span class="w"> </span>pointer<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/categories/1/products/0&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json<span class="w"> </span>
+<div class="language-console highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="gp">$ </span>json<span class="w"> </span>--pretty<span class="w"> </span>pointer<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/categories/1/products/0&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="go">{</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="go">  &quot;title&quot;: &quot;Cap&quot;,</span>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="go">  &quot;description&quot;: &quot;Baseball cap&quot;,</span>
@@ -1019,7 +1034,7 @@
 </span></code></pre></div>
 <h3 id="-no-unicode-escape"><code>--no-unicode-escape</code></h3>
 <p>Disable decoding of UTF-16 escape sequences, including surrogate paris. This can improve performance if you know your paths and pointers don't contain UTF-16 escape sequences.</p>
-<div class="language-console highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="gp">$ </span>json<span class="w"> </span>--no-unicode-escape<span class="w"> </span>path<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;</span>$<span class="s2">.price_cap&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json<span class="w"> </span>
+<div class="language-console highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="gp">$ </span>json<span class="w"> </span>--no-unicode-escape<span class="w"> </span>path<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;</span>$<span class="s2">.price_cap&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json
 </span></code></pre></div>
 <h2 id="commands">Commands</h2>
 <p>One of the subcommands <code>path</code>, <code>pointer</code> or <code>patch</code> must be specified, depending on whether you want to search a JSON document with a JSONPath, resolve a JSON Pointer against a JSON document or apply a JSON Patch to a JSON Document.</p>
@@ -1051,6 +1066,9 @@
 </span></code></pre></div>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="gp">$ </span>json<span class="w"> </span>path<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;</span>$<span class="s2">.price_cap&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json<span class="w"> </span>--output<span class="w"> </span>result.json
 </span></code></pre></div>
+<h4 id="-no-type-checks"><code>--no-type-checks</code></h4>
+<p><em>New in version 0.10.0</em></p>
+<p>Disables JSONPath filter expression well-typedness checks. The well-typedness of a filter expression is defined by the IETF JSONPath Draft specification.</p>
 <h3 id="pointer"><code>pointer</code></h3>
 <p>Resolve a JSON Pointer against a JSON document. One of <code>-p</code>/<code>--pointer</code> or <code>-r</code>/<code>--pointer-file</code> must be given. <code>-p</code> being a JSON Pointer given on the command line as a string, <code>-r</code> being the path to a file containing a JSON Pointer.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>json pointer [-h] (-p POINTER | -r POINTER_FILE) [-f FILE] [-o OUTPUT] [-u]
@@ -1075,10 +1093,10 @@
 </span></code></pre></div>
 <h4 id="-o-output_1"><code>-o</code> / <code>--output</code></h4>
 <p>The path to a file to write the resulting object to. If omitted or a hyphen (<code>-</code>) is given, results will be written to the standard output stream.</p>
-<p><div class="language-console highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="gp">$ </span>json<span class="w"> </span>pointer<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/categories/0/name&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json<span class="w"> </span>-o<span class="w"> </span>result.json
+<div class="language-console highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="gp">$ </span>json<span class="w"> </span>pointer<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/categories/0/name&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json<span class="w"> </span>-o<span class="w"> </span>result.json
 </span></code></pre></div>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="gp">$ </span>json<span class="w"> </span>pointer<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/categories/0/name&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json<span class="w"> </span>--output<span class="w"> </span>result.json
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h4 id="-u-uri-decode"><code>-u</code> / <code>--uri-decode</code></h4>
 <p>Enable URI decoding of the JSON Pointer. In this example, we would look for a property called "hello world" in the root of the target document.</p>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="gp">$ </span>json<span class="w"> </span>pointer<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;/hello%20world&quot;</span><span class="w"> </span>-f<span class="w"> </span>/tmp/source.json<span class="w"> </span>-u
@@ -1102,10 +1120,10 @@
 </span></code></pre></div>
 <h4 id="-o-output_2"><code>-o</code> / <code>--output</code></h4>
 <p>The path to a file to write the resulting object to. If omitted or a hyphen (<code>-</code>) is given, results will be written to the standard output stream.</p>
-<p><div class="language-console highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="gp">$ </span>json<span class="w"> </span>patch<span class="w"> </span>/tmp/patch.json<span class="w"> </span>-f<span class="w"> </span>/tmp/target.json<span class="w"> </span>-o<span class="w"> </span>result.json
+<div class="language-console highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="gp">$ </span>json<span class="w"> </span>patch<span class="w"> </span>/tmp/patch.json<span class="w"> </span>-f<span class="w"> </span>/tmp/target.json<span class="w"> </span>-o<span class="w"> </span>result.json
 </span></code></pre></div>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="gp">$ </span>json<span class="w"> </span>patch<span class="w"> </span>/tmp/patch.json<span class="w"> </span>-f<span class="w"> </span>/tmp/target.json<span class="w"> </span>--output<span class="w"> </span>result.json
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h4 id="-u-uri-decode_1"><code>-u</code> / <code>--uri-decode</code></h4>
 <p>Enable URI decoding of JSON Pointers in the patch document.</p>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="gp">$ </span>json<span class="w"> </span>patch<span class="w"> </span>/tmp/patch.json<span class="w"> </span>-f<span class="w"> </span>/tmp/target.json<span class="w"> </span>-u

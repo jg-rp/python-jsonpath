@@ -2,57 +2,57 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/advanced/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/api/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/async/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/cli/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/custom_api/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/exceptions/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/functions/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/pointers/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/quickstart/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://jg-rp.github.io/python-jsonpath/syntax/</loc>
-         <lastmod>2023-07-22</lastmod>
+         <lastmod>2023-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

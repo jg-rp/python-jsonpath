@@ -359,6 +359,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#type-system-for-function-expressions" class="md-nav__link">
+    Type System for Function Expressions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#example" class="md-nav__link">
     Example
   </a>
@@ -703,6 +710,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#type-system-for-function-expressions" class="md-nav__link">
+    Type System for Function Expressions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#example" class="md-nav__link">
     Example
   </a>
@@ -854,24 +868,42 @@
 </span></code></pre></div>
 <h2 id="function-extensions">Function Extensions</h2>
 <p>Add, remove or replace <a href="../functions/">filter functions</a> by updating the <a href="../api/#jsonpath.env.JSONPathEnvironment.function_extensions"><code>function_extensions</code></a> attribute of a <a href="../api/#jsonpath.env.JSONPathEnvironment"><code>JSONPathEnvironment</code></a>. It is a regular Python dictionary mapping filter function names to any <a href="https://docs.python.org/3/library/typing.html#typing.Callable">callable</a>, like a function or class with a <code>__call__</code> method.</p>
+<h3 id="type-system-for-function-expressions">Type System for Function Expressions</h3>
+<p><a href="https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-21#section-2.4.1">Section 2.4.1</a> of the IETF JSONPath Draft specification defines a type system for function expressions and requires that we check that filter expressions are well-typed. With that in mind, you are encouraged to implement custom filter functions by extending <a href="../api/#jsonpath.function_extensions.FilterFunction"><code>jsonpath.function_extensions.FilterFunction</code></a>, which forces you to be explicit about the <a href="../api/#jsonpath.function_extensions.ExpressionType">types</a> of arguments the function extension accepts and the type of its return value.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p><a href="../api/#jsonpath.function_extensions.FilterFunction"><code>FilterFunction</code></a> was new in Python JSONPath version 0.10.0. Prior to that we did not enforce function expression well-typedness. To use any arbitrary <a href="https://docs.python.org/3/library/typing.html#typing.Callable">callable</a> as a function extension - or if you don't want built-in filter functions to raise a <code>JSONPathTypeError</code> for function expressions that are not well-typed - set <a href="../api/#jsonpath.env.JSONPathEnvironment.well_typed"><code>well_typed</code></a> to <code>False</code> when constructing a <a href="../api/#jsonpath.env.JSONPathEnvironment"><code>JSONPathEnvironment</code></a>.</p>
+</div>
 <h3 id="example">Example</h3>
 <p>As an example, we'll add a <code>min()</code> filter function, which will return the minimum of a sequence of values. If any of the values are not comparable, we'll return the special <code>undefined</code> value instead.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">def</span> <span class="nf">min_filter</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="k">return</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">UNDEFINED</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="k">try</span><span class="p">:</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        <span class="k">return</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">UNDEFINED</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">from</span> <span class="nn">jsonpath.function_extensions</span> <span class="kn">import</span> <span class="n">ExpressionType</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kn">from</span> <span class="nn">jsonpath.function_extensions</span> <span class="kn">import</span> <span class="n">FilterFunction</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">class</span> <span class="nc">MinFilterFunction</span><span class="p">(</span><span class="n">FilterFunction</span><span class="p">):</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A JSONPath function extension returning the minimum of a sequence.&quot;&quot;&quot;</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">arg_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">ExpressionType</span><span class="o">.</span><span class="n">VALUE</span><span class="p">]</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">return_type</span> <span class="o">=</span> <span class="n">ExpressionType</span><span class="o">.</span><span class="n">VALUE</span>
 </span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="n">env</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">JSONPathEnvironment</span><span class="p">()</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="n">env</span><span class="o">.</span><span class="n">function_extensions</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">min_filter</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>            <span class="k">return</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">UNDEFINED</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>        <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>            <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>            <span class="k">return</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">UNDEFINED</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="n">env</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">JSONPathEnvironment</span><span class="p">()</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="n">env</span><span class="o">.</span><span class="n">function_extensions</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MinFilterFunction</span><span class="p">()</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="n">example_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">]}]}</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="nb">print</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;$.foo[?min(@.bar) &gt; 1]&quot;</span><span class="p">,</span> <span class="n">example_data</span><span class="p">))</span>
 </span></code></pre></div>
 <p>Now, when we use <code>env.finall()</code>, <code>env.finditer()</code> or <code>env.compile()</code>, our <code>min</code> function will be available for use in filter expressions.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$..products[?@.price == min($..products.price)]
@@ -912,7 +944,7 @@
 </span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="n">env</span> <span class="o">=</span> <span class="n">MyEnv</span><span class="p">()</span>
 </span></code></pre></div>
 <h3 id="compile-time-validation">Compile Time Validation</h3>
-<p>A function extension's arguments can be validated at compile time by implementing the function as a class with a <code>__call__</code> method, and a <code>validate</code> method. <code>validate</code> will be called after parsing the function, giving you the opportunity to inspect its arguments and raise a <code>JSONPathTypeError</code> should any arguments be unacceptable. If defined, <code>validate</code> must take a reference to the current environment, an argument list and the token pointing to the start of the function call.</p>
+<p>Calls to <a href="#type-system-for-function-expressions">type-aware</a> function extension are validated at JSONPath compile-time automatically. If <a href="../api/#jsonpath.env.JSONPathEnvironment.well_typed"><code>well_typed</code></a> is set to <code>False</code> or a custom function extension does not inherit from <a href="../api/#jsonpath.function_extensions.FilterFunction"><code>FilterFunction</code></a>, its arguments can be validated by implementing the function as a class with a <code>__call__</code> method, and a <code>validate</code> method. <code>validate</code> will be called after parsing the function, giving you the opportunity to inspect its arguments and raise a <code>JSONPathTypeError</code> should any arguments be unacceptable. If defined, <code>validate</code> must take a reference to the current environment, an argument list and the token pointing to the start of the function call.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>        <span class="bp">self</span><span class="p">,</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>        <span class="n">env</span><span class="p">:</span> <span class="n">JSONPathEnvironment</span><span class="p">,</span>

@@ -559,6 +559,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#jsonpath.env.JSONPathEnvironment.well_typed" class="md-nav__link">
+    well_typed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.env.JSONPathEnvironment.check_well_typedness" class="md-nav__link">
+    check_well_typedness()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#jsonpath.env.JSONPathEnvironment.compare" class="md-nav__link">
     compare()
   </a>
@@ -731,6 +745,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#jsonpath.path.JSONPath.singular_query" class="md-nav__link">
+    singular_query()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -795,6 +816,47 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jsonpath.function_extensions.FilterFunction" class="md-nav__link">
+    FilterFunction
+  </a>
+  
+    <nav class="md-nav" aria-label="FilterFunction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.function_extensions.filter_function.FilterFunction.arg_types" class="md-nav__link">
+    arg_types
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.function_extensions.filter_function.FilterFunction.return_type" class="md-nav__link">
+    return_type
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.function_extensions.filter_function.FilterFunction.__call__" class="md-nav__link">
+    __call__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jsonpath.function_extensions.ExpressionType" class="md-nav__link">
+    ExpressionType
+  </a>
   
 </li>
       
@@ -1097,6 +1159,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#jsonpath.env.JSONPathEnvironment.well_typed" class="md-nav__link">
+    well_typed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.env.JSONPathEnvironment.check_well_typedness" class="md-nav__link">
+    check_well_typedness()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#jsonpath.env.JSONPathEnvironment.compare" class="md-nav__link">
     compare()
   </a>
@@ -1269,6 +1345,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#jsonpath.path.JSONPath.singular_query" class="md-nav__link">
+    singular_query()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1333,6 +1416,47 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jsonpath.function_extensions.FilterFunction" class="md-nav__link">
+    FilterFunction
+  </a>
+  
+    <nav class="md-nav" aria-label="FilterFunction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.function_extensions.filter_function.FilterFunction.arg_types" class="md-nav__link">
+    arg_types
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.function_extensions.filter_function.FilterFunction.return_type" class="md-nav__link">
+    return_type
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.function_extensions.filter_function.FilterFunction.__call__" class="md-nav__link">
+    __call__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jsonpath.function_extensions.ExpressionType" class="md-nav__link">
+    ExpressionType
+  </a>
   
 </li>
       
@@ -1597,6 +1721,27 @@ where possible.</p>
             <div class="doc-md-description">
               <p>If <code>True</code>, decode UTF-16 escape sequences found in
 JSONPath string literals.</p>
+            </div>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>bool</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>True</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>well_typed</code></td>
+          <td class="doc-param-details">
+            <div class="doc-md-description">
+              <p>Control well-typedness checks on filter function expressions.
+If <code>True</code> (the default), JSONPath expressions are checked for
+well-typedness as compile time.</p>
+<p><strong>New in version 0.10.0</strong></p>
             </div>
             <p>
                 <span class="doc-param-annotation">
@@ -1914,7 +2059,54 @@ JSONPath string literals.</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
 
+
+
+<h3 id="jsonpath.env.JSONPathEnvironment.well_typed" class="doc doc-heading">
+        <span class="doc doc-object-name doc-attribute-name">well_typed</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">well_typed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">well_typed</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Control well-typedness checks on filter function expressions.</p>
+  </div>
+
+</div>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="jsonpath.env.JSONPathEnvironment.check_well_typedness" class="doc doc-heading">
+        <span class="doc doc-object-name doc-function-name">check_well_typedness</span>
+
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">check_well_typedness</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">func</span><span class="p">:</span> <span class="n">FilterFunction</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FilterExpression</span><span class="p">],</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Check the well-typedness of a function's arguments at compile-time.</p>
+
+  </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
@@ -3631,6 +3823,26 @@ an incompatible way.</p>
 
 </div>
 
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="jsonpath.path.JSONPath.singular_query" class="doc doc-heading">
+        <span class="doc doc-object-name doc-function-name">singular_query</span>
+
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">singular_query</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Return <code>True</code> if this JSONPath query is a singular query.</p>
+
+  </div>
+
+</div>
+
 
 
   </div>
@@ -4178,6 +4390,158 @@ an incompatible way.</p>
 
 
 
+<h2 id="jsonpath.function_extensions.FilterFunction" class="doc doc-heading">
+        <span class="doc doc-object-name doc-class-name">jsonpath.function_extensions.FilterFunction</span>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><span title="abc.ABC">ABC</span></code></p>
+
+  
+      <p>Base class for typed function extensions.</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="jsonpath.function_extensions.filter_function.FilterFunction.arg_types" class="doc doc-heading">
+        <span class="doc doc-object-name doc-attribute-name">arg_types</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">arg_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExpressionType</span><span class="p">]</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Argument types expected by the filter function.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="jsonpath.function_extensions.filter_function.FilterFunction.return_type" class="doc doc-heading">
+        <span class="doc doc-object-name doc-attribute-name">return_type</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">return_type</span><span class="p">:</span> <span class="n">ExpressionType</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>The type of the value returned by the filter function.</p>
+  </div>
+
+</div>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="jsonpath.function_extensions.filter_function.FilterFunction.__call__" class="doc doc-heading">
+        <span class="doc doc-object-name doc-function-name">__call__</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="fm">__call__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Called the filter function.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="jsonpath.function_extensions.ExpressionType" class="doc doc-heading">
+        <span class="doc doc-object-name doc-class-name">jsonpath.function_extensions.ExpressionType</span>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+  
+      <p>The type of a filter function argument or return value.</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
 <h2 id="jsonpath.JSONPointer" class="doc doc-heading">
         <span class="doc doc-object-name doc-class-name">jsonpath.JSONPointer</span>
 
@@ -4621,7 +4985,7 @@ before being parsed.</p>
       <p>Join this pointer with <em>parts</em>.</p>
 <p>Each part is expected to be a JSON Pointer string, possibly without a
 leading slash. If a part does have a leading slash, the previous
-pointer is ignored and a new <code>JSONPath</code> is created, and processing of
+pointer is ignored and a new <code>JSONPointer</code> is created, and processing of
 remaining parts continues.</p>
 
   </div>
@@ -5931,7 +6295,7 @@ already been parsed.</p>
           <td><code>value</code></td>
           <td class="doc-param-details">
             <div class="doc-md-description">
-              <p>The object to add.</p>
+              <p>The object to test.</p>
             </div>
             <p>
                 <span class="doc-param-annotation">

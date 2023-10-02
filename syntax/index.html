@@ -865,16 +865,17 @@
 </ul>
 <p>And this is a list of areas where we deviate from the <a href="https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-13">IETF JSONPath draft</a>.</p>
 <ul>
-<li>We don't follow all "singular query" rules when evaluating a filter comparison. Note that we support membership operators <code>in</code> and <code>contains</code>, plus list literals, so testing non-singular queries for membership is OK.</li>
-<li>We don't yet force the result of some filter functions to be compared.</li>
+<li>The root token (default <code>$</code>) is optional and paths starting with a dot (<code>.</code>) are OK. <code>.thing</code> is the same as <code>$.thing</code>, as is <code>thing</code>, <code>$[thing]</code> and <code>$["thing"]</code>.</li>
 <li>Whitespace is mostly insignificant unless inside quotes.</li>
-<li>The root token (default <code>$</code>) is optional.</li>
-<li>Paths starting with a dot (<code>.</code>) are OK. <code>.thing</code> is the same as <code>$.thing</code>, as is <code>thing</code>, <code>$[thing]</code> and <code>$["thing"]</code>.</li>
 <li>The built-in <code>match()</code> and <code>search()</code> filter functions use Python's standard library <code>re</code> module, which, at least, doesn't support Unicode properties. We might add an implementation of <code>match()</code> and <code>search()</code> using the third party <a href="https://pypi.org/project/regex/">regex</a> package in the future.</li>
-<li>We silently ignore unnecessary escaping when parsing some quoted selectors. The standard treats this as an "invalid selector".</li>
+<li>We don't require property names to be quoted inside a bracketed selection, unless the name contains reserved characters.</li>
+<li>We don't require the recursive descent segment to have a selector. <code>$..</code> is equivalent to <code>$..*</code>.</li>
+<li>We support explicit comparisons to <code>undefined</code> as well as implicit existence tests.</li>
+<li>Float literals without a fractional digit are OK. <code>1.</code> is equivalent to <code>1.0</code>.</li>
 </ul>
 <p>And this is a list of features that are uncommon or unique to Python JSONPath.</p>
 <ul>
+<li>We support membership operators <code>in</code> and <code>contains</code>, plus list/array literals.</li>
 <li><code>|</code> is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.</li>
 <li><code>&amp;</code> is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.</li>
 <li><code>#</code> is the current key/property or index identifier when filtering a mapping or sequence.</li>
