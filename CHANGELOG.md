@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 0.10.1
+
+**Hot fix**
+
+- Fixed priority of JSONPath lexer rules. Previously, standard short tokens (like `*` and `?`) had a higher priority than environment-controlled tokens (like `JSONPathEnvironment.keys_selector_token`), making it impossible to incorporate short token characters into longer environment-controlled tokens.
+
 ## Version 0.10.0
 
 **Breaking Changes**

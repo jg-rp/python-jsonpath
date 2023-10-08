@@ -158,3 +158,15 @@ def test_no_unicode_escape() -> None:
     env = JSONPathEnvironment(unicode_escape=False)
     assert env.findall(selector, document) == []
     assert env.findall(selector, {"\\uD834\\uDD1E": "B"}) == ["B"]
+
+
+def test_custom_keys_selector_token() -> None:
+    """Test that we can change the non-standard keys selector."""
+
+    class MyJSONPathEnvironment(JSONPathEnvironment):
+        keys_selector_token = "*~"
+
+    env = MyJSONPathEnvironment()
+    data = {"foo": {"a": 1, "b": 2, "c": 3}}
+    assert env.findall("$.foo.*~", data) == ["a", "b", "c"]
+    assert env.findall("$.foo.*", data) == [1, 2, 3]
