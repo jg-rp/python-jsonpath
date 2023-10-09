@@ -159,30 +159,18 @@ Python JSONPath can be customized by subclassing [`JSONPathEnvironment`](api.md#
 The default identifier tokens, like `$` and `@`, can be changed by setting attributes a on `JSONPathEnvironment`. This example sets the root token (default `$`) to be `^`.
 
 ```python
-import jsonpath
+import JSONPathEnvironment
 
-class MyJSONPathEnvironment(jsonpath.JSONPathEnvironment):
+class MyJSONPathEnvironment(JSONPathEnvironment):
     root_token = "^"
 
 
 data = {
     "users": [
-        {
-            "name": "Sue",
-            "score": 100,
-        },
-        {
-            "name": "John",
-            "score": 86,
-        },
-        {
-            "name": "Sally",
-            "score": 84,
-        },
-        {
-            "name": "Jane",
-            "score": 55,
-        },
+        {"name": "Sue", "score": 100},
+        {"name": "John", "score": 86},
+        {"name": "Sally", "score": 84},
+        {"name": "Jane", "score": 55},
     ],
     "limit": 100,
 }
@@ -203,17 +191,53 @@ This table shows all available identifier token attributes.
 | root_token           | `$`     |
 | self_token           | `@`     |
 
-### Operator Tokens
+### Logical Operator Tokens
 
 TODO:
 
 ### Keys Selector
 
-TODO:
+The non-standard keys selector is used to retrieve the keys/properties from a JSON Object or Python mapping. It defaults to `~` and can be changed using the `keys_selector_token` attribute on a [`JSONPathEnvironment`](./api.md#jsonpath.JSONPathEnvironment) subclass.
+
+This example changes the keys selector to `*~`.
+
+```python
+from jsonpath import JSONPathEnvironment
+
+class MyJSONPathEnvironment(JSONPathEnvironment):
+    keys_selector_token = "*~"
+
+data = {
+    "users": [
+        {"name": "Sue", "score": 100},
+        {"name": "John", "score": 86},
+        {"name": "Sally", "score": 84},
+        {"name": "Jane", "score": 55},
+    ],
+    "limit": 100,
+}
+
+env = MyJSONPathEnvironment()
+print(env.findall("$.users[0].*~", data))  # ['name', 'score']
+```
 
 ### Array Index Limits
 
-TODO:
+Python JSONPath limits the minimum and maximum JSON array or Python sequence indices (including slice steps) allowed in a JSONPath query. The default minimum allowed index is set to `-(2**53) + 1`, and the maximum to `(2**53) - 1`. When a limit is reached, a `JSONPathIndexError` is raised.
+
+You can change the minimum and maximum allowed indices using the `min_int_index` and `max_int_index` attributes on a [`JSONPathEnvironment`](./api.md#jsonpath.JSONPathEnvironment) subclass.
+
+```python
+from jsonpath import JSONPathEnvironment
+
+class MyJSONPathEnvironment(JSONPathEnvironment):
+    min_int_index = -100
+    max_int_index = 100
+
+env = MyJSONPathEnvironment()
+query = env.compile("$.users[999]")
+# jsonpath.exceptions.JSONPathIndexError: index out of range, line 1, column 8
+```
 
 ### Subclassing Lexer
 
