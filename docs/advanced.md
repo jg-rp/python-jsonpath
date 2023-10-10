@@ -193,7 +193,26 @@ This table shows all available identifier token attributes.
 
 ### Logical Operator Tokens
 
-TODO:
+By default, we accept both Python and C-style logical operators in filter expressions. That is, `not` and `!` are equivalent, `and` and `&&` are equivalent and `or` and `||` are equivalent. You can change this using class attributes on a [`Lexer`](custom_api.md#jsonpath.lex.Lexer) subclass and setting the `lexer_class` attribute on a `JSONPathEnvironment`.
+
+This example changes all three logical operators to strictly match the JSONPath spec.
+
+```python
+from jsonpath import JSONPathEnvironment
+from jsonpath import Lexer
+
+class MyLexer(Lexer):
+    logical_not_pattern = r"!"
+    logical_and_pattern = r"&&"
+    logical_or_pattern = r"\|\|"
+
+class MyJSONPathEnvironment(JSONPathEnvironment):
+    lexer_class = MyLexer
+
+env = MyJSONPathEnvironment()
+env.compile("$.foo[?@.a > 0 && @.b < 100]")  # OK
+env.compile("$.foo[?@.a > 0 and @.b < 100]")  # JSONPathSyntaxError
+```
 
 ### Keys Selector
 
