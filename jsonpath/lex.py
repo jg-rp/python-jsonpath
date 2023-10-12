@@ -66,9 +66,33 @@ if TYPE_CHECKING:
 
 
 class Lexer:
-    """Tokenize a JSONPath string."""
+    """Tokenize a JSONPath string.
+
+    Some customization can be achieved by subclassing _Lexer_ and setting
+    class attributes. Then setting `lexer_class` on a `JSONPathEnvironment`.
+
+    Attributes:
+        key_pattern: The regular expression pattern used to match mapping
+            keys/properties.
+        logical_not_pattern: The regular expression pattern used to match
+            logical negation tokens. By default, `not` and `!` are
+            equivalent.
+        logical_and_pattern: The regular expression pattern used to match
+            logical _and_ tokens. By default, `and` and `&&` are equivalent.
+        logical_or_pattern: The regular expression pattern used to match
+            logical _or_ tokens. By default, `or` and `||` are equivalent.
+    """
 
     key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
+
+    # `not` or !
+    logical_not_pattern = r"(?:not|!)"
+
+    # && or `and`
+    logical_and_pattern = r"(?:&&|and)"
+
+    # || or `or`
+    logical_or_pattern = r"(?:\|\||or)"
 
     def __init__(self, *, env: JSONPathEnvironment) -> None:
         self.env = env
@@ -84,15 +108,6 @@ class Lexer:
             r":\s*(?P<G_LSLICE_STOP>\-?\d*)\s*"
             r"(?::\s*(?P<G_LSLICE_STEP>\-?\d*))?"
         )
-
-        # `not` or !
-        self.logical_not_pattern = r"(?:not|!)"
-
-        # && or `and`
-        self.bool_and_pattern = r"(?:&&|and)"
-
-        # || or `or`
-        self.bool_or_pattern = r"(?:\|\||or)"
 
         # /pattern/ or /pattern/flags
         self.re_pattern = r"/(?P<G_RE>.+?)/(?P<G_RE_FLAGS>[aims]*)"
@@ -114,8 +129,8 @@ class Lexer:
             (TOKEN_FLOAT, r"-?\d+\.\d*(?:e[+-]?\d+)?"),
             (TOKEN_INT, r"-?\d+(?P<G_EXP>e[+\-]?\d+)?\b"),
             (TOKEN_DDOT, r"\.\."),
-            (TOKEN_AND, self.bool_and_pattern),
-            (TOKEN_OR, self.bool_or_pattern),
+            (TOKEN_AND, self.logical_and_pattern),
+            (TOKEN_OR, self.logical_or_pattern),
             (TOKEN_ROOT, re.escape(self.env.root_token)),
             (TOKEN_SELF, re.escape(self.env.self_token)),
             (TOKEN_KEY, re.escape(self.env.key_token)),

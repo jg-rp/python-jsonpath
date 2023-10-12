@@ -446,6 +446,7 @@ class Parser:
                 )
 
             if stream.peek.kind != TOKEN_RBRACKET:
+                # TODO: error message .. expected a comma or logical operator
                 stream.expect_peek(TOKEN_COMMA)
                 stream.next_token()
 

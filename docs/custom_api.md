@@ -1,14 +1,15 @@
 # Low Level API Reference
 
 ::: jsonpath.token.Token
+
     handler: python
 
 ::: jsonpath.filter.FilterExpression
+
     handler: python
 
-## jsonpath.lex.Lexer
-
-TODO:
+::: jsonpath.lex.Lexer
+    handler: python
 
 ## jsonpath.parse.Parser
 
