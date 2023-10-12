@@ -158,7 +158,7 @@ class Parser:
         TOKEN_LG: PRECEDENCE_RELATIONAL,
         TOKEN_LT: PRECEDENCE_RELATIONAL,
         TOKEN_NE: PRECEDENCE_RELATIONAL,
-        TOKEN_NOT: PRECEDENCE_LOGICALRIGHT,
+        TOKEN_NOT: PRECEDENCE_PREFIX,
         TOKEN_OR: PRECEDENCE_LOGICAL,
         TOKEN_RE: PRECEDENCE_RELATIONAL,
         TOKEN_RPAREN: PRECEDENCE_LOWEST,
@@ -499,9 +499,7 @@ class Parser:
         assert tok.kind == TOKEN_NOT
         return PrefixExpression(
             operator="!",
-            right=self.parse_filter_selector(
-                stream, precedence=self.PRECEDENCE_LOGICALRIGHT
-            ),
+            right=self.parse_filter_selector(stream, precedence=self.PRECEDENCE_PREFIX),
         )
 
     def parse_infix_expression(

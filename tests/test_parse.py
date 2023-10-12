@@ -180,6 +180,21 @@ TEST_CASES = [
         path='$[?@.foo == "ba\\"r"]',
         want='$[?@[\'foo\'] == "ba\\"r"]',
     ),
+    Case(
+        description="not binds more tightly than or",
+        path="$[?!@.a || !@.b]",
+        want="$[?(!@['a'] || !@['b'])]",
+    ),
+    Case(
+        description="not binds more tightly than and",
+        path="$[?!@.a && !@.b]",
+        want="$[?(!@['a'] && !@['b'])]",
+    ),
+    Case(
+        description="control precedence with parens",
+        path="$[?!(@.a && !@.b)]",
+        want="$[?!(@['a'] && !@['b'])]",
+    ),
 ]
 
 

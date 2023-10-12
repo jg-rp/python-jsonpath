@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 0.10.2 (unreleased)
+
+**Fixes**
+
+- Fixed precedence of the logical not operator in JSONPath filter expressions. Previously, logical _or_ and logical _and_ had priority over _not_. See [#41](https://github.com/jg-rp/python-jsonpath/issues/41).
+
 ## Version 0.10.1
 
 **Hot fix**
