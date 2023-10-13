@@ -4,7 +4,7 @@
 
 Arbitrary variables can be made available to [filter expressions](syntax.md#filters-expression) using the _filter_context_ argument to [`findall()`](quickstart.md#findallpath-data) and [`finditer()`](quickstart.md#finditerpath-data). _filter_context_ should be a [mapping](https://docs.python.org/3/library/typing.html#typing.Mapping) of strings to JSON-like objects, like lists, dictionaries, strings and integers.
 
-Filter context variables are selected using the _filter context selector_, which defaults to `_` and has usage similar to `$` and `@`.
+Filter context variables are selected using a filter query starting with the _filter context identifier_, which defaults to `_` and has usage similar to `$` and `@`.
 
 ```python
 import jsonpath

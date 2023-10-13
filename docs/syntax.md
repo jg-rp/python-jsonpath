@@ -122,7 +122,7 @@ $...title
 
 ### Filters (`[?EXPRESSION]`)
 
-Filters allow you to remove nodes from a selection using a Boolean expression. When filtering a mapping-like object, `#` references the current key/property and `@` references the current value associated with `#`. When filtering a sequence-like object, `@` references the current item and `#` will hold the item's index in the sequence.
+Filters allow you to remove nodes from a selection using a Boolean expression. A _filter query_ is a JSONPath query nested within a filter expression. Every filter query must start with the root identifier (`$`), the current node identifier (`@`) or the [filter context](advanced.md#filter-variables) identifier (`_`).
 
 ```text
 $..products[?(@.price < $.price_cap)]
@@ -132,11 +132,13 @@ $..products[?(@.price < $.price_cap)]
 $..products[?@.price < $.price_cap]
 ```
 
+When filtering a mapping-like object, `#` references the current key/property and `@` references the current value associated with `#`. When filtering a sequence-like object, `@` references the current item and `#` will hold the item's index in the sequence.
+
 Comparison operators include `==`, `!=`, `<`, `>`, `<=` and `>=`. Plus `<>` as an alias for `!=`.
 
 `in` and `contains` are membership operators. `left in right` is equivalent to `right contains left`.
 
-`&&` and `||` are logical operators, `and` and `or` work too.
+`&&` and `||` are logical operators and terms can be grouped with parentheses. `and` and `or` work too.
 
 `=~` matches the left value with a regular expression literal. Regular expressions use a syntax similar to that found in JavaScript, where the pattern to match is surrounded by slashes, optionally followed by flags.
 
@@ -144,16 +146,20 @@ Comparison operators include `==`, `!=`, `<`, `>`, `<=` and `>=`. Plus `<>` as a
 $..products[?(@.description =~ /.*trainers/i)]
 ```
 
+A filter query on its own - one that is not part of a comparison expression - is an existence test. We also support comparing a filter query to the special `undefined` keyword. These two example are equivalent.
+
+```text
+$..products[?!@.sale_price]
+```
+
+```text
+$..products[?@.sale_price == undefined]
+```
+
 Filter expressions can call predefined [function extensions](functions.md) too.
 
 ```text
 $.categories[?count(@.products.*) >= 2]
-```
-
-`undefined` can be used to filter on the absence of a key/property or an undefined value returned from a filter function. `missing` is an alias for `undefined`.
-
-```text
-$..products[?@.sale_price == undefined]
 ```
 
 ### Union (`|`) and intersection (`&`)
