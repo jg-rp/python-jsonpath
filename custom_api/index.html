@@ -577,9 +577,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#jsonpathlexlexer" class="md-nav__link">
-    jsonpath.lex.Lexer
+  <a href="#jsonpath.lex.Lexer" class="md-nav__link">
+    Lexer
   </a>
+  
+    <nav class="md-nav" aria-label="Lexer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.lex.Lexer.compile_rules" class="md-nav__link">
+    compile_rules()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.lex.Lexer.tokenize" class="md-nav__link">
+    tokenize()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -721,9 +741,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#jsonpathlexlexer" class="md-nav__link">
-    jsonpath.lex.Lexer
+  <a href="#jsonpath.lex.Lexer" class="md-nav__link">
+    Lexer
   </a>
+  
+    <nav class="md-nav" aria-label="Lexer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.lex.Lexer.compile_rules" class="md-nav__link">
+    compile_rules()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.lex.Lexer.tokenize" class="md-nav__link">
+    tokenize()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -891,7 +931,9 @@ token derives.</p>
 
   </div>
 
-</div>
+</div><div class="language-text highlight"><pre><span></span><code>handler: python
+</code></pre></div>
+
 
 <div class="doc doc-object doc-class">
 
@@ -1079,9 +1121,145 @@ by <em>self.children</em>, and in the same order.</p>
 
   </div>
 
-</div><h2 id="jsonpathlexlexer">jsonpath.lex.Lexer</h2>
-<p>TODO:</p>
-<h2 id="jsonpathparseparser">jsonpath.parse.Parser</h2>
+</div><div class="language-text highlight"><pre><span></span><code>handler: python
+</code></pre></div>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="jsonpath.lex.Lexer" class="doc doc-heading">
+        <span class="doc doc-object-name doc-class-name">jsonpath.lex.Lexer</span>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>Tokenize a JSONPath string.</p>
+<p>Some customization can be achieved by subclassing <em>Lexer</em> and setting
+class attributes. Then setting <code>lexer_class</code> on a <code>JSONPathEnvironment</code>.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>ATTRIBUTE</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>key_pattern</code></td>
+          <td class="doc-attribute-details">
+            <div class="doc-md-description">
+              <p>The regular expression pattern used to match mapping
+keys/properties.</p>
+            </div>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>logical_not_pattern</code></td>
+          <td class="doc-attribute-details">
+            <div class="doc-md-description">
+              <p>The regular expression pattern used to match
+logical negation tokens. By default, <code>not</code> and <code>!</code> are
+equivalent.</p>
+            </div>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>logical_and_pattern</code></td>
+          <td class="doc-attribute-details">
+            <div class="doc-md-description">
+              <p>The regular expression pattern used to match
+logical <em>and</em> tokens. By default, <code>and</code> and <code>&amp;&amp;</code> are equivalent.</p>
+            </div>
+            <p>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>logical_or_pattern</code></td>
+          <td class="doc-attribute-details">
+            <div class="doc-md-description">
+              <p>The regular expression pattern used to match
+logical <em>or</em> tokens. By default, <code>or</code> and <code>||</code> are equivalent.</p>
+            </div>
+            <p>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="jsonpath.lex.Lexer.compile_rules" class="doc doc-heading">
+        <span class="doc doc-object-name doc-function-name">compile_rules</span>
+
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">compile_rules</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Prepare regular expression rules.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="jsonpath.lex.Lexer.tokenize" class="doc doc-heading">
+        <span class="doc doc-object-name doc-function-name">tokenize</span>
+
+
+</h3>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">tokenize</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Token</span><span class="p">]</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Generate a sequence of tokens from a JSONPath string.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div><h2 id="jsonpathparseparser">jsonpath.parse.Parser</h2>
 <p>TODO:</p>
 <h2 id="jsonpathselectorsjsonpathselector">jsonpath.selectors.JSONPathSelector</h2>
 <p>TODO:</p>
