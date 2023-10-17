@@ -88,7 +88,6 @@ class PropertySelector(JSONPathSelector):
                     obj=self.env.getitem(match.obj, self.name),
                     parent=match,
                     parts=match.parts + (self.name,),
-                    path=match.path + f"['{self.name}']",
                     root=match.root,
                 )
                 match.add_child(_match)
@@ -107,7 +106,6 @@ class PropertySelector(JSONPathSelector):
                     obj=await self.env.getitem_async(match.obj, self.name),
                     parent=match,
                     parts=match.parts + (self.name,),
-                    path=match.path + f"['{self.name}']",
                     root=match.root,
                 )
                 match.add_child(_match)
@@ -161,7 +159,6 @@ class IndexSelector(JSONPathSelector):
                         obj=self.env.getitem(match.obj, self._as_key),
                         parent=match,
                         parts=match.parts + (self._as_key,),
-                        path=f"{match.path}['{self.index}']",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -174,7 +171,6 @@ class IndexSelector(JSONPathSelector):
                         obj=self.env.getitem(match.obj, self.index),
                         parent=match,
                         parts=match.parts + (norm_index,),
-                        path=match.path + f"[{norm_index}]",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -192,7 +188,6 @@ class IndexSelector(JSONPathSelector):
                         obj=await self.env.getitem_async(match.obj, self._as_key),
                         parent=match,
                         parts=match.parts + (self._as_key,),
-                        path=f"{match.path}['{self.index}']",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -205,7 +200,6 @@ class IndexSelector(JSONPathSelector):
                         obj=await self.env.getitem_async(match.obj, self.index),
                         parent=match,
                         parts=match.parts + (norm_index,),
-                        path=match.path + f"[{norm_index}]",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -238,13 +232,12 @@ class KeysSelector(JSONPathSelector):
 
     def _keys(self, match: JSONPathMatch) -> Iterable[JSONPathMatch]:
         if isinstance(match.obj, Mapping):
-            for i, key in enumerate(match.obj.keys()):
+            for key in match.obj:
                 _match = self.env.match_class(
                     filter_context=match.filter_context(),
                     obj=key,
                     parent=match,
                     parts=match.parts + (f"{self.env.keys_selector_token}{key}",),
-                    path=f"{match.path}[{self.env.keys_selector_token}][{i}]",
                     root=match.root,
                 )
                 match.add_child(_match)
@@ -322,7 +315,6 @@ class SliceSelector(JSONPathSelector):
                     obj=obj,
                     parent=match,
                     parts=match.parts + (norm_index,),
-                    path=f"{match.path}[{norm_index}]",
                     root=match.root,
                 )
                 match.add_child(_match)
@@ -345,7 +337,6 @@ class SliceSelector(JSONPathSelector):
                     obj=obj,
                     parent=match,
                     parts=match.parts + (norm_index,),
-                    path=f"{match.path}[{norm_index}]",
                     root=match.root,
                 )
                 match.add_child(_match)
@@ -384,7 +375,6 @@ class WildSelector(JSONPathSelector):
                         obj=val,
                         parent=match,
                         parts=match.parts + (key,),
-                        path=match.path + f"['{key}']",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -396,7 +386,6 @@ class WildSelector(JSONPathSelector):
                         obj=val,
                         parent=match,
                         parts=match.parts + (i,),
-                        path=f"{match.path}[{i}]",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -413,7 +402,6 @@ class WildSelector(JSONPathSelector):
                         obj=val,
                         parent=match,
                         parts=match.parts + (key,),
-                        path=match.path + f"['{key}']",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -425,7 +413,6 @@ class WildSelector(JSONPathSelector):
                         obj=val,
                         parent=match,
                         parts=match.parts + (i,),
-                        path=f"{match.path}[{i}]",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -458,7 +445,6 @@ class RecursiveDescentSelector(JSONPathSelector):
                         obj=val,
                         parent=match,
                         parts=match.parts + (key,),
-                        path=match.path + f"['{key}']",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -474,7 +460,6 @@ class RecursiveDescentSelector(JSONPathSelector):
                         obj=val,
                         parent=match,
                         parts=match.parts + (i,),
-                        path=f"{match.path}[{i}]",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -609,7 +594,6 @@ class Filter(JSONPathSelector):
                                 obj=val,
                                 parent=match,
                                 parts=match.parts + (key,),
-                                path=match.path + f"['{key}']",
                                 root=match.root,
                             )
                             match.add_child(_match)
@@ -635,7 +619,6 @@ class Filter(JSONPathSelector):
                                 obj=obj,
                                 parent=match,
                                 parts=match.parts + (i,),
-                                path=f"{match.path}[{i}]",
                                 root=match.root,
                             )
                             match.add_child(_match)
@@ -677,7 +660,6 @@ class Filter(JSONPathSelector):
                             obj=val,
                             parent=match,
                             parts=match.parts + (key,),
-                            path=match.path + f"['{key}']",
                             root=match.root,
                         )
                         match.add_child(_match)
@@ -705,7 +687,6 @@ class Filter(JSONPathSelector):
                             obj=obj,
                             parent=match,
                             parts=match.parts + (i,),
-                            path=f"{match.path}[{i}]",
                             root=match.root,
                         )
                         match.add_child(_match)

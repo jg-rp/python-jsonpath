@@ -97,7 +97,7 @@ from .token import Token
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
-    from .stream import TokenStream
+    from .token import TokenStream
 
 # ruff: noqa: D102
 
@@ -197,6 +197,13 @@ class Parser:
         ]
     )
 
+    END_SELECTOR = frozenset(
+        [
+            TOKEN_EOF,
+            TOKEN_RBRACKET,
+        ]
+    )
+
     RE_FLAG_MAP = {
         "a": re.A,
         "i": re.I,
@@ -269,7 +276,7 @@ class Parser:
     def parse(self, stream: TokenStream) -> Iterable[JSONPathSelector]:
         """Parse a JSONPath from a stream of tokens."""
         if stream.current.kind == TOKEN_ROOT:
-            stream.next_token()
+            next(stream)
         yield from self.parse_path(stream, in_filter=False)
 
         if stream.current.kind not in (TOKEN_EOF, TOKEN_INTERSECTION, TOKEN_UNION):
@@ -316,16 +323,16 @@ class Parser:
                 yield self.parse_selector_list(stream)
             else:
                 if in_filter:
-                    stream.push(stream.current)
+                    stream.backup()
                 break
 
-            stream.next_token()
+            next(stream)
 
     def parse_slice(self, stream: TokenStream) -> SliceSelector:
         """Parse a slice JSONPath expression from a stream of tokens."""
-        start_token = stream.next_token()
+        start_token = next(stream)
         stream.expect(TOKEN_SLICE_STOP)
-        stop_token = stream.next_token()
+        stop_token = next(stream)
         stream.expect(TOKEN_SLICE_STEP)
         step_token = stream.current
 
@@ -354,7 +361,7 @@ class Parser:
 
     def parse_selector_list(self, stream: TokenStream) -> ListSelector:  # noqa: PLR0912
         """Parse a comma separated list JSONPath selectors from a stream of tokens."""
-        tok = stream.next_token()
+        tok = next(stream)
         list_items: List[
             Union[
                 IndexSelector,
@@ -448,9 +455,9 @@ class Parser:
             if stream.peek.kind != TOKEN_RBRACKET:
                 # TODO: error message .. expected a comma or logical operator
                 stream.expect_peek(TOKEN_COMMA)
-                stream.next_token()
+                next(stream)
 
-            stream.next_token()
+            next(stream)
 
         if not list_items:
             raise JSONPathSyntaxError("empty bracketed segment", token=tok)
@@ -458,7 +465,7 @@ class Parser:
         return ListSelector(env=self.env, token=tok, items=list_items)
 
     def parse_filter(self, stream: TokenStream) -> Filter:
-        tok = stream.next_token()
+        tok = next(stream)
         expr = self.parse_filter_selector(stream)
 
         if self.env.well_typed and isinstance(expr, FunctionExtension):
@@ -496,7 +503,7 @@ class Parser:
         return FloatLiteral(value=float(stream.current.value))
 
     def parse_prefix_expression(self, stream: TokenStream) -> FilterExpression:
-        tok = stream.next_token()
+        tok = next(stream)
         assert tok.kind == TOKEN_NOT
         return PrefixExpression(
             operator="!",
@@ -506,7 +513,7 @@ class Parser:
     def parse_infix_expression(
         self, stream: TokenStream, left: FilterExpression
     ) -> FilterExpression:
-        tok = stream.next_token()
+        tok = next(stream)
         precedence = self.PRECEDENCES.get(tok.kind, self.PRECEDENCE_LOWEST)
         right = self.parse_filter_selector(stream, precedence)
         operator = self.BINARY_OPERATORS[tok.kind]
@@ -521,9 +528,9 @@ class Parser:
         return InfixExpression(left, operator, right)
 
     def parse_grouped_expression(self, stream: TokenStream) -> FilterExpression:
-        stream.next_token()
+        next(stream)
         expr = self.parse_filter_selector(stream)
-        stream.next_token()
+        next(stream)
 
         while stream.current.kind != TOKEN_RPAREN:
             if stream.current.kind == TOKEN_EOF:
@@ -536,13 +543,13 @@ class Parser:
         return expr
 
     def parse_root_path(self, stream: TokenStream) -> FilterExpression:
-        stream.next_token()
+        next(stream)
         return RootPath(
             JSONPath(env=self.env, selectors=self.parse_path(stream, in_filter=True))
         )
 
     def parse_self_path(self, stream: TokenStream) -> FilterExpression:
-        stream.next_token()
+        next(stream)
         return SelfPath(
             JSONPath(env=self.env, selectors=self.parse_path(stream, in_filter=True))
         )
@@ -551,7 +558,7 @@ class Parser:
         return CURRENT_KEY
 
     def parse_filter_context_path(self, stream: TokenStream) -> FilterExpression:
-        stream.next_token()
+        next(stream)
         return FilterContextPath(
             JSONPath(env=self.env, selectors=self.parse_path(stream, in_filter=True))
         )
@@ -559,14 +566,14 @@ class Parser:
     def parse_regex(self, stream: TokenStream) -> FilterExpression:
         pattern = stream.current.value
         if stream.peek.kind == TOKEN_RE_FLAGS:
-            stream.next_token()
+            next(stream)
             flags = 0
             for flag in set(stream.current.value):
                 flags |= self.RE_FLAG_MAP[flag]
         return RegexLiteral(value=re.compile(pattern, flags))
 
     def parse_list_literal(self, stream: TokenStream) -> FilterExpression:
-        stream.next_token()
+        next(stream)
         list_items: List[FilterExpression] = []
 
         while stream.current.kind != TOKEN_RBRACKET:
@@ -580,15 +587,15 @@ class Parser:
 
             if stream.peek.kind != TOKEN_RBRACKET:
                 stream.expect_peek(TOKEN_COMMA)
-                stream.next_token()
+                next(stream)
 
-            stream.next_token()
+            next(stream)
 
         return ListLiteral(list_items)
 
     def parse_function_extension(self, stream: TokenStream) -> FilterExpression:
         function_arguments: List[FilterExpression] = []
-        tok = stream.next_token()
+        tok = next(stream)
 
         while stream.current.kind != TOKEN_RPAREN:
             try:
@@ -604,7 +611,7 @@ class Parser:
             # The argument could be a comparison or logical expression
             peek_kind = stream.peek.kind
             while peek_kind in self.BINARY_OPERATORS:
-                stream.next_token()
+                next(stream)
                 expr = self.parse_infix_expression(stream, expr)
                 peek_kind = stream.peek.kind
 
@@ -612,9 +619,9 @@ class Parser:
 
             if stream.peek.kind != TOKEN_RPAREN:
                 stream.expect_peek(TOKEN_COMMA)
-                stream.next_token()
+                next(stream)
 
-            stream.next_token()
+            next(stream)
 
         return FunctionExtension(
             tok.value,
@@ -627,7 +634,7 @@ class Parser:
         try:
             left = self.token_map[stream.current.kind](stream)
         except KeyError as err:
-            if stream.current.kind in (TOKEN_EOF, TOKEN_RBRACKET):
+            if stream.current.kind in self.END_SELECTOR:
                 msg = "end of expression"
             else:
                 msg = repr(stream.current.value)
@@ -638,7 +645,7 @@ class Parser:
         while True:
             peek_kind = stream.peek.kind
             if (
-                peek_kind in (TOKEN_EOF, TOKEN_RBRACKET)
+                peek_kind in self.END_SELECTOR
                 or self.PRECEDENCES.get(peek_kind, self.PRECEDENCE_LOWEST) < precedence
             ):
                 break
@@ -646,7 +653,7 @@ class Parser:
             if peek_kind not in self.BINARY_OPERATORS:
                 return left
 
-            stream.next_token()
+            next(stream)
             left = self.parse_infix_expression(stream, left)
 
         return left

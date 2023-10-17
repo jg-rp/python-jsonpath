@@ -36,11 +36,11 @@ from .match import NodeList
 from .parse import Parser
 from .path import CompoundJSONPath
 from .path import JSONPath
-from .stream import TokenStream
 from .token import TOKEN_EOF
 from .token import TOKEN_INTERSECTION
 from .token import TOKEN_UNION
 from .token import Token
+from .token import TokenStream
 
 if TYPE_CHECKING:
     from io import IOBase

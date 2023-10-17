@@ -80,8 +80,6 @@ ENV/
 
 # Dev utils
 dev.py
-benchmark.py
-profile_.py
 
 # Test fixtures
 comparison_regression_suite.yaml
