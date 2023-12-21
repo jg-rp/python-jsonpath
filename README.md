@@ -11,6 +11,9 @@ A flexible JSONPath engine for Python with JSON Pointer and JSON Patch.
   <a href="https://github.com/jg-rp/python-jsonpath/actions">
     <img src="https://img.shields.io/github/actions/workflow/status/jg-rp/python-jsonpath/tests.yaml?branch=main&label=tests&style=flat-square" alt="Tests">
   </a>
+  <a href="https://pypi.org/project/python-jsonpath">
+    <img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/python-jsonpath">
+  </a>
   <br>
   <a href="https://pypi.org/project/python-jsonpath">
     <img src="https://img.shields.io/pypi/v/python-jsonpath.svg?style=flat-square" alt="PyPi - Version">
