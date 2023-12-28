@@ -623,7 +623,19 @@ class FunctionExtension(FilterExpression):
                 if func.arg_types[idx] != ExpressionType.NODES and isinstance(
                     arg, NodeList
                 ):
-                    _args.append(arg.values_or_singular())
+                    if len(arg) == 0:
+                        # If the query results in an empty nodelist, the
+                        # argument is the special result Nothing.
+                        _args.append(UNDEFINED)
+                    elif len(arg) == 1:
+                        # If the query results in a nodelist consisting of a
+                        # single node, the argument is the value of the node
+                        _args.append(arg[0].obj)
+                    else:
+                        # This should not be possible as a non-singular query
+                        # would have been rejected when checking function
+                        # well-typedness.
+                        _args.append(arg)
                 else:
                     _args.append(arg)
             return _args
