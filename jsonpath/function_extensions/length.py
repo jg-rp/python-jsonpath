@@ -1,7 +1,9 @@
 """The standard `length` function extension."""
 from collections.abc import Sized
-from typing import Optional
+from typing import Union
 
+from jsonpath.filter import UNDEFINED
+from jsonpath.filter import _Undefined
 from jsonpath.function_extensions import ExpressionType
 from jsonpath.function_extensions import FilterFunction
 
@@ -12,9 +14,13 @@ class Length(FilterFunction):
     arg_types = [ExpressionType.VALUE]
     return_type = ExpressionType.VALUE
 
-    def __call__(self, obj: Sized) -> Optional[int]:
-        """Return an object's length, or `None` if the object does not have a length."""
+    def __call__(self, obj: Sized) -> Union[int, _Undefined]:
+        """Return an object's length.
+
+        If the object does not have a length, the special _Nothing_ value is
+        returned.
+        """
         try:
             return len(obj)
         except TypeError:
-            return None
+            return UNDEFINED
