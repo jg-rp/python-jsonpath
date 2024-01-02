@@ -180,7 +180,7 @@ class Parser:
         TOKEN_RE: "=~",
     }
 
-    SINGULAR_QUERY_COMPARISON_OPERATORS = frozenset(
+    COMPARISON_OPERATORS = frozenset(
         [
             "==",
             ">=",
@@ -511,10 +511,7 @@ class Parser:
         right = self.parse_filter_selector(stream, precedence)
         operator = self.BINARY_OPERATORS[tok.kind]
 
-        self._raise_for_non_singular_query(left, tok)  # TODO: store tok on expression
-        self._raise_for_non_singular_query(right, tok)
-
-        if operator in self.SINGULAR_QUERY_COMPARISON_OPERATORS:
+        if self.env.well_typed and operator in self.COMPARISON_OPERATORS:
             self._raise_for_non_comparable_function(left, tok)
             self._raise_for_non_comparable_function(right, tok)
 
@@ -666,26 +663,18 @@ class Parser:
 
         return token.value
 
-    def _raise_for_non_singular_query(
-        self, expr: FilterExpression, token: Token
-    ) -> None:
-        if (
-            self.env.well_typed
-            and isinstance(expr, Path)
-            and not expr.path.singular_query()
-        ):
-            raise JSONPathSyntaxError(
-                "non-singular query is not comparable", token=token
-            )
-
     def _raise_for_non_comparable_function(
         self, expr: FilterExpression, token: Token
     ) -> None:
-        if not self.env.well_typed or not isinstance(expr, FunctionExtension):
-            return
-        func = self.env.function_extensions.get(expr.name)
-        if (
-            isinstance(func, FilterFunction)
-            and func.return_type != ExpressionType.VALUE
-        ):
-            raise JSONPathTypeError(f"result of {expr.name}() is not comparable", token)
+        if isinstance(expr, Path) and not expr.path.singular_query():
+            raise JSONPathTypeError("non-singular query is not comparable", token=token)
+
+        if isinstance(expr, FunctionExtension):
+            func = self.env.function_extensions.get(expr.name)
+            if (
+                isinstance(func, FilterFunction)
+                and func.return_type != ExpressionType.VALUE
+            ):
+                raise JSONPathTypeError(
+                    f"result of {expr.name}() is not comparable", token
+                )
