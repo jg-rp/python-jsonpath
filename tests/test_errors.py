@@ -23,3 +23,8 @@ def test_function_missing_param(env: JSONPathEnvironment) -> None:
 def test_function_too_many_params(env: JSONPathEnvironment) -> None:
     with pytest.raises(JSONPathTypeError):
         env.compile("$[?(length(@.a, @.b)==1)]")
+
+
+def test_non_singular_query_is_not_comparable(env: JSONPathEnvironment) -> None:
+    with pytest.raises(JSONPathTypeError):
+        env.compile("$[?@.* > 2]")

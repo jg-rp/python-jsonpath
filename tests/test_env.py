@@ -5,6 +5,7 @@ from typing import List
 import pytest
 
 from jsonpath import JSONPathEnvironment
+from jsonpath import JSONPathTypeError
 
 
 @pytest.fixture()
@@ -170,3 +171,13 @@ def test_custom_keys_selector_token() -> None:
     data = {"foo": {"a": 1, "b": 2, "c": 3}}
     assert env.findall("$.foo.*~", data) == ["a", "b", "c"]
     assert env.findall("$.foo.*", data) == [1, 2, 3]
+
+
+def test_disable_well_typed_checks() -> None:
+    """Test that we can disable checks for well-typedness."""
+    env = JSONPathEnvironment(well_typed=True)
+    with pytest.raises(JSONPathTypeError):
+        env.compile("$[?@.* > 2]")
+
+    env = JSONPathEnvironment(well_typed=False)
+    env.compile("$[?@.* > 2]")
