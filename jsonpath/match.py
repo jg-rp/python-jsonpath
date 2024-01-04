@@ -37,7 +37,6 @@ class JSONPathMatch:
         "obj",
         "parent",
         "parts",
-        "path",
         "root",
     )
 
@@ -49,7 +48,6 @@ class JSONPathMatch:
         filter_context: FilterContextVars,
         obj: object,
         parent: Optional[JSONPathMatch],
-        path: str,
         parts: Tuple[PathPart, ...],
         root: Union[Sequence[Any], Mapping[str, Any]],
     ) -> None:
@@ -58,11 +56,15 @@ class JSONPathMatch:
         self.obj: object = obj
         self.parent: Optional[JSONPathMatch] = parent
         self.parts: Tuple[PathPart, ...] = parts
-        self.path: str = path
         self.root: Union[Sequence[Any], Mapping[str, Any]] = root
 
     def __str__(self) -> str:
         return f"{_truncate(str(self.obj), 5)!r} @ {_truncate(self.path, 5)}"
+
+    @property
+    def path(self) -> str:
+        """The canonical string representation of the path to this match."""
+        return "$" + "".join((_path_repr(p) for p in self.parts))
 
     def add_child(self, *children: JSONPathMatch) -> None:
         """Append one or more children to this match."""
@@ -84,6 +86,14 @@ def _truncate(val: str, num: int, end: str = "...") -> str:
     if len(words) < num:
         return " ".join(words)
     return " ".join(words[:num]) + end
+
+
+def _path_repr(part: Union[str, int]) -> str:
+    if isinstance(part, str):
+        if len(part) > 1 and part.startswith(("#", "~")):
+            return f"[{part}]"
+        return f"['{part}']"
+    return f"[{part}]"
 
 
 class NodeList(List[JSONPathMatch]):

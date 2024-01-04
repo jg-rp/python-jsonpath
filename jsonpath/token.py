@@ -1,6 +1,10 @@
 """JSONPath tokens."""
 import sys
+from typing import Iterable
+from typing import Iterator
 from typing import Tuple
+
+from .exceptions import JSONPathSyntaxError
 
 # Utility tokens
 TOKEN_EOF = sys.intern("EOF")
@@ -119,3 +123,77 @@ class Token:
         line_number = self.value.count("\n", 0, self.index) + 1
         column_number = self.index - self.value.rfind("\n", 0, self.index)
         return (line_number, column_number - 1)
+
+
+class TokenStream:
+    """Step through a stream of tokens."""
+
+    eof = Token(TOKEN_EOF, "", -1, "")
+
+    __slots__ = ("tokens", "pos")
+
+    def __init__(self, token_iter: Iterable[Token]):
+        self.tokens = tuple(token_iter)
+        self.pos = 0
+
+    def __iter__(self) -> Iterator[Token]:
+        return iter(self.tokens)
+
+    @property
+    def current(self) -> Token:
+        """The current token in the stream.
+
+        Returns EOF if we're at the end of the stream.
+        """
+        try:
+            return self.tokens[self.pos]
+        except IndexError:
+            return self.eof
+
+    @property
+    def peek(self) -> Token:
+        """The next token in the stream.
+
+        Returns EOF if we're at or one away from the end of the stream.
+        """
+        try:
+            return self.tokens[self.pos + 1]
+        except IndexError:
+            return self.eof
+
+    def __next__(self) -> Token:
+        self.pos += 1
+        return self.tokens[self.pos - 1]
+
+    def next_token(self) -> Token:
+        """Return the current token ans advance the stream."""
+        return next(self)
+
+    def backup(self) -> None:
+        """Go back one token in the stream."""
+        if self.pos > 0:
+            self.pos -= 1
+
+    def expect(self, *typ: str) -> None:
+        """Raise an exception if the current token's type is not in _typ_."""
+        if self.current.kind not in typ:
+            if len(typ) == 1:
+                _typ = repr(typ[0])
+            else:
+                _typ = f"one of {typ!r}"
+            raise JSONPathSyntaxError(
+                f"expected {_typ}, found {self.current.kind!r}",
+                token=self.current,
+            )
+
+    def expect_peek(self, *typ: str) -> None:
+        """Raise an exception if the next token's type is not in _typ_."""
+        if self.peek.kind not in typ:
+            if len(typ) == 1:
+                _typ = repr(typ[0])
+            else:
+                _typ = f"one of {typ!r}"
+            raise JSONPathSyntaxError(
+                f"expected {_typ}, found {self.peek.kind!r}",
+                token=self.peek,
+            )

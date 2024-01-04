@@ -124,7 +124,6 @@ class JSONPath:
                 filter_context=filter_context or {},
                 obj=_data,
                 parent=None,
-                path=self.env.root_token,
                 parts=(),
                 root=_data,
             )
@@ -163,7 +162,6 @@ class JSONPath:
                 filter_context=filter_context or {},
                 obj=_data,
                 parent=None,
-                path=self.env.root_token,
                 parts=(),
                 root=_data,
             )
