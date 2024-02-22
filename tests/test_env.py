@@ -5,6 +5,7 @@ from typing import List
 import pytest
 
 from jsonpath import JSONPathEnvironment
+from jsonpath import JSONPathSyntaxError
 from jsonpath import JSONPathTypeError
 
 
@@ -171,6 +172,41 @@ def test_custom_keys_selector_token() -> None:
     data = {"foo": {"a": 1, "b": 2, "c": 3}}
     assert env.findall("$.foo.*~", data) == ["a", "b", "c"]
     assert env.findall("$.foo.*", data) == [1, 2, 3]
+
+
+def test_custom_fake_root_identifier_token() -> None:
+    """Test that we can change the non-standard fake root identifier."""
+
+    class MyJSONPathEnvironment(JSONPathEnvironment):
+        fake_root_token = "$$"
+
+    env = MyJSONPathEnvironment()
+    data = {"foo": {"a": 1, "b": 2, "c": 3}}
+    assert env.findall("$$[?@.foo.a == 1]", data) == [data]
+    assert env.findall("$$[?@.foo.a == 7]", data) == []
+    assert env.findall("$.*", data) == [{"a": 1, "b": 2, "c": 3}]
+
+
+def test_disable_fake_root_identifier() -> None:
+    """Test that we can disable the non-standard fake root identifier."""
+
+    class MyJSONPathEnvironment(JSONPathEnvironment):
+        fake_root_token = ""
+
+    env = MyJSONPathEnvironment()
+    with pytest.raises(JSONPathSyntaxError):
+        env.compile("^[?@.a == 42]")
+
+
+def test_disable_keys_selector() -> None:
+    """Test that we can disable the non-standard keys selector."""
+
+    class MyJSONPathEnvironment(JSONPathEnvironment):
+        keys_selector_token = ""
+
+    env = MyJSONPathEnvironment()
+    with pytest.raises(JSONPathSyntaxError):
+        env.compile("*..~")
 
 
 def test_disable_well_typed_checks() -> None:

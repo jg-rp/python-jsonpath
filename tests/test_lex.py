@@ -12,6 +12,7 @@ from jsonpath.token import TOKEN_COMMA
 from jsonpath.token import TOKEN_DDOT
 from jsonpath.token import TOKEN_DOUBLE_QUOTE_STRING
 from jsonpath.token import TOKEN_EQ
+from jsonpath.token import TOKEN_FAKE_ROOT
 from jsonpath.token import TOKEN_FALSE
 from jsonpath.token import TOKEN_FILTER
 from jsonpath.token import TOKEN_FLOAT
@@ -61,12 +62,28 @@ TEST_CASES = [
         ],
     ),
     Case(
+        description="just fake root",
+        path="^",
+        want=[
+            Token(kind=TOKEN_FAKE_ROOT, value="^", index=0, path="^"),
+        ],
+    ),
+    Case(
         description="root dot property",
         path="$.some.thing",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.some.thing"),
             Token(kind=TOKEN_PROPERTY, value="some", index=2, path="$.some.thing"),
             Token(kind=TOKEN_PROPERTY, value="thing", index=7, path="$.some.thing"),
+        ],
+    ),
+    Case(
+        description="fake root dot property",
+        path="^.some.thing",
+        want=[
+            Token(kind=TOKEN_FAKE_ROOT, value="^", index=0, path="^.some.thing"),
+            Token(kind=TOKEN_PROPERTY, value="some", index=2, path="^.some.thing"),
+            Token(kind=TOKEN_PROPERTY, value="thing", index=7, path="^.some.thing"),
         ],
     ),
     Case(
@@ -1374,4 +1391,4 @@ def test_default_lexer(env: JSONPathEnvironment, case: Case) -> None:
 
 def test_illegal_token(env: JSONPathEnvironment) -> None:
     with pytest.raises(JSONPathSyntaxError):
-        list(env.lexer.tokenize("^"))
+        list(env.lexer.tokenize("%"))
