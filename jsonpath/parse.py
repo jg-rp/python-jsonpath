@@ -53,6 +53,7 @@ from .token import TOKEN_DDOT
 from .token import TOKEN_DOUBLE_QUOTE_STRING
 from .token import TOKEN_EOF
 from .token import TOKEN_EQ
+from .token import TOKEN_FAKE_ROOT
 from .token import TOKEN_FALSE
 from .token import TOKEN_FILTER
 from .token import TOKEN_FILTER_CONTEXT
@@ -213,8 +214,12 @@ class Parser:
         self.env = env
 
         self.token_map: Dict[str, Callable[[TokenStream], FilterExpression]] = {
+            TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
+            TOKEN_FAKE_ROOT: self.parse_root_path,
             TOKEN_FALSE: self.parse_boolean,
+            TOKEN_FILTER_CONTEXT: self.parse_filter_context_path,
             TOKEN_FLOAT: self.parse_float_literal,
+            TOKEN_FUNCTION: self.parse_function_extension,
             TOKEN_INT: self.parse_integer_literal,
             TOKEN_KEY: self.parse_current_key,
             TOKEN_LIST_START: self.parse_list_literal,
@@ -227,12 +232,9 @@ class Parser:
             TOKEN_RE_PATTERN: self.parse_regex,
             TOKEN_ROOT: self.parse_root_path,
             TOKEN_SELF: self.parse_self_path,
-            TOKEN_FILTER_CONTEXT: self.parse_filter_context_path,
-            TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
             TOKEN_UNDEFINED: self.parse_undefined,
-            TOKEN_FUNCTION: self.parse_function_extension,
         }
 
         self.list_item_map: Dict[str, Callable[[TokenStream], FilterExpression]] = {
@@ -250,25 +252,26 @@ class Parser:
         self.function_argument_map: Dict[
             str, Callable[[TokenStream], FilterExpression]
         ] = {
+            TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
+            TOKEN_FAKE_ROOT: self.parse_root_path,
             TOKEN_FALSE: self.parse_boolean,
+            TOKEN_FILTER_CONTEXT: self.parse_filter_context_path,
             TOKEN_FLOAT: self.parse_float_literal,
+            TOKEN_FUNCTION: self.parse_function_extension,
             TOKEN_INT: self.parse_integer_literal,
             TOKEN_KEY: self.parse_current_key,
             TOKEN_NIL: self.parse_nil,
             TOKEN_NONE: self.parse_nil,
             TOKEN_NULL: self.parse_nil,
-            TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
-            TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
-            TOKEN_TRUE: self.parse_boolean,
             TOKEN_ROOT: self.parse_root_path,
             TOKEN_SELF: self.parse_self_path,
-            TOKEN_FILTER_CONTEXT: self.parse_filter_context_path,
-            TOKEN_FUNCTION: self.parse_function_extension,
+            TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
+            TOKEN_TRUE: self.parse_boolean,
         }
 
     def parse(self, stream: TokenStream) -> Iterable[JSONPathSelector]:
         """Parse a JSONPath from a stream of tokens."""
-        if stream.current.kind == TOKEN_ROOT:
+        if stream.current.kind in {TOKEN_ROOT, TOKEN_FAKE_ROOT}:
             stream.next_token()
         yield from self.parse_path(stream, in_filter=False)
 
@@ -533,9 +536,14 @@ class Parser:
         return expr
 
     def parse_root_path(self, stream: TokenStream) -> FilterExpression:
-        stream.next_token()
+        root = stream.next_token()
+        assert root.kind in {TOKEN_ROOT, TOKEN_FAKE_ROOT}  # XXX:
         return RootPath(
-            JSONPath(env=self.env, selectors=self.parse_path(stream, in_filter=True))
+            JSONPath(
+                env=self.env,
+                selectors=self.parse_path(stream, in_filter=True),
+                fake_root=root.kind == TOKEN_FAKE_ROOT,
+            )
         )
 
     def parse_self_path(self, stream: TokenStream) -> FilterExpression:

@@ -162,6 +162,16 @@ Filter expressions can call predefined [function extensions](functions.md) too.
 $.categories[?count(@.products.*) >= 2]
 ```
 
+### Fake root (`^`)
+
+**_New in version 0.11.0_**
+
+This non-standard "fake root" identifier behaves like the standard root identifier (`$`), but wraps the target JSON document in a single-element array, so as to make it selectable with a filter selector.
+
+```text
+^[?length(categories) > 0]
+```
+
 ### Union (`|`) and intersection (`&`)
 
 Union (`|`) and intersection (`&`) are similar to Python's set operations, but we don't dedupe the matches (matches will often contain unhashable objects).
@@ -209,3 +219,4 @@ And this is a list of features that are uncommon or unique to Python JSONPath.
 - `#` is the current key/property or index identifier when filtering a mapping or sequence.
 - `_` is a filter context selector. With usage similar to `$` and `@`, `_` exposes arbitrary data from the `filter_context` argument to `findall()` and `finditer()`.
 - `~` is a "keys" or "properties" selector.
+- `^` is a "fake root" identifier. It is equivalent to `$`, but wraps the target JSON document in a single-element array, so the root value can be conditionally selected with a filter selector.

@@ -38,6 +38,7 @@ from .path import CompoundJSONPath
 from .path import JSONPath
 from .stream import TokenStream
 from .token import TOKEN_EOF
+from .token import TOKEN_FAKE_ROOT
 from .token import TOKEN_INTERSECTION
 from .token import TOKEN_UNION
 from .token import Token
@@ -89,6 +90,8 @@ class JSONPathEnvironment:
             **New in version 0.10.0**
 
     Attributes:
+        fake_root_token (str): The pattern used to select a "fake" root node, one level
+            above the real root node.
         filter_context_token (str): The pattern used to select extra filter context
             data. Defaults to `"_"`.
         intersection_token (str): The pattern used as the intersection operator.
@@ -112,6 +115,7 @@ class JSONPathEnvironment:
 
     # These should be unescaped strings. `re.escape` will be called
     # on them automatically when compiling lexer rules.
+    fake_root_token = "^"
     filter_context_token = "_"
     intersection_token = "&"
     key_token = "#"
@@ -174,8 +178,9 @@ class JSONPathEnvironment:
         """
         tokens = self.lexer.tokenize(path)
         stream = TokenStream(tokens)
+        fake_root = stream.current.kind == TOKEN_FAKE_ROOT
         _path: Union[JSONPath, CompoundJSONPath] = JSONPath(
-            env=self, selectors=self.parser.parse(stream)
+            env=self, selectors=self.parser.parse(stream), fake_root=fake_root
         )
 
         if stream.current.kind != TOKEN_EOF:
@@ -190,18 +195,22 @@ class JSONPathEnvironment:
 
                 if stream.current.kind == TOKEN_UNION:
                     stream.next_token()
+                    fake_root = stream.current.kind == TOKEN_FAKE_ROOT
                     _path = _path.union(
                         JSONPath(
                             env=self,
                             selectors=self.parser.parse(stream),
+                            fake_root=fake_root,
                         )
                     )
                 elif stream.current.kind == TOKEN_INTERSECTION:
                     stream.next_token()
+                    fake_root = stream.current.kind == TOKEN_FAKE_ROOT
                     _path = _path.intersection(
                         JSONPath(
                             env=self,
                             selectors=self.parser.parse(stream),
+                            fake_root=fake_root,
                         )
                     )
                 else:  # pragma: no cover

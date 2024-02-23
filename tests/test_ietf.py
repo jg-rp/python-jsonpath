@@ -173,7 +173,7 @@ TEST_CASES = [
     ),
     Case(
         description="filter selector - Nested filters",
-        path="$[?(@[?(@.b)])]	",
+        path="$[?(@[?(@.b)])]",
         data=FILTER_SELECTOR_DATA,
         want=[[3, 5, 1, 2, 4, 6, {"b": "j"}, {"b": "k"}, {"b": {}}, {"b": "kilo"}]],
     ),

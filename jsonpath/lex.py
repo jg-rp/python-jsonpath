@@ -16,6 +16,7 @@ from .token import TOKEN_DDOT
 from .token import TOKEN_DOT_PROPERTY
 from .token import TOKEN_DOUBLE_QUOTE_STRING
 from .token import TOKEN_EQ
+from .token import TOKEN_FAKE_ROOT
 from .token import TOKEN_FALSE
 from .token import TOKEN_FILTER
 from .token import TOKEN_FILTER_CONTEXT
@@ -119,6 +120,17 @@ class Lexer:
 
     def compile_rules(self) -> Pattern[str]:
         """Prepare regular expression rules."""
+        env_tokens = [
+            (TOKEN_ROOT, self.env.root_token),
+            (TOKEN_FAKE_ROOT, self.env.fake_root_token),
+            (TOKEN_SELF, self.env.self_token),
+            (TOKEN_KEY, self.env.key_token),
+            (TOKEN_UNION, self.env.union_token),
+            (TOKEN_INTERSECTION, self.env.intersection_token),
+            (TOKEN_FILTER_CONTEXT, self.env.filter_context_token),
+            (TOKEN_KEYS, self.env.keys_selector_token),
+        ]
+
         rules = [
             (TOKEN_DOUBLE_QUOTE_STRING, self.double_quote_pattern),
             (TOKEN_SINGLE_QUOTE_STRING, self.single_quote_pattern),
@@ -131,13 +143,13 @@ class Lexer:
             (TOKEN_DDOT, r"\.\."),
             (TOKEN_AND, self.logical_and_pattern),
             (TOKEN_OR, self.logical_or_pattern),
-            (TOKEN_ROOT, re.escape(self.env.root_token)),
-            (TOKEN_SELF, re.escape(self.env.self_token)),
-            (TOKEN_KEY, re.escape(self.env.key_token)),
-            (TOKEN_UNION, re.escape(self.env.union_token)),
-            (TOKEN_INTERSECTION, re.escape(self.env.intersection_token)),
-            (TOKEN_FILTER_CONTEXT, re.escape(self.env.filter_context_token)),
-            (TOKEN_KEYS, re.escape(self.env.keys_selector_token)),
+            *[
+                (token, re.escape(pattern))
+                for token, pattern in sorted(
+                    env_tokens, key=lambda x: len(x[1]), reverse=True
+                )
+                if pattern
+            ],
             (TOKEN_WILD, r"\*"),
             (TOKEN_FILTER, r"\?"),
             (TOKEN_IN, r"in"),

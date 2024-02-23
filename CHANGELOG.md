@@ -1,5 +1,16 @@
 # Python JSONPath Change Log
 
+## Version 0.11.0 (unreleased)
+
+**Fixes**
+
+- The lexer now sorts environment-controlled tokens by their length in descending order. This allows one custom token to be a prefix of another.
+
+**Features**
+
+- Added the non-standard "fake root" identifier, which defaults to `^` and can be customized with the `fake_root_token` attribute on a `JSONPathEnvironment` subclass. Using the fake root identifier is equivalent to the standard root identifier (`$`), but wraps the target JSON value in an array, so the root value can be conditionally selected using a filter.
+- Non-standard environment-controlled tokens can now be disabled by setting them to the empty string.
+
 ## Version 0.10.3
 
 **Changes**

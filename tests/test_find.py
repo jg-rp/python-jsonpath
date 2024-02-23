@@ -57,6 +57,24 @@ TEST_CASES = [
         },
         want=[{"foo": 1}, {"foo": 2}],
     ),
+    Case(
+        description="select root value using fake root",
+        path="^[?@some.thing > 7]",
+        data={"some": {"thing": 42}},
+        want=[{"some": {"thing": 42}}],
+    ),
+    Case(
+        description="fake root in a filter query",
+        path="^[?@some.thing > value(^.*.num)]",
+        data={"some": {"thing": 42}, "num": 7},
+        want=[{"some": {"thing": 42}, "num": 7}],
+    ),
+    Case(
+        description="recurse object keys",
+        path="$..~",
+        data={"some": {"thing": "else", "foo": {"bar": "baz"}}},
+        want=["some", "thing", "foo", "bar"],
+    ),
 ]
 
 
