@@ -352,8 +352,8 @@ class JSONPathEnvironment:
     ) -> List[Any]:
         """Compile-time validation of function extension arguments.
 
-        The IETF JSONPath draft requires us to reject paths that use filter
-        functions with too many or too few arguments.
+        RFC 9535 requires us to reject paths that use filter functions with
+        too many or too few arguments.
         """
         try:
             func = self.function_extensions[token.value]
@@ -452,10 +452,10 @@ class JSONPathEnvironment:
     def is_truthy(self, obj: object) -> bool:
         """Test for truthiness when evaluating JSONPath filter expressions.
 
-        In some cases, the IETF JSONPath draft requires us to test for
-        existence rather than truthiness. So the default implementation returns
-        `True` for empty collections and `None`. The special `UNDEFINED` object
-        means that _obj_ was missing, as opposed to an explicit `None`.
+        In some cases, RFC 9535 requires us to test for existence rather than
+        truthiness. So the default implementation returns `True` for empty
+        collections and `None`. The special `UNDEFINED` object means that
+        _obj_ was missing, as opposed to an explicit `None`.
 
         Arguments:
             obj: Any object.

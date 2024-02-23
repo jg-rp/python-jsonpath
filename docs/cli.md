@@ -189,7 +189,7 @@ $ json path -q "$.price_cap" -f /tmp/source.json --output result.json
 
 _New in version 0.10.0_
 
-Disables JSONPath filter expression well-typedness checks. The well-typedness of a filter expression is defined by the IETF JSONPath Draft specification.
+Disables JSONPath filter expression well-typedness checks. The well-typedness of a filter expression is defined by RFC 9535.
 
 ### `pointer`
 

@@ -1,6 +1,6 @@
 # JSONPath Syntax
 
-Python JSONPath's default syntax is an opinionated combination of JSONPath features from existing, popular implementations, and much of the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-11). If you're already familiar with JSONPath syntax, skip to [notable differences](#notable-differences).
+Python JSONPath's default syntax is an opinionated combination of JSONPath features from existing, popular implementations and [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535). If you're already familiar with JSONPath syntax, skip to [notable differences](#notable-differences).
 
 Imagine a JSON document as a tree structure, where each object (mapping) and array can contain more objects, arrays and scalar values. Every object, array and scalar value is a node in the tree, and the outermost object or array is the "root" node.
 
@@ -201,10 +201,9 @@ This is a list of things that you might find in other JSONPath implementation th
 - Python JSONPath is strictly read only. There are no update "selectors", but we do provide methods for converting `JSONPathMatch` instances to `JSONPointer`s, and a `JSONPatch` builder API for modifying JSON-like data structures using said pointers.
 - We don't attempt to handle JSON documents without a top-level array or object (or equivalent Python objects).
 
-And this is a list of areas where we deviate from the [IETF JSONPath draft](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-13).
+And this is a list of areas where we deviate from [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535).
 
 - The root token (default `$`) is optional and paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.
-- Whitespace is mostly insignificant unless inside quotes.
 - The built-in `match()` and `search()` filter functions use Python's standard library `re` module, which, at least, doesn't support Unicode properties. We might add an implementation of `match()` and `search()` using the third party [regex](https://pypi.org/project/regex/) package in the future.
 - We don't require property names to be quoted inside a bracketed selection, unless the name contains reserved characters.
 - We don't require the recursive descent segment to have a selector. `$..` is equivalent to `$..*`.

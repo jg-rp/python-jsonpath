@@ -43,7 +43,7 @@ Add, remove or replace [filter functions](functions.md) by updating the [`functi
 
 ### Type System for Function Expressions
 
-[Section 2.4.1](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-21#section-2.4.1) of the IETF JSONPath Draft specification defines a type system for function expressions and requires that we check that filter expressions are well-typed. With that in mind, you are encouraged to implement custom filter functions by extending [`jsonpath.function_extensions.FilterFunction`](api.md#jsonpath.function_extensions.FilterFunction), which forces you to be explicit about the [types](api.md#jsonpath.function_extensions.ExpressionType) of arguments the function extension accepts and the type of its return value.
+[Section 2.4.1](https://datatracker.ietf.org/doc/html/rfc9535#name-type-system-for-function-ex) of RFC 9535 defines a type system for function expressions and requires that we check that filter expressions are well-typed. With that in mind, you are encouraged to implement custom filter functions by extending [`jsonpath.function_extensions.FilterFunction`](api.md#jsonpath.function_extensions.FilterFunction), which forces you to be explicit about the [types](api.md#jsonpath.function_extensions.ExpressionType) of arguments the function extension accepts and the type of its return value.
 
 !!! info
 

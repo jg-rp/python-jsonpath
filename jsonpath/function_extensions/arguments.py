@@ -20,8 +20,8 @@ def validate(
 ) -> List[Any]:
     """Generic validation of function extension arguments using introspection.
 
-    The IETF JSONPath draft requires us to reject paths that use filter
-    functions with too many or too few arguments.
+    RFC 9535 requires us to reject paths that use filter functions with too
+    many or too few arguments.
     """
     params = list(inspect.signature(func).parameters.values())
 
