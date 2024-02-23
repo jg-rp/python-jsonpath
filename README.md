@@ -1,7 +1,7 @@
 <h1 align="center">Python JSONPath</h1>
 
 <p align="center">
-A flexible JSONPath engine for Python with JSON Pointer and JSON Patch.
+A flexible JSONPath engine for Python.
 <br>
 We follow <a href="https://datatracker.ietf.org/doc/html/rfc9535">RFC 9535</a> and test against the <a href="https://github.com/jsonpath-standard/jsonpath-compliance-test-suite">JSONPath Compliance Test Suite</a>.
 </p>
@@ -38,19 +38,19 @@ We follow <a href="https://datatracker.ietf.org/doc/html/rfc9535">RFC 9535</a> a
 
 Install Python JSONPath using [pip](https://pip.pypa.io/en/stable/getting-started/):
 
-```console
+```
 pip install python-jsonpath
 ```
 
 Or [Pipenv](https://pipenv.pypa.io/en/latest/):
 
-```console
+```
 pipenv install -u python-jsonpath
 ```
 
 Or from [conda-forge](https://anaconda.org/conda-forge/python-jsonpath):
 
-```console
+```
 conda install -c conda-forge python-jsonpath
 ```
 

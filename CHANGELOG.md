@@ -1,6 +1,12 @@
 # Python JSONPath Change Log
 
-## Version 0.11.0 (unreleased)
+## Version 1.0.0
+
+[RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535) (JSONPath: Query Expressions for JSON) is now out, replacing the [draft IETF JSONPath base](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-21).
+
+**Breaking Changes**
+
+- The undocumented `keys` function extension is no longer enabled by default. A new, well-typed `keys` function is planned for the future.
 
 **Fixes**
 
@@ -13,7 +19,7 @@
 
 ## Version 0.10.3
 
-**Changes**
+**Breaking Changes**
 
 - Changed the exception raised when attempting to compare a non-singular filter query from `JSONPathSyntaxError` to `JSONPathTypeError`.
 

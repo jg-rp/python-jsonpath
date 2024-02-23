@@ -336,7 +336,6 @@ class JSONPathEnvironment:
 
     def setup_function_extensions(self) -> None:
         """Initialize function extensions."""
-        self.function_extensions["keys"] = function_extensions.keys
         self.function_extensions["length"] = function_extensions.Length()
         self.function_extensions["count"] = function_extensions.Count()
         self.function_extensions["match"] = function_extensions.Match()
