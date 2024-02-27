@@ -17,6 +17,7 @@ from .exceptions import RelativeJSONPointerError
 from .exceptions import RelativeJSONPointerIndexError
 from .exceptions import RelativeJSONPointerSyntaxError
 from .filter import UNDEFINED
+from .fluent_api import Query
 from .lex import Lexer
 from .match import JSONPathMatch
 from .parse import Parser
@@ -58,6 +59,7 @@ __all__ = (
     "RelativeJSONPointerSyntaxError",
     "resolve",
     "UNDEFINED",
+    "Query",
 )
 
 
@@ -69,3 +71,6 @@ findall_async = DEFAULT_ENV.findall_async
 finditer = DEFAULT_ENV.finditer
 finditer_async = DEFAULT_ENV.finditer_async
 match = DEFAULT_ENV.match
+first = DEFAULT_ENV.match
+query = DEFAULT_ENV.query
+find = DEFAULT_ENV.query

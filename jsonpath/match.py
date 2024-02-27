@@ -76,6 +76,11 @@ class JSONPathMatch:
         """Return a `JSONPointer` pointing to this match's path."""
         return JSONPointer.from_match(self)
 
+    @property
+    def value(self) -> object:
+        """Return the value associated with this match/node."""
+        return self.obj
+
 
 def _truncate(val: str, num: int, end: str = "...") -> str:
     # Replaces consecutive whitespace with a single newline.
