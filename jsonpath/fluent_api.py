@@ -123,3 +123,10 @@ class Query:
             return next(iter(self.tail(1)))
         except StopIteration:
             return None
+
+    def tee(self, n: int = 2) -> Tuple[Query, ...]:
+        """Return _n_ independent queries by teeing this query's match iterable.
+
+        It is not safe to use a `Query` instance after calling `tee()`.
+        """
+        return tuple(Query(it) for it in itertools.tee(self._it, n))
