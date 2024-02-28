@@ -31,10 +31,12 @@ from .pointer import resolve
 __all__ = (
     "compile",
     "CompoundJSONPath",
+    "find",
     "findall_async",
     "findall",
     "finditer_async",
     "finditer",
+    "first",
     "JSONPatch",
     "JSONPath",
     "JSONPathEnvironment",
@@ -53,13 +55,14 @@ __all__ = (
     "Lexer",
     "match",
     "Parser",
+    "query",
+    "Query",
     "RelativeJSONPointer",
     "RelativeJSONPointerError",
     "RelativeJSONPointerIndexError",
     "RelativeJSONPointerSyntaxError",
     "resolve",
     "UNDEFINED",
-    "Query",
 )
 
 
