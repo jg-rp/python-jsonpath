@@ -85,3 +85,95 @@ def test_query_drop() -> None:
     matches = list(it)
     assert len(matches) == 2  # noqa: PLR2004
     assert [m.obj for m in matches] == [2, 3]
+
+
+def test_query_limit() -> None:
+    """Test that we can limit the number of matches."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).limit(2)
+    matches = list(it)
+    assert len(matches) == 2  # noqa: PLR2004
+    assert [m.obj for m in matches] == [0, 1]
+
+
+def test_query_limit_zero() -> None:
+    """Test that we can call limit with zero."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).limit(0)
+    matches = list(it)
+    assert len(matches) == 0  # noqa: PLR2004
+    assert [m.obj for m in matches] == []
+
+
+def test_query_limit_more() -> None:
+    """Test that we can give limit a number greater than the number of matches."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).limit(5)
+    matches = list(it)
+    assert len(matches) == 4  # noqa: PLR2004
+    assert [m.obj for m in matches] == [0, 1, 2, 3]
+
+
+def test_query_limit_all() -> None:
+    """Test limit is number of matches."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).limit(4)
+    matches = list(it)
+    assert len(matches) == 4  # noqa: PLR2004
+    assert [m.obj for m in matches] == [0, 1, 2, 3]
+
+
+def test_query_limit_negative() -> None:
+    """Test that we get an exception if limit is negative."""
+    with pytest.raises(ValueError, match="can't take a negative number of matches"):
+        query("$.some.*", {"some": [0, 1, 2, 3]}).limit(-1)
+
+
+def test_query_take() -> None:
+    """Test that we can limit the number of matches with `take`."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).take(2)
+    matches = list(it)
+    assert len(matches) == 2  # noqa: PLR2004
+    assert [m.obj for m in matches] == [0, 1]
+
+
+def test_query_head() -> None:
+    """Test that we can limit the number of matches with `head`."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).head(2)
+    matches = list(it)
+    assert len(matches) == 2  # noqa: PLR2004
+    assert [m.obj for m in matches] == [0, 1]
+
+
+def test_query_tail() -> None:
+    """Test that we can get the last _n_ matches."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).tail(2)
+    matches = list(it)
+    assert len(matches) == 2  # noqa: PLR2004
+    assert [m.obj for m in matches] == [2, 3]
+
+
+def test_query_tail_zero() -> None:
+    """Test that we can call `tail` with zero."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).tail(0)
+    matches = list(it)
+    assert len(matches) == 0  # noqa: PLR2004
+    assert [m.obj for m in matches] == []
+
+
+def test_query_tail_all() -> None:
+    """Test tail is the same as the number of matches."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).tail(4)
+    matches = list(it)
+    assert len(matches) == 4  # noqa: PLR2004
+    assert [m.obj for m in matches] == [0, 1, 2, 3]
+
+
+def test_query_tail_more() -> None:
+    """Test tail is more than the number of matches."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).tail(5)
+    matches = list(it)
+    assert len(matches) == 4  # noqa: PLR2004
+    assert [m.obj for m in matches] == [0, 1, 2, 3]
+
+
+def test_query_tail_negative() -> None:
+    """Test that we get an exception if tail is given a negative integer."""
+    with pytest.raises(ValueError, match="can't select a negative number of matches"):
+        query("$.some.*", {"some": [0, 1, 2, 3]}).tail(-1)
