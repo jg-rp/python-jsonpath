@@ -11,6 +11,7 @@ from typing import Tuple
 
 if TYPE_CHECKING:
     from jsonpath import JSONPathMatch
+    from jsonpath import JSONPointer
 
 
 class Query:
@@ -123,14 +124,16 @@ class Query:
         return (m.obj for m in self._it)
 
     def locations(self) -> Iterable[str]:
-        """Return an iterable of normalized paths for each match."""
+        """Return an iterable of normalized paths, one for each match."""
         return (m.path for m in self._it)
 
     def items(self) -> Iterable[Tuple[str, object]]:
-        """Return an iterable of (object, normalized path) tuples for each match."""
+        """Return an iterable of (object, path) tuples, one for each match."""
         return ((m.path, m.obj) for m in self._it)
 
-    # TODO: def pointers
+    def pointers(self) -> Iterable[JSONPointer]:
+        """Return an iterable of JSONPointers, one for each match."""
+        return (m.pointer() for m in self._it)
 
     def first_one(self) -> Optional[JSONPathMatch]:
         """Return the first `JSONPathMatch` or `None` if there were no matches."""

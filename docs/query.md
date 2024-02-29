@@ -24,6 +24,23 @@ for value in values:
     # ...
 ```
 
+`Query` objects are iterable and can only be iterated once. Pass the query to `list()` (or other sequence) to get a list of results that can be iterated multiple times or otherwise manipulated.
+
+```python
+from jsonpath import query
+
+# data = ...
+
+values = list(
+    query("$.some[?@.thing]", data)
+    .skip(5)
+    .limit(10)
+    .values()
+)
+
+print(values[1])
+```
+
 ## Chainable methods
 
 The following `Query` methods all return `self` (the same `Query` instance), so method calls can be chained to further manipulate the underlying iterator.

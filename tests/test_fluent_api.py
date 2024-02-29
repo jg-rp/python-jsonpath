@@ -2,6 +2,7 @@
 import pytest
 
 from jsonpath import JSONPathMatch
+from jsonpath import JSONPointer
 from jsonpath import query
 
 
@@ -240,3 +241,10 @@ def test_query_tee() -> None:
     rv2 = it2.skip(2).one()
     assert rv2 is not None
     assert rv2.value == 2  # noqa: PLR2004
+
+
+def test_query_pointers() -> None:
+    """Test that we can get pointers from a query."""
+    pointers = list(query("$.some.*", {"some": [0, 1, 2, 3]}).pointers())
+    assert len(pointers) == 4  # noqa: PLR2004
+    assert pointers[0] == JSONPointer("/some/0")
