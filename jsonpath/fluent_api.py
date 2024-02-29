@@ -130,6 +130,8 @@ class Query:
         """Return an iterable of (object, normalized path) tuples for each match."""
         return ((m.path, m.obj) for m in self._it)
 
+    # TODO: def pointers
+
     def first_one(self) -> Optional[JSONPathMatch]:
         """Return the first `JSONPathMatch` or `None` if there were no matches."""
         try:
@@ -152,7 +154,7 @@ class Query:
             return None
 
     def tee(self, n: int = 2) -> Tuple[Query, ...]:
-        """Return _n_ independent queries by teeing this query's match iterable.
+        """Return _n_ independent queries by teeing this query's iterator.
 
         It is not safe to use a `Query` instance after calling `tee()`.
         """

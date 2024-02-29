@@ -74,6 +74,4 @@ findall_async = DEFAULT_ENV.findall_async
 finditer = DEFAULT_ENV.finditer
 finditer_async = DEFAULT_ENV.finditer_async
 match = DEFAULT_ENV.match
-first = DEFAULT_ENV.match
 query = DEFAULT_ENV.query
-find = DEFAULT_ENV.query
