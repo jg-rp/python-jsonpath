@@ -1,6 +1,7 @@
 """Test cases for the fluent API."""
 import pytest
 
+from jsonpath import JSONPathMatch
 from jsonpath import query
 
 
@@ -141,6 +142,14 @@ def test_query_head() -> None:
     assert [m.obj for m in matches] == [0, 1]
 
 
+def test_query_first() -> None:
+    """Test that we can limit the number of matches with `first`."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).first(2)
+    matches = list(it)
+    assert len(matches) == 2  # noqa: PLR2004
+    assert [m.obj for m in matches] == [0, 1]
+
+
 def test_query_tail() -> None:
     """Test that we can get the last _n_ matches."""
     it = query("$.some.*", {"some": [0, 1, 2, 3]}).tail(2)
@@ -177,3 +186,57 @@ def test_query_tail_negative() -> None:
     """Test that we get an exception if tail is given a negative integer."""
     with pytest.raises(ValueError, match="can't select a negative number of matches"):
         query("$.some.*", {"some": [0, 1, 2, 3]}).tail(-1)
+
+
+def test_query_last() -> None:
+    """Test that we can get the last _n_ matches with `last`."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]}).last(2)
+    matches = list(it)
+    assert len(matches) == 2  # noqa: PLR2004
+    assert [m.obj for m in matches] == [2, 3]
+
+
+def test_query_first_one() -> None:
+    """Test that we can get the first match from a query iterator."""
+    maybe_match = query("$.some.*", {"some": [0, 1, 2, 3]}).first_one()
+    assert isinstance(maybe_match, JSONPathMatch)
+    assert maybe_match.value == 0
+
+
+def test_query_first_one_of_empty_iterator() -> None:
+    """Test that `first_one` returns `None` if the iterator is empty."""
+    maybe_match = query("$.nosuchthing.*", {"some": [0, 1, 2, 3]}).first_one()
+    assert maybe_match is None
+
+
+def test_query_one() -> None:
+    """Test that we can get the first match from a query iterator with `one`."""
+    maybe_match = query("$.some.*", {"some": [0, 1, 2, 3]}).one()
+    assert isinstance(maybe_match, JSONPathMatch)
+    assert maybe_match.value == 0
+
+
+def test_query_last_one() -> None:
+    """Test that we can get the last match from a query iterator."""
+    maybe_match = query("$.some.*", {"some": [0, 1, 2, 3]}).last_one()
+    assert isinstance(maybe_match, JSONPathMatch)
+    assert maybe_match.value == 3  # noqa: PLR2004
+
+
+def test_query_last_of_empty_iterator() -> None:
+    """Test that `last_one` returns `None` if the iterator is empty."""
+    maybe_match = query("$.nosuchthing.*", {"some": [0, 1, 2, 3]}).last_one()
+    assert maybe_match is None
+
+
+def test_query_tee() -> None:
+    """Test that we can tee a query iterator."""
+    it1, it2 = query("$.some.*", {"some": [0, 1, 2, 3]}).tee()
+
+    rv1 = it1.skip(1).one()
+    assert rv1 is not None
+    assert rv1.value == 1
+
+    rv2 = it2.skip(2).one()
+    assert rv2 is not None
+    assert rv2.value == 2  # noqa: PLR2004

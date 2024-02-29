@@ -33,7 +33,7 @@ class Query:
         return self._it
 
     def take(self, n: int) -> Query:
-        """Limit the result set to at most _n_ matches.
+        """Limit the query iterator to at most _n_ matches.
 
         Raises:
             ValueError: If _n_ < 0.
@@ -45,7 +45,7 @@ class Query:
         return self
 
     def limit(self, n: int) -> Query:
-        """Limit the result set to at most _n_ matches.
+        """Limit the query iterator to at most _n_ matches.
 
         `limit()` is an alias of `take()`.
 
@@ -55,7 +55,7 @@ class Query:
         return self.take(n)
 
     def head(self, n: int) -> Query:
-        """Take the first _n_ matches.
+        """Limit the query iterator to at most the first _n_ matches.
 
         `head()` is an alias for `take()`.
 
@@ -64,8 +64,18 @@ class Query:
         """
         return self.take(n)
 
+    def first(self, n: int) -> Query:
+        """Limit the query iterator to at most the first _n_ matches.
+
+        `first()` is an alias for `take()`.
+
+        Raises:
+            ValueError: If _n_ < 0.
+        """
+        return self.take(n)
+
     def drop(self, n: int) -> Query:
-        """Skip up to _n_ matches from the result set.
+        """Skip up to _n_ matches from the query iterator.
 
         Raises:
             ValueError: If _n_ < 0.
@@ -79,7 +89,7 @@ class Query:
         return self
 
     def skip(self, n: int) -> Query:
-        """Skip up to _n_ matches from the result set.
+        """Skip up to _n_ matches from the query iterator.
 
         Raises:
             ValueError: If _n_ < 0.
@@ -87,7 +97,7 @@ class Query:
         return self.drop(n)
 
     def tail(self, n: int) -> Query:
-        """Drop matches up to the last _n_ matches.
+        """Drop matches up to the last _n_ matches from the iterator.
 
         Raises:
             ValueError: If _n_ < 0.
@@ -97,6 +107,16 @@ class Query:
 
         self._it = iter(collections.deque(self._it, maxlen=n))
         return self
+
+    def last(self, n: int) -> Query:
+        """Drop up to the last _n_ matches from the iterator.
+
+        `last()` is an alias for `tail()`.
+
+        Raises:
+            ValueError: If _n_ < 0.
+        """
+        return self.tail(n)
 
     def values(self) -> Iterable[object]:
         """Return an iterable of objects associated with each match."""
@@ -110,14 +130,21 @@ class Query:
         """Return an iterable of (object, normalized path) tuples for each match."""
         return ((m.path, m.obj) for m in self._it)
 
-    def first(self) -> Optional[JSONPathMatch]:
+    def first_one(self) -> Optional[JSONPathMatch]:
         """Return the first `JSONPathMatch` or `None` if there were no matches."""
         try:
             return next(self._it)
         except StopIteration:
             return None
 
-    def last(self) -> Optional[JSONPathMatch]:
+    def one(self) -> Optional[JSONPathMatch]:
+        """Return the first `JSONPathMatch` or `None` if there were no matches.
+
+        `one()` is an alias for `first_one()`.
+        """
+        return self.first_one()
+
+    def last_one(self) -> Optional[JSONPathMatch]:
         """Return the last `JSONPathMatch` or `None` if there were no matches."""
         try:
             return next(iter(self.tail(1)))
