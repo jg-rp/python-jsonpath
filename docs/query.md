@@ -45,11 +45,11 @@ print(values[1])
 
 The following `Query` methods all return `self` (the same `Query` instance), so method calls can be chained to further manipulate the underlying iterator.
 
-| Method          | Aliases                 | Description                                        |
-| --------------- | ----------------------- | -------------------------------------------------- |
-| `skip(n: int)`  | `drop`                  | Drop up to _n_ matches from the iterator.          |
-| `limit(n: int)` | `head`, `take`, `first` | Yield at most _n_ matches from the iterator.       |
-| `tail(n: int)`  | `last`                  | Drop matches from the iterator up to the last _n_. |
+| Method          | Aliases         | Description                                        |
+| --------------- | --------------- | -------------------------------------------------- |
+| `skip(n: int)`  | `drop`          | Drop up to _n_ matches from the iterator.          |
+| `limit(n: int)` | `head`, `first` | Yield at most _n_ matches from the iterator.       |
+| `tail(n: int)`  | `last`          | Drop matches from the iterator up to the last _n_. |
 
 ## Terminal methods
 
@@ -63,6 +63,22 @@ These are terminal methods of the `Query` class. They can not be chained.
 | `pointers()`  |         | Return an iterable of `JSONPointer` instances, one for each match in the iterable.          |
 | `first_one()` | `one`   | Return the first `JSONPathMatch`, or `None` if there were no matches.                       |
 | `last_one()`  |         | Return the last `JSONPathMatch`, or `None` if there were no matches.                        |
+
+## Take
+
+[`Query.take(self, n: int)`](api.md#jsonpath.Query.take) returns a new `Query` instance, iterating over the next _n_ matches. It leaves the existing query in a safe state, ready to resume iteration of remaining matches.
+
+```python
+from jsonpath import query
+
+it = query("$.some.*", {"some": [0, 1, 2, 3]})
+
+for match in it.take(2):
+    print(match.value)  # 0, 1
+
+for value in it.values():
+    print(value)  # 2, 3
+```
 
 ## Tee
 

@@ -123,16 +123,8 @@ def test_query_limit_all() -> None:
 
 def test_query_limit_negative() -> None:
     """Test that we get an exception if limit is negative."""
-    with pytest.raises(ValueError, match="can't take a negative number of matches"):
+    with pytest.raises(ValueError, match="can't limit by a negative number of matches"):
         query("$.some.*", {"some": [0, 1, 2, 3]}).limit(-1)
-
-
-def test_query_take() -> None:
-    """Test that we can limit the number of matches with `take`."""
-    it = query("$.some.*", {"some": [0, 1, 2, 3]}).take(2)
-    matches = list(it)
-    assert len(matches) == 2  # noqa: PLR2004
-    assert [m.obj for m in matches] == [0, 1]
 
 
 def test_query_head() -> None:
@@ -248,3 +240,12 @@ def test_query_pointers() -> None:
     pointers = list(query("$.some.*", {"some": [0, 1, 2, 3]}).pointers())
     assert len(pointers) == 4  # noqa: PLR2004
     assert pointers[0] == JSONPointer("/some/0")
+
+
+def test_query_take() -> None:
+    """Test that we can take matches from a query iterable."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]})
+    head = list(it.take(2).values())
+    assert len(head) == 2  # noqa: PLR2004
+    assert head == [0, 1]
+    assert list(it.values()) == [2, 3]

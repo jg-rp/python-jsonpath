@@ -6,6 +6,7 @@ import itertools
 from typing import TYPE_CHECKING
 from typing import Iterable
 from typing import Iterator
+from typing import List
 from typing import Optional
 from typing import Tuple
 
@@ -33,47 +34,37 @@ class Query:
     def __iter__(self) -> Iterator[JSONPathMatch]:
         return self._it
 
-    def take(self, n: int) -> Query:
+    def limit(self, n: int) -> Query:
         """Limit the query iterator to at most _n_ matches.
 
         Raises:
             ValueError: If _n_ < 0.
         """
         if n < 0:
-            raise ValueError("can't take a negative number of matches")
+            raise ValueError("can't limit by a negative number of matches")
 
         self._it = itertools.islice(self._it, n)
         return self
 
-    def limit(self, n: int) -> Query:
-        """Limit the query iterator to at most _n_ matches.
-
-        `limit()` is an alias of `take()`.
-
-        Raises:
-            ValueError: If _n_ < 0.
-        """
-        return self.take(n)
-
     def head(self, n: int) -> Query:
         """Limit the query iterator to at most the first _n_ matches.
 
-        `head()` is an alias for `take()`.
+        `head()` is an alias for `limit()`.
 
         Raises:
             ValueError: If _n_ < 0.
         """
-        return self.take(n)
+        return self.limit(n)
 
     def first(self, n: int) -> Query:
         """Limit the query iterator to at most the first _n_ matches.
 
-        `first()` is an alias for `take()`.
+        `first()` is an alias for `limit()`.
 
         Raises:
             ValueError: If _n_ < 0.
         """
-        return self.take(n)
+        return self.limit(n)
 
     def drop(self, n: int) -> Query:
         """Skip up to _n_ matches from the query iterator.
@@ -162,3 +153,10 @@ class Query:
         It is not safe to use a `Query` instance after calling `tee()`.
         """
         return tuple(Query(it) for it in itertools.tee(self._it, n))
+
+    def take(self, n: int) -> Query:
+        """Return a new query iterating over the next _n_ matches.
+
+        It is safe to continue using this query after calling take.
+        """
+        return Query(list(itertools.islice(self._it, n)))
