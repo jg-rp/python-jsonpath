@@ -249,3 +249,21 @@ def test_query_take() -> None:
     assert len(head) == 2  # noqa: PLR2004
     assert head == [0, 1]
     assert list(it.values()) == [2, 3]
+
+
+def test_query_take_all() -> None:
+    """Test that we can take all matches from a query iterable."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]})
+    head = list(it.take(4).values())
+    assert len(head) == 4  # noqa: PLR2004
+    assert head == [0, 1, 2, 3]
+    assert list(it.values()) == []
+
+
+def test_query_take_more() -> None:
+    """Test that we can take more matches than there are nodes."""
+    it = query("$.some.*", {"some": [0, 1, 2, 3]})
+    head = list(it.take(5).values())
+    assert len(head) == 4  # noqa: PLR2004
+    assert head == [0, 1, 2, 3]
+    assert list(it.values()) == []

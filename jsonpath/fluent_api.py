@@ -6,7 +6,6 @@ import itertools
 from typing import TYPE_CHECKING
 from typing import Iterable
 from typing import Iterator
-from typing import List
 from typing import Optional
 from typing import Tuple
 
