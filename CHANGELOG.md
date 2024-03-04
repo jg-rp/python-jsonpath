@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 1.1.0 (unreleased)
+
+**Features**
+
+- Added the "query API", a fluent, chainable API for manipulating `JSONPathMatch` iterators.
+
 ## Version 1.0.0
 
 [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535) (JSONPath: Query Expressions for JSON) is now out, replacing the [draft IETF JSONPath base](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-21).
