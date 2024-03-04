@@ -27,6 +27,7 @@ from .filter import FilterExpression
 from .filter import FunctionExtension
 from .filter import InfixExpression
 from .filter import Path
+from .fluent_api import Query
 from .function_extensions import ExpressionType
 from .function_extensions import FilterFunction
 from .function_extensions import validate
@@ -76,8 +77,6 @@ class JSONPathEnvironment:
     - Hook in to mapping and sequence item getting by overriding `getitem()`.
     - Change filter comparison operator behavior by overriding `compare()`.
 
-    ## Class attributes
-
     Arguments:
         filter_caching (bool): If `True`, filter expressions will be cached
             where possible.
@@ -88,6 +87,8 @@ class JSONPathEnvironment:
             well-typedness as compile time.
 
             **New in version 0.10.0**
+
+    ## Class attributes
 
     Attributes:
         fake_root_token (str): The pattern used to select a "fake" root node, one level
@@ -229,9 +230,9 @@ class JSONPathEnvironment:
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
-        """Find all objects in `data` matching the given JSONPath `path`.
+        """Find all objects in _data_ matching the JSONPath _path_.
 
-        If `data` is a string or a file-like objects, it will be loaded
+        If _data_ is a string or a file-like objects, it will be loaded
         using `json.loads()` and the default `JSONDecoder`.
 
         Arguments:
@@ -259,10 +260,10 @@ class JSONPathEnvironment:
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> Iterable[JSONPathMatch]:
-        """Generate `JSONPathMatch` objects for each match.
+        """Generate `JSONPathMatch` objects for each match of _path_ in _data_.
 
-        If `data` is a string or a file-like objects, it will be loaded
-        using `json.loads()` and the default `JSONDecoder`.
+        If _data_ is a string or a file-like objects, it will be loaded using
+        `json.loads()` and the default `JSONDecoder`.
 
         Arguments:
             path: The JSONPath as a string.
@@ -309,6 +310,50 @@ class JSONPathEnvironment:
                 an incompatible way.
         """
         return self.compile(path).match(data, filter_context=filter_context)
+
+    def query(
+        self,
+        path: str,
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        filter_context: Optional[FilterContextVars] = None,
+    ) -> Query:
+        """Return a `Query` object over matches found by applying _path_ to _data_.
+
+        `Query` objects are iterable.
+
+        ```
+        for match in jsonpath.query("$.foo..bar", data):
+            ...
+        ```
+
+        You can skip and limit results with `Query.skip()` and `Query.limit()`.
+
+        ```
+        matches = (
+            jsonpath.query("$.foo..bar", data)
+            .skip(5)
+            .limit(10)
+        )
+
+        for match in matches
+            ...
+        ```
+
+        `Query.tail()` will get the last _n_ results.
+
+        ```
+        for match in jsonpath.query("$.foo..bar", data).tail(5):
+            ...
+        ```
+
+        Get values for each match using `Query.values()`.
+
+        ```
+        for obj in jsonpath.query("$.foo..bar", data).limit(5).values():
+            ...
+        ```
+        """
+        return Query(self.finditer(path, data, filter_context=filter_context))
 
     async def findall_async(
         self,

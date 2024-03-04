@@ -11,6 +11,9 @@
 ::: jsonpath.CompoundJSONPath
     handler: python
 
+::: jsonpath.Query
+    handler: python
+
 ::: jsonpath.function_extensions.FilterFunction
     handler: python
 

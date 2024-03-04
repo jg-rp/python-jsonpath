@@ -294,7 +294,7 @@ print(data)  # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}
 
 ## What's Next?
 
-Read about user-defined filter functions at [Function Extensions](advanced.md#function-extensions), or see how to make extra data available to filters with [Extra Filter Context](advanced.md#extra-filter-context).
+Read about the [Query Iterators](query.md) API or [user-defined filter functions](advanced.md#function-extensions). Also see how to make extra data available to filters with [Extra Filter Context](advanced.md#extra-filter-context).
 
 `findall()`, `finditer()` and `compile()` are shortcuts that use the default[`JSONPathEnvironment`](api.md#jsonpath.JSONPathEnvironment). `jsonpath.findall(path, data)` is equivalent to:
 
