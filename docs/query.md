@@ -2,11 +2,11 @@
 
 **_New in version 1.1.0_**
 
-In addition to [`findall()`](api.md#jsonpath.JSONPathEnvironment.findall) and [`finditer()`](api.md#jsonpath.JSONPathEnvironment.finditer), covered in the [quick start guide](./quickstart.md), Python JSONPath offers a fluent _query_ iterator interface.
+In addition to [`findall()`](api.md#jsonpath.JSONPathEnvironment.findall) and [`finditer()`](api.md#jsonpath.JSONPathEnvironment.finditer), covered in the [quick start guide](./quickstart.md), Python JSONPath offers a fluent _query iterator_ interface.
 
-[`Query`](api.md#jsonpath.Query) objects provide chainable methods for manipulating a [`JSONPathMatch`](api.md#jsonpath.JSONPathMatch) iterator, just like you'd get from `finditer()`. Obtain a `Query` object using the package-level `query()` function or [`JSONPathEnvironment.query()`](api.md#jsonpath.JSONPathEnvironment.query).
+[`Query`](api.md#jsonpath.Query) objects provide chainable methods for manipulating a [`JSONPathMatch`](api.md#jsonpath.JSONPathMatch) iterator, like you'd get from `finditer()`. Obtain a `Query` object using the package-level `query()` function or [`JSONPathEnvironment.query()`](api.md#jsonpath.JSONPathEnvironment.query).
 
-This example uses the query API to skip the first five matches, limit the total number of matches to ten, and get the value associated with each match.
+This example uses the query API to skip the first five matches, limit the total number of matches to ten, then get the value associated with each match.
 
 ```python
 from jsonpath import query

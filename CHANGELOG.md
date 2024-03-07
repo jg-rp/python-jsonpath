@@ -1,15 +1,15 @@
 # Python JSONPath Change Log
 
-## Version 1.1.0 (unreleased)
+## Version 1.1.0
 
 **Fixes**
 
-- Fixed logical operator precedence in JSONPath filter expressions. Previously, logical _or_ (`||`) logical _and_ (`&&`) had equal precedence. Now `&&` binds more tightly than `||`, as per RFC 9535.
-- Fixed bracketed selector list evaluation order. Previously we were iterating nodes for every list item, now we exhaust all matches for the first item before moving on to the next item.
+- Fixed logical operator precedence in JSONPath filter expressions. Previously, logical _or_ (`||`) and logical _and_ (`&&`) had equal precedence. Now `&&` binds more tightly than `||`, as per RFC 9535.
+- Fixed JSONPath bracketed selector list evaluation order. Previously we were iterating nodes for every list item, now we exhaust all matches for the first item before moving on to the next item.
 
 **Features**
 
-- Added the "query API", a fluent, chainable API for manipulating `JSONPathMatch` iterators.
+- Added the "query API", a fluent, chainable interface for manipulating `JSONPathMatch` iterators ([docs](https://jg-rp.github.io/python-jsonpath/query/), [source](https://github.com/jg-rp/python-jsonpath/blob/7665105de1501a5b2172f63a88db6d08b2b1702d/jsonpath/fluent_api.py#L17)).
 
 ## Version 1.0.0
 
