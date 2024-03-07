@@ -209,6 +209,7 @@ And this is a list of areas where we deviate from [RFC 9535](https://datatracker
 - We don't require the recursive descent segment to have a selector. `$..` is equivalent to `$..*`.
 - We support explicit comparisons to `undefined` as well as implicit existence tests.
 - Float literals without a fractional digit are OK. `1.` is equivalent to `1.0`.
+- We treat literals (such as `true` and `false`) as valid "basic" expressions. So `$[?true || false]` does not raise a syntax error, which is and invalid query according to RFC 9535.
 
 And this is a list of features that are uncommon or unique to Python JSONPath.
 

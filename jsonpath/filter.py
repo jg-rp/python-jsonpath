@@ -1,4 +1,5 @@
 """Filter expression nodes."""
+
 from __future__ import annotations
 
 import copy

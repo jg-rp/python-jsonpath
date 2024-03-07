@@ -2,6 +2,11 @@
 
 ## Version 1.1.0 (unreleased)
 
+**Fixes**
+
+- Fixed logical operator precedence in JSONPath filter expressions. Previously, logical _or_ (`||`) logical _and_ (`&&`) had equal precedence. Now `&&` binds more tightly than `||`, as per RFC 9535.
+- Fixed bracketed selector list evaluation order. Previously we were iterating nodes for every list item, now we exhaust all matches for the first item before moving on to the next item.
+
 **Features**
 
 - Added the "query API", a fluent, chainable API for manipulating `JSONPathMatch` iterators.
