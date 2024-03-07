@@ -541,17 +541,17 @@ class ListSelector(JSONPathSelector):
         return hash((self.items, self.token))
 
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
-        _matches = list(matches)
-        for item in self.items:
-            yield from item.resolve(_matches)
+        for match_ in matches:
+            for item in self.items:
+                yield from item.resolve([match_])
 
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
     ) -> AsyncIterable[JSONPathMatch]:
-        _matches = [m async for m in matches]
-        for item in self.items:
-            async for match in item.resolve_async(_alist(_matches)):
-                yield match
+        async for match_ in matches:
+            for item in self.items:
+                async for m in item.resolve_async(_alist([match_])):
+                    yield m
 
 
 class Filter(JSONPathSelector):

@@ -1,4 +1,5 @@
 """The default JSONPath parser."""
+
 from __future__ import annotations
 
 import json
@@ -142,14 +143,15 @@ class Parser:
     """A JSONPath parser bound to a JSONPathEnvironment."""
 
     PRECEDENCE_LOWEST = 1
-    PRECEDENCE_LOGICALRIGHT = 3
-    PRECEDENCE_LOGICAL = 4
+    PRECEDENCE_LOGICALRIGHT = 2
+    PRECEDENCE_LOGICAL_OR = 3
+    PRECEDENCE_LOGICAL_AND = 4
     PRECEDENCE_RELATIONAL = 5
     PRECEDENCE_MEMBERSHIP = 6
     PRECEDENCE_PREFIX = 7
 
     PRECEDENCES = {
-        TOKEN_AND: PRECEDENCE_LOGICAL,
+        TOKEN_AND: PRECEDENCE_LOGICAL_AND,
         TOKEN_CONTAINS: PRECEDENCE_MEMBERSHIP,
         TOKEN_EQ: PRECEDENCE_RELATIONAL,
         TOKEN_GE: PRECEDENCE_RELATIONAL,
@@ -160,7 +162,7 @@ class Parser:
         TOKEN_LT: PRECEDENCE_RELATIONAL,
         TOKEN_NE: PRECEDENCE_RELATIONAL,
         TOKEN_NOT: PRECEDENCE_PREFIX,
-        TOKEN_OR: PRECEDENCE_LOGICAL,
+        TOKEN_OR: PRECEDENCE_LOGICAL_OR,
         TOKEN_RE: PRECEDENCE_RELATIONAL,
         TOKEN_RPAREN: PRECEDENCE_LOWEST,
     }
@@ -563,9 +565,9 @@ class Parser:
 
     def parse_regex(self, stream: TokenStream) -> FilterExpression:
         pattern = stream.current.value
+        flags = 0
         if stream.peek.kind == TOKEN_RE_FLAGS:
             stream.next_token()
-            flags = 0
             for flag in set(stream.current.value):
                 flags |= self.RE_FLAG_MAP[flag]
         return RegexLiteral(value=re.compile(pattern, flags))

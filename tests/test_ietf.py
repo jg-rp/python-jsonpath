@@ -279,7 +279,7 @@ TEST_CASES = [
         description=("descendant segment - Multiple segments"),
         path="$.a..[0, 1]",
         data={"o": {"j": 1, "k": 2}, "a": [5, 3, [{"j": 4}, {"k": 6}]]},
-        want=[5, {"j": 4}, 3, {"k": 6}],
+        want=[5, 3, {"j": 4}, {"k": 6}],
     ),
     Case(
         description=("null semantics - Object value"),
