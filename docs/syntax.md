@@ -220,3 +220,4 @@ And this is a list of features that are uncommon or unique to Python JSONPath.
 - `_` is a filter context selector. With usage similar to `$` and `@`, `_` exposes arbitrary data from the `filter_context` argument to `findall()` and `finditer()`.
 - `~` is a "keys" or "properties" selector.
 - `^` is a "fake root" identifier. It is equivalent to `$`, but wraps the target JSON document in a single-element array, so the root value can be conditionally selected with a filter selector.
+- `=~` is the the regex match operator, matching a value to a JavaScript-style regex literal.
