@@ -1,4 +1,4 @@
-"""JSONPath selector objects, as returned from `Parser.parse`."""
+"""JSONPath segments and selectors, as returned from `Parser.parse`."""
 from __future__ import annotations
 
 from abc import ABC
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 
 class JSONPathSelector(ABC):
-    """Base class for all JSONPath selectors."""
+    """Base class for all JSONPath segments and selectors."""
 
     __slots__ = ("env", "token")
 
@@ -38,7 +38,17 @@ class JSONPathSelector(ABC):
 
     @abstractmethod
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
-        """Expand matches from previous JSONPath selectors in to new matches."""
+        """Apply the segment/selector to each node in _matches_.
+
+        Arguments:
+            matches: Nodes matched by preceding segments/selectors. This is like
+                a lazy _NodeList_, as described in RFC 9535, but each match carries
+                more than the node's value and location.
+
+        Returns:
+            The `JSONPathMatch` instances created by applying this selector to each
+            preceding node.
+        """
 
     @abstractmethod
     def resolve_async(
@@ -48,7 +58,7 @@ class JSONPathSelector(ABC):
 
 
 class PropertySelector(JSONPathSelector):
-    """A JSONPath property."""
+    """A shorthand or bracketed property selector."""
 
     __slots__ = ("name", "shorthand")
 
@@ -115,7 +125,12 @@ class PropertySelector(JSONPathSelector):
 
 
 class IndexSelector(JSONPathSelector):
-    """Dotted and bracketed sequence access by index."""
+    """Select an element from an array by index.
+
+    Considering we don't require mapping (JSON object) keys/properties to
+    be quoted, and that we support mappings with numeric keys, we also check
+    to see if the "index" is a mapping key, which is non-standard.
+    """
 
     __slots__ = ("index", "_as_key")
 
@@ -213,7 +228,10 @@ class IndexSelector(JSONPathSelector):
 
 
 class KeysSelector(JSONPathSelector):
-    """Select an mapping's keys/properties."""
+    """Select mapping/object keys/properties.
+
+    NOTE: This is a non-standard selector.
+    """
 
     __slots__ = ("shorthand",)
 
@@ -354,7 +372,7 @@ class SliceSelector(JSONPathSelector):
 
 
 class WildSelector(JSONPathSelector):
-    """Wildcard expansion selector."""
+    """Select all items from a sequence/array or values from a mapping/object."""
 
     __slots__ = ("shorthand",)
 
@@ -433,7 +451,10 @@ class WildSelector(JSONPathSelector):
 
 
 class RecursiveDescentSelector(JSONPathSelector):
-    """A JSONPath selector that visits all objects recursively."""
+    """A JSONPath selector that visits all nodes recursively.
+
+    NOTE: Strictly this is a "segment", not a "selector".
+    """
 
     def __str__(self) -> str:
         return ".."
@@ -504,7 +525,10 @@ async def _alist(it: List[T]) -> AsyncIterable[T]:
 
 
 class ListSelector(JSONPathSelector):
-    """A JSONPath selector representing a list of properties, slices or indices."""
+    """A bracketed list of selectors, the results of which are concatenated together.
+
+    NOTE: Strictly this is a "segment", not a "selector".
+    """
 
     __slots__ = ("items",)
 
@@ -555,7 +579,7 @@ class ListSelector(JSONPathSelector):
 
 
 class Filter(JSONPathSelector):
-    """A filter selector."""
+    """Filter sequence/array items or mapping/object values with a filter expression."""
 
     __slots__ = ("expression", "cacheable_nodes")
 
@@ -713,7 +737,7 @@ class Filter(JSONPathSelector):
 
 
 class FilterContext:
-    """A filter expression context."""
+    """Contextual information and data for evaluating a filter expression."""
 
     __slots__ = (
         "current_key",

@@ -199,7 +199,6 @@ This is a list of things that you might find in other JSONPath implementation th
 - We do not support arithmetic in filter expression.
 - We don't allow dotted array indices. An array index must be surrounded by square brackets.
 - Python JSONPath is strictly read only. There are no update "selectors", but we do provide methods for converting `JSONPathMatch` instances to `JSONPointer`s, and a `JSONPatch` builder API for modifying JSON-like data structures using said pointers.
-- We don't attempt to handle JSON documents without a top-level array or object (or equivalent Python objects).
 
 And this is a list of areas where we deviate from [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535).
 
@@ -209,7 +208,10 @@ And this is a list of areas where we deviate from [RFC 9535](https://datatracker
 - We don't require the recursive descent segment to have a selector. `$..` is equivalent to `$..*`.
 - We support explicit comparisons to `undefined` as well as implicit existence tests.
 - Float literals without a fractional digit are OK. `1.` is equivalent to `1.0`.
-- We treat literals (such as `true` and `false`) as valid "basic" expressions. So `$[?true || false]` does not raise a syntax error, which is and invalid query according to RFC 9535.
+- We treat literals (such as `true` and `false`) as valid "basic" expressions. For example, `$[?true || false]`, without an existence test or comparison either side of logical _or_, does not raise a syntax error.
+- By default, `and` is equivalent to `&&` and `or` is equivalent to `||`.
+- `none` and `nil` are aliases for `null`.
+- `null` (and its aliases), `true` and `false` can start with an upper or lower case letter.
 
 And this is a list of features that are uncommon or unique to Python JSONPath.
 
@@ -217,6 +219,7 @@ And this is a list of features that are uncommon or unique to Python JSONPath.
 - `|` is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.
 - `&` is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.
 - `#` is the current key/property or index identifier when filtering a mapping or sequence.
-- `_` is a filter context selector. With usage similar to `$` and `@`, `_` exposes arbitrary data from the `filter_context` argument to `findall()` and `finditer()`.
+- `_` is a filter context identifier. With usage similar to `$` and `@`, `_` exposes arbitrary data from the `filter_context` argument to `findall()` and `finditer()`.
 - `~` is a "keys" or "properties" selector.
 - `^` is a "fake root" identifier. It is equivalent to `$`, but wraps the target JSON document in a single-element array, so the root value can be conditionally selected with a filter selector.
+- `=~` is the the regex match operator, matching a value to a JavaScript-style regex literal.
