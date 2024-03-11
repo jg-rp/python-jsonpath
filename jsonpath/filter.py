@@ -318,7 +318,7 @@ class PrefixExpression(FilterExpression):
 class InfixExpression(FilterExpression):
     """A pair of expressions and a comparison or logical operator."""
 
-    __slots__ = ("left", "operator", "right")
+    __slots__ = ("left", "operator", "right", "logical")
 
     def __init__(
         self,
@@ -329,10 +329,11 @@ class InfixExpression(FilterExpression):
         self.left = left
         self.operator = operator
         self.right = right
+        self.logical = operator in ("&&", "||")
         super().__init__()
 
     def __str__(self) -> str:
-        if self.operator in ("&&", "||"):
+        if self.logical:
             return f"({self.left} {self.operator} {self.right})"
         return f"{self.left} {self.operator} {self.right}"
 
@@ -346,22 +347,22 @@ class InfixExpression(FilterExpression):
 
     def evaluate(self, context: FilterContext) -> bool:
         left = self.left.evaluate(context)
-        if isinstance(left, NodeList) and len(left) == 1:
+        if not self.logical and isinstance(left, NodeList) and len(left) == 1:
             left = left[0].obj
 
         right = self.right.evaluate(context)
-        if isinstance(right, NodeList) and len(right) == 1:
+        if not self.logical and isinstance(right, NodeList) and len(right) == 1:
             right = right[0].obj
 
         return context.env.compare(left, self.operator, right)
 
     async def evaluate_async(self, context: FilterContext) -> bool:
         left = await self.left.evaluate_async(context)
-        if isinstance(left, NodeList) and len(left) == 1:
+        if not self.logical and isinstance(left, NodeList) and len(left) == 1:
             left = left[0].obj
 
         right = await self.right.evaluate_async(context)
-        if isinstance(right, NodeList) and len(right) == 1:
+        if not self.logical and isinstance(right, NodeList) and len(right) == 1:
             right = right[0].obj
 
         return context.env.compare(left, self.operator, right)
