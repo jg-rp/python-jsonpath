@@ -75,6 +75,18 @@ TEST_CASES = [
         data={"some": {"thing": "else", "foo": {"bar": "baz"}}},
         want=["some", "thing", "foo", "bar"],
     ),
+    Case(
+        description="logical expr existence tests",
+        path="$[?@.a && @.b]",
+        data=[{"a": True, "b": False}],
+        want=[{"a": True, "b": False}],
+    ),
+    Case(
+        description="logical expr existence tests, alternate and",
+        path="$[?@.a and @.b]",
+        data=[{"a": True, "b": False}],
+        want=[{"a": True, "b": False}],
+    ),
 ]
 
 
