@@ -1077,7 +1077,6 @@
 <li>We do not support arithmetic in filter expression.</li>
 <li>We don't allow dotted array indices. An array index must be surrounded by square brackets.</li>
 <li>Python JSONPath is strictly read only. There are no update "selectors", but we do provide methods for converting <code>JSONPathMatch</code> instances to <code>JSONPointer</code>s, and a <code>JSONPatch</code> builder API for modifying JSON-like data structures using said pointers.</li>
-<li>We don't attempt to handle JSON documents without a top-level array or object (or equivalent Python objects).</li>
 </ul>
 <p>And this is a list of areas where we deviate from <a href="https://datatracker.ietf.org/doc/html/rfc9535">RFC 9535</a>.</p>
 <ul>
@@ -1087,7 +1086,10 @@
 <li>We don't require the recursive descent segment to have a selector. <code>$..</code> is equivalent to <code>$..*</code>.</li>
 <li>We support explicit comparisons to <code>undefined</code> as well as implicit existence tests.</li>
 <li>Float literals without a fractional digit are OK. <code>1.</code> is equivalent to <code>1.0</code>.</li>
-<li>We treat literals (such as <code>true</code> and <code>false</code>) as valid "basic" expressions. So <code>$[?true || false]</code> does not raise a syntax error, which is and invalid query according to RFC 9535.</li>
+<li>We treat literals (such as <code>true</code> and <code>false</code>) as valid "basic" expressions. For example, <code>$[?true || false]</code>, without an existence test or comparison either side of logical <em>or</em>, does not raise a syntax error.</li>
+<li>By default, <code>and</code> is equivalent to <code>&amp;&amp;</code> and <code>or</code> is equivalent to <code>||</code>.</li>
+<li><code>none</code> and <code>nil</code> are aliases for <code>null</code>.</li>
+<li><code>null</code> (and its aliases), <code>true</code> and <code>false</code> can start with an upper or lower case letter.</li>
 </ul>
 <p>And this is a list of features that are uncommon or unique to Python JSONPath.</p>
 <ul>
@@ -1095,9 +1097,10 @@
 <li><code>|</code> is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.</li>
 <li><code>&amp;</code> is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.</li>
 <li><code>#</code> is the current key/property or index identifier when filtering a mapping or sequence.</li>
-<li><code>_</code> is a filter context selector. With usage similar to <code>$</code> and <code>@</code>, <code>_</code> exposes arbitrary data from the <code>filter_context</code> argument to <code>findall()</code> and <code>finditer()</code>.</li>
+<li><code>_</code> is a filter context identifier. With usage similar to <code>$</code> and <code>@</code>, <code>_</code> exposes arbitrary data from the <code>filter_context</code> argument to <code>findall()</code> and <code>finditer()</code>.</li>
 <li><code>~</code> is a "keys" or "properties" selector.</li>
 <li><code>^</code> is a "fake root" identifier. It is equivalent to <code>$</code>, but wraps the target JSON document in a single-element array, so the root value can be conditionally selected with a filter selector.</li>
+<li><code>=~</code> is the the regex match operator, matching a value to a JavaScript-style regex literal.</li>
 </ul>
 
 
