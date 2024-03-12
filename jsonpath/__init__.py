@@ -31,12 +31,10 @@ from .pointer import resolve
 __all__ = (
     "compile",
     "CompoundJSONPath",
-    "find",
     "findall_async",
     "findall",
     "finditer_async",
     "finditer",
-    "first",
     "JSONPatch",
     "JSONPath",
     "JSONPathEnvironment",

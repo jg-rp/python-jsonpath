@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 1.1.1
+
+**Fixes**
+
+- Fixed evaluation of JSONPath singular queries when they appear in a logical expression and without a comparison operator. Previously we were evaluating logical expressions with the value held by the single element node list, now we treat such filter queries as existence tests. See [#57](https://github.com/jg-rp/python-jsonpath/issues/57).
+
 ## Version 1.1.0
 
 **Fixes**
