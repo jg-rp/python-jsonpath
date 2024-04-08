@@ -668,6 +668,9 @@ class CurrentKey(FilterExpression):
         super().__init__()
         self.volatile = True
 
+    def __str__(self) -> str:
+        return "#"
+
     def __eq__(self, other: object) -> bool:
         return isinstance(other, CurrentKey)
 

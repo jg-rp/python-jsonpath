@@ -171,6 +171,11 @@ TEST_CASES = [
         want="$['some'][~]",
     ),
     Case(
+        description="current key identifier",
+        path="$[?# > 2]",
+        want="$[?# > 2]",
+    ),
+    Case(
         description="comparison to single quoted string literal with escape",
         path="$[?@.foo == 'ba\\'r']",
         want="$[?@['foo'] == \"ba'r\"]",
