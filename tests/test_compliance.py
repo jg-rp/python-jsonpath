@@ -3,6 +3,7 @@
 The CTS is a submodule located in /tests/cts. After a git clone, run
 `git submodule update --init` from the root of the repository.
 """
+
 import asyncio
 import json
 import operator
