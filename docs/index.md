@@ -1,6 +1,6 @@
 # Python JSONPath
 
-JSONPath is a mini language for selecting objects from data formatted in JavaScript Object Notation, or equivalent Python objects, like dictionaries and lists.
+JSONPath is a mini language for selecting values from data formatted in JavaScript Object Notation, or equivalent Python objects, like dictionaries and lists.
 
 Python JSONPath is a non-evaluating, read-only implementation of JSONPath, suitable for situations where JSONPath query authors are untrusted. We follow most of [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535). See [Notable differences](syntax.md#notable-differences) for a list of areas where we deviate from the standard.
 

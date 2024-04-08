@@ -1,4 +1,5 @@
 """A fluent API for managing JSONPathMatch iterators."""
+
 from __future__ import annotations
 
 import collections
@@ -118,7 +119,7 @@ class Query:
         return (m.path for m in self._it)
 
     def items(self) -> Iterable[Tuple[str, object]]:
-        """Return an iterable of (object, path) tuples, one for each match."""
+        """Return an iterable of (path, object) tuples, one for each match."""
         return ((m.path, m.obj) for m in self._it)
 
     def pointers(self) -> Iterable[JSONPointer]:
