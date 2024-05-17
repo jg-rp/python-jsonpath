@@ -1,3 +1,7 @@
+from operator import attrgetter
+from typing import List
+from typing import NamedTuple
+
 import pytest
 
 from jsonpath import JSONPathEnvironment
@@ -28,3 +32,39 @@ def test_function_too_many_params(env: JSONPathEnvironment) -> None:
 def test_non_singular_query_is_not_comparable(env: JSONPathEnvironment) -> None:
     with pytest.raises(JSONPathTypeError):
         env.compile("$[?@.* > 2]")
+
+
+def test_unbalanced_parens(env: JSONPathEnvironment) -> None:
+    with pytest.raises(JSONPathSyntaxError):
+        env.compile("$[?((@.foo)]")
+
+
+class FilterLiteralTestCase(NamedTuple):
+    description: str
+    query: str
+
+
+# TODO: add these to the CTS?
+BAD_FILTER_LITERAL_TEST_CASES: List[FilterLiteralTestCase] = [
+    FilterLiteralTestCase("just true", "$[?true]"),
+    FilterLiteralTestCase("just string", "$[?'foo']"),
+    FilterLiteralTestCase("just int", "$[?2]"),
+    FilterLiteralTestCase("just float", "$[?2.2]"),
+    FilterLiteralTestCase("just null", "$[?null]"),
+    FilterLiteralTestCase("literal and literal", "$[?true && false]"),
+    FilterLiteralTestCase("literal or literal", "$[?true || false]"),
+    FilterLiteralTestCase("comparison and literal", "$[?true == false && false]"),
+    FilterLiteralTestCase("comparison or literal", "$[?true == false || false]"),
+    FilterLiteralTestCase("literal and comparison", "$[?true && true == false]"),
+    FilterLiteralTestCase("literal or comparison", "$[?false || true == false]"),
+]
+
+
+@pytest.mark.parametrize(
+    "case", BAD_FILTER_LITERAL_TEST_CASES, ids=attrgetter("description")
+)
+def test_filter_literals_must_be_compared(
+    env: JSONPathEnvironment, case: FilterLiteralTestCase
+) -> None:
+    with pytest.raises(JSONPathSyntaxError):
+        env.compile(case.query)
