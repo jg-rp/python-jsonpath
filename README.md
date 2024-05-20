@@ -31,6 +31,7 @@ We follow <a href="https://datatracker.ietf.org/doc/html/rfc9535">RFC 9535</a> a
 
 - [Install](#install)
 - [Links](#links)
+- [Related projects](#related-projects)
 - [Examples](#examples)
 - [License](#license)
 
@@ -63,6 +64,14 @@ conda install -c conda-forge python-jsonpath
 - Source code: https://github.com/jg-rp/python-jsonpath
 - Issue tracker: https://github.com/jg-rp/python-jsonpath/issues
 
+## Related projects
+
+- [Python JSONPath RFC 9535](https://github.com/jg-rp/python-jsonpath-rfc9535) - An implementation of JSONPath that follows RFC 9535 much more strictly. If you require maximum interoperability with JSONPath implemented in other languages - at the expense of extra features - choose python-jsonpath-rfc9535 over python-jsonpath.
+
+  python-jsonpath-rfc9535 matches RFC 9535's JSONPath model internally and is careful to match the spec's terminology. It also includes utilities for verifying and testing the [JSONPath Compliance Test Suite](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite). Most notably the nondeterministic behavior of some JSONPath selectors.
+
+- [JSON P3](https://github.com/jg-rp/json-p3) - RFC 9535 implemented in TypeScript. JSON P3 does not include all the non-standard features of Python JSONPath, but does define some optional [extra syntax](https://jg-rp.github.io/json-p3/guides/jsonpath-extra).
+
 ## Examples
 
 ### JSONPath
@@ -85,7 +94,7 @@ print(user_names) # ['John', 'Sally', 'Jane']
 
 ### JSON Pointer
 
-Since version 0.8.0, we include an [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) compliant implementation of JSON Pointer. See JSON Pointer [quick start](https://jg-rp.github.io/python-jsonpath/quickstart/#pointerresolvepointer-data), [guide](https://jg-rp.github.io/python-jsonpath/pointers/) and [API reference](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPointer)
+We include an [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) compliant implementation of JSON Pointer. See JSON Pointer [quick start](https://jg-rp.github.io/python-jsonpath/quickstart/#pointerresolvepointer-data), [guide](https://jg-rp.github.io/python-jsonpath/pointers/) and [API reference](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPointer)
 
 ```python
 from jsonpath import pointer
@@ -108,7 +117,7 @@ print(jane_score)  # 55
 
 ### JSON Patch
 
-Since version 0.8.0, we also include an [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902) compliant implementation of JSON Patch. See JSON Patch [quick start](https://jg-rp.github.io/python-jsonpath/quickstart/#patchapplypatch-data) and [API reference](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch)
+We also include an [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902) compliant implementation of JSON Patch. See JSON Patch [quick start](https://jg-rp.github.io/python-jsonpath/quickstart/#patchapplypatch-data) and [API reference](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch)
 
 ```python
 from jsonpath import patch
