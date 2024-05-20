@@ -34,6 +34,11 @@ SKIP = {
     "basic, no leading whitespace": "flexible whitespace policy",
     "basic, no trailing whitespace": "flexible whitespace policy",
     "basic, bald descendant segment": "almost has a consensus",
+    "filter, index segment on object, selects nothing": "flexible selector policy",
+    "functions, match, dot matcher on \\u2028": "standard library re policy",
+    "functions, match, dot matcher on \\u2029": "standard library re policy",
+    "functions, search, dot matcher on \\u2028": "standard library re policy",
+    "functions, search, dot matcher on \\u2029": "standard library re policy",
     "functions, match, filter, match function, unicode char class, uppercase": "\\p not supported",  # noqa: E501
     "functions, match, filter, match function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
     "functions, search, filter, search function, unicode char class, uppercase": "\\p not supported",  # noqa: E501

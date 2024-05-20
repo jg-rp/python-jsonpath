@@ -44,7 +44,6 @@ class FilterLiteralTestCase(NamedTuple):
     query: str
 
 
-# TODO: add these to the CTS?
 BAD_FILTER_LITERAL_TEST_CASES: List[FilterLiteralTestCase] = [
     FilterLiteralTestCase("just true", "$[?true]"),
     FilterLiteralTestCase("just string", "$[?'foo']"),
