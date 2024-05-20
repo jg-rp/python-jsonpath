@@ -1,5 +1,9 @@
 # Python JSONPath Change Log
 
+## Version 1.1.2 (unreleased)
+
+- Fixed handling of JSONPath literals in filter expressions. We now raise a `JSONPathSyntaxError` if a filter expression literal is not part of a comparison or function expression. See [jsonpath-compliance-test-suite#81](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/81).
+
 ## Version 1.1.1
 
 **Fixes**

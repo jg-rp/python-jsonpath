@@ -30,6 +30,8 @@ from .filter import FunctionExtension
 from .filter import InfixExpression
 from .filter import IntegerLiteral
 from .filter import ListLiteral
+from .filter import Literal
+from .filter import Nil
 from .filter import Path
 from .filter import PrefixExpression
 from .filter import RegexLiteral
@@ -191,6 +193,7 @@ class Parser:
             "<=",
             "<",
             "!=",
+            "=~",
         ]
     )
 
@@ -477,6 +480,13 @@ class Parser:
                     f"result of {expr.name}() must be compared", token=tok
                 )
 
+        if isinstance(expr, (Literal, Nil)):
+            raise JSONPathSyntaxError(
+                "filter expression literals outside of "
+                "function expressions must be compared",
+                token=tok,
+            )
+
         return Filter(env=self.env, token=tok, expression=BooleanExpression(expr))
 
     def parse_boolean(self, stream: TokenStream) -> FilterExpression:
@@ -520,6 +530,20 @@ class Parser:
             self._raise_for_non_comparable_function(left, tok)
             self._raise_for_non_comparable_function(right, tok)
 
+        if operator not in self.COMPARISON_OPERATORS:
+            if isinstance(left, Literal):
+                raise JSONPathSyntaxError(
+                    "filter expression literals outside of "
+                    "function expressions must be compared",
+                    token=tok,
+                )
+            if isinstance(right, Literal):
+                raise JSONPathSyntaxError(
+                    "filter expression literals outside of "
+                    "function expressions must be compared",
+                    token=tok,
+                )
+
         return InfixExpression(left, operator, right)
 
     def parse_grouped_expression(self, stream: TokenStream) -> FilterExpression:
@@ -532,6 +556,13 @@ class Parser:
                 raise JSONPathSyntaxError(
                     "unbalanced parentheses", token=stream.current
                 )
+
+            if stream.current.kind not in self.BINARY_OPERATORS:
+                raise JSONPathSyntaxError(
+                    f"expected an expression, found '{stream.current.value}'",
+                    token=stream.current,
+                )
+
             expr = self.parse_infix_expression(stream, expr)
 
         stream.expect(TOKEN_RPAREN)
@@ -539,7 +570,6 @@ class Parser:
 
     def parse_root_path(self, stream: TokenStream) -> FilterExpression:
         root = stream.next_token()
-        assert root.kind in {TOKEN_ROOT, TOKEN_FAKE_ROOT}  # XXX:
         return RootPath(
             JSONPath(
                 env=self.env,
