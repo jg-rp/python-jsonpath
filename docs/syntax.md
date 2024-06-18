@@ -200,10 +200,11 @@ This is a list of things that you might find in other JSONPath implementation th
 - We don't allow dotted array indices. An array index must be surrounded by square brackets.
 - Python JSONPath is strictly read only. There are no update "selectors", but we do provide methods for converting `JSONPathMatch` instances to `JSONPointer`s, and a `JSONPatch` builder API for modifying JSON-like data structures using said pointers.
 
-And this is a list of areas where we deviate from [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535).
+And this is a list of areas where we deviate from [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535). See [jsonpath-rfc9535](https://github.com/jg-rp/python-jsonpath-rfc9535) for an alternative implementation of JSONPath that does not deviate from RFC 9535.
 
 - The root token (default `$`) is optional and paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.
 - The built-in `match()` and `search()` filter functions use Python's standard library `re` module, which, at least, doesn't support Unicode properties. We might add an implementation of `match()` and `search()` using the third party [regex](https://pypi.org/project/regex/) package in the future.
+- We don't check `match()` and `search()` regex arguments against RFC 9485. Any valid Python pattern is allowed.
 - We don't require property names to be quoted inside a bracketed selection, unless the name contains reserved characters.
 - We don't require the recursive descent segment to have a selector. `$..` is equivalent to `$..*`.
 - We support explicit comparisons to `undefined` as well as implicit existence tests.
