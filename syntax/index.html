@@ -1078,10 +1078,11 @@
 <li>We don't allow dotted array indices. An array index must be surrounded by square brackets.</li>
 <li>Python JSONPath is strictly read only. There are no update "selectors", but we do provide methods for converting <code>JSONPathMatch</code> instances to <code>JSONPointer</code>s, and a <code>JSONPatch</code> builder API for modifying JSON-like data structures using said pointers.</li>
 </ul>
-<p>And this is a list of areas where we deviate from <a href="https://datatracker.ietf.org/doc/html/rfc9535">RFC 9535</a>.</p>
+<p>And this is a list of areas where we deviate from <a href="https://datatracker.ietf.org/doc/html/rfc9535">RFC 9535</a>. See <a href="https://github.com/jg-rp/python-jsonpath-rfc9535">jsonpath-rfc9535</a> for an alternative implementation of JSONPath that does not deviate from RFC 9535.</p>
 <ul>
 <li>The root token (default <code>$</code>) is optional and paths starting with a dot (<code>.</code>) are OK. <code>.thing</code> is the same as <code>$.thing</code>, as is <code>thing</code>, <code>$[thing]</code> and <code>$["thing"]</code>.</li>
 <li>The built-in <code>match()</code> and <code>search()</code> filter functions use Python's standard library <code>re</code> module, which, at least, doesn't support Unicode properties. We might add an implementation of <code>match()</code> and <code>search()</code> using the third party <a href="https://pypi.org/project/regex/">regex</a> package in the future.</li>
+<li>We don't check <code>match()</code> and <code>search()</code> regex arguments against RFC 9485. Any valid Python pattern is allowed.</li>
 <li>We don't require property names to be quoted inside a bracketed selection, unless the name contains reserved characters.</li>
 <li>We don't require the recursive descent segment to have a selector. <code>$..</code> is equivalent to <code>$..*</code>.</li>
 <li>We support explicit comparisons to <code>undefined</code> as well as implicit existence tests.</li>
