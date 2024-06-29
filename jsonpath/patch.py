@@ -85,6 +85,52 @@ class OpAdd(Op):
         return {"op": self.name, "path": str(self.path), "value": self.value}
 
 
+class OpAddNe(Op):
+    """A non-standard _add if not exists_ operation."""
+
+    __slots__ = ("path", "value")
+
+    name = "add"
+
+    def __init__(self, path: JSONPointer, value: object) -> None:
+        self.path = path
+        self.value = value
+
+    def apply(
+        self, data: Union[MutableSequence[object], MutableMapping[str, object]]
+    ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
+        """Apply this patch operation to _data_."""
+        parent, obj = self.path.resolve_parent(data)
+        if parent is None:
+            # Replace the root object.
+            # The following op, if any, will raise a JSONPatchError if needed.
+            return self.value  # type: ignore
+
+        target = self.path.parts[-1]
+        if isinstance(parent, MutableSequence):
+            if obj is UNDEFINED:
+                if target == "-":
+                    parent.append(self.value)
+                else:
+                    raise JSONPatchError("index out of range")
+            else:
+                parent.insert(int(target), self.value)
+        elif (
+            isinstance(parent, MutableMapping)
+            and parent.get(target, UNDEFINED) == UNDEFINED
+        ):
+            parent[target] = self.value
+        # else:
+        #     raise JSONPatchError(
+        #         f"unexpected operation on {parent.__class__.__name__!r}"
+        #     )
+        return data
+
+    def asdict(self) -> Dict[str, object]:
+        """Return a dictionary representation of this operation."""
+        return {"op": self.name, "path": str(self.path), "value": self.value}
+
+
 class OpRemove(Op):
     """The JSON Patch _remove_ operation."""
 
@@ -340,6 +386,11 @@ class JSONPatch:
                     path=self._op_pointer(operation, "path", "add", i),
                     value=self._op_value(operation, "value", "add", i),
                 )
+            elif op == "addne":
+                self.addne(
+                    path=self._op_pointer(operation, "path", "add", i),
+                    value=self._op_value(operation, "value", "add", i),
+                )
             elif op == "remove":
                 self.remove(path=self._op_pointer(operation, "path", "add", i))
             elif op == "replace":
@@ -422,6 +473,22 @@ class JSONPatch:
         """
         pointer = self._ensure_pointer(path)
         self.ops.append(OpAdd(path=pointer, value=value))
+        return self
+
+    def addne(self: Self, path: Union[str, JSONPointer], value: object) -> Self:
+        """Append an _addne_ operation to this patch.
+
+        Arguments:
+            path: A string representation of a JSON Pointer, or one that has
+                already been parsed.
+            value: The object to add.
+
+        Returns:
+            This `JSONPatch` instance, so we can build a JSON Patch by chaining
+                calls to JSON Patch operation methods.
+        """
+        pointer = self._ensure_pointer(path)
+        self.ops.append(OpAddNe(path=pointer, value=value))
         return self
 
     def remove(self: Self, path: Union[str, JSONPointer]) -> Self:

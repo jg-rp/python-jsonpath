@@ -5,12 +5,22 @@ from __future__ import annotations
 import collections
 import itertools
 from typing import TYPE_CHECKING
+from typing import Any
+from typing import Dict
 from typing import Iterable
 from typing import Iterator
+from typing import List
+from typing import Mapping
 from typing import Optional
+from typing import Sequence
 from typing import Tuple
+from typing import Union
+
+from .exceptions import JSONPointerKeyError
+from .patch import JSONPatch
 
 if TYPE_CHECKING:
+    from jsonpath import JSONPathEnvironment
     from jsonpath import JSONPathMatch
     from jsonpath import JSONPointer
 
@@ -28,8 +38,9 @@ class Query:
     **New in version 1.1.0**
     """
 
-    def __init__(self, it: Iterable[JSONPathMatch]) -> None:
+    def __init__(self, it: Iterable[JSONPathMatch], env: JSONPathEnvironment) -> None:
         self._it = iter(it)
+        self._env = env
 
     def __iter__(self) -> Iterator[JSONPathMatch]:
         return self._it
@@ -126,6 +137,31 @@ class Query:
         """Return an iterable of JSONPointers, one for each match."""
         return (m.pointer() for m in self._it)
 
+    def select(self, *expressions: str) -> Iterable[object]:
+        """Query projection using relative JSONPaths.
+
+        Returns an iterable of objects built from selecting _expressions_ relative to
+        each match from the current query.
+        """
+        for m in self._it:
+            if isinstance(m.obj, Sequence):
+                obj: Union[List[Any], Dict[str, Any]] = []
+            elif isinstance(m.obj, Mapping):
+                obj = {}
+            else:
+                return iter([])
+
+            patch = JSONPatch()
+
+            for expr in expressions:
+                for match in self._env.finditer(expr, m.obj):  # type: ignore
+                    _pointer = match.pointer()
+                    _patch_parents(_pointer.parent(), patch, m.obj)  # type: ignore
+                    patch.add(_pointer, match.obj)
+
+            patch.apply(obj)
+            yield obj
+
     def first_one(self) -> Optional[JSONPathMatch]:
         """Return the first `JSONPathMatch` or `None` if there were no matches."""
         try:
@@ -152,11 +188,31 @@ class Query:
 
         It is not safe to use a `Query` instance after calling `tee()`.
         """
-        return tuple(Query(it) for it in itertools.tee(self._it, n))
+        return tuple(Query(it, self._env) for it in itertools.tee(self._it, n))
 
     def take(self, n: int) -> Query:
         """Return a new query iterating over the next _n_ matches.
 
         It is safe to continue using this query after calling take.
         """
-        return Query(list(itertools.islice(self._it, n)))
+        return Query(list(itertools.islice(self._it, n)), self._env)
+
+
+def _patch_parents(
+    pointer: JSONPointer,
+    patch: JSONPatch,
+    obj: Union[Sequence[Any], Mapping[str, Any]],
+) -> None:
+    if pointer.parent().parts:
+        _patch_parents(pointer.parent(), patch, obj)
+
+    try:
+        _obj = pointer.resolve(obj)
+    except JSONPointerKeyError:
+        _obj = obj
+
+    if pointer.parts:
+        if isinstance(_obj, Sequence):
+            patch.addne(pointer, [])
+        elif isinstance(_obj, Mapping):
+            patch.addne(pointer, {})
