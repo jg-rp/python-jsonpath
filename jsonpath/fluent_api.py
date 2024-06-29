@@ -149,7 +149,7 @@ class Query:
             elif isinstance(m.obj, Mapping):
                 obj = {}
             else:
-                return iter([])
+                return
 
             patch = JSONPatch()
 
