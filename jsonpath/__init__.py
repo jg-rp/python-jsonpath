@@ -17,6 +17,7 @@ from .exceptions import RelativeJSONPointerError
 from .exceptions import RelativeJSONPointerIndexError
 from .exceptions import RelativeJSONPointerSyntaxError
 from .filter import UNDEFINED
+from .fluent_api import Projection
 from .fluent_api import Query
 from .lex import Lexer
 from .match import JSONPathMatch
@@ -53,6 +54,7 @@ __all__ = (
     "Lexer",
     "match",
     "Parser",
+    "Projection",
     "query",
     "Query",
     "RelativeJSONPointer",

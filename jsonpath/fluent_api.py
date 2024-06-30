@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import collections
 import itertools
+from enum import Enum
+from enum import auto
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
@@ -23,6 +25,14 @@ if TYPE_CHECKING:
     from jsonpath import JSONPathEnvironment
     from jsonpath import JSONPathMatch
     from jsonpath import JSONPointer
+
+
+class Projection(Enum):
+    """Projection style."""
+
+    RELATIVE = auto()
+    ROOT = auto()
+    FLAT = auto()
 
 
 class Query:
@@ -137,27 +147,45 @@ class Query:
         """Return an iterable of JSONPointers, one for each match."""
         return (m.pointer() for m in self._it)
 
-    def select(self, *expressions: str) -> Iterable[object]:
+    def select(
+        self,
+        *expressions: str,
+        projection: Projection = Projection.RELATIVE,
+    ) -> Iterable[object]:
         """Query projection using relative JSONPaths.
 
         Returns an iterable of objects built from selecting _expressions_ relative to
         each match from the current query.
         """
         for m in self._it:
-            if isinstance(m.obj, Sequence):
+            if isinstance(m.obj, Sequence) or projection == Projection.FLAT:
                 obj: Union[List[Any], Dict[str, Any]] = []
             elif isinstance(m.obj, Mapping):
                 obj = {}
             else:
                 return
 
+            root_pointer = m.pointer()
             patch = JSONPatch()
 
             for expr in expressions:
                 for match in self._env.finditer(expr, m.obj):  # type: ignore
-                    _pointer = match.pointer()
-                    _patch_parents(_pointer.parent(), patch, m.obj)  # type: ignore
-                    patch.addap(_pointer, match.obj)
+                    if projection == Projection.FLAT:
+                        patch.addap("/-", match.obj)
+                    elif projection == Projection.ROOT:
+                        # Pointer string without a leading slash
+                        rel_pointer = "/".join(
+                            str(p).replace("~", "~0").replace("/", "~1")
+                            for p in match.parts
+                        )
+                        _pointer = root_pointer / rel_pointer
+                        _patch_parents(_pointer.parent(), patch, m.obj)  # type: ignore
+                        patch.addap(_pointer, match.obj)
+                    else:
+                        # Natural projection
+                        _pointer = match.pointer()
+                        _patch_parents(_pointer.parent(), patch, m.obj)  # type: ignore
+                        patch.addap(_pointer, match.obj)
 
             patch.apply(obj)
 
