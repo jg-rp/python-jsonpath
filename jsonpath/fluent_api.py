@@ -157,10 +157,12 @@ class Query:
                 for match in self._env.finditer(expr, m.obj):  # type: ignore
                     _pointer = match.pointer()
                     _patch_parents(_pointer.parent(), patch, m.obj)  # type: ignore
-                    patch.add(_pointer, match.obj)
+                    patch.addap(_pointer, match.obj)
 
             patch.apply(obj)
-            yield obj
+
+            if obj:
+                yield obj
 
     def first_one(self) -> Optional[JSONPathMatch]:
         """Return the first `JSONPathMatch` or `None` if there were no matches."""
