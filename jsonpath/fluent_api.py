@@ -28,11 +28,14 @@ if TYPE_CHECKING:
 
 
 class Projection(Enum):
-    """Projection style."""
+    """Projection style used by `Query.select()`."""
 
     RELATIVE = auto()
     ROOT = auto()
     FLAT = auto()
+
+
+EMPTY = object()
 
 
 class Query:
@@ -157,40 +160,57 @@ class Query:
         Returns an iterable of objects built from selecting _expressions_ relative to
         each match from the current query.
         """
-        for m in self._it:
-            if isinstance(m.obj, Sequence) or projection == Projection.FLAT:
-                obj: Union[List[Any], Dict[str, Any]] = []
-            elif isinstance(m.obj, Mapping):
-                obj = {}
+        return filter(
+            bool,
+            (self._select(m, expressions, projection) for m in self._it),
+        )
+
+    def _select(
+        self,
+        match: JSONPathMatch,
+        expressions: Tuple[str, ...],
+        projection: Projection,
+    ) -> object:
+        if isinstance(match.obj, Sequence) or projection == Projection.FLAT:
+            obj: Union[List[Any], Dict[str, Any]] = []
+        elif isinstance(match.obj, Mapping):
+            obj = {}
+        else:
+            return None
+
+        patch = JSONPatch()
+
+        for expr in expressions:
+            self._patch(match, expr, patch, projection)
+
+        return patch.apply(obj)
+
+    def _patch(
+        self,
+        match: JSONPathMatch,
+        expr: str,
+        patch: JSONPatch,
+        projection: Projection,
+    ) -> None:
+        root_pointer = match.pointer()
+
+        for rel_match in self._env.finditer(expr, match.obj):  # type: ignore
+            if projection == Projection.FLAT:
+                patch.addap("/-", rel_match.obj)
+            elif projection == Projection.ROOT:
+                # Pointer string without a leading slash
+                rel_pointer = "/".join(
+                    str(p).replace("~", "~0").replace("/", "~1")
+                    for p in rel_match.parts
+                )
+                pointer = root_pointer / rel_pointer
+                _patch_parents(pointer.parent(), patch, match.obj)  # type: ignore
+                patch.addap(pointer, rel_match.obj)
             else:
-                return
-
-            root_pointer = m.pointer()
-            patch = JSONPatch()
-
-            for expr in expressions:
-                for match in self._env.finditer(expr, m.obj):  # type: ignore
-                    if projection == Projection.FLAT:
-                        patch.addap("/-", match.obj)
-                    elif projection == Projection.ROOT:
-                        # Pointer string without a leading slash
-                        rel_pointer = "/".join(
-                            str(p).replace("~", "~0").replace("/", "~1")
-                            for p in match.parts
-                        )
-                        _pointer = root_pointer / rel_pointer
-                        _patch_parents(_pointer.parent(), patch, m.obj)  # type: ignore
-                        patch.addap(_pointer, match.obj)
-                    else:
-                        # Natural projection
-                        _pointer = match.pointer()
-                        _patch_parents(_pointer.parent(), patch, m.obj)  # type: ignore
-                        patch.addap(_pointer, match.obj)
-
-            patch.apply(obj)
-
-            if obj:
-                yield obj
+                # Natural projection
+                pointer = rel_match.pointer()
+                _patch_parents(pointer.parent(), patch, match.obj)  # type: ignore
+                patch.addap(pointer, rel_match.obj)
 
     def first_one(self) -> Optional[JSONPathMatch]:
         """Return the first `JSONPathMatch` or `None` if there were no matches."""
