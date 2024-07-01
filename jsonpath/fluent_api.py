@@ -171,6 +171,8 @@ class Query:
         Returns:
             An iterable of objects built from selecting _expressions_ relative to
                 each match from the current query.
+
+        **New in version 1.2.0**
         """
         return filter(
             bool,

@@ -91,6 +91,8 @@ class OpAddNe(OpAdd):
 
     This is like _OpAdd_, but only adds object/dict keys/values if they key does
     not already exist.
+
+    **New in version 1.2.0**
     """
 
     __slots__ = ("path", "value")
@@ -126,6 +128,8 @@ class OpAddAp(OpAdd):
 
     This is like _OpAdd_, but assumes an index of "-" if the path can not
     be resolved.
+
+    **New in version 1.2.0**
     """
 
     __slots__ = ("path", "value")
