@@ -14,6 +14,9 @@
 ::: jsonpath.Query
     handler: python
 
+::: jsonpath.Projection
+    handler: python
+
 ::: jsonpath.function_extensions.FilterFunction
     handler: python
 

@@ -31,11 +31,15 @@ class Projection(Enum):
     """Projection style used by `Query.select()`."""
 
     RELATIVE = auto()
+    """The default projection. Selections include parent arrays and objects relative
+    to the JSONPathMatch."""
+
     ROOT = auto()
+    """Selections include parent arrays and objects relative to the root JSON value."""
+
     FLAT = auto()
-
-
-EMPTY = object()
+    """All selections are appended to a new array/list, without arrays and objects
+    on the path to the selected value."""
 
 
 class Query:
@@ -157,8 +161,16 @@ class Query:
     ) -> Iterable[object]:
         """Query projection using relative JSONPaths.
 
-        Returns an iterable of objects built from selecting _expressions_ relative to
-        each match from the current query.
+        Arguments:
+            expressions: One or more JSONPath query expressions to select relative
+                to each match in this query iterator.
+            projection: The style of projection used when selecting values. Can be
+                one of `Projection.RELATIVE`, `Projection.ROOT` or `Projection.FLAT`.
+                Defaults to `Projection.RELATIVE`.
+
+        Returns:
+            An iterable of objects built from selecting _expressions_ relative to
+                each match from the current query.
         """
         return filter(
             bool,
