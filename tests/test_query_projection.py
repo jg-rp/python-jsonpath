@@ -109,3 +109,53 @@ def test_select_nested_objects_flat_projection() -> None:
     projection = ("foo.bar",)
     it = jsonpath.query(expr, data).select(*projection, projection=Projection.FLAT)
     assert list(it) == [[42]]
+
+
+def test_sparse_array_selection() -> None:
+    expr = "$..products[?@.social]"
+    data = {
+        "categories": [
+            {
+                "name": "footwear",
+                "products": [
+                    {
+                        "title": "Trainers",
+                        "description": "Fashionable trainers.",
+                        "price": 89.99,
+                    },
+                    {
+                        "title": "Barefoot Trainers",
+                        "description": "Running trainers.",
+                        "price": 130.00,
+                    },
+                ],
+            },
+            {
+                "name": "headwear",
+                "products": [
+                    {
+                        "title": "Cap",
+                        "description": "Baseball cap",
+                        "price": 15.00,
+                    },
+                    {
+                        "title": "Beanie",
+                        "description": "Winter running hat.",
+                        "price": 9.00,
+                        "social": {"likes": 12, "shares": 7},
+                    },
+                ],
+            },
+        ],
+        "price_cap": 10,
+    }
+
+    it = jsonpath.query(expr, data).select(
+        "title",
+        "social.shares",
+        projection=Projection.ROOT,
+    )
+
+    assert list(it) == [
+        {"categories": [{"products": [{"title": "Beanie", "social": {"shares": 7}}]}]}
+    ]

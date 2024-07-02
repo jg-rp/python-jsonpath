@@ -1,4 +1,4 @@
-"""A fluent API for managing JSONPathMatch iterators."""
+"""A fluent API for working with `JSONPathMatch` iterators."""
 
 from __future__ import annotations
 
@@ -154,6 +154,41 @@ class Query:
         """Return an iterable of JSONPointers, one for each match."""
         return (m.pointer() for m in self._it)
 
+    def first_one(self) -> Optional[JSONPathMatch]:
+        """Return the first `JSONPathMatch` or `None` if there were no matches."""
+        try:
+            return next(self._it)
+        except StopIteration:
+            return None
+
+    def one(self) -> Optional[JSONPathMatch]:
+        """Return the first `JSONPathMatch` or `None` if there were no matches.
+
+        `one()` is an alias for `first_one()`.
+        """
+        return self.first_one()
+
+    def last_one(self) -> Optional[JSONPathMatch]:
+        """Return the last `JSONPathMatch` or `None` if there were no matches."""
+        try:
+            return next(iter(self.tail(1)))
+        except StopIteration:
+            return None
+
+    def tee(self, n: int = 2) -> Tuple[Query, ...]:
+        """Return _n_ independent queries by teeing this query's iterator.
+
+        It is not safe to use a `Query` instance after calling `tee()`.
+        """
+        return tuple(Query(it, self._env) for it in itertools.tee(self._it, n))
+
+    def take(self, n: int) -> Query:
+        """Return a new query iterating over the next _n_ matches.
+
+        It is safe to continue using this query after calling take.
+        """
+        return Query(list(itertools.islice(self._it, n)), self._env)
+
     def select(
         self,
         *expressions: str,
@@ -199,7 +234,7 @@ class Query:
         for expr in expressions:
             self._patch(match, expr, patch, projection)
 
-        return _sparse_values(patch.apply(obj))
+        return _fix_sparse_arrays(patch.apply(obj))
 
     def _patch(
         self,
@@ -219,87 +254,51 @@ class Query:
                     str(p).replace("~", "~0").replace("/", "~1")
                     for p in rel_match.parts
                 )
-                pointer = _patch_parents(root_pointer / rel_pointer, patch, match.root)  # type: ignore
+                pointer = root_pointer / rel_pointer
+                _patch_parents(pointer.parent(), patch, match.root)
                 patch.addap(pointer, rel_match.obj)
             else:
                 # Natural projection
-                pointer = _patch_parents(rel_match.pointer(), patch, match.obj)  # type: ignore
+                pointer = rel_match.pointer()
+                _patch_parents(pointer.parent(), patch, match.obj)  # type: ignore
                 patch.addap(pointer, rel_match.obj)
-
-    def first_one(self) -> Optional[JSONPathMatch]:
-        """Return the first `JSONPathMatch` or `None` if there were no matches."""
-        try:
-            return next(self._it)
-        except StopIteration:
-            return None
-
-    def one(self) -> Optional[JSONPathMatch]:
-        """Return the first `JSONPathMatch` or `None` if there were no matches.
-
-        `one()` is an alias for `first_one()`.
-        """
-        return self.first_one()
-
-    def last_one(self) -> Optional[JSONPathMatch]:
-        """Return the last `JSONPathMatch` or `None` if there were no matches."""
-        try:
-            return next(iter(self.tail(1)))
-        except StopIteration:
-            return None
-
-    def tee(self, n: int = 2) -> Tuple[Query, ...]:
-        """Return _n_ independent queries by teeing this query's iterator.
-
-        It is not safe to use a `Query` instance after calling `tee()`.
-        """
-        return tuple(Query(it, self._env) for it in itertools.tee(self._it, n))
-
-    def take(self, n: int) -> Query:
-        """Return a new query iterating over the next _n_ matches.
-
-        It is safe to continue using this query after calling take.
-        """
-        return Query(list(itertools.islice(self._it, n)), self._env)
 
 
 def _patch_parents(
     pointer: JSONPointer,
     patch: JSONPatch,
     obj: Union[Sequence[Any], Mapping[str, Any]],
-) -> JSONPointer:
-    parent = pointer.parent()
-    if parent.parent().parts:
-        _patch_parents(parent, patch, obj)
+) -> None:
+    if pointer.parent().parts:
+        _patch_parents(pointer.parent(), patch, obj)
 
-    if parent.parts:
+    if pointer.parts:
         try:
-            _obj = parent.resolve(obj)
+            _obj = pointer.resolve(obj)
         except JSONPointerKeyError:
             _obj = obj
 
-        # For lack of a better solution, we're patching arrays to dictionaries with
-        # integer keys. This is to handle sparse array selections without having to
-        # keep track of indexes and how they map from the root JSON value to the
-        # selected JSON value.
+        # For lack of a better idea, we're patching arrays to dictionaries with
+        # integer keys. This is to handle sparse array selections without having
+        # to keep track of indexes and how they map from the root JSON value to
+        # the selected JSON value.
         #
         # We'll fix these "sparse arrays" after the patch has been applied.
         if isinstance(_obj, (Sequence, Mapping)) and not isinstance(_obj, str):
-            patch.addne(parent, {})
-
-    return pointer
+            patch.addne(pointer, {})
 
 
-def _sparse_values(obj: Any) -> object:
+def _fix_sparse_arrays(obj: Any) -> object:
     """Fix sparse arrays (dictionaries with integer keys)."""
     if isinstance(obj, str) or not obj:
         return obj
 
     if isinstance(obj, Sequence):
-        return [_sparse_values(e) for e in obj]
+        return [_fix_sparse_arrays(e) for e in obj]
 
     if isinstance(obj, Mapping):
         if isinstance(next(iter(obj)), int):
-            return [_sparse_values(v) for v in obj.values()]
-        return {k: _sparse_values(v) for k, v in obj.items()}
+            return [_fix_sparse_arrays(v) for v in obj.values()]
+        return {k: _fix_sparse_arrays(v) for k, v in obj.items()}
 
     return obj
