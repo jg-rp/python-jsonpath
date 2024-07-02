@@ -185,6 +185,8 @@ class Query:
         expressions: Tuple[str, ...],
         projection: Projection,
     ) -> object:
+        if isinstance(match.obj, str):
+            return None
         if isinstance(match.obj, Sequence) or projection == Projection.FLAT:
             obj: Union[List[Any], Dict[str, Any]] = []
         elif isinstance(match.obj, Mapping):
@@ -197,7 +199,7 @@ class Query:
         for expr in expressions:
             self._patch(match, expr, patch, projection)
 
-        return patch.apply(obj)
+        return _sparse_values(patch.apply(obj))
 
     def _patch(
         self,
@@ -217,13 +219,11 @@ class Query:
                     str(p).replace("~", "~0").replace("/", "~1")
                     for p in rel_match.parts
                 )
-                pointer = root_pointer / rel_pointer
-                _patch_parents(pointer.parent(), patch, match.obj)  # type: ignore
+                pointer = _patch_parents(root_pointer / rel_pointer, patch, match.root)  # type: ignore
                 patch.addap(pointer, rel_match.obj)
             else:
                 # Natural projection
-                pointer = rel_match.pointer()
-                _patch_parents(pointer.parent(), patch, match.obj)  # type: ignore
+                pointer = _patch_parents(rel_match.pointer(), patch, match.obj)  # type: ignore
                 patch.addap(pointer, rel_match.obj)
 
     def first_one(self) -> Optional[JSONPathMatch]:
@@ -266,17 +266,40 @@ def _patch_parents(
     pointer: JSONPointer,
     patch: JSONPatch,
     obj: Union[Sequence[Any], Mapping[str, Any]],
-) -> None:
-    if pointer.parent().parts:
-        _patch_parents(pointer.parent(), patch, obj)
+) -> JSONPointer:
+    parent = pointer.parent()
+    if parent.parent().parts:
+        _patch_parents(parent, patch, obj)
 
-    try:
-        _obj = pointer.resolve(obj)
-    except JSONPointerKeyError:
-        _obj = obj
+    if parent.parts:
+        try:
+            _obj = parent.resolve(obj)
+        except JSONPointerKeyError:
+            _obj = obj
 
-    if pointer.parts:
-        if isinstance(_obj, Sequence):
-            patch.addne(pointer, [])
-        elif isinstance(_obj, Mapping):
-            patch.addne(pointer, {})
+        # For lack of a better solution, we're patching arrays to dictionaries with
+        # integer keys. This is to handle sparse array selections without having to
+        # keep track of indexes and how they map from the root JSON value to the
+        # selected JSON value.
+        #
+        # We'll fix these "sparse arrays" after the patch has been applied.
+        if isinstance(_obj, (Sequence, Mapping)) and not isinstance(_obj, str):
+            patch.addne(parent, {})
+
+    return pointer
+
+
+def _sparse_values(obj: Any) -> object:
+    """Fix sparse arrays (dictionaries with integer keys)."""
+    if isinstance(obj, str) or not obj:
+        return obj
+
+    if isinstance(obj, Sequence):
+        return [_sparse_values(e) for e in obj]
+
+    if isinstance(obj, Mapping):
+        if isinstance(next(iter(obj)), int):
+            return [_sparse_values(v) for v in obj.values()]
+        return {k: _sparse_values(v) for k, v in obj.items()}
+
+    return obj

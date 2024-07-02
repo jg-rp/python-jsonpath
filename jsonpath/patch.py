@@ -112,10 +112,7 @@ class OpAddNe(OpAdd):
         target = self.path.parts[-1]
         if isinstance(parent, MutableSequence):
             if obj is UNDEFINED:
-                if target == "-":
-                    parent.append(self.value)
-                else:
-                    raise JSONPatchError("index out of range")
+                parent.append(self.value)
             else:
                 parent.insert(int(target), self.value)
         elif isinstance(parent, MutableMapping) and target not in parent:
@@ -669,6 +666,7 @@ class JSONPatch:
                 raise JSONPatchError(f"{err} ({op.name}:{i})") from err
             except (JSONPointerError, JSONPatchError) as err:
                 raise JSONPatchError(f"{err} ({op.name}:{i})") from err
+
         return _data
 
     def asdicts(self) -> List[Dict[str, object]]:
