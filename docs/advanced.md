@@ -39,7 +39,7 @@ user_names = jsonpath.findall(
 
 ## Function Extensions
 
-Add, remove or replace [filter functions](functions.md) by updating the [`function_extensions`](api.md#jsonpath.env.JSONPathEnvironment.function_extensions) attribute of a [`JSONPathEnvironment`](api.md#jsonpath.env.JSONPathEnvironment). It is a regular Python dictionary mapping filter function names to any [callable](https://docs.python.org/3/library/typing.html#typing.Callable), like a function or class with a `__call__` method.
+Add, remove or replace [filter functions](functions.md) by updating the [`function_extensions`](api.md#jsonpath.JSONPathEnvironment.function_extensions) attribute of a [`JSONPathEnvironment`](api.md#jsonpath.JSONPathEnvironment). It is a regular Python dictionary mapping filter function names to any [callable](https://docs.python.org/3/library/typing.html#typing.Callable), like a function or class with a `__call__` method.
 
 ### Type System for Function Expressions
 
@@ -47,7 +47,7 @@ Add, remove or replace [filter functions](functions.md) by updating the [`functi
 
 !!! info
 
-    [`FilterFunction`](api.md#jsonpath.function_extensions.FilterFunction) was new in Python JSONPath version 0.10.0. Prior to that we did not enforce function expression well-typedness. To use any arbitrary [callable](https://docs.python.org/3/library/typing.html#typing.Callable) as a function extension - or if you don't want built-in filter functions to raise a `JSONPathTypeError` for function expressions that are not well-typed - set [`well_typed`](api.md#jsonpath.env.JSONPathEnvironment.well_typed) to `False` when constructing a [`JSONPathEnvironment`](api.md#jsonpath.env.JSONPathEnvironment).
+    [`FilterFunction`](api.md#jsonpath.function_extensions.FilterFunction) was new in Python JSONPath version 0.10.0. Prior to that we did not enforce function expression well-typedness. To use any arbitrary [callable](https://docs.python.org/3/library/typing.html#typing.Callable) as a function extension - or if you don't want built-in filter functions to raise a `JSONPathTypeError` for function expressions that are not well-typed - set [`well_typed`](api.md#jsonpath.JSONPathEnvironment.well_typed) to `False` when constructing a [`JSONPathEnvironment`](api.md#jsonpath.JSONPathEnvironment).
 
 ### Example
 
@@ -137,7 +137,7 @@ env = MyEnv()
 
 ### Compile Time Validation
 
-Calls to [type-aware](#type-system-for-function-expressions) function extension are validated at JSONPath compile-time automatically. If [`well_typed`](api.md#jsonpath.env.JSONPathEnvironment.well_typed) is set to `False` or a custom function extension does not inherit from [`FilterFunction`](api.md#jsonpath.function_extensions.FilterFunction), its arguments can be validated by implementing the function as a class with a `__call__` method, and a `validate` method. `validate` will be called after parsing the function, giving you the opportunity to inspect its arguments and raise a `JSONPathTypeError` should any arguments be unacceptable. If defined, `validate` must take a reference to the current environment, an argument list and the token pointing to the start of the function call.
+Calls to [type-aware](#type-system-for-function-expressions) function extension are validated at JSONPath compile-time automatically. If [`well_typed`](api.md#jsonpath.JSONPathEnvironment.well_typed) is set to `False` or a custom function extension does not inherit from [`FilterFunction`](api.md#jsonpath.function_extensions.FilterFunction), its arguments can be validated by implementing the function as a class with a `__call__` method, and a `validate` method. `validate` will be called after parsing the function, giving you the opportunity to inspect its arguments and raise a `JSONPathTypeError` should any arguments be unacceptable. If defined, `validate` must take a reference to the current environment, an argument list and the token pointing to the start of the function call.
 
 ```python
 def validate(

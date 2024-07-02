@@ -2,7 +2,7 @@
 
 Largely motivated by its integration with [Python Liquid](https://jg-rp.github.io/liquid/jsonpath/introduction), Python JSONPath offers an asynchronous API that allows for items in a target data structure to be "fetched" lazily.
 
-[`findall_async()`](api.md#jsonpath.env.JSONPathEnvironment.findall_async) and [`finditer_async()`](api.md#jsonpath.env.JSONPathEnvironment.finditer) are [asyncio](https://docs.python.org/3/library/asyncio.html) equivalents to [`findall()`](api.md#jsonpath.env.JSONPathEnvironment.findall) and [`finditer()`](api.md#jsonpath.env.JSONPathEnvironment.finditer). By default, any class implementing the [mapping](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) or [sequence](https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence) interfaces, and a `__getitem_async__()` method, will have `__getitem_async__()` awaited instead of calling `__getitem__()` when resolving mapping keys or sequence indices.
+[`findall_async()`](api.md#jsonpath.JSONPathEnvironment.findall_async) and [`finditer_async()`](api.md#jsonpath.JSONPathEnvironment.finditer_async) are [asyncio](https://docs.python.org/3/library/asyncio.html) equivalents to [`findall()`](api.md#jsonpath.JSONPathEnvironment.findall) and [`finditer()`](api.md#jsonpath.JSONPathEnvironment.finditer). By default, any class implementing the [mapping](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) or [sequence](https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence) interfaces, and a `__getitem_async__()` method, will have `__getitem_async__()` awaited instead of calling `__getitem__()` when resolving mapping keys or sequence indices.
 
 ## Example
 

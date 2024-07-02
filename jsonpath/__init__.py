@@ -3,11 +3,14 @@
 # SPDX-License-Identifier: MIT
 
 from .env import JSONPathEnvironment
+from .exceptions import JSONPatchError
+from .exceptions import JSONPatchTestFailure
 from .exceptions import JSONPathError
 from .exceptions import JSONPathIndexError
 from .exceptions import JSONPathNameError
 from .exceptions import JSONPathSyntaxError
 from .exceptions import JSONPathTypeError
+from .exceptions import JSONPointerEncodeError
 from .exceptions import JSONPointerError
 from .exceptions import JSONPointerIndexError
 from .exceptions import JSONPointerKeyError
@@ -17,6 +20,7 @@ from .exceptions import RelativeJSONPointerError
 from .exceptions import RelativeJSONPointerIndexError
 from .exceptions import RelativeJSONPointerSyntaxError
 from .filter import UNDEFINED
+from .fluent_api import Projection
 from .fluent_api import Query
 from .lex import Lexer
 from .match import JSONPathMatch
@@ -36,6 +40,8 @@ __all__ = (
     "finditer_async",
     "finditer",
     "JSONPatch",
+    "JSONPatchError",
+    "JSONPatchTestFailure",
     "JSONPath",
     "JSONPathEnvironment",
     "JSONPathError",
@@ -45,6 +51,7 @@ __all__ = (
     "JSONPathSyntaxError",
     "JSONPathTypeError",
     "JSONPointer",
+    "JSONPointerEncodeError",
     "JSONPointerError",
     "JSONPointerIndexError",
     "JSONPointerKeyError",
@@ -53,6 +60,7 @@ __all__ = (
     "Lexer",
     "match",
     "Parser",
+    "Projection",
     "query",
     "Query",
     "RelativeJSONPointer",

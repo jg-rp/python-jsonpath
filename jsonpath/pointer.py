@@ -1,4 +1,5 @@
 """JSON Pointer. See https://datatracker.ietf.org/doc/html/rfc6901."""
+
 from __future__ import annotations
 
 import codecs
@@ -325,6 +326,9 @@ class JSONPointer:
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, JSONPointer) and self.parts == other.parts
+
+    def __hash__(self) -> int:
+        return hash(self.parts)
 
     def __repr__(self) -> str:
         return f"JSONPointer({self._s!r})"

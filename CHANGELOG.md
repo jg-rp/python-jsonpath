@@ -1,8 +1,15 @@
 # Python JSONPath Change Log
 
-## Version 1.1.2 (unreleased)
+## Version 1.2.0 (unreleased)
+
+**Fixes**
 
 - Fixed handling of JSONPath literals in filter expressions. We now raise a `JSONPathSyntaxError` if a filter expression literal is not part of a comparison or function expression. See [jsonpath-compliance-test-suite#81](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/81).
+
+**Features**
+
+- Added a `select` method to the JSONPath [query iterator interface](https://jg-rp.github.io/python-jsonpath/query/), generating a projection of each JSONPath match by selecting a subset of its values.
+- Added the `addne` and `addap` operations to [JSONPatch](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch). `addne` (add if not exists) is like the standard `add` operation, but only adds object keys/values if the key does not exist. `addap` (add or append) is like the standard `add` operation, but assumes and index of `-` if the target index can not be resolved.
 
 ## Version 1.1.1
 

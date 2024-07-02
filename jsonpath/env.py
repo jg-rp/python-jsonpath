@@ -353,7 +353,7 @@ class JSONPathEnvironment:
             ...
         ```
         """
-        return Query(self.finditer(path, data, filter_context=filter_context))
+        return Query(self.finditer(path, data, filter_context=filter_context), self)
 
     async def findall_async(
         self,
