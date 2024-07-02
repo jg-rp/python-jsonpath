@@ -9,7 +9,7 @@
 **Features**
 
 - Added a `select` method to the JSONPath [query iterator interface](https://jg-rp.github.io/python-jsonpath/query/), generating a projection of each JSONPath match by selecting a subset of its values.
-- Added the `addne` and `addap` operations to [JSONPatch](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch). `addne` (add if not exists) is like the standard `add` operation, but only adds object keys/values if the key does not exist. `addap` (add or append) is like the standard `add` operation, but assumes and index of `-` if the target index can not be resolved.
+- Added the `addne` and `addap` operations to [JSONPatch](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch). `addne` (add if not exists) is like the standard `add` operation, but only adds object keys/values if the key does not exist. `addap` (add or append) is like the standard `add` operation, but assumes an index of `-` if the target index can not be resolved.
 
 ## Version 1.1.1
 
