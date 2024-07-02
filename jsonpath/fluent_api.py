@@ -1,18 +1,45 @@
-"""A fluent API for managing JSONPathMatch iterators."""
+"""A fluent API for working with `JSONPathMatch` iterators."""
 
 from __future__ import annotations
 
 import collections
 import itertools
+from enum import Enum
+from enum import auto
 from typing import TYPE_CHECKING
+from typing import Any
+from typing import Dict
 from typing import Iterable
 from typing import Iterator
+from typing import List
+from typing import Mapping
 from typing import Optional
+from typing import Sequence
 from typing import Tuple
+from typing import Union
+
+from .exceptions import JSONPointerKeyError
+from .patch import JSONPatch
 
 if TYPE_CHECKING:
+    from jsonpath import JSONPathEnvironment
     from jsonpath import JSONPathMatch
     from jsonpath import JSONPointer
+
+
+class Projection(Enum):
+    """Projection style used by `Query.select()`."""
+
+    RELATIVE = auto()
+    """The default projection. Selections include parent arrays and objects relative
+    to the JSONPathMatch."""
+
+    ROOT = auto()
+    """Selections include parent arrays and objects relative to the root JSON value."""
+
+    FLAT = auto()
+    """All selections are appended to a new array/list, without arrays and objects
+    on the path to the selected value."""
 
 
 class Query:
@@ -28,8 +55,9 @@ class Query:
     **New in version 1.1.0**
     """
 
-    def __init__(self, it: Iterable[JSONPathMatch]) -> None:
+    def __init__(self, it: Iterable[JSONPathMatch], env: JSONPathEnvironment) -> None:
         self._it = iter(it)
+        self._env = env
 
     def __iter__(self) -> Iterator[JSONPathMatch]:
         return self._it
@@ -152,11 +180,125 @@ class Query:
 
         It is not safe to use a `Query` instance after calling `tee()`.
         """
-        return tuple(Query(it) for it in itertools.tee(self._it, n))
+        return tuple(Query(it, self._env) for it in itertools.tee(self._it, n))
 
     def take(self, n: int) -> Query:
         """Return a new query iterating over the next _n_ matches.
 
         It is safe to continue using this query after calling take.
         """
-        return Query(list(itertools.islice(self._it, n)))
+        return Query(list(itertools.islice(self._it, n)), self._env)
+
+    def select(
+        self,
+        *expressions: str,
+        projection: Projection = Projection.RELATIVE,
+    ) -> Iterable[object]:
+        """Query projection using relative JSONPaths.
+
+        Arguments:
+            expressions: One or more JSONPath query expressions to select relative
+                to each match in this query iterator.
+            projection: The style of projection used when selecting values. Can be
+                one of `Projection.RELATIVE`, `Projection.ROOT` or `Projection.FLAT`.
+                Defaults to `Projection.RELATIVE`.
+
+        Returns:
+            An iterable of objects built from selecting _expressions_ relative to
+                each match from the current query.
+
+        **New in version 1.2.0**
+        """
+        return filter(
+            bool,
+            (self._select(m, expressions, projection) for m in self._it),
+        )
+
+    def _select(
+        self,
+        match: JSONPathMatch,
+        expressions: Tuple[str, ...],
+        projection: Projection,
+    ) -> object:
+        if isinstance(match.obj, str):
+            return None
+        if isinstance(match.obj, Sequence) or projection == Projection.FLAT:
+            obj: Union[List[Any], Dict[str, Any]] = []
+        elif isinstance(match.obj, Mapping):
+            obj = {}
+        else:
+            return None
+
+        patch = JSONPatch()
+
+        for expr in expressions:
+            self._patch(match, expr, patch, projection)
+
+        return _fix_sparse_arrays(patch.apply(obj))
+
+    def _patch(
+        self,
+        match: JSONPathMatch,
+        expr: str,
+        patch: JSONPatch,
+        projection: Projection,
+    ) -> None:
+        root_pointer = match.pointer()
+
+        for rel_match in self._env.finditer(expr, match.obj):  # type: ignore
+            if projection == Projection.FLAT:
+                patch.addap("/-", rel_match.obj)
+            elif projection == Projection.ROOT:
+                # Pointer string without a leading slash
+                rel_pointer = "/".join(
+                    str(p).replace("~", "~0").replace("/", "~1")
+                    for p in rel_match.parts
+                )
+                pointer = root_pointer / rel_pointer
+                _patch_parents(pointer.parent(), patch, match.root)
+                patch.addap(pointer, rel_match.obj)
+            else:
+                # Natural projection
+                pointer = rel_match.pointer()
+                _patch_parents(pointer.parent(), patch, match.obj)  # type: ignore
+                patch.addap(pointer, rel_match.obj)
+
+
+def _patch_parents(
+    pointer: JSONPointer,
+    patch: JSONPatch,
+    obj: Union[Sequence[Any], Mapping[str, Any]],
+) -> None:
+    if pointer.parent().parts:
+        _patch_parents(pointer.parent(), patch, obj)
+
+    if pointer.parts:
+        try:
+            _obj = pointer.resolve(obj)
+        except JSONPointerKeyError:
+            _obj = obj
+
+        # For lack of a better idea, we're patching arrays to dictionaries with
+        # integer keys. This is to handle sparse array selections without having
+        # to keep track of indexes and how they map from the root JSON value to
+        # the selected JSON value.
+        #
+        # We'll fix these "sparse arrays" after the patch has been applied.
+        if isinstance(_obj, (Sequence, Mapping)) and not isinstance(_obj, str):
+            patch.addne(pointer, {})
+
+
+def _fix_sparse_arrays(obj: Any) -> object:
+    """Fix sparse arrays (dictionaries with integer keys)."""
+    if isinstance(obj, str) or not obj:
+        return obj
+
+    if isinstance(obj, Sequence):
+        return [_fix_sparse_arrays(e) for e in obj]
+
+    if isinstance(obj, Mapping):
+        if isinstance(next(iter(obj)), int):
+            return [_fix_sparse_arrays(v) for v in obj.values()]
+        return {k: _fix_sparse_arrays(v) for k, v in obj.items()}
+
+    return obj

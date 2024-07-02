@@ -82,7 +82,7 @@ for value in it.values():
 
 ## Tee
 
-And finally there's `tee()`, which creates multiple independent queries from one query iterator. It is not safe to use the initial `Query` instance after calling `tee()`.
+[`tee()`](api.md#jsonpath.Query.tee) creates multiple independent queries from one query iterator. It is not safe to use the initial `Query` instance after calling `tee()`.
 
 ```python
 from jsonpath import query
@@ -91,4 +91,131 @@ it1, it2 = query("$.some[?@.thing]", data).tee()
 
 head = it1.head(10) # first 10 matches
 tail = it2.tail(10) # last 10 matches
+```
+
+## Select
+
+[`select(*expressions, projection=Projection.RELATIVE)`](api.md/#jsonpath.Query.select) performs JSONPath match projection, selecting a subset of values according to one or more JSONPath query expressions relative to the match location. For example:
+
+```python
+from jsonpath import query
+
+data = {
+    "categories": [
+        {
+            "name": "footwear",
+            "products": [
+                {
+                    "title": "Trainers",
+                    "description": "Fashionable trainers.",
+                    "price": 89.99,
+                },
+                {
+                    "title": "Barefoot Trainers",
+                    "description": "Running trainers.",
+                    "price": 130.00,
+                    "social": {"likes": 12, "shares": 7},
+                },
+            ],
+        },
+        {
+            "name": "headwear",
+            "products": [
+                {
+                    "title": "Cap",
+                    "description": "Baseball cap",
+                    "price": 15.00,
+                },
+                {
+                    "title": "Beanie",
+                    "description": "Winter running hat.",
+                    "price": 9.00,
+                },
+            ],
+        },
+    ],
+    "price_cap": 10,
+}
+
+for product in query("$..products.*", data).select("title", "price"):
+    print(product)
+```
+
+Which selects just the `title` and `price` fields for each product.
+
+```text
+{'title': 'Trainers', 'price': 89.99}
+{'title': 'Barefoot Trainers', 'price': 130.0}
+{'title': 'Cap', 'price': 15.0}
+{'title': 'Beanie', 'price': 9.0}
+```
+
+Without the call to `select()`, we'd get all fields in each product object.
+
+```python
+# ...
+
+for product in query("$..products.*", data).values():
+    print(product)
+```
+
+```text
+{'title': 'Trainers', 'description': 'Fashionable trainers.', 'price': 89.99}
+{'title': 'Barefoot Trainers', 'description': 'Running trainers.', 'price': 130.0, 'social': {'likes': 12, 'shares': 7}}
+{'title': 'Cap', 'description': 'Baseball cap', 'price': 15.0}
+{'title': 'Beanie', 'description': 'Winter running hat.', 'price': 9.0}
+```
+
+We can select nested values too.
+
+```python
+# ...
+
+for product in query("$..products.*", data).select("title", "social.shares"):
+    print(product)
+```
+
+```text
+{'title': 'Trainers'}
+{'title': 'Barefoot Trainers', 'social': {'shares': 7}}
+{'title': 'Cap'}
+{'title': 'Beanie'}
+```
+
+And flatten the selection into a sequence of values.
+
+```python
+from jsonpath import Projection
+
+# ...
+
+for product in query("$..products.*", data).select(
+    "title", "social.shares", projection=Projection.FLAT
+):
+    print(product)
+```
+
+```text
+['Trainers']
+['Barefoot Trainers', 7]
+['Cap']
+['Beanie']
+```
+
+Or project the selection from the JSON value root.
+
+```python
+# ..
+
+for product in query("$..products[?@.social]", data).select(
+    "title",
+    "social.shares",
+    projection=Projection.ROOT,
+):
+    print(product)
+
+```
+
+```text
+{'categories': [{'products': [{'title': 'Barefoot Trainers', 'social': {'shares': 7}}]}]}
 ```
