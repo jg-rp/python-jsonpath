@@ -197,6 +197,22 @@ class Parser:
         ]
     )
 
+    # Infix operators that accept filter expression literals.
+    INFIX_LITERAL_OPERATORS = frozenset(
+        [
+            "==",
+            ">=",
+            ">",
+            "<=",
+            "<",
+            "!=",
+            "<>",
+            "=~",
+            "in",
+            "contains",
+        ]
+    )
+
     PREFIX_OPERATORS = frozenset(
         [
             TOKEN_NOT,
@@ -530,14 +546,14 @@ class Parser:
             self._raise_for_non_comparable_function(left, tok)
             self._raise_for_non_comparable_function(right, tok)
 
-        if operator not in self.COMPARISON_OPERATORS:
-            if isinstance(left, Literal):
+        if operator not in self.INFIX_LITERAL_OPERATORS:
+            if isinstance(left, (Literal, Nil)):
                 raise JSONPathSyntaxError(
                     "filter expression literals outside of "
                     "function expressions must be compared",
                     token=tok,
                 )
-            if isinstance(right, Literal):
+            if isinstance(right, (Literal, Nil)):
                 raise JSONPathSyntaxError(
                     "filter expression literals outside of "
                     "function expressions must be compared",
