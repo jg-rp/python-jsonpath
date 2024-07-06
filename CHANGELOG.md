@@ -4,10 +4,11 @@
 
 **Fixes**
 
-- Fixed handling of JSONPath literals in filter expressions. We now raise a `JSONPathSyntaxError` if a filter expression literal is not part of a comparison or function expression. See [jsonpath-compliance-test-suite#81](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/81).
+- Fixed handling of JSONPath literals in filter expressions. We now raise a `JSONPathSyntaxError` if a filter expression literal is not part of a comparison, membership or function expression. See [jsonpath-compliance-test-suite#81](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/81).
 
 **Features**
 
+- Allow JSONPath filter expression membership operators (`contains` and `in`) to operate on object/mapping data as well as arrays/sequences. See [#55](https://github.com/jg-rp/python-jsonpath/issues/55).
 - Added a `select` method to the JSONPath [query iterator interface](https://jg-rp.github.io/python-jsonpath/query/), generating a projection of each JSONPath match by selecting a subset of its values.
 - Added the `addne` and `addap` operations to [JSONPatch](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch). `addne` (add if not exists) is like the standard `add` operation, but only adds object keys/values if the key does not exist. `addap` (add or append) is like the standard `add` operation, but assumes an index of `-` if the target index can not be resolved.
 

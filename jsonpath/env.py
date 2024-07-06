@@ -1,4 +1,5 @@
 """Core JSONPath configuration object."""
+
 from __future__ import annotations
 
 import re
@@ -548,9 +549,9 @@ class JSONPathEnvironment:
             return self._lt(right, left) or self._eq(left, right)
         if operator == "<=":
             return self._lt(left, right) or self._eq(left, right)
-        if operator == "in" and isinstance(right, Sequence):
+        if operator == "in" and isinstance(right, (Mapping, Sequence)):
             return left in right
-        if operator == "contains" and isinstance(left, Sequence):
+        if operator == "contains" and isinstance(left, (Mapping, Sequence)):
             return right in left
         if operator == "=~" and isinstance(right, re.Pattern) and isinstance(left, str):
             return bool(right.fullmatch(left))
