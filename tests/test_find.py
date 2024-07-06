@@ -98,12 +98,32 @@ TEST_CASES = [
         ],
     ),
     Case(
+        description="object contains literal",
+        path="$[?@.a contains 'foo']",
+        data=[{"a": {"foo": "bar"}}, {"a": {"bar": "baz"}}],
+        want=[
+            {
+                "a": {"foo": "bar"},
+            }
+        ],
+    ),
+    Case(
         description="literal in array",
         path="$[?'foo' in @.a]",
         data=[{"a": ["foo", "bar"]}, {"a": ["bar"]}],
         want=[
             {
                 "a": ["foo", "bar"],
+            }
+        ],
+    ),
+    Case(
+        description="literal in object",
+        path="$[?'foo' in @.a]",
+        data=[{"a": {"foo": "bar"}}, {"a": {"bar": "baz"}}],
+        want=[
+            {
+                "a": {"foo": "bar"},
             }
         ],
     ),
