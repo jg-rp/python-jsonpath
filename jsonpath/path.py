@@ -432,6 +432,30 @@ class CompoundJSONPath:
 
         return matches
 
+    def query(
+        self,
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
+    ) -> Query:
+        """Return a `Query` iterator over matches found by applying this path to _data_.
+
+        Arguments:
+            data: A JSON document or Python object implementing the `Sequence`
+                or `Mapping` interfaces.
+            filter_context: Arbitrary data made available to filters using
+                the _filter context_ selector.
+
+        Returns:
+            A query iterator.
+
+        Raises:
+            JSONPathSyntaxError: If the path is invalid.
+            JSONPathTypeError: If a filter expression attempts to use types in
+                an incompatible way.
+        """
+        return Query(self.finditer(data, filter_context=filter_context), self.env)
+
     def union(self, path: JSONPath) -> CompoundJSONPath:
         """Union of this path and another path."""
         return self.__class__(

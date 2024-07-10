@@ -276,3 +276,10 @@ def test_query_from_compiled_path() -> None:
     path = compile("$.some.*")
     it = path.query({"some": [0, 1, 2, 3]}).values()
     assert list(it) == [0, 1, 2, 3]
+
+
+def test_query_from_compiled_compound_path() -> None:
+    """Test that we can get a query iterator from a compiled path."""
+    path = compile("$.some[0] | $.some[2]")
+    it = path.query({"some": [0, 1, 2, 3]}).values()
+    assert list(it) == [0, 2]
