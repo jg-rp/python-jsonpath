@@ -318,7 +318,7 @@ class JSONPathEnvironment:
         data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
         filter_context: Optional[FilterContextVars] = None,
     ) -> Query:
-        """Return a `Query` object over matches found by applying _path_ to _data_.
+        """Return a `Query` iterator over matches found by applying _path_ to _data_.
 
         `Query` objects are iterable.
 
@@ -353,6 +353,21 @@ class JSONPathEnvironment:
         for obj in jsonpath.query("$.foo..bar", data).limit(5).values():
             ...
         ```
+
+        Arguments:
+            path: The JSONPath as a string.
+            data: A JSON document or Python object implementing the `Sequence`
+                or `Mapping` interfaces.
+            filter_context: Arbitrary data made available to filters using
+                the _filter context_ selector.
+
+        Returns:
+            A query iterator.
+
+        Raises:
+            JSONPathSyntaxError: If the path is invalid.
+            JSONPathTypeError: If a filter expression attempts to use types in
+                an incompatible way.
         """
         return Query(self.finditer(path, data, filter_context=filter_context), self)
 

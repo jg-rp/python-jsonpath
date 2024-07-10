@@ -15,6 +15,7 @@ from typing import TypeVar
 from typing import Union
 
 from jsonpath._data import load_data
+from jsonpath.fluent_api import Query
 from jsonpath.match import FilterContextVars
 from jsonpath.match import JSONPathMatch
 from jsonpath.selectors import IndexSelector
@@ -209,6 +210,30 @@ class JSONPath:
             return next(iter(self.finditer(data, filter_context=filter_context)))
         except StopIteration:
             return None
+
+    def query(
+        self,
+        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        *,
+        filter_context: Optional[FilterContextVars] = None,
+    ) -> Query:
+        """Return a `Query` iterator over matches found by applying this path to _data_.
+
+        Arguments:
+            data: A JSON document or Python object implementing the `Sequence`
+                or `Mapping` interfaces.
+            filter_context: Arbitrary data made available to filters using
+                the _filter context_ selector.
+
+        Returns:
+            A query iterator.
+
+        Raises:
+            JSONPathSyntaxError: If the path is invalid.
+            JSONPathTypeError: If a filter expression attempts to use types in
+                an incompatible way.
+        """
+        return Query(self.finditer(data, filter_context=filter_context), self.env)
 
     def empty(self) -> bool:
         """Return `True` if this path has no selectors."""

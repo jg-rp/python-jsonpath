@@ -1,8 +1,10 @@
 """Test cases for the fluent API."""
+
 import pytest
 
 from jsonpath import JSONPathMatch
 from jsonpath import JSONPointer
+from jsonpath import compile
 from jsonpath import query
 
 
@@ -267,3 +269,10 @@ def test_query_take_more() -> None:
     assert len(head) == 4  # noqa: PLR2004
     assert head == [0, 1, 2, 3]
     assert list(it.values()) == []
+
+
+def test_query_from_compiled_path() -> None:
+    """Test that we can get a query iterator from a compiled path."""
+    path = compile("$.some.*")
+    it = path.query({"some": [0, 1, 2, 3]}).values()
+    assert list(it) == [0, 1, 2, 3]
