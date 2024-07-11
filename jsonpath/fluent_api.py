@@ -22,6 +22,8 @@ from .exceptions import JSONPointerKeyError
 from .patch import JSONPatch
 
 if TYPE_CHECKING:
+    from jsonpath import CompoundJSONPath
+    from jsonpath import JSONPath
     from jsonpath import JSONPathEnvironment
     from jsonpath import JSONPathMatch
     from jsonpath import JSONPointer
@@ -191,7 +193,7 @@ class Query:
 
     def select(
         self,
-        *expressions: str,
+        *expressions: Union[str, JSONPath, CompoundJSONPath],
         projection: Projection = Projection.RELATIVE,
     ) -> Iterable[object]:
         """Query projection using relative JSONPaths.
@@ -217,7 +219,7 @@ class Query:
     def _select(
         self,
         match: JSONPathMatch,
-        expressions: Tuple[str, ...],
+        expressions: Tuple[Union[str, JSONPath, CompoundJSONPath], ...],
         projection: Projection,
     ) -> object:
         if isinstance(match.obj, str):
@@ -232,20 +234,21 @@ class Query:
         patch = JSONPatch()
 
         for expr in expressions:
-            self._patch(match, expr, patch, projection)
+            path = self._env.compile(expr) if isinstance(expr, str) else expr
+            self._patch(match, path, patch, projection)
 
         return _fix_sparse_arrays(patch.apply(obj))
 
     def _patch(
         self,
         match: JSONPathMatch,
-        expr: str,
+        path: Union[JSONPath, CompoundJSONPath],
         patch: JSONPatch,
         projection: Projection,
     ) -> None:
         root_pointer = match.pointer()
 
-        for rel_match in self._env.finditer(expr, match.obj):  # type: ignore
+        for rel_match in path.finditer(match.obj):  # type: ignore
             if projection == Projection.FLAT:
                 patch.addap("/-", rel_match.obj)
             elif projection == Projection.ROOT:

@@ -159,3 +159,11 @@ def test_sparse_array_selection() -> None:
     assert list(it) == [
         {"categories": [{"products": [{"title": "Beanie", "social": {"shares": 7}}]}]}
     ]
+
+
+def test_pre_compiled_select_many() -> None:
+    expr = "$.*"
+    data = [{"a": 1, "b": 1, "c": 1}, {"a": 2, "b": 2, "c": 2}, {"b": 3, "a": 3}]
+    projection = (jsonpath.compile("a"), "c")
+    it = jsonpath.query(expr, data).select(*projection)
+    assert list(it) == [{"a": 1, "c": 1}, {"a": 2, "c": 2}, {"a": 3}]
