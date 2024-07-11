@@ -166,12 +166,16 @@ for product in query("$..products.*", data).values():
 {'title': 'Beanie', 'description': 'Winter running hat.', 'price': 9.0}
 ```
 
-We can select nested values too.
+We can select nested values too, and arguments to `select()` can be pre-compiled paths.
 
 ```python
+import jsonpath
+
 # ...
 
-for product in query("$..products.*", data).select("title", "social.shares"):
+projection = (jsonpath.compile("title"), jsonpath.compile("social.shares"))
+
+for product in jsonpath.query("$..products.*", data).select(*projection):
     print(product)
 ```
 
