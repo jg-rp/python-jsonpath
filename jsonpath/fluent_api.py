@@ -18,9 +18,6 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
-from .exceptions import JSONPointerKeyError
-from .patch import JSONPatch
-
 if TYPE_CHECKING:
     from jsonpath import CompoundJSONPath
     from jsonpath import JSONPath
@@ -222,73 +219,55 @@ class Query:
         expressions: Tuple[Union[str, JSONPath, CompoundJSONPath], ...],
         projection: Projection,
     ) -> object:
-        if isinstance(match.obj, str):
-            return None
-        if isinstance(match.obj, Sequence) or projection == Projection.FLAT:
-            obj: Union[List[Any], Dict[str, Any]] = []
-        elif isinstance(match.obj, Mapping):
-            obj = {}
-        else:
+        if not isinstance(match.obj, (Mapping, Sequence)) or isinstance(match.obj, str):
             return None
 
-        patch = JSONPatch()
+        if projection == Projection.RELATIVE:
+            obj: Dict[Union[int, str], Any] = {}
+            for expr in expressions:
+                path = self._env.compile(expr) if isinstance(expr, str) else expr
+                for rel_match in path.finditer(match.obj):  # type: ignore
+                    _patch_obj(rel_match.parts, obj, rel_match.obj)
 
+            return _fix_sparse_arrays(obj)
+
+        if projection == Projection.FLAT:
+            arr: List[object] = []
+            for expr in expressions:
+                path = self._env.compile(expr) if isinstance(expr, str) else expr
+                for rel_match in path.finditer(match.obj):  # type: ignore
+                    arr.append(rel_match.obj)
+            return arr
+
+        # Project from the root document
+        obj = {}
         for expr in expressions:
             path = self._env.compile(expr) if isinstance(expr, str) else expr
-            self._patch(match, path, patch, projection)
+            for rel_match in path.finditer(match.obj):  # type: ignore
+                _patch_obj(match.parts + rel_match.parts, obj, rel_match.obj)
 
-        return _fix_sparse_arrays(patch.apply(obj))
-
-    def _patch(
-        self,
-        match: JSONPathMatch,
-        path: Union[JSONPath, CompoundJSONPath],
-        patch: JSONPatch,
-        projection: Projection,
-    ) -> None:
-        root_pointer = match.pointer()
-
-        for rel_match in path.finditer(match.obj):  # type: ignore
-            if projection == Projection.FLAT:
-                patch.addap("/-", rel_match.obj)
-            elif projection == Projection.ROOT:
-                # Pointer string without a leading slash
-                rel_pointer = "/".join(
-                    str(p).replace("~", "~0").replace("/", "~1")
-                    for p in rel_match.parts
-                )
-                pointer = root_pointer / rel_pointer
-                _patch_parents(pointer.parent(), patch, match.root)
-                patch.addap(pointer, rel_match.obj)
-            else:
-                # Natural projection
-                pointer = rel_match.pointer()
-                _patch_parents(pointer.parent(), patch, match.obj)  # type: ignore
-                patch.addap(pointer, rel_match.obj)
+        return _fix_sparse_arrays(obj)
 
 
-def _patch_parents(
-    pointer: JSONPointer,
-    patch: JSONPatch,
-    obj: Union[Sequence[Any], Mapping[str, Any]],
+def _patch_obj(
+    parts: Tuple[Union[int, str], ...],
+    obj: Mapping[Union[str, int], Any],
+    value: object,
 ) -> None:
-    if pointer.parent().parts:
-        _patch_parents(pointer.parent(), patch, obj)
+    _obj = obj
 
-    if pointer.parts:
-        try:
-            _obj = pointer.resolve(obj)
-        except JSONPointerKeyError:
-            _obj = obj
+    # For lack of a better idea, we're patching arrays to dictionaries with
+    # integer keys. This is to handle sparse array selections without having
+    # to keep track of indexes and how they map from the root JSON value to
+    # the selected JSON value.
+    #
+    # We'll fix these "sparse arrays" after the patch has been applied.
+    for part in parts[:-1]:
+        if part not in _obj:
+            _obj[part] = {}  # type: ignore
+        _obj = _obj[part]
 
-        # For lack of a better idea, we're patching arrays to dictionaries with
-        # integer keys. This is to handle sparse array selections without having
-        # to keep track of indexes and how they map from the root JSON value to
-        # the selected JSON value.
-        #
-        # We'll fix these "sparse arrays" after the patch has been applied.
-        if isinstance(_obj, (Sequence, Mapping)) and not isinstance(_obj, str):
-            patch.addne(pointer, {})
+    _obj[parts[-1]] = value  # type: ignore
 
 
 def _fix_sparse_arrays(obj: Any) -> object:
