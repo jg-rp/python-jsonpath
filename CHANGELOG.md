@@ -8,7 +8,7 @@
 
 **Compliance**
 
-- Skipped tests for invalid escape sequences. The JSONPath spec is more strict than Python's JSON decoder when it comes to parsing `\u` escape sequences in string literals. We are adopting a policy of least surprise. That is, most people will expect the JSONPath parser to behave the same as Python's JSON parser. See [jsonpath-compliance-test-suite #87](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/87).
+- Skipped tests for invalid escape sequences. The JSONPath spec is more strict than Python's JSON decoder when it comes to parsing `\u` escape sequences in string literals. We are adopting a policy of least surprise. The assertion is that most people will expect the JSONPath parser to behave the same as Python's JSON parser. See [jsonpath-compliance-test-suite #87](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/87).
 
 **Features**
 
