@@ -208,7 +208,7 @@ And this is a list of areas where we deviate from [RFC 9535](https://datatracker
 - We don't require property names to be quoted inside a bracketed selection, unless the name contains reserved characters.
 - We don't require the recursive descent segment to have a selector. `$..` is equivalent to `$..*`.
 - We support explicit comparisons to `undefined` as well as implicit existence tests.
-- Float literals without a fractional digit are OK. `1.` is equivalent to `1.0`.
+- Float literals without a fractional digit are OK or leading digit. `1.` is equivalent to `1.0`.
 - We treat literals (such as `true` and `false`) as valid "basic" expressions. For example, `$[?true || false]`, without an existence test or comparison either side of logical _or_, does not raise a syntax error.
 - By default, `and` is equivalent to `&&` and `or` is equivalent to `||`.
 - `none` and `nil` are aliases for `null`.

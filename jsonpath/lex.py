@@ -1,4 +1,5 @@
 """JSONPath tokenization."""
+
 from __future__ import annotations
 
 import re
@@ -138,8 +139,8 @@ class Lexer:
             (TOKEN_LIST_SLICE, self.slice_list_pattern),
             (TOKEN_FUNCTION, self.function_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
-            (TOKEN_FLOAT, r"-?\d+\.\d*(?:e[+-]?\d+)?"),
-            (TOKEN_INT, r"-?\d+(?P<G_EXP>e[+\-]?\d+)?\b"),
+            (TOKEN_FLOAT, r"-?\d+\.\d*(?:[eE][+-]?\d+)?"),
+            (TOKEN_INT, r"-?\d+(?P<G_EXP>[eE][+\-]?\d+)?\b"),
             (TOKEN_DDOT, r"\.\."),
             (TOKEN_AND, self.logical_and_pattern),
             (TOKEN_OR, self.logical_or_pattern),

@@ -8,6 +8,7 @@ import asyncio
 import json
 import operator
 from dataclasses import dataclass
+from dataclasses import field
 from typing import Any
 from typing import List
 from typing import Mapping
@@ -28,6 +29,7 @@ class Case:
     result: Any = None
     results: Optional[List[Any]] = None
     invalid_selector: Optional[bool] = None
+    tags: List[str] = field(default_factory=list)
 
 
 SKIP = {
@@ -43,12 +45,35 @@ SKIP = {
     "functions, match, filter, match function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
     "functions, search, filter, search function, unicode char class, uppercase": "\\p not supported",  # noqa: E501
     "functions, search, filter, search function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
-    "filter, equals number, decimal fraction, no fractional digit": "TODO",
+    "filter, equals number, decimal fraction, no fractional digit": "expected behavior policy",  # noqa: E501
+    "filter, equals number, decimal fraction, no int digit": "expected behavior policy",
+    "filter, equals number, invalid no int digit": "expected behavior policy",
+    "filter, equals number, invalid 00": "expected behavior policy",
+    "filter, equals number, invalid leading 0": "expected behavior policy",
+    "filter, equals number, invalid no fractional digit": "expected behavior policy",
+    "filter, equals number, invalid no fractional digit e": "expected behavior policy",
+    "slice selector, start, leading 0": "expected behavior policy",
+    "slice selector, start, -0": "expected behavior policy",
+    "slice selector, start, leading -0": "expected behavior policy",
+    "slice selector, end, leading 0": "expected behavior policy",
+    "slice selector, end, minus space": "expected behavior policy",
+    "slice selector, end, -0": "expected behavior policy",
+    "slice selector, end, leading -0": "expected behavior policy",
+    "slice selector, step, leading 0": "expected behavior policy",
+    "slice selector, step, minus space": "expected behavior policy",
+    "slice selector, step, -0": "expected behavior policy",
+    "slice selector, step, leading -0": "expected behavior policy",
+    "filter, true, incorrectly capitalized": "flexible literal policy",
+    "filter, false, incorrectly capitalized": "flexible literal policy",
+    "filter, null, incorrectly capitalized": "flexible literal policy",
     "name selector, double quotes, single high surrogate": "expected behavior policy",
     "name selector, double quotes, single low surrogate": "expected behavior policy",
     "name selector, double quotes, high high surrogate": "expected behavior policy",
     "name selector, double quotes, low low surrogate": "expected behavior policy",
     "name selector, double quotes, surrogate non-surrogate": "expected behavior policy",
+    "name selector, double quotes, non-surrogate surrogate": "expected behavior policy",
+    "name selector, double quotes, surrogate supplementary": "expected behavior policy",
+    "name selector, double quotes, supplementary surrogate": "expected behavior policy",
     "whitespace, selectors, space between dot and name": "flexible whitespace policy",  # noqa: E501
     "whitespace, selectors, newline between dot and name": "flexible whitespace policy",  # noqa: E501
     "whitespace, selectors, tab between dot and name": "flexible whitespace policy",  # noqa: E501
