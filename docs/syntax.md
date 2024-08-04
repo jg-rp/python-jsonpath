@@ -213,6 +213,7 @@ And this is a list of areas where we deviate from [RFC 9535](https://datatracker
 - By default, `and` is equivalent to `&&` and `or` is equivalent to `||`.
 - `none` and `nil` are aliases for `null`.
 - `null` (and its aliases), `true` and `false` can start with an upper or lower case letter.
+- We don't treat some invalid `\u` escape sequences in quoted name selectors and string literals as an error. We match the behavior of the JSON decoder in Python's standard library, which is less strict than RFC 9535.
 
 And this is a list of features that are uncommon or unique to Python JSONPath.
 

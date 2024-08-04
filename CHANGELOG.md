@@ -6,6 +6,10 @@
 
 - Fixed handling of JSONPath literals in filter expressions. We now raise a `JSONPathSyntaxError` if a filter expression literal is not part of a comparison, membership or function expression. See [jsonpath-compliance-test-suite#81](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/81).
 
+**Compliance**
+
+- Skipped tests for invalid escape sequences. The JSONPath spec is more strict than Python's JSON decoder when it comes to parsing `\u` escape sequences in string literals. We are adopting a policy of least surprise. The assertion is that most people will expect the JSONPath parser to behave the same as Python's JSON parser. See [jsonpath-compliance-test-suite #87](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/87).
+
 **Features**
 
 - Allow JSONPath filter expression membership operators (`contains` and `in`) to operate on object/mapping data as well as arrays/sequences. See [#55](https://github.com/jg-rp/python-jsonpath/issues/55).

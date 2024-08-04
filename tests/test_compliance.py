@@ -44,6 +44,11 @@ SKIP = {
     "functions, search, filter, search function, unicode char class, uppercase": "\\p not supported",  # noqa: E501
     "functions, search, filter, search function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
     "filter, equals number, decimal fraction, no fractional digit": "TODO",
+    "name selector, double quotes, single high surrogate": "expected behavior policy",
+    "name selector, double quotes, single low surrogate": "expected behavior policy",
+    "name selector, double quotes, high high surrogate": "expected behavior policy",
+    "name selector, double quotes, low low surrogate": "expected behavior policy",
+    "name selector, double quotes, surrogate non-surrogate": "expected behavior policy",
     "whitespace, selectors, space between dot and name": "flexible whitespace policy",  # noqa: E501
     "whitespace, selectors, newline between dot and name": "flexible whitespace policy",  # noqa: E501
     "whitespace, selectors, tab between dot and name": "flexible whitespace policy",  # noqa: E501
