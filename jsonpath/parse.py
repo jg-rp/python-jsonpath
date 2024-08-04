@@ -474,6 +474,12 @@ class Parser:
                 stream.expect_peek(TOKEN_COMMA)
                 stream.next_token()
 
+                if stream.peek.kind == TOKEN_RBRACKET:
+                    raise JSONPathSyntaxError(
+                        "unexpected trailing comma",
+                        token=stream.peek,
+                    )
+
             stream.next_token()
 
         if not list_items:

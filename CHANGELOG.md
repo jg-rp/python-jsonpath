@@ -5,10 +5,14 @@
 **Fixes**
 
 - Fixed handling of JSONPath literals in filter expressions. We now raise a `JSONPathSyntaxError` if a filter expression literal is not part of a comparison, membership or function expression. See [jsonpath-compliance-test-suite#81](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/81).
+- Fixed parsing of number literals including an exponent. Upper case 'e's are now allowed.
+- Fixed handling of trailing commas in bracketed selection lists. We now raise a `JSONPathSyntaxError` in such cases.
 
 **Compliance**
 
 - Skipped tests for invalid escape sequences. The JSONPath spec is more strict than Python's JSON decoder when it comes to parsing `\u` escape sequences in string literals. We are adopting a policy of least surprise. The assertion is that most people will expect the JSONPath parser to behave the same as Python's JSON parser. See [jsonpath-compliance-test-suite #87](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/87).
+- Skipped tests for invalid integer and float literals. Same as above. We are deliberately choosing to match Python's int and float parsing behavior. See [jsonpath-compliance-test-suite #89](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite/pull/89).
+- Skipped tests for incorrect casing `true`, `false` and `null` literals.
 
 **Features**
 
