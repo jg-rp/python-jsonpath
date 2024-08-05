@@ -1086,11 +1086,12 @@
 <li>We don't require property names to be quoted inside a bracketed selection, unless the name contains reserved characters.</li>
 <li>We don't require the recursive descent segment to have a selector. <code>$..</code> is equivalent to <code>$..*</code>.</li>
 <li>We support explicit comparisons to <code>undefined</code> as well as implicit existence tests.</li>
-<li>Float literals without a fractional digit are OK. <code>1.</code> is equivalent to <code>1.0</code>.</li>
+<li>Float literals without a fractional digit are OK or leading digit. <code>1.</code> is equivalent to <code>1.0</code>.</li>
 <li>We treat literals (such as <code>true</code> and <code>false</code>) as valid "basic" expressions. For example, <code>$[?true || false]</code>, without an existence test or comparison either side of logical <em>or</em>, does not raise a syntax error.</li>
 <li>By default, <code>and</code> is equivalent to <code>&amp;&amp;</code> and <code>or</code> is equivalent to <code>||</code>.</li>
 <li><code>none</code> and <code>nil</code> are aliases for <code>null</code>.</li>
 <li><code>null</code> (and its aliases), <code>true</code> and <code>false</code> can start with an upper or lower case letter.</li>
+<li>We don't treat some invalid <code>\u</code> escape sequences in quoted name selectors and string literals as an error. We match the behavior of the JSON decoder in Python's standard library, which is less strict than RFC 9535.</li>
 </ul>
 <p>And this is a list of features that are uncommon or unique to Python JSONPath.</p>
 <ul>

@@ -856,7 +856,7 @@
 <h1 id="quick-start">Quick Start</h1>
 <p>This page gets you started using JSONPath, JSON Pointer and JSON Patch wih Python. See <a href="../syntax/">JSONPath Syntax</a> for information on JSONPath selector syntax.</p>
 <h2 id="findallpath-data"><code>findall(path, data)</code></h2>
-<p>Find all objects matching a JSONPath with <a href="../api/#jsonpath.env.JSONPathEnvironment.findall"><code>jsonpath.findall()</code></a>. It takes, as arguments, a JSONPath string and some <em>data</em> object. It always returns a list of objects selected from <em>data</em>, never a scalar value.</p>
+<p>Find all objects matching a JSONPath with <a href="../api/#jsonpath.JSONPathEnvironment.findall"><code>jsonpath.findall()</code></a>. It takes, as arguments, a JSONPath string and some <em>data</em> object. It always returns a list of objects selected from <em>data</em>, never a scalar value.</p>
 <p><em>data</em> can be a file-like object or string containing JSON formatted data, or a Python <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping"><code>Mapping</code></a> or <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence"><code>Sequence</code></a>, like a dictionary or list. In this example we select user names from a dictionary containing a list of user dictionaries.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
@@ -893,7 +893,7 @@
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">user_names</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;$.users.*.name&quot;</span><span class="p">,</span> <span class="n">fd</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="finditerpath-data"><code>finditer(path, data)</code></h2>
-<p>Use <a href="../api/#jsonpath.env.JSONPathEnvironment.finditer"><code>jsonpath.finditer()</code></a> to iterate over instances of <a href="../api/#jsonpath.JSONPathMatch"><code>jsonpath.JSONPathMatch</code></a> for every object in <em>data</em> that matches <em>path</em>. It accepts the same arguments as <a href="#findall"><code>findall()</code></a>, a path string and data from which to select matches.</p>
+<p>Use <a href="../api/#jsonpath.JSONPathEnvironment.finditer"><code>jsonpath.finditer()</code></a> to iterate over instances of <a href="../api/#jsonpath.JSONPathMatch"><code>jsonpath.JSONPathMatch</code></a> for every object in <em>data</em> that matches <em>path</em>. It accepts the same arguments as <a href="#findallpath-data"><code>findall()</code></a>, a path string and data from which to select matches.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
@@ -929,7 +929,7 @@
 </span></code></pre></div>
 <p>The selected object is available from a <a href="../api/#jsonpath.JSONPathMatch"><code>JSONPathMatch</code></a> as <code>obj</code> and its path, as a string, as <code>path</code>. Other useful properties of <code>JSONPathMatch</code> include a reference to the parent match, a list of child matches, and a <code>parts</code> tuple of keys and indices that make up the path.</p>
 <h2 id="compilepath"><code>compile(path)</code></h2>
-<p>When you have a JSONPath that needs to be matched against different data repeatedly, you can <em>compile</em> the path ahead of time using <a href="../api/#jsonpath.env.JSONPathEnvironment.compile"><code>jsonpath.compile()</code></a>. It takes a path as a string and returns a <a href="../api/#jsonpath.JSONPath"><code>JSONPath</code></a> instance. <code>JSONPath</code> has <code>findall()</code> and <code>finditer()</code> methods that behave similarly to package-level <code>findall()</code> and <code>finditer()</code>, just without the <code>path</code> argument.</p>
+<p>When you have a JSONPath that needs to be matched against different data repeatedly, you can <em>compile</em> the path ahead of time using <a href="../api/#jsonpath.JSONPathEnvironment.compile"><code>jsonpath.compile()</code></a>. It takes a path as a string and returns a <a href="../api/#jsonpath.JSONPath"><code>JSONPath</code></a> instance. <code>JSONPath</code> has <code>findall()</code> and <code>finditer()</code> methods that behave similarly to package-level <code>findall()</code> and <code>finditer()</code>, just without the <code>path</code> argument.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">some_data</span> <span class="o">=</span> <span class="p">{</span>
@@ -965,7 +965,7 @@
 </span></code></pre></div>
 <h2 id="matchpath-data"><code>match(path, data)</code></h2>
 <p><strong><em>New in version 0.8.0</em></strong></p>
-<p>Get a <a href="../api/#jsonpath.JSONPathMatch"><code>jsonpath.JSONPathMatch</code></a> instance for the first match found in <em>data</em>. If there are no matches, <code>None</code> is returned. <code>match()</code> accepts the same arguments as <a href="#findall"><code>findall()</code></a>.</p>
+<p>Get a <a href="../api/#jsonpath.JSONPathMatch"><code>jsonpath.JSONPathMatch</code></a> instance for the first match found in <em>data</em>. If there are no matches, <code>None</code> is returned. <code>match()</code> accepts the same arguments as <a href="#findallpath-data"><code>findall()</code></a>.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span> <span class="nn">jsonpath</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
@@ -1045,7 +1045,7 @@
 </span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="n">sue_score</span> <span class="o">=</span> <span class="n">pointer</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="s2">&quot;/users/99/score&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">sue_score</span><span class="p">)</span>  <span class="c1"># 0</span>
 </span></code></pre></div>
-<p>See also <a href="../api/#jsonpath.match.JSONPathMatch.pointer"><code>JSONPathMatch.pointer()</code></a>, which builds a <a href="../api/#jsonpath.JSONPointer"><code>JSONPointer</code></a> from a <code>JSONPathMatch</code>.</p>
+<p>See also <a href="../api/#jsonpath.JSONPathMatch.pointer"><code>JSONPathMatch.pointer()</code></a>, which builds a <a href="../api/#jsonpath.JSONPointer"><code>JSONPointer</code></a> from a <code>JSONPathMatch</code>.</p>
 <h2 id="patchapplypatch-data"><code>patch.apply(patch, data)</code></h2>
 <p><strong><em>New in version 0.8.0</em></strong></p>
 <p>Apply a JSON Patch (<a href="https://datatracker.ietf.org/doc/html/rfc6902">RFC 6902</a>) to some data. A JSON Patch defines update operation to perform on a JSON document.</p>
@@ -1096,7 +1096,7 @@
 </span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># {&#39;some&#39;: {&#39;other&#39;: &#39;thing&#39;, &#39;foo&#39;: {&#39;bar&#39;: [1], &#39;else&#39;: &#39;thing&#39;}}}</span>
 </span></code></pre></div>
 <h2 id="whats-next">What's Next?</h2>
-<p>Read about the <a href="../query/">Query Iterators</a> API or <a href="../advanced/#function-extensions">user-defined filter functions</a>. Also see how to make extra data available to filters with <a href="../advanced/#extra-filter-context">Extra Filter Context</a>.</p>
+<p>Read about the <a href="../query/">Query Iterators</a> API or <a href="../advanced/#function-extensions">user-defined filter functions</a>. Also see how to make extra data available to filters with <a href="../advanced/#filter-variables">Extra Filter Context</a>.</p>
 <p><code>findall()</code>, <code>finditer()</code> and <code>compile()</code> are shortcuts that use the default<a href="../api/#jsonpath.JSONPathEnvironment"><code>JSONPathEnvironment</code></a>. <code>jsonpath.findall(path, data)</code> is equivalent to:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">jsonpath</span><span class="o">.</span><span class="n">JSONPathEnvironment</span><span class="p">()</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </span></code></pre></div>
