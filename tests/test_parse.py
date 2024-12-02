@@ -210,6 +210,11 @@ TEST_CASES = [
         path=r"$[?@ =~ /\\d/]",
         want="$[?@ =~ /\\\\d/]",
     ),
+    Case(
+        description="match function",
+        path=r"$[?match(@, '\\d')]",
+        want='$[?match(@, "\\\\d")]',
+    ),
 ]
 
 
