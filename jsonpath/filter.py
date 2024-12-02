@@ -243,8 +243,7 @@ class RegexLiteral(Literal[Pattern[str]]):
             if self.value.flags & flag:
                 flags.append(ch)
 
-        pattern = re.sub(r"\\(.)", r"\1", self.value.pattern)
-        return f"/{pattern}/{''.join(flags)}"
+        return f"/{self.value.pattern}/{''.join(flags)}"
 
 
 class ListLiteral(FilterExpression):

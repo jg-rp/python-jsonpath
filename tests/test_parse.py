@@ -200,6 +200,21 @@ TEST_CASES = [
         path="$[?!(@.a && !@.b)]",
         want="$[?!(@['a'] && !@['b'])]",
     ),
+    Case(
+        description="issue 70",
+        path=r"$[?@ =~ /\d/]",
+        want="$[?@ =~ /\\d/]",
+    ),
+    Case(
+        description="escaped slash in regex literal",
+        path=r"$[?@ =~ /\\d/]",
+        want="$[?@ =~ /\\\\d/]",
+    ),
+    Case(
+        description="match function",
+        path=r"$[?match(@, '\\d')]",
+        want='$[?match(@, "\\\\d")]',
+    ),
 ]
 
 

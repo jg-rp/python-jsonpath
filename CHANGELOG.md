@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 1.2.1 (unreleased)
+
+**Fixes**
+
+- Fixed the string representation regex literals in filter expressions. See [issue #70](https://github.com/jg-rp/python-jsonpath/issues/70).
+
 ## Version 1.2.0
 
 **Fixes**
