@@ -4,7 +4,7 @@ import pytest
 
 from jsonpath import JSONPathMatch
 from jsonpath import JSONPointer
-from jsonpath import compile
+from jsonpath import compile  # noqa: A004
 from jsonpath import query
 
 
