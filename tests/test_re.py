@@ -39,6 +39,12 @@ TEST_CASES = [
         data={"some": [{"thing": "foO"}]},
         want=[{"thing": "foO"}],
     ),
+    Case(
+        description="escaped slash",
+        path="$.some[?(@.thing =~ /fo\\\\[a-z]/)]",
+        data={"some": [{"thing": "fo\\b"}]},
+        want=[{"thing": "fo\\b"}],
+    ),
 ]
 
 
