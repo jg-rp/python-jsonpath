@@ -42,6 +42,8 @@ $.categories[0][name]
 $.categories[0]['name']
 ```
 
+By default, `or`, `and`, `in`, `true`, `True`, `false`, `False`, `nil`, `Nil`, `null`, `Null`, `none`, `None`, `contains`, `undefined`, and `missing` are considered _reserved words_. In some cases you will need to use quoted property/name selector syntax if you're selecting a name that matches any of these words exactly. For example, `["and"]`.
+
 ### Array indices (`[0]` or `[-1]`)
 
 Select an item from an array by its index. Indices are zero-based and enclosed in brackets. If the index is negative, items are selected from the end of the array. Considering example data from the top of this page, the following examples are equivalent.

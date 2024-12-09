@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 1.2.2 (unreleased)
+
+**Fixes**
+
+- Fixed parsing of bare name selectors that start with a reserved word. See [issue #72](https://github.com/jg-rp/python-jsonpath/issues/72).
+
 ## Version 1.2.1
 
 **Fixes**
