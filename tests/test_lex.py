@@ -1375,6 +1375,85 @@ TEST_CASES = [
             Token(kind=TOKEN_RBRACKET, value="]", index=9, path="$.thing[~]"),
         ],
     ),
+    Case(
+        description="implicit root selector, name selector starts with `and`",
+        path="anderson",
+        want=[
+            Token(kind=TOKEN_BARE_PROPERTY, value="anderson", index=0, path="anderson"),
+        ],
+    ),
+    Case(
+        description="implicit root selector, name selector starts with `or`",
+        path="order",
+        want=[
+            Token(kind=TOKEN_BARE_PROPERTY, value="order", index=0, path="order"),
+        ],
+    ),
+    Case(
+        description="implicit root selector, name selector starts with `true`",
+        path="trueblue",
+        want=[
+            Token(kind=TOKEN_BARE_PROPERTY, value="trueblue", index=0, path="trueblue"),
+        ],
+    ),
+    Case(
+        description="implicit root selector, name selector starts with `false`",
+        path="falsehood",
+        want=[
+            Token(
+                kind=TOKEN_BARE_PROPERTY, value="falsehood", index=0, path="falsehood"
+            ),
+        ],
+    ),
+    Case(
+        description="implicit root selector, name selector starts with `not`",
+        path="nottingham",
+        want=[
+            Token(
+                kind=TOKEN_BARE_PROPERTY, value="nottingham", index=0, path="nottingham"
+            ),
+        ],
+    ),
+    Case(
+        description="implicit root selector, name selector starts with `null`",
+        path="nullable",
+        want=[
+            Token(kind=TOKEN_BARE_PROPERTY, value="nullable", index=0, path="nullable"),
+        ],
+    ),
+    Case(
+        description="implicit root selector, name selector starts with `none`",
+        path="nonexpert",
+        want=[
+            Token(
+                kind=TOKEN_BARE_PROPERTY, value="nonexpert", index=0, path="nonexpert"
+            ),
+        ],
+    ),
+    Case(
+        description="implicit root selector, name selector starts with `undefined`",
+        path="undefinedness",
+        want=[
+            Token(
+                kind=TOKEN_BARE_PROPERTY,
+                value="undefinedness",
+                index=0,
+                path="undefinedness",
+            ),
+        ],
+    ),
+    Case(
+        description="implicit root selector, name selector starts with `missing`",
+        path="missingly",
+        want=[
+            Token(
+                kind=TOKEN_BARE_PROPERTY,
+                value="missingly",
+                index=0,
+                path="missingly",
+            ),
+        ],
+    ),
 ]
 
 

@@ -127,6 +127,30 @@ TEST_CASES = [
             }
         ],
     ),
+    Case(
+        description="issue 72, orders",
+        path="orders",
+        data={"orders": [1, 2, 3]},
+        want=[[1, 2, 3]],
+    ),
+    Case(
+        description="issue 72, andy",
+        path="andy",
+        data={"andy": [1, 2, 3]},
+        want=[[1, 2, 3]],
+    ),
+    Case(
+        description="quoted reserved word, and",
+        path="['and']",
+        data={"and": [1, 2, 3]},
+        want=[[1, 2, 3]],
+    ),
+    Case(
+        description="quoted reserved word, or",
+        path="['or']",
+        data={"or": [1, 2, 3]},
+        want=[[1, 2, 3]],
+    ),
 ]
 
 

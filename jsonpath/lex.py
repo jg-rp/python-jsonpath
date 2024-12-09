@@ -88,13 +88,13 @@ class Lexer:
     key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
 
     # `not` or !
-    logical_not_pattern = r"(?:not|!)"
+    logical_not_pattern = r"(?:not\b)|!"
 
     # && or `and`
-    logical_and_pattern = r"(?:&&|and)"
+    logical_and_pattern = r"&&|(?:and\b)"
 
     # || or `or`
-    logical_or_pattern = r"(?:\|\||or)"
+    logical_or_pattern = r"\|\||(?:or\b)"
 
     def __init__(self, *, env: JSONPathEnvironment) -> None:
         self.env = env
@@ -153,15 +153,15 @@ class Lexer:
             ],
             (TOKEN_WILD, r"\*"),
             (TOKEN_FILTER, r"\?"),
-            (TOKEN_IN, r"in"),
-            (TOKEN_TRUE, r"[Tt]rue"),
-            (TOKEN_FALSE, r"[Ff]alse"),
-            (TOKEN_NIL, r"[Nn]il"),
-            (TOKEN_NULL, r"[Nn]ull"),
-            (TOKEN_NONE, r"[Nn]one"),
-            (TOKEN_CONTAINS, r"contains"),
-            (TOKEN_UNDEFINED, r"undefined"),
-            (TOKEN_MISSING, r"missing"),
+            (TOKEN_IN, r"in\b"),
+            (TOKEN_TRUE, r"[Tt]rue\b"),
+            (TOKEN_FALSE, r"[Ff]alse\b"),
+            (TOKEN_NIL, r"[Nn]il\b"),
+            (TOKEN_NULL, r"[Nn]ull\b"),
+            (TOKEN_NONE, r"[Nn]one\b"),
+            (TOKEN_CONTAINS, r"contains\b"),
+            (TOKEN_UNDEFINED, r"undefined\b"),
+            (TOKEN_MISSING, r"missing\b"),
             (TOKEN_LIST_START, r"\["),
             (TOKEN_RBRACKET, r"]"),
             (TOKEN_COMMA, r","),
