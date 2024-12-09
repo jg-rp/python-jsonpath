@@ -1,6 +1,6 @@
 # Python JSONPath Change Log
 
-## Version 1.2.2 (unreleased)
+## Version 1.2.2
 
 **Fixes**
 
@@ -8,7 +8,7 @@
 
 **Changes**
 
-- We're dropped support for Python 3.7, which was end of life in June 2023.
+- We've dropped support for Python 3.7, which was end of life in June 2023.
 
 ## Version 1.2.1
 
