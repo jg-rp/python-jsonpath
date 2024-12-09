@@ -6,6 +6,10 @@
 
 - Fixed parsing of bare name selectors that start with a reserved word. See [issue #72](https://github.com/jg-rp/python-jsonpath/issues/72).
 
+**Changes**
+
+- We're dropped support for Python 3.7, which was end of life in June 2023.
+
 ## Version 1.2.1
 
 **Fixes**
