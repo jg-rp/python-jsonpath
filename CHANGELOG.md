@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 1.2.3
+
+**Fixes**
+
+- Relax type hints on `JSONPatch.apply()`. Some static type checkers were complaining.
+
 ## Version 1.2.2
 
 **Fixes**

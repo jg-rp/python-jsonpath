@@ -7,6 +7,7 @@ import json
 from abc import ABC
 from abc import abstractmethod
 from io import IOBase
+from typing import Any
 from typing import Dict
 from typing import Iterable
 from typing import List
@@ -74,7 +75,7 @@ class OpAdd(Op):
             else:
                 parent.insert(int(target), self.value)
         elif isinstance(parent, MutableMapping):
-            parent[target] = self.value
+            parent[str(target)] = self.value
         else:
             raise JSONPatchError(
                 f"unexpected operation on {parent.__class__.__name__!r}"
@@ -183,7 +184,7 @@ class OpRemove(Op):
         elif isinstance(parent, MutableMapping):
             if obj is UNDEFINED:
                 raise JSONPatchError("can't remove nonexistent property")
-            del parent[self.path.parts[-1]]
+            del parent[str(self.path.parts[-1])]
         else:
             raise JSONPatchError(
                 f"unexpected operation on {parent.__class__.__name__!r}"
@@ -221,7 +222,7 @@ class OpReplace(Op):
         elif isinstance(parent, MutableMapping):
             if obj is UNDEFINED:
                 raise JSONPatchError("can't replace nonexistent property")
-            parent[self.path.parts[-1]] = self.value
+            parent[str(self.path.parts[-1])] = self.value
         else:
             raise JSONPatchError(
                 f"unexpected operation on {parent.__class__.__name__!r}"
@@ -259,7 +260,7 @@ class OpMove(Op):
         if isinstance(source_parent, MutableSequence):
             del source_parent[int(self.source.parts[-1])]
         if isinstance(source_parent, MutableMapping):
-            del source_parent[self.source.parts[-1]]
+            del source_parent[str(self.source.parts[-1])]
 
         dest_parent, _ = self.dest.resolve_parent(data)
 
@@ -270,7 +271,7 @@ class OpMove(Op):
         if isinstance(dest_parent, MutableSequence):
             dest_parent.insert(int(self.dest.parts[-1]), source_obj)
         elif isinstance(dest_parent, MutableMapping):
-            dest_parent[self.dest.parts[-1]] = source_obj
+            dest_parent[str(self.dest.parts[-1])] = source_obj
         else:
             raise JSONPatchError(
                 f"unexpected operation on {dest_parent.__class__.__name__!r}"
@@ -312,7 +313,7 @@ class OpCopy(Op):
         if isinstance(dest_parent, MutableSequence):
             dest_parent.insert(int(self.dest.parts[-1]), copy.deepcopy(source_obj))
         elif isinstance(dest_parent, MutableMapping):
-            dest_parent[self.dest.parts[-1]] = copy.deepcopy(source_obj)
+            dest_parent[str(self.dest.parts[-1])] = copy.deepcopy(source_obj)
         else:
             raise JSONPatchError(
                 f"unexpected operation on {dest_parent.__class__.__name__!r}"
@@ -628,7 +629,7 @@ class JSONPatch:
 
     def apply(
         self,
-        data: Union[str, IOBase, MutableSequence[object], MutableMapping[str, object]],
+        data: Union[str, IOBase, MutableSequence[object], MutableMapping[str, Any]],
     ) -> object:
         """Apply all operations from this patch to _data_.
 
@@ -676,7 +677,7 @@ class JSONPatch:
 
 def apply(
     patch: Union[str, IOBase, Iterable[Mapping[str, object]], None],
-    data: Union[str, IOBase, MutableSequence[object], MutableMapping[str, object]],
+    data: Union[str, IOBase, MutableSequence[object], MutableMapping[str, Any]],
     *,
     unicode_escape: bool = True,
     uri_decode: bool = False,
