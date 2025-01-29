@@ -1,4 +1,5 @@
 """The JSONPath match object, as returned from `JSONPath.finditer()`."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -103,6 +104,10 @@ class NodeList(List[JSONPathMatch]):
         if len(self) == 1:
             return self[0].obj
         return [match.obj for match in self]
+
+    def paths(self) -> List[str]:
+        """Return a normalized path for each node in this node list."""
+        return [match.path for match in self]
 
     def empty(self) -> bool:
         """Return `True` if this node list is empty."""

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import copy
-import json
 import re
 from abc import ABC
 from abc import abstractmethod
@@ -25,6 +24,7 @@ from .function_extensions import FilterFunction
 from .match import NodeList
 from .selectors import Filter as FilterSelector
 from .selectors import ListSelector
+from .serialize import canonical_string
 
 if TYPE_CHECKING:
     from .path import JSONPath
@@ -208,7 +208,7 @@ class StringLiteral(Literal[str]):
     __slots__ = ()
 
     def __str__(self) -> str:
-        return json.dumps(self.value)
+        return canonical_string(self.value)
 
 
 class IntegerLiteral(Literal[int]):

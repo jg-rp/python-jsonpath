@@ -1,5 +1,17 @@
 # Python JSONPath Change Log
 
+## Version 1.3.0
+
+**Fixes**
+
+- Fixed `jsonpath.JSONPathMatch.path`. It is now a "normalized path" following section 2.7 of RFC 9525.
+
+**Other changes**
+
+- `jsonpath.match.NodeList` is now re-exported as `jsonpath.NodeList`.
+- Added `jsonpath.NodeList.paths()`, which returns a list of normalized paths, one for each node in the list.
+- Serialization of compiled JSONPath queries (instances of `jsonpath.JSONPath`) has changed. String literals inside filter selectors are now serialized using the canonical format, as described in section 2.7 of RFC 9525.
+
 ## Version 1.2.2
 
 **Fixes**

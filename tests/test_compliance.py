@@ -28,6 +28,8 @@ class Case:
     document: Union[Mapping[str, Any], Sequence[Any], None] = None
     result: Any = None
     results: Optional[List[Any]] = None
+    result_paths: Optional[List[str]] = None
+    results_paths: Optional[List[List[str]]] = None
     invalid_selector: Optional[bool] = None
     tags: List[str] = field(default_factory=list)
 
@@ -86,7 +88,8 @@ SKIP = {
 
 
 def cases() -> List[Case]:
-    with open("tests/cts/cts.json", encoding="utf8") as fd:
+    # with open("tests/cts/cts.json", encoding="utf8") as fd:
+    with open("../jsonpath-compliance-test-suite/cts.json", encoding="utf8") as fd:
         data = json.load(fd)
     return [Case(**case) for case in data["tests"]]
 
@@ -105,12 +108,16 @@ def test_compliance(case: Case) -> None:
         pytest.skip(reason=SKIP[case.name])
 
     assert case.document is not None
-    rv = jsonpath.findall(case.selector, case.document)
+    nodes = jsonpath.NodeList(jsonpath.finditer(case.selector, case.document))
 
     if case.results is not None:
-        assert rv in case.results
+        assert case.results_paths is not None
+        assert nodes.values() in case.results
+        assert nodes.paths() in case.results_paths
     else:
-        assert rv == case.result
+        assert case.result_paths is not None
+        assert nodes.values() == case.result
+        assert nodes.paths() == case.result_paths
 
 
 @pytest.mark.parametrize("case", valid_cases(), ids=operator.attrgetter("name"))
@@ -118,14 +125,21 @@ def test_compliance_async(case: Case) -> None:
     if case.name in SKIP:
         pytest.skip(reason=SKIP[case.name])
 
-    async def coro() -> List[object]:
+    async def coro() -> jsonpath.NodeList:
         assert case.document is not None
-        return await jsonpath.findall_async(case.selector, case.document)
+        it = await jsonpath.finditer_async(case.selector, case.document)
+        return jsonpath.NodeList([node async for node in it])
+
+    nodes = asyncio.run(coro())
 
     if case.results is not None:
-        assert asyncio.run(coro()) in case.results
+        assert case.results_paths is not None
+        assert nodes.values() in case.results
+        assert nodes.paths() in case.results_paths
     else:
-        assert asyncio.run(coro()) == case.result
+        assert case.result_paths is not None
+        assert nodes.values() == case.result
+        assert nodes.paths() == case.result_paths
 
 
 @pytest.mark.parametrize("case", invalid_cases(), ids=operator.attrgetter("name"))
