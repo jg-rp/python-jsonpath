@@ -11,7 +11,7 @@
 
 - `jsonpath.match.NodeList` is now re-exported as `jsonpath.NodeList`.
 - Added `jsonpath.NodeList.paths()`, which returns a list of normalized paths, one for each node in the list.
-- Serialization of compiled JSONPath queries (instances of `jsonpath.JSONPath`) has changed. String literals inside filter selectors are now serialized using the canonical format, as described in section 2.7 of RFC 9525.
+- Serialization of compiled JSONPath queries (instances of `jsonpath.JSONPath`) has changed. String literals inside filter selectors are now serialized using the canonical format, as described in section 2.7 of RFC 9525, and parentheses in filter selectors are kept to a minimum.
 
 ## Version 1.2.2
 

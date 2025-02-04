@@ -158,12 +158,12 @@ TEST_CASES = [
     Case(
         description="filter with logical not",
         path="$.some[?(@.thing > 1 and not $.other)]",
-        want="$['some'][?(@['thing'] > 1 && !$['other'])]",
+        want="$['some'][?@['thing'] > 1 && !$['other']]",
     ),
     Case(
         description="filter with grouped expression",
         path="$.some[?(@.thing > 1 and ($.foo or $.bar))]",
-        want="$['some'][?(@['thing'] > 1 && ($['foo'] || $['bar']))]",
+        want="$['some'][?@['thing'] > 1 && ($['foo'] || $['bar'])]",
     ),
     Case(
         description="keys selector",
@@ -188,12 +188,12 @@ TEST_CASES = [
     Case(
         description="not binds more tightly than or",
         path="$[?!@.a || !@.b]",
-        want="$[?(!@['a'] || !@['b'])]",
+        want="$[?!@['a'] || !@['b']]",
     ),
     Case(
         description="not binds more tightly than and",
         path="$[?!@.a && !@.b]",
-        want="$[?(!@['a'] && !@['b'])]",
+        want="$[?!@['a'] && !@['b']]",
     ),
     Case(
         description="control precedence with parens",

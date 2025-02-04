@@ -375,6 +375,12 @@ class InfixExpression(FilterExpression):
         self.right = children[1]
 
 
+PRECEDENCE_LOWEST = 1
+PRECEDENCE_LOGICAL_OR = 3
+PRECEDENCE_LOGICAL_AND = 4
+PRECEDENCE_PREFIX = 7
+
+
 class BooleanExpression(FilterExpression):
     """An expression that always evaluates to `True` or `False`."""
 
@@ -408,12 +414,39 @@ class BooleanExpression(FilterExpression):
         )
 
     def __str__(self) -> str:
-        return str(self.expression)
+        return self._canonical_string(self.expression, PRECEDENCE_LOWEST)
 
     def __eq__(self, other: object) -> bool:
         return (
             isinstance(other, BooleanExpression) and self.expression == other.expression
         )
+
+    def _canonical_string(
+        self, expression: FilterExpression, parent_precedence: int
+    ) -> str:
+        if isinstance(expression, InfixExpression):
+            if expression.operator == "&&":
+                left = self._canonical_string(expression.left, PRECEDENCE_LOGICAL_AND)
+                right = self._canonical_string(expression.right, PRECEDENCE_LOGICAL_AND)
+                expr = f"{left} && {right}"
+                return (
+                    f"({expr})" if parent_precedence >= PRECEDENCE_LOGICAL_AND else expr
+                )
+
+            if expression.operator == "||":
+                left = self._canonical_string(expression.left, PRECEDENCE_LOGICAL_OR)
+                right = self._canonical_string(expression.right, PRECEDENCE_LOGICAL_OR)
+                expr = f"{left} || {right}"
+                return (
+                    f"({expr})" if parent_precedence >= PRECEDENCE_LOGICAL_OR else expr
+                )
+
+        if isinstance(expression, PrefixExpression):
+            operand = self._canonical_string(expression.right, PRECEDENCE_PREFIX)
+            expr = f"!{operand}"
+            return f"({expr})" if parent_precedence > PRECEDENCE_PREFIX else expr
+
+        return str(expression)
 
     def evaluate(self, context: FilterContext) -> bool:
         return context.env.is_truthy(self.expression.evaluate(context))
