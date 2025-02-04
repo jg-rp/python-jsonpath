@@ -1,10 +1,11 @@
 # Python JSONPath Change Log
 
-## Version 1.3.0
+## Version 1.3.0 (unreleased)
 
 **Fixes**
 
 - Fixed `jsonpath.JSONPathMatch.path`. It is now a "normalized path" following section 2.7 of RFC 9525.
+- Fixed normalized slice indexes. We were failing to normalize somme indexes given a negative step.
 
 **Other changes**
 
