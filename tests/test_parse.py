@@ -108,7 +108,7 @@ TEST_CASES = [
     Case(
         description="filter with list membership test",
         path="$.some[?(@.thing in ['foo', 'bar', 42])]",
-        want="$['some'][?@['thing'] in [\"foo\", \"bar\", 42]]",
+        want="$['some'][?@['thing'] in ['foo', 'bar', 42]]",
     ),
     Case(
         description="filter with boolean literals",
@@ -143,7 +143,7 @@ TEST_CASES = [
     Case(
         description="filter with string literal",
         path="$.some[?(@.thing == 'foo')]",
-        want="$['some'][?@['thing'] == \"foo\"]",
+        want="$['some'][?@['thing'] == 'foo']",
     ),
     Case(
         description="filter with integer literal",
@@ -158,12 +158,12 @@ TEST_CASES = [
     Case(
         description="filter with logical not",
         path="$.some[?(@.thing > 1 and not $.other)]",
-        want="$['some'][?(@['thing'] > 1 && !$['other'])]",
+        want="$['some'][?@['thing'] > 1 && !$['other']]",
     ),
     Case(
         description="filter with grouped expression",
         path="$.some[?(@.thing > 1 and ($.foo or $.bar))]",
-        want="$['some'][?(@['thing'] > 1 && ($['foo'] || $['bar']))]",
+        want="$['some'][?@['thing'] > 1 && ($['foo'] || $['bar'])]",
     ),
     Case(
         description="keys selector",
@@ -178,22 +178,22 @@ TEST_CASES = [
     Case(
         description="comparison to single quoted string literal with escape",
         path="$[?@.foo == 'ba\\'r']",
-        want="$[?@['foo'] == \"ba'r\"]",
+        want="$[?@['foo'] == 'ba\\'r']",
     ),
     Case(
         description="comparison to double quoted string literal with escape",
         path='$[?@.foo == "ba\\"r"]',
-        want='$[?@[\'foo\'] == "ba\\"r"]',
+        want="$[?@['foo'] == 'ba\"r']",
     ),
     Case(
         description="not binds more tightly than or",
         path="$[?!@.a || !@.b]",
-        want="$[?(!@['a'] || !@['b'])]",
+        want="$[?!@['a'] || !@['b']]",
     ),
     Case(
         description="not binds more tightly than and",
         path="$[?!@.a && !@.b]",
-        want="$[?(!@['a'] && !@['b'])]",
+        want="$[?!@['a'] && !@['b']]",
     ),
     Case(
         description="control precedence with parens",
@@ -213,7 +213,7 @@ TEST_CASES = [
     Case(
         description="match function",
         path=r"$[?match(@, '\\d')]",
-        want='$[?match(@, "\\\\d")]',
+        want="$[?match(@, '\\\\d')]",
     ),
 ]
 

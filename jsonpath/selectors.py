@@ -1,4 +1,5 @@
 """JSONPath segments and selectors, as returned from `Parser.parse`."""
+
 from __future__ import annotations
 
 from abc import ABC
@@ -17,6 +18,7 @@ from typing import Union
 
 from .exceptions import JSONPathIndexError
 from .exceptions import JSONPathTypeError
+from .serialize import canonical_string
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
@@ -75,7 +77,11 @@ class PropertySelector(JSONPathSelector):
         self.shorthand = shorthand
 
     def __str__(self) -> str:
-        return f"['{self.name}']" if self.shorthand else f"'{self.name}'"
+        return (
+            f"[{canonical_string(self.name)}]"
+            if self.shorthand
+            else f"{canonical_string(self.name)}"
+        )
 
     def __eq__(self, __value: object) -> bool:
         return (
@@ -98,7 +104,7 @@ class PropertySelector(JSONPathSelector):
                     obj=self.env.getitem(match.obj, self.name),
                     parent=match,
                     parts=match.parts + (self.name,),
-                    path=match.path + f"['{self.name}']",
+                    path=match.path + f"[{canonical_string(self.name)}]",
                     root=match.root,
                 )
                 match.add_child(_match)
@@ -117,7 +123,7 @@ class PropertySelector(JSONPathSelector):
                     obj=await self.env.getitem_async(match.obj, self.name),
                     parent=match,
                     parts=match.parts + (self.name,),
-                    path=match.path + f"['{self.name}']",
+                    path=match.path + f"[{canonical_string(self.name)}]",
                     root=match.root,
                 )
                 match.add_child(_match)
@@ -321,20 +327,15 @@ class SliceSelector(JSONPathSelector):
             ):
                 raise JSONPathIndexError("index out of range", token=self.token)
 
-    def _normalized_index(self, obj: Sequence[object], index: int) -> int:
-        if index < 0 and len(obj) >= abs(index):
-            return len(obj) + index
-        return index
-
     def resolve(self, matches: Iterable[JSONPathMatch]) -> Iterable[JSONPathMatch]:
         for match in matches:
             if not isinstance(match.obj, Sequence) or self.slice.step == 0:
                 continue
 
-            idx = self.slice.start or 0
-            step = self.slice.step or 1
-            for obj in self.env.getitem(match.obj, self.slice):
-                norm_index = self._normalized_index(match.obj, idx)
+            for norm_index, obj in zip(  # noqa: B905
+                range(*self.slice.indices(len(match.obj))),
+                self.env.getitem(match.obj, self.slice),
+            ):
                 _match = self.env.match_class(
                     filter_context=match.filter_context(),
                     obj=obj,
@@ -345,7 +346,6 @@ class SliceSelector(JSONPathSelector):
                 )
                 match.add_child(_match)
                 yield _match
-                idx += step
 
     async def resolve_async(
         self, matches: AsyncIterable[JSONPathMatch]
@@ -354,10 +354,10 @@ class SliceSelector(JSONPathSelector):
             if not isinstance(match.obj, Sequence) or self.slice.step == 0:
                 continue
 
-            idx = self.slice.start or 0
-            step = self.slice.step or 1
-            for obj in await self.env.getitem_async(match.obj, self.slice):
-                norm_index = self._normalized_index(match.obj, idx)
+            for norm_index, obj in zip(  # noqa: B905
+                range(*self.slice.indices(len(match.obj))),
+                await self.env.getitem_async(match.obj, self.slice),
+            ):
                 _match = self.env.match_class(
                     filter_context=match.filter_context(),
                     obj=obj,
@@ -368,7 +368,6 @@ class SliceSelector(JSONPathSelector):
                 )
                 match.add_child(_match)
                 yield _match
-                idx += step
 
 
 class WildSelector(JSONPathSelector):
@@ -402,7 +401,7 @@ class WildSelector(JSONPathSelector):
                         obj=val,
                         parent=match,
                         parts=match.parts + (key,),
-                        path=match.path + f"['{key}']",
+                        path=match.path + f"[{canonical_string(key)}]",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -431,7 +430,7 @@ class WildSelector(JSONPathSelector):
                         obj=val,
                         parent=match,
                         parts=match.parts + (key,),
-                        path=match.path + f"['{key}']",
+                        path=match.path + f"[{canonical_string(key)}]",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -479,7 +478,7 @@ class RecursiveDescentSelector(JSONPathSelector):
                         obj=val,
                         parent=match,
                         parts=match.parts + (key,),
-                        path=match.path + f"['{key}']",
+                        path=match.path + f"[{canonical_string(key)}]",
                         root=match.root,
                     )
                     match.add_child(_match)
@@ -633,7 +632,7 @@ class Filter(JSONPathSelector):
                                 obj=val,
                                 parent=match,
                                 parts=match.parts + (key,),
-                                path=match.path + f"['{key}']",
+                                path=match.path + f"[{canonical_string(key)}]",
                                 root=match.root,
                             )
                             match.add_child(_match)
@@ -701,7 +700,7 @@ class Filter(JSONPathSelector):
                             obj=val,
                             parent=match,
                             parts=match.parts + (key,),
-                            path=match.path + f"['{key}']",
+                            path=match.path + f"[{canonical_string(key)}]",
                             root=match.root,
                         )
                         match.add_child(_match)

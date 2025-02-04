@@ -24,6 +24,7 @@ from .fluent_api import Projection
 from .fluent_api import Query
 from .lex import Lexer
 from .match import JSONPathMatch
+from .match import NodeList
 from .parse import Parser
 from .patch import JSONPatch
 from .path import CompoundJSONPath
@@ -58,6 +59,7 @@ __all__ = (
     "JSONPointerResolutionError",
     "JSONPointerTypeError",
     "Lexer",
+    "NodeList",
     "match",
     "Parser",
     "Projection",
