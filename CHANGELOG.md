@@ -4,14 +4,14 @@
 
 **Fixes**
 
-- Fixed `jsonpath.JSONPathMatch.path`. It is now a "normalized path" following section 2.7 of RFC 9525.
-- Fixed normalized slice indexes. We were failing to normalize somme indexes given a negative step.
+- Fixed `jsonpath.JSONPathMatch.path`. It is now a "normalized path" following section 2.7 of RFC 9535.
+- Fixed normalized slice indexes. We were failing to normalize some indexes given a negative step.
 
 **Other changes**
 
 - `jsonpath.match.NodeList` is now re-exported as `jsonpath.NodeList`.
 - Added `jsonpath.NodeList.paths()`, which returns a list of normalized paths, one for each node in the list.
-- Serialization of compiled JSONPath queries (instances of `jsonpath.JSONPath`) has changed. String literals inside filter selectors are now serialized using the canonical format, as described in section 2.7 of RFC 9525, and parentheses in filter selectors are kept to a minimum.
+- Serialization of compiled JSONPath queries (instances of `jsonpath.JSONPath`) has changed. String literals inside filter selectors are now serialized using the canonical format, as described in section 2.7 of RFC 9535, and parentheses in filter selectors are kept to a minimum.
 
 ## Version 1.2.2
 
