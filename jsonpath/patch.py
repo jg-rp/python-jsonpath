@@ -419,7 +419,7 @@ class JSONPatch:
                     value=self._op_value(operation, "value", "addne", i),
                 )
             elif op == "addap":
-                self.addne(
+                self.addap(
                     path=self._op_pointer(operation, "path", "addap", i),
                     value=self._op_value(operation, "value", "addap", i),
                 )
