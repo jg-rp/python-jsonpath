@@ -72,6 +72,8 @@ conda install -c conda-forge python-jsonpath
 
 - [JSON P3](https://github.com/jg-rp/json-p3) - RFC 9535 implemented in TypeScript. JSON P3 does not include all the non-standard features of Python JSONPath, but does define some optional [extra syntax](https://jg-rp.github.io/json-p3/guides/jsonpath-extra).
 
+- [Ruby JSON P3](https://github.com/jg-rp/ruby-json-p3) - RFC 9535, RFC 6901 and RFC 6902 implemented in Ruby.
+
 ## Examples
 
 ### JSONPath
