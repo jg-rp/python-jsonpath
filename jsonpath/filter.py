@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from .path import JSONPath
     from .selectors import FilterContext
 
-# ruff: noqa: D102
+# ruff: noqa: D102, PLW1641
 
 
 class FilterExpression(ABC):

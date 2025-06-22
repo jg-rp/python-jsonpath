@@ -268,3 +268,8 @@ def test_non_standard_addap_op() -> None:
     # Index 7 is out of range and would raises a JSONPatchError with the `add` op.
     patch = JSONPatch().addap(path="/foo/7", value=99)
     assert patch.apply({"foo": [1, 2, 3]}) == {"foo": [1, 2, 3, 99]}
+
+
+def test_add_to_mapping_with_int_key() -> None:
+    patch = JSONPatch().add(path="/1", value=99)
+    assert patch.apply({"foo": 1}) == {"foo": 1, "1": 99}

@@ -1,5 +1,12 @@
 # Python JSONPath Change Log
 
+## Version 1.3.1 (unreleased)
+
+**Fixes**
+
+- Fixed the non-standard JSON Patch operation, `addap`. Previously it was behaving like `addne`. See [#81](https://github.com/jg-rp/python-jsonpath/pull/81).
+- Fixed JSON Patch ops that operate on mappings and have a target that looks like an int. We now ensure the target is a string. See [#82](https://github.com/jg-rp/python-jsonpath/pull/82).
+
 ## Version 1.3.0
 
 **Fixes**

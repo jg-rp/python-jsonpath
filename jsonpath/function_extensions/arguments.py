@@ -1,4 +1,5 @@
 """Class-based function extension base."""
+
 import inspect
 from typing import TYPE_CHECKING
 from typing import Any
@@ -26,7 +27,7 @@ def validate(
     params = list(inspect.signature(func).parameters.values())
 
     # Keyword only params are not supported
-    if len([p for p in params if p.kind in (p.KEYWORD_ONLY, p.VAR_KEYWORD)]):
+    if [p for p in params if p.kind in (p.KEYWORD_ONLY, p.VAR_KEYWORD)]:
         raise JSONPathTypeError(
             f"function {token.value!r} requires keyword arguments",
             token=token,
