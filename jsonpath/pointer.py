@@ -485,6 +485,9 @@ class RelativeJSONPointer:
     def __eq__(self, __value: object) -> bool:
         return isinstance(__value, RelativeJSONPointer) and str(self) == str(__value)
 
+    def __hash__(self) -> int:
+        return hash((self.origin, self.index, self.pointer))
+
     def _parse(
         self,
         rel: str,
