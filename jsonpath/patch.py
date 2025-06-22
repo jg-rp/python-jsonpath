@@ -124,7 +124,7 @@ class OpAddAp(OpAdd):
     """A non-standard add operation that appends to arrays/lists .
 
     This is like _OpAdd_, but assumes an index of "-" if the path can not
-    be resolved.
+    be resolved rather than raising a JSONPatchError.
 
     **New in version 1.2.0**
     """
