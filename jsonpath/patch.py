@@ -124,7 +124,7 @@ class OpAddAp(OpAdd):
     """A non-standard add operation that appends to arrays/lists .
 
     This is like _OpAdd_, but assumes an index of "-" if the path can not
-    be resolved.
+    be resolved rather than raising a JSONPatchError.
 
     **New in version 1.2.0**
     """
@@ -419,7 +419,7 @@ class JSONPatch:
                     value=self._op_value(operation, "value", "addne", i),
                 )
             elif op == "addap":
-                self.addne(
+                self.addap(
                     path=self._op_pointer(operation, "path", "addap", i),
                     value=self._op_value(operation, "value", "addap", i),
                 )
