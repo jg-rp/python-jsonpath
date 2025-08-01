@@ -77,6 +77,8 @@ ENV/
 
 # IDE
 .vscode/
+.idea/
+python-jsonpath.iml
 
 # Dev utils
 dev.py
@@ -89,3 +91,6 @@ cts.json
 
 # System
 .DS_Store
+
+# Rob-specific
+generated_temp/
