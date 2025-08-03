@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 class _Undefined:
     def __str__(self) -> str:
-        return "<jsonpath.pointer.UNDEFINED>"
+        return "<jsonpath.pointer.UNDEFINED>"  # pragma: no cover
 
 
 UNDEFINED = _Undefined()
@@ -120,53 +120,78 @@ class JSONPointer:
         except ValueError:
             return s
 
-    def _getitem(self, obj: Any, key: Any) -> Any:  # noqa: PLR0912
+    def _getitem(self, obj: Any, key: Any) -> Any:
         try:
+            # Handle the most common cases. A mapping with a string key, or a sequence
+            # with an integer index.
+            #
+            # Note that `obj` does not have to be a Mapping or Sequence here. Any object
+            # implementing `__getitem__` will do.
             return getitem(obj, key)
         except KeyError as err:
-            # Try a string repr of the index-like item as a mapping key.
-            if isinstance(key, int):
-                try:
-                    return getitem(obj, str(key))
-                except KeyError:
-                    raise JSONPointerKeyError(key) from err
-            # Handle non-standard keys/property selector/pointer.
-            if (
-                isinstance(key, str)
-                and isinstance(obj, Mapping)
-                and key.startswith((self.keys_selector, "#"))
-                and key[1:] in obj
-            ):
-                return key[1:]
-            # Handle non-standard index/property pointer (`#`)
-            raise JSONPointerKeyError(key) from err
+            return self._handle_key_error(obj, key, err)
         except TypeError as err:
-            if isinstance(obj, Sequence) and not isinstance(obj, str):
-                if key == "-":
-                    # "-" is a valid index when appending to a JSON array
-                    # with JSON Patch, but not when resolving a JSON Pointer.
-                    raise JSONPointerIndexError("index out of range") from None
-                # Handle non-standard index pointer.
-                if isinstance(key, str) and key.startswith("#"):
-                    _index = int(key[1:])
-                    if _index >= len(obj):
-                        raise JSONPointerIndexError(
-                            f"index out of range: {_index}"
-                        ) from err
-                    return _index
-                # Try int index. Reject non-zero ints that start with a zero.
-                if isinstance(key, str):
-                    index = self._index(key)
-                    if isinstance(index, int):
-                        try:
-                            return getitem(obj, int(key))
-                        except IndexError as index_err:
-                            raise JSONPointerIndexError(
-                                f"index out of range: {key}"
-                            ) from index_err
-            raise JSONPointerTypeError(f"{key}: {err}") from err
+            return self._handle_type_error(obj, key, err)
         except IndexError as err:
             raise JSONPointerIndexError(f"index out of range: {key}") from err
+
+    def _handle_key_error(self, obj: Any, key: Any, err: Exception) -> object:
+        if isinstance(key, int):
+            # Try a string repr of the index-like item as a mapping key.
+            return self._getitem(obj, str(key))
+
+        # Handle non-standard keys/property selector/pointer.
+        #
+        # For the benefit of `RelativeJSONPointer.to()`, treat keys starting with a `#`
+        # as a "key pointer". If `key[1:]` is a key in `obj`, return the key.
+        #
+        # Note that is a key with a leading `#` exists in `obj`, it will have been
+        # handled by `_getitem`.
+        #
+        # TODO: Same goes for `~`
+        if (
+            isinstance(key, str)
+            and isinstance(obj, Mapping)
+            and key.startswith((self.keys_selector, "#"))
+            and key[1:] in obj
+        ):
+            return key[1:]
+
+        raise JSONPointerKeyError(key) from err
+
+    def _handle_type_error(self, obj: Any, key: Any, err: Exception) -> object:
+        if (
+            isinstance(obj, str)
+            or not isinstance(obj, Sequence)
+            or not isinstance(key, str)
+        ):
+            raise JSONPointerTypeError(f"{key}: {err}") from err
+
+        # `obj` is array-like
+        # `key` is a string
+
+        if key == "-":
+            # "-" is a valid index when appending to a JSON array with JSON Patch, but
+            # not when resolving a JSON Pointer.
+            raise JSONPointerIndexError("index out of range") from None
+
+        # Handle non-standard index pointer.
+        #
+        # For the benefit of `RelativeJSONPointer.to()`, treat keys starting with a `#`
+        # and followed by a valid index as an "index pointer". If `int(key[1:])` is
+        # less than `len(obj)`, return the index.
+        if re.match(r"#[1-9]\d*", key):
+            _index = int(key[1:])
+            if _index >= len(obj):
+                raise JSONPointerIndexError(f"index out of range: {_index}") from err
+            return _index
+
+        # Try int index. Reject non-zero ints that start with a zero.
+        index = self._index(key)
+        if isinstance(index, int):
+            return self._getitem(obj, index)
+
+        raise JSONPointerTypeError(f"{key}: {err}") from err
 
     def resolve(
         self,
@@ -263,7 +288,7 @@ class JSONPointer:
             pointer = cls._encode(match.parts)
         else:
             # This should not happen, unless the JSONPathMatch has been tampered with.
-            pointer = ""
+            pointer = ""  # pragma: no cover
 
         return cls(
             pointer,
@@ -328,10 +353,10 @@ class JSONPointer:
         return isinstance(other, JSONPointer) and self.parts == other.parts
 
     def __hash__(self) -> int:
-        return hash(self.parts)
+        return hash(self.parts)  # pragma: no cover
 
     def __repr__(self) -> str:
-        return f"JSONPointer({self._s!r})"
+        return f"JSONPointer({self._s!r})"  # pragma: no cover
 
     def exists(
         self, data: Union[str, IOBase, Sequence[object], Mapping[str, object]]
@@ -486,7 +511,7 @@ class RelativeJSONPointer:
         return isinstance(__value, RelativeJSONPointer) and str(self) == str(__value)
 
     def __hash__(self) -> int:
-        return hash((self.origin, self.index, self.pointer))
+        return hash((self.origin, self.index, self.pointer))  # pragma: no cover
 
     def _parse(
         self,

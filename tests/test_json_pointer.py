@@ -1,4 +1,5 @@
 """JSONPointer test cases."""
+
 from io import StringIO
 from typing import List
 from typing import Union
@@ -261,7 +262,7 @@ def test_join_pointers_with_slash() -> None:
     assert str(pointer / "/bar") == "/bar"
 
     with pytest.raises(TypeError):
-        pointer / 0
+        pointer / 0  # type: ignore
 
 
 def test_join_pointers() -> None:
@@ -297,6 +298,15 @@ def test_non_standard_index_pointer() -> None:
     assert JSONPointer("/foo/bar/#1").resolve(data) == 1
     with pytest.raises(JSONPointerIndexError):
         JSONPointer("/foo/bar/#9").resolve(data)
+
+
+def test_non_standard_index_pointer_with_leading_zero() -> None:
+    data = {"foo": {"bar": [1, 2, 3], "#baz": "hello"}}
+    with pytest.raises(JSONPointerTypeError):
+        JSONPointer("/foo/bar/#01").resolve(data)
+
+    with pytest.raises(JSONPointerTypeError):
+        JSONPointer("/foo/bar/#09").resolve(data)
 
 
 def test_trailing_slash() -> None:
