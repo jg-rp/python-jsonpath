@@ -140,15 +140,14 @@ class JSONPointer:
             # Try a string repr of the index-like item as a mapping key.
             return self._getitem(obj, str(key))
 
-        # Handle non-standard keys/property selector/pointer.
+        # Handle non-standard key/property selector/pointer.
         #
-        # For the benefit of `RelativeJSONPointer.to()`, treat keys starting with a `#`
-        # as a "key pointer". If `key[1:]` is a key in `obj`, return the key.
+        # For the benefit of `RelativeJSONPointer.to()` and `JSONPathMatch.pointer()`,
+        # treat keys starting with a `#` or `~` as a "key pointer". If `key[1:]` is a
+        # key in `obj`, return the key.
         #
-        # Note that is a key with a leading `#` exists in `obj`, it will have been
+        # Note that if a key with a leading `#`/`~` exists in `obj`, it will have been
         # handled by `_getitem`.
-        #
-        # TODO: Same goes for `~`
         if (
             isinstance(key, str)
             and isinstance(obj, Mapping)

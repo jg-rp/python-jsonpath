@@ -40,7 +40,7 @@ def test_resolve_with_default() -> None:
     assert pointer.resolve(data, default=None) is None
 
 
-def test_pointer_index_out_fo_range() -> None:
+def test_pointer_index_out_of_range() -> None:
     max_plus_one = JSONPointer.max_int_index + 1
     min_minus_one = JSONPointer.min_int_index - 1
 
@@ -307,6 +307,12 @@ def test_non_standard_index_pointer_with_leading_zero() -> None:
 
     with pytest.raises(JSONPointerTypeError):
         JSONPointer("/foo/bar/#09").resolve(data)
+
+
+def test_non_standard_index_pointer_to_non_array_object() -> None:
+    data = {"foo": {"bar": True, "#baz": "hello"}}
+    with pytest.raises(JSONPointerTypeError):
+        JSONPointer("/foo/bar/#1").resolve(data)
 
 
 def test_trailing_slash() -> None:
