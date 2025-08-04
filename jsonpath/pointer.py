@@ -115,7 +115,7 @@ class JSONPointer:
         try:
             index = int(s)
             if index < self.min_int_index or index > self.max_int_index:
-                raise JSONPointerIndexError("index out of range")
+                raise JSONPointerError("index out of range")
             return index
         except ValueError:
             return s
