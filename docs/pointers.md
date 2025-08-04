@@ -2,13 +2,40 @@
 
 **_New in version 0.8.0_**
 
-JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) is a string syntax for targeting a single value (JSON object, array or scalar) in a JSON document. Whereas a JSONPath has the potential to yield many values from a JSON document, a JSON Pointer can _resolve_ to at most one value.
+JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) is a string syntax for targeting a single value (JSON object, array, or scalar) within a JSON document. Unlike a JSONPath expression, which can yield multiple values, a JSON Pointer resolves to **at most one value**.
 
-JSON Pointers are a fundamental part of JSON Patch ([RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)). Each patch operation must have at least one pointer, identifying the target value.
+JSON Pointers are a fundamental component of JSON Patch ([RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)), where each patch operation must have at least one pointer identifying the target location to modify.
 
-!!! note
+??? note "Extensions to RFC 6901"
 
-    We have extended RFC 6901 to handle our non-standard JSONPath [keys selector](syntax.md#keys-or) and index/property pointers from [Relative JSON Pointer](#torel).
+    We have extended RFC 6901 to support:
+
+    - Interoperability with the JSONPath [keys selector](syntax.md#keys-or) (`~`)
+    - A special non-standard syntax for targeting **keys or indices themselves**, used in conjunction with [Relative JSON Pointer](#torel)
+
+    **Keys Selector Compatibility**
+
+    The JSONPath **keys selector** (`.~` or `[~]`) allows expressions to target the *keys* of an object, rather than their associated values. To maintain compatibility when translating between JSONPath and JSON Pointer, our implementation includes special handling for this selector.
+
+    While standard JSON Pointers always refer to values, we ensure that paths derived from expressions like `$.categories.~` can be represented in our pointer system. This is especially important when converting from JSONPath to JSON Pointer or when evaluating expressions that mix value and key access.
+
+    **Key/Index Pointers (`#<key or index>`)**
+
+    This non-standard pointer form represents **keys or indices themselves**, not the values they map to. Examples:
+
+    - `#foo` points to the object key `"foo"` (not the value at `"foo"`)
+    - `#0` points to the index `0` of an array (not the value at that index)
+
+    This syntax is introduced to support the full capabilities of [Relative JSON Pointer](#torel), which allows references to both values and the *keys or indices* that identify them. To ensure that any `RelativeJSONPointer` can be losslessly converted into a `JSONPointer`, we use the `#<key or index>` form to represent these special cases.
+
+    #### Example
+
+    ```python
+    from jsonpath import RelativeJSONPointer
+
+    rjp = RelativeJSONPointer("1#")
+    print(repr(rjp.to("/items/0/name")))  # JSONPointer('/items/#0')
+    ```
 
 ## `resolve(data)`
 
