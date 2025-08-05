@@ -4,9 +4,22 @@ This page gets you started using JSONPath, JSON Pointer and JSON Patch wih Pytho
 
 ## `findall(path, data)`
 
-Find all objects matching a JSONPath with [`jsonpath.findall()`](api.md#jsonpath.JSONPathEnvironment.findall). It takes, as arguments, a JSONPath string and some _data_ object. It always returns a list of objects selected from _data_, never a scalar value.
+Find all values matching a JSONPath expression using [`jsonpath.findall()`](api.md#jsonpath.JSONPathEnvironment.findall).
 
-_data_ can be a file-like object or string containing JSON formatted data, or a Python [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) or [`Sequence`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence), like a dictionary or list. In this example we select user names from a dictionary containing a list of user dictionaries.
+This function takes two arguments:
+
+- `path`: a JSONPath expression as a string (e.g., `"$.users[*].name"`)
+- `data`: the JSON document to query
+
+It always returns a **list** of matched values, even if the path resolves to a single result or nothing at all.
+
+The `data` argument can be:
+
+- A Python [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) (e.g., `dict`) or [`Sequence`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence) (e.g., `list`)
+- A JSON-formatted string
+- A file-like object containing JSON
+
+For example, the following query extracts all user names from a dictionary containing a list of user objects:
 
 ```python
 import jsonpath
