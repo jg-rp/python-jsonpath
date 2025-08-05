@@ -1,4 +1,5 @@
 """JSONPath exceptions."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -80,10 +81,6 @@ class JSONPointerError(Exception):
     """Base class for all JSON Pointer errors."""
 
 
-class JSONPointerEncodeError(JSONPointerError):
-    """An exception raised when a JSONPathMatch can't be encoded to a JSON Pointer."""
-
-
 class JSONPointerResolutionError(JSONPointerError):
     """Base exception for those that can be raised during pointer resolution."""
 
@@ -145,7 +142,7 @@ class JSONPatchTestFailure(JSONPatchError):  # noqa: N818
 def _truncate_message(value: str, num: int, end: str = "...") -> str:
     if len(value) < num:
         return value
-    return f"{value[:num-len(end)]}{end}"
+    return f"{value[: num - len(end)]}{end}"
 
 
 def _truncate_words(val: str, num: int, end: str = "...") -> str:

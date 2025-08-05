@@ -10,7 +10,6 @@ from .exceptions import JSONPathIndexError
 from .exceptions import JSONPathNameError
 from .exceptions import JSONPathSyntaxError
 from .exceptions import JSONPathTypeError
-from .exceptions import JSONPointerEncodeError
 from .exceptions import JSONPointerError
 from .exceptions import JSONPointerIndexError
 from .exceptions import JSONPointerKeyError
@@ -52,7 +51,6 @@ __all__ = (
     "JSONPathSyntaxError",
     "JSONPathTypeError",
     "JSONPointer",
-    "JSONPointerEncodeError",
     "JSONPointerError",
     "JSONPointerIndexError",
     "JSONPointerKeyError",

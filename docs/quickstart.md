@@ -4,9 +4,22 @@ This page gets you started using JSONPath, JSON Pointer and JSON Patch wih Pytho
 
 ## `findall(path, data)`
 
-Find all objects matching a JSONPath with [`jsonpath.findall()`](api.md#jsonpath.JSONPathEnvironment.findall). It takes, as arguments, a JSONPath string and some _data_ object. It always returns a list of objects selected from _data_, never a scalar value.
+Find all values matching a JSONPath expression using [`jsonpath.findall()`](api.md#jsonpath.JSONPathEnvironment.findall).
 
-_data_ can be a file-like object or string containing JSON formatted data, or a Python [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) or [`Sequence`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence), like a dictionary or list. In this example we select user names from a dictionary containing a list of user dictionaries.
+This function takes two arguments:
+
+- `path`: a JSONPath expression as a string (e.g., `"$.users[*].name"`)
+- `data`: the JSON document to query
+
+It always returns a **list** of matched values, even if the path resolves to a single result or nothing at all.
+
+The `data` argument can be:
+
+- A Python [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) (e.g., `dict`) or [`Sequence`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence) (e.g., `list`)
+- A JSON-formatted string
+- A file-like object containing JSON
+
+For example, the following query extracts all user names from a dictionary containing a list of user objects:
 
 ```python
 import jsonpath
@@ -173,7 +186,18 @@ if match:
 
 **_New in version 0.8.0_**
 
-Resolve a JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) against some data. A JSON Pointer references a single object on a specific "path" in a JSON document. Here, _pointer_ can be a string representation of a JSON Pointer or a list of parts that make up a pointer. _data_ can be a file-like object or string containing JSON formatted data, or equivalent Python objects.
+Resolves a JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) against a JSON document, returning the value located at the specified path.
+
+The `pointer` argument can be either:
+
+- A string representation of a JSON Pointer (e.g., `"/foo/bar/0"`)
+- A list of unescaped pointer segments (e.g., `["foo", "bar", "0"]`)
+
+The `data` argument can be:
+
+- A Python data structure (`dict`, `list`, etc.)
+- A JSON-formatted string
+- A file-like object containing JSON
 
 ```python
 from jsonpath import pointer
@@ -206,7 +230,15 @@ jane_score = pointer.resolve(["users", 3, "score"], data)
 print(jane_score)  # 55
 ```
 
-If the pointer can't be resolved against the target JSON document - due to missing keys/properties or out of range indices - a `JSONPointerIndexError`, `JSONPointerKeyError` or `JSONPointerTypeError` will be raised, each of which inherit from `JSONPointerResolutionError`. A default value can be given, which will be returned in the event of a `JSONPointerResolutionError`.
+If the pointer cannot be resolved against the target JSON data — due to a missing key, an out-of-range index, or an unexpected data type — an exception will be raised:
+
+- `JSONPointerKeyError` – when a referenced key is missing from an object
+- `JSONPointerIndexError` – when an array index is out of bounds
+- `JSONPointerTypeError` – when a path segment expects the wrong type (e.g., indexing into a non-array)
+
+All of these exceptions are subclasses of `JSONPointerResolutionError`.
+
+You can optionally provide a `default` value to `resolve()`, which will be returned instead of raising an error if the pointer cannot be resolved.
 
 ```python
 from jsonpath import pointer
