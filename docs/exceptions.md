@@ -20,9 +20,6 @@ Each of the following exceptions has a `token` property, referencing the [`Token
 ::: jsonpath.JSONPointerError
     handler: python
 
-::: jsonpath.JSONPointerEncodeError
-    handler: python
-
 ::: jsonpath.JSONPointerResolutionError
     handler: python
 

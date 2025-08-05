@@ -99,7 +99,7 @@ class JSONPathEnvironment:
         intersection_token (str): The pattern used as the intersection operator.
             Defaults to `"&"`.
         key_token (str): The pattern used to identify the current key or index when
-            filtering a, mapping or sequence. Defaults to `"#"`.
+            filtering a mapping or sequence. Defaults to `"#"`.
         keys_selector_token (str): The pattern used as the "keys" selector. Defaults to
             `"~"`.
         lexer_class: The lexer to use when tokenizing path strings.
