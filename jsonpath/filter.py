@@ -23,7 +23,6 @@ from .exceptions import JSONPathTypeError
 from .function_extensions import FilterFunction
 from .match import NodeList
 from .selectors import Filter as FilterSelector
-from .selectors import ListSelector
 from .serialize import canonical_string
 
 if TYPE_CHECKING:
@@ -494,7 +493,7 @@ class CachingFilterExpression(FilterExpression):
         self._expr.set_children(children)
 
 
-class Path(FilterExpression, ABC):
+class FilterQuery(FilterExpression, ABC):
     """Base expression for all _sub paths_ found in filter expressions."""
 
     __slots__ = ("path",)
@@ -504,17 +503,14 @@ class Path(FilterExpression, ABC):
         super().__init__()
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, Path) and str(self) == str(other)
+        return isinstance(other, FilterQuery) and str(self) == str(other)
 
     def children(self) -> List[FilterExpression]:
         _children: List[FilterExpression] = []
-        for segment in self.path.selectors:
-            if isinstance(segment, ListSelector):
-                _children.extend(
-                    selector.expression
-                    for selector in segment.items
-                    if isinstance(selector, FilterSelector)
-                )
+        for segment in self.path.segments:
+            for selector in segment.selectors:
+                if isinstance(selector, FilterSelector):
+                    _children.append(selector.expression)
         return _children
 
     def set_children(self, children: List[FilterExpression]) -> None:  # noqa: ARG002
@@ -522,7 +518,7 @@ class Path(FilterExpression, ABC):
         return
 
 
-class SelfPath(Path):
+class RelativeFilterQuery(FilterQuery):
     """A JSONPath starting at the current node."""
 
     __slots__ = ()
@@ -572,7 +568,7 @@ class SelfPath(Path):
         )
 
 
-class RootPath(Path):
+class RootFilterQuery(FilterQuery):
     """A JSONPath starting at the root node."""
 
     __slots__ = ()
@@ -606,7 +602,7 @@ class RootPath(Path):
         )
 
 
-class FilterContextPath(Path):
+class FilterContextPath(FilterQuery):
     """A JSONPath starting at the root of any extra context data."""
 
     __slots__ = ()

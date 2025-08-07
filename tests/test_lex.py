@@ -7,28 +7,28 @@ import pytest
 from jsonpath import JSONPathEnvironment
 from jsonpath.exceptions import JSONPathSyntaxError
 from jsonpath.token import TOKEN_AND
-from jsonpath.token import TOKEN_BARE_PROPERTY
+from jsonpath.token import TOKEN_COLON
 from jsonpath.token import TOKEN_COMMA
 from jsonpath.token import TOKEN_DDOT
+from jsonpath.token import TOKEN_DOT
 from jsonpath.token import TOKEN_DOUBLE_QUOTE_STRING
 from jsonpath.token import TOKEN_EQ
-from jsonpath.token import TOKEN_FAKE_ROOT
 from jsonpath.token import TOKEN_FALSE
 from jsonpath.token import TOKEN_FILTER
 from jsonpath.token import TOKEN_FLOAT
-from jsonpath.token import TOKEN_FUNCTION
 from jsonpath.token import TOKEN_GT
 from jsonpath.token import TOKEN_IN
 from jsonpath.token import TOKEN_INT
 from jsonpath.token import TOKEN_INTERSECTION
 from jsonpath.token import TOKEN_KEYS
-from jsonpath.token import TOKEN_LIST_START
+from jsonpath.token import TOKEN_LBRACKET
 from jsonpath.token import TOKEN_LPAREN
 from jsonpath.token import TOKEN_LT
+from jsonpath.token import TOKEN_NAME
 from jsonpath.token import TOKEN_NIL
 from jsonpath.token import TOKEN_NOT
 from jsonpath.token import TOKEN_OR
-from jsonpath.token import TOKEN_PROPERTY
+from jsonpath.token import TOKEN_PSEUDO_ROOT
 from jsonpath.token import TOKEN_RBRACKET
 from jsonpath.token import TOKEN_RE
 from jsonpath.token import TOKEN_RE_FLAGS
@@ -37,11 +37,9 @@ from jsonpath.token import TOKEN_ROOT
 from jsonpath.token import TOKEN_RPAREN
 from jsonpath.token import TOKEN_SELF
 from jsonpath.token import TOKEN_SINGLE_QUOTE_STRING
-from jsonpath.token import TOKEN_SLICE_START
-from jsonpath.token import TOKEN_SLICE_STEP
-from jsonpath.token import TOKEN_SLICE_STOP
 from jsonpath.token import TOKEN_TRUE
 from jsonpath.token import TOKEN_UNION
+from jsonpath.token import TOKEN_WHITESPACE
 from jsonpath.token import TOKEN_WILD
 from jsonpath.token import Token
 
@@ -57,33 +55,33 @@ TEST_CASES = [
     Case(
         description="just root",
         path="$",
-        want=[
-            Token(kind=TOKEN_ROOT, value="$", index=0, path="$"),
-        ],
+        want=[Token(kind=TOKEN_ROOT, value="$", index=0, path="$")],
     ),
     Case(
-        description="just fake root",
+        description="just pseudo-root",
         path="^",
-        want=[
-            Token(kind=TOKEN_FAKE_ROOT, value="^", index=0, path="^"),
-        ],
+        want=[Token(kind=TOKEN_PSEUDO_ROOT, value="^", index=0, path="^")],
     ),
     Case(
         description="root dot property",
         path="$.some.thing",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.some.thing"),
-            Token(kind=TOKEN_PROPERTY, value="some", index=2, path="$.some.thing"),
-            Token(kind=TOKEN_PROPERTY, value="thing", index=7, path="$.some.thing"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.some.thing"),
+            Token(kind=TOKEN_NAME, value="some", index=2, path="$.some.thing"),
+            Token(kind=TOKEN_DOT, value=".", index=6, path="$.some.thing"),
+            Token(kind=TOKEN_NAME, value="thing", index=7, path="$.some.thing"),
         ],
     ),
     Case(
-        description="fake root dot property",
+        description="pseudo root dot property",
         path="^.some.thing",
         want=[
-            Token(kind=TOKEN_FAKE_ROOT, value="^", index=0, path="^.some.thing"),
-            Token(kind=TOKEN_PROPERTY, value="some", index=2, path="^.some.thing"),
-            Token(kind=TOKEN_PROPERTY, value="thing", index=7, path="^.some.thing"),
+            Token(kind=TOKEN_PSEUDO_ROOT, value="^", index=0, path="^.some.thing"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="^.some.thing"),
+            Token(kind=TOKEN_NAME, value="some", index=2, path="^.some.thing"),
+            Token(kind=TOKEN_DOT, value=".", index=6, path="^.some.thing"),
+            Token(kind=TOKEN_NAME, value="thing", index=7, path="^.some.thing"),
         ],
     ),
     Case(
@@ -91,15 +89,11 @@ TEST_CASES = [
         path="$[some][thing]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$[some][thing]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$[some][thing]"),
-            Token(
-                kind=TOKEN_BARE_PROPERTY, value="some", index=2, path="$[some][thing]"
-            ),
+            Token(kind=TOKEN_LBRACKET, value="[", index=1, path="$[some][thing]"),
+            Token(kind=TOKEN_NAME, value="some", index=2, path="$[some][thing]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=6, path="$[some][thing]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=7, path="$[some][thing]"),
-            Token(
-                kind=TOKEN_BARE_PROPERTY, value="thing", index=8, path="$[some][thing]"
-            ),
+            Token(kind=TOKEN_LBRACKET, value="[", index=7, path="$[some][thing]"),
+            Token(kind=TOKEN_NAME, value="thing", index=8, path="$[some][thing]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=13, path="$[some][thing]"),
         ],
     ),
@@ -108,7 +102,7 @@ TEST_CASES = [
         path='$["some"]',
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path='$["some"]'),
-            Token(kind=TOKEN_LIST_START, value="[", index=1, path='$["some"]'),
+            Token(kind=TOKEN_LBRACKET, value="[", index=1, path='$["some"]'),
             Token(
                 kind=TOKEN_DOUBLE_QUOTE_STRING, value="some", index=3, path='$["some"]'
             ),
@@ -120,7 +114,7 @@ TEST_CASES = [
         path="$['some']",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$['some']"),
-            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$['some']"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=1, path="$['some']"),
             Token(
                 kind=TOKEN_SINGLE_QUOTE_STRING, value="some", index=3, path="$['some']"
             ),
@@ -132,15 +126,12 @@ TEST_CASES = [
         path="$.[some][thing]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.[some][thing]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=2, path="$.[some][thing]"),
-            Token(
-                kind=TOKEN_BARE_PROPERTY, value="some", index=3, path="$.[some][thing]"
-            ),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.[some][thing]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=2, path="$.[some][thing]"),
+            Token(kind=TOKEN_NAME, value="some", index=3, path="$.[some][thing]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=7, path="$.[some][thing]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=8, path="$.[some][thing]"),
-            Token(
-                kind=TOKEN_BARE_PROPERTY, value="thing", index=9, path="$.[some][thing]"
-            ),
+            Token(kind=TOKEN_LBRACKET, value="[", index=8, path="$.[some][thing]"),
+            Token(kind=TOKEN_NAME, value="thing", index=9, path="$.[some][thing]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=14, path="$.[some][thing]"),
         ],
     ),
@@ -149,7 +140,7 @@ TEST_CASES = [
         path="$[1]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$[1]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$[1]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=1, path="$[1]"),
             Token(kind=TOKEN_INT, value="1", index=2, path="$[1]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=3, path="$[1]"),
         ],
@@ -159,7 +150,8 @@ TEST_CASES = [
         path="$.[1]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.[1]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=2, path="$.[1]"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.[1]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=2, path="$.[1]"),
             Token(kind=TOKEN_INT, value="1", index=3, path="$.[1]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=4, path="$.[1]"),
         ],
@@ -168,10 +160,8 @@ TEST_CASES = [
         description="empty slice",
         path="[:]",
         want=[
-            Token(kind=TOKEN_LIST_START, value="[", index=0, path="[:]"),
-            Token(kind=TOKEN_SLICE_START, value="", index=1, path="[:]"),
-            Token(kind=TOKEN_SLICE_STOP, value="", index=2, path="[:]"),
-            Token(kind=TOKEN_SLICE_STEP, value="", index=-1, path="[:]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[:]"),
+            Token(kind=TOKEN_COLON, value=":", index=1, path="[:]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=2, path="[:]"),
         ],
     ),
@@ -179,10 +169,9 @@ TEST_CASES = [
         description="empty slice empty step",
         path="[::]",
         want=[
-            Token(kind=TOKEN_LIST_START, value="[", index=0, path="[::]"),
-            Token(kind=TOKEN_SLICE_START, value="", index=1, path="[::]"),
-            Token(kind=TOKEN_SLICE_STOP, value="", index=2, path="[::]"),
-            Token(kind=TOKEN_SLICE_STEP, value="", index=3, path="[::]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[::]"),
+            Token(kind=TOKEN_COLON, value=":", index=1, path="[::]"),
+            Token(kind=TOKEN_COLON, value=":", index=2, path="[::]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=3, path="[::]"),
         ],
     ),
@@ -190,10 +179,9 @@ TEST_CASES = [
         description="slice empty stop",
         path="[1:]",
         want=[
-            Token(kind=TOKEN_LIST_START, value="[", index=0, path="[1:]"),
-            Token(kind=TOKEN_SLICE_START, value="1", index=1, path="[1:]"),
-            Token(kind=TOKEN_SLICE_STOP, value="", index=3, path="[1:]"),
-            Token(kind=TOKEN_SLICE_STEP, value="", index=-1, path="[1:]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[1:]"),
+            Token(kind=TOKEN_INT, value="1", index=1, path="[1:]"),
+            Token(kind=TOKEN_COLON, value=":", index=2, path="[1:]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=3, path="[1:]"),
         ],
     ),
@@ -201,10 +189,9 @@ TEST_CASES = [
         description="slice empty start",
         path="[:-1]",
         want=[
-            Token(kind=TOKEN_LIST_START, value="[", index=0, path="[:-1]"),
-            Token(kind=TOKEN_SLICE_START, value="", index=1, path="[:-1]"),
-            Token(kind=TOKEN_SLICE_STOP, value="-1", index=2, path="[:-1]"),
-            Token(kind=TOKEN_SLICE_STEP, value="", index=-1, path="[:-1]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[:-1]"),
+            Token(kind=TOKEN_COLON, value=":", index=1, path="[:-1]"),
+            Token(kind=TOKEN_INT, value="-1", index=2, path="[:-1]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=4, path="[:-1]"),
         ],
     ),
@@ -212,10 +199,10 @@ TEST_CASES = [
         description="slice start and stop",
         path="[1:7]",
         want=[
-            Token(kind=TOKEN_LIST_START, value="[", index=0, path="[1:7]"),
-            Token(kind=TOKEN_SLICE_START, value="1", index=1, path="[1:7]"),
-            Token(kind=TOKEN_SLICE_STOP, value="7", index=3, path="[1:7]"),
-            Token(kind=TOKEN_SLICE_STEP, value="", index=-1, path="[1:7]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[1:7]"),
+            Token(kind=TOKEN_INT, value="1", index=1, path="[1:7]"),
+            Token(kind=TOKEN_COLON, value=":", index=2, path="[1:7]"),
+            Token(kind=TOKEN_INT, value="7", index=3, path="[1:7]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=4, path="[1:7]"),
         ],
     ),
@@ -223,10 +210,12 @@ TEST_CASES = [
         description="slice start, stop and step",
         path="[1:7:2]",
         want=[
-            Token(kind=TOKEN_LIST_START, value="[", index=0, path="[1:7:2]"),
-            Token(kind=TOKEN_SLICE_START, value="1", index=1, path="[1:7:2]"),
-            Token(kind=TOKEN_SLICE_STOP, value="7", index=3, path="[1:7:2]"),
-            Token(kind=TOKEN_SLICE_STEP, value="2", index=5, path="[1:7:2]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[1:7:2]"),
+            Token(kind=TOKEN_INT, value="1", index=1, path="[1:7:2]"),
+            Token(kind=TOKEN_COLON, value=":", index=2, path="[1:7:2]"),
+            Token(kind=TOKEN_INT, value="7", index=3, path="[1:7:2]"),
+            Token(kind=TOKEN_COLON, value=":", index=4, path="[1:7:2]"),
+            Token(kind=TOKEN_INT, value="2", index=5, path="[1:7:2]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=6, path="[1:7:2]"),
         ],
     ),
@@ -235,6 +224,7 @@ TEST_CASES = [
         path="$.*",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.*"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.*"),
             Token(kind=TOKEN_WILD, value="*", index=2, path="$.*"),
         ],
     ),
@@ -243,7 +233,7 @@ TEST_CASES = [
         path="$[*]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$[*]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$[*]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=1, path="$[*]"),
             Token(kind=TOKEN_WILD, value="*", index=2, path="$[*]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=3, path="$[*]"),
         ],
@@ -253,7 +243,8 @@ TEST_CASES = [
         path="$.[*]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.[*]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=2, path="$.[*]"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.[*]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=2, path="$.[*]"),
             Token(kind=TOKEN_WILD, value="*", index=3, path="$.[*]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=4, path="$.[*]"),
         ],
@@ -272,7 +263,7 @@ TEST_CASES = [
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$..thing"),
             Token(kind=TOKEN_DDOT, value="..", index=1, path="$..thing"),
-            Token(kind=TOKEN_BARE_PROPERTY, value="thing", index=3, path="$..thing"),
+            Token(kind=TOKEN_NAME, value="thing", index=3, path="$..thing"),
         ],
     ),
     Case(
@@ -281,7 +272,8 @@ TEST_CASES = [
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$...thing"),
             Token(kind=TOKEN_DDOT, value="..", index=1, path="$...thing"),
-            Token(kind=TOKEN_PROPERTY, value="thing", index=4, path="$...thing"),
+            Token(kind=TOKEN_DOT, value=".", index=3, path="$...thing"),
+            Token(kind=TOKEN_NAME, value="thing", index=4, path="$...thing"),
         ],
     ),
     Case(
@@ -289,7 +281,7 @@ TEST_CASES = [
         path="$[1,4,5]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$[1,4,5]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$[1,4,5]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=1, path="$[1,4,5]"),
             Token(kind=TOKEN_INT, value="1", index=2, path="$[1,4,5]"),
             Token(kind=TOKEN_COMMA, value=",", index=3, path="$[1,4,5]"),
             Token(kind=TOKEN_INT, value="4", index=4, path="$[1,4,5]"),
@@ -303,12 +295,12 @@ TEST_CASES = [
         path="$[1,4:9]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$[1,4:9]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$[1,4:9]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=1, path="$[1,4:9]"),
             Token(kind=TOKEN_INT, value="1", index=2, path="$[1,4:9]"),
             Token(kind=TOKEN_COMMA, value=",", index=3, path="$[1,4:9]"),
-            Token(kind=TOKEN_SLICE_START, value="4", index=4, path="$[1,4:9]"),
-            Token(kind=TOKEN_SLICE_STOP, value="9", index=6, path="$[1,4:9]"),
-            Token(kind=TOKEN_SLICE_STEP, value="", index=-1, path="$[1,4:9]"),
+            Token(kind=TOKEN_INT, value="4", index=4, path="$[1,4:9]"),
+            Token(kind=TOKEN_COLON, value=":", index=5, path="$[1,4:9]"),
+            Token(kind=TOKEN_INT, value="9", index=6, path="$[1,4:9]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=7, path="$[1,4:9]"),
         ],
     ),
@@ -317,14 +309,10 @@ TEST_CASES = [
         path="$[some,thing]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$[some,thing]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$[some,thing]"),
-            Token(
-                kind=TOKEN_BARE_PROPERTY, value="some", index=2, path="$[some,thing]"
-            ),
+            Token(kind=TOKEN_LBRACKET, value="[", index=1, path="$[some,thing]"),
+            Token(kind=TOKEN_NAME, value="some", index=2, path="$[some,thing]"),
             Token(kind=TOKEN_COMMA, value=",", index=6, path="$[some,thing]"),
-            Token(
-                kind=TOKEN_BARE_PROPERTY, value="thing", index=7, path="$[some,thing]"
-            ),
+            Token(kind=TOKEN_NAME, value="thing", index=7, path="$[some,thing]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=12, path="$[some,thing]"),
         ],
     ),
@@ -333,11 +321,13 @@ TEST_CASES = [
         path="$.[?(@.some)]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.[?(@.some)]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=2, path="$.[?(@.some)]"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.[?(@.some)]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=2, path="$.[?(@.some)]"),
             Token(kind=TOKEN_FILTER, value="?", index=3, path="$.[?(@.some)]"),
             Token(kind=TOKEN_LPAREN, value="(", index=4, path="$.[?(@.some)]"),
             Token(kind=TOKEN_SELF, value="@", index=5, path="$.[?(@.some)]"),
-            Token(kind=TOKEN_PROPERTY, value="some", index=7, path="$.[?(@.some)]"),
+            Token(kind=TOKEN_DOT, value=".", index=6, path="$.[?(@.some)]"),
+            Token(kind=TOKEN_NAME, value="some", index=7, path="$.[?(@.some)]"),
             Token(kind=TOKEN_RPAREN, value=")", index=11, path="$.[?(@.some)]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=12, path="$.[?(@.some)]"),
         ],
@@ -347,11 +337,13 @@ TEST_CASES = [
         path="$.[?($.some)]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.[?($.some)]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=2, path="$.[?($.some)]"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.[?($.some)]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=2, path="$.[?($.some)]"),
             Token(kind=TOKEN_FILTER, value="?", index=3, path="$.[?($.some)]"),
             Token(kind=TOKEN_LPAREN, value="(", index=4, path="$.[?($.some)]"),
             Token(kind=TOKEN_ROOT, value="$", index=5, path="$.[?($.some)]"),
-            Token(kind=TOKEN_PROPERTY, value="some", index=7, path="$.[?($.some)]"),
+            Token(kind=TOKEN_DOT, value=".", index=6, path="$.[?($.some)]"),
+            Token(kind=TOKEN_NAME, value="some", index=7, path="$.[?($.some)]"),
             Token(kind=TOKEN_RPAREN, value=")", index=11, path="$.[?($.some)]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=12, path="$.[?($.some)]"),
         ],
@@ -361,11 +353,12 @@ TEST_CASES = [
         path="$.[?(@[1])]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.[?(@[1])]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=2, path="$.[?(@[1])]"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.[?(@[1])]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=2, path="$.[?(@[1])]"),
             Token(kind=TOKEN_FILTER, value="?", index=3, path="$.[?(@[1])]"),
             Token(kind=TOKEN_LPAREN, value="(", index=4, path="$.[?(@[1])]"),
             Token(kind=TOKEN_SELF, value="@", index=5, path="$.[?(@[1])]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=6, path="$.[?(@[1])]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=6, path="$.[?(@[1])]"),
             Token(kind=TOKEN_INT, value="1", index=7, path="$.[?(@[1])]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=8, path="$.[?(@[1])]"),
             Token(kind=TOKEN_RPAREN, value=")", index=9, path="$.[?(@[1])]"),
@@ -376,43 +369,41 @@ TEST_CASES = [
         description="filter self dot property equality with float",
         path="[?(@.some == 1.1)]",
         want=[
-            Token(kind=TOKEN_LIST_START, value="[", index=0, path="[?(@.some == 1.1)]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[?(@.some == 1.1)]"),
             Token(kind=TOKEN_FILTER, value="?", index=1, path="[?(@.some == 1.1)]"),
             Token(kind=TOKEN_LPAREN, value="(", index=2, path="[?(@.some == 1.1)]"),
             Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@.some == 1.1)]"),
-            Token(
-                kind=TOKEN_PROPERTY, value="some", index=5, path="[?(@.some == 1.1)]"
-            ),
+            Token(kind=TOKEN_DOT, value=".", index=4, path="[?(@.some == 1.1)]"),
+            Token(kind=TOKEN_NAME, value="some", index=5, path="[?(@.some == 1.1)]"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=9, path="[?(@.some == 1.1)]"),
             Token(kind=TOKEN_EQ, value="==", index=10, path="[?(@.some == 1.1)]"),
+            Token(
+                kind=TOKEN_WHITESPACE, value=" ", index=12, path="[?(@.some == 1.1)]"
+            ),
             Token(kind=TOKEN_FLOAT, value="1.1", index=13, path="[?(@.some == 1.1)]"),
             Token(kind=TOKEN_RPAREN, value=")", index=16, path="[?(@.some == 1.1)]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=17, path="[?(@.some == 1.1)]"),
         ],
     ),
     Case(
-        description=(
-            "filter self dot property equality with float in scientific notation"
-        ),
+        description="filter self dot property equality float in scientific notation",
         path="[?(@.some == 1.1e10)]",
         want=[
             Token(
-                kind=TOKEN_LIST_START,
-                value="[",
-                index=0,
-                path="[?(@.some == 1.1e10)]",
+                kind=TOKEN_LBRACKET, value="[", index=0, path="[?(@.some == 1.1e10)]"
             ),
             Token(kind=TOKEN_FILTER, value="?", index=1, path="[?(@.some == 1.1e10)]"),
-            Token(
-                kind=TOKEN_LPAREN,
-                value="(",
-                index=2,
-                path="[?(@.some == 1.1e10)]",
-            ),
+            Token(kind=TOKEN_LPAREN, value="(", index=2, path="[?(@.some == 1.1e10)]"),
             Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@.some == 1.1e10)]"),
+            Token(kind=TOKEN_DOT, value=".", index=4, path="[?(@.some == 1.1e10)]"),
+            Token(kind=TOKEN_NAME, value="some", index=5, path="[?(@.some == 1.1e10)]"),
             Token(
-                kind=TOKEN_PROPERTY, value="some", index=5, path="[?(@.some == 1.1e10)]"
+                kind=TOKEN_WHITESPACE, value=" ", index=9, path="[?(@.some == 1.1e10)]"
             ),
             Token(kind=TOKEN_EQ, value="==", index=10, path="[?(@.some == 1.1e10)]"),
+            Token(
+                kind=TOKEN_WHITESPACE, value=" ", index=12, path="[?(@.some == 1.1e10)]"
+            ),
             Token(
                 kind=TOKEN_FLOAT, value="1.1e10", index=13, path="[?(@.some == 1.1e10)]"
             ),
@@ -426,14 +417,16 @@ TEST_CASES = [
         description="filter self index equality with float",
         path="[?(@[1] == 1.1)]",
         want=[
-            Token(kind=TOKEN_LIST_START, value="[", index=0, path="[?(@[1] == 1.1)]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[?(@[1] == 1.1)]"),
             Token(kind=TOKEN_FILTER, value="?", index=1, path="[?(@[1] == 1.1)]"),
             Token(kind=TOKEN_LPAREN, value="(", index=2, path="[?(@[1] == 1.1)]"),
             Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@[1] == 1.1)]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=4, path="[?(@[1] == 1.1)]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=4, path="[?(@[1] == 1.1)]"),
             Token(kind=TOKEN_INT, value="1", index=5, path="[?(@[1] == 1.1)]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=6, path="[?(@[1] == 1.1)]"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=7, path="[?(@[1] == 1.1)]"),
             Token(kind=TOKEN_EQ, value="==", index=8, path="[?(@[1] == 1.1)]"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=10, path="[?(@[1] == 1.1)]"),
             Token(kind=TOKEN_FLOAT, value="1.1", index=11, path="[?(@[1] == 1.1)]"),
             Token(kind=TOKEN_RPAREN, value=")", index=14, path="[?(@[1] == 1.1)]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=15, path="[?(@[1] == 1.1)]"),
@@ -443,12 +436,15 @@ TEST_CASES = [
         description="filter self dot property equality with int",
         path="[?(@.some == 1)]",
         want=[
-            Token(kind=TOKEN_LIST_START, value="[", index=0, path="[?(@.some == 1)]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[?(@.some == 1)]"),
             Token(kind=TOKEN_FILTER, value="?", index=1, path="[?(@.some == 1)]"),
             Token(kind=TOKEN_LPAREN, value="(", index=2, path="[?(@.some == 1)]"),
             Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@.some == 1)]"),
-            Token(kind=TOKEN_PROPERTY, value="some", index=5, path="[?(@.some == 1)]"),
+            Token(kind=TOKEN_DOT, value=".", index=4, path="[?(@.some == 1)]"),
+            Token(kind=TOKEN_NAME, value="some", index=5, path="[?(@.some == 1)]"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=9, path="[?(@.some == 1)]"),
             Token(kind=TOKEN_EQ, value="==", index=10, path="[?(@.some == 1)]"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=12, path="[?(@.some == 1)]"),
             Token(kind=TOKEN_INT, value="1", index=13, path="[?(@.some == 1)]"),
             Token(kind=TOKEN_RPAREN, value=")", index=14, path="[?(@.some == 1)]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=15, path="[?(@.some == 1)]"),
@@ -458,29 +454,19 @@ TEST_CASES = [
         description="filter self dot property equality with int in scientific notation",
         path="[?(@.some == 1e10)]",
         want=[
-            Token(
-                kind=TOKEN_LIST_START,
-                value="[",
-                index=0,
-                path="[?(@.some == 1e10)]",
-            ),
-            Token(
-                kind=TOKEN_FILTER,
-                value="?",
-                index=1,
-                path="[?(@.some == 1e10)]",
-            ),
-            Token(
-                kind=TOKEN_LPAREN,
-                value="(",
-                index=2,
-                path="[?(@.some == 1e10)]",
-            ),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[?(@.some == 1e10)]"),
+            Token(kind=TOKEN_FILTER, value="?", index=1, path="[?(@.some == 1e10)]"),
+            Token(kind=TOKEN_LPAREN, value="(", index=2, path="[?(@.some == 1e10)]"),
             Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@.some == 1e10)]"),
+            Token(kind=TOKEN_DOT, value=".", index=4, path="[?(@.some == 1e10)]"),
+            Token(kind=TOKEN_NAME, value="some", index=5, path="[?(@.some == 1e10)]"),
             Token(
-                kind=TOKEN_PROPERTY, value="some", index=5, path="[?(@.some == 1e10)]"
+                kind=TOKEN_WHITESPACE, value=" ", index=9, path="[?(@.some == 1e10)]"
             ),
             Token(kind=TOKEN_EQ, value="==", index=10, path="[?(@.some == 1e10)]"),
+            Token(
+                kind=TOKEN_WHITESPACE, value=" ", index=12, path="[?(@.some == 1e10)]"
+            ),
             Token(kind=TOKEN_INT, value="1e10", index=13, path="[?(@.some == 1e10)]"),
             Token(kind=TOKEN_RPAREN, value=")", index=17, path="[?(@.some == 1e10)]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=18, path="[?(@.some == 1e10)]"),
@@ -491,36 +477,37 @@ TEST_CASES = [
         path="[?(@.some =~ /foo|bar/i)]",
         want=[
             Token(
-                kind=TOKEN_LIST_START,
+                kind=TOKEN_LBRACKET,
                 value="[",
                 index=0,
                 path="[?(@.some =~ /foo|bar/i)]",
             ),
             Token(
-                kind=TOKEN_FILTER,
-                value="?",
-                index=1,
-                path="[?(@.some =~ /foo|bar/i)]",
+                kind=TOKEN_FILTER, value="?", index=1, path="[?(@.some =~ /foo|bar/i)]"
             ),
             Token(
-                kind=TOKEN_LPAREN,
-                value="(",
-                index=2,
-                path="[?(@.some =~ /foo|bar/i)]",
+                kind=TOKEN_LPAREN, value="(", index=2, path="[?(@.some =~ /foo|bar/i)]"
             ),
             Token(
                 kind=TOKEN_SELF, value="@", index=3, path="[?(@.some =~ /foo|bar/i)]"
             ),
+            Token(kind=TOKEN_DOT, value=".", index=4, path="[?(@.some =~ /foo|bar/i)]"),
             Token(
-                kind=TOKEN_PROPERTY,
-                value="some",
-                index=5,
+                kind=TOKEN_NAME, value="some", index=5, path="[?(@.some =~ /foo|bar/i)]"
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=9,
                 path="[?(@.some =~ /foo|bar/i)]",
             ),
             Token(
-                kind=TOKEN_RE,
-                value="=~",
-                index=10,
+                kind=TOKEN_RE, value="=~", index=10, path="[?(@.some =~ /foo|bar/i)]"
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=12,
                 path="[?(@.some =~ /foo|bar/i)]",
             ),
             Token(
@@ -536,10 +523,7 @@ TEST_CASES = [
                 path="[?(@.some =~ /foo|bar/i)]",
             ),
             Token(
-                kind=TOKEN_RPAREN,
-                value=")",
-                index=23,
-                path="[?(@.some =~ /foo|bar/i)]",
+                kind=TOKEN_RPAREN, value=")", index=23, path="[?(@.some =~ /foo|bar/i)]"
             ),
             Token(
                 kind=TOKEN_RBRACKET,
@@ -554,12 +538,14 @@ TEST_CASES = [
         path="$.some | $.thing",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.some | $.thing"),
-            Token(kind=TOKEN_PROPERTY, value="some", index=2, path="$.some | $.thing"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.some | $.thing"),
+            Token(kind=TOKEN_NAME, value="some", index=2, path="$.some | $.thing"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=6, path="$.some | $.thing"),
             Token(kind=TOKEN_UNION, value="|", index=7, path="$.some | $.thing"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=8, path="$.some | $.thing"),
             Token(kind=TOKEN_ROOT, value="$", index=9, path="$.some | $.thing"),
-            Token(
-                kind=TOKEN_PROPERTY, value="thing", index=11, path="$.some | $.thing"
-            ),
+            Token(kind=TOKEN_DOT, value=".", index=10, path="$.some | $.thing"),
+            Token(kind=TOKEN_NAME, value="thing", index=11, path="$.some | $.thing"),
         ],
     ),
     Case(
@@ -570,31 +556,64 @@ TEST_CASES = [
                 kind=TOKEN_ROOT, value="$", index=0, path="$.some | $.thing | $.other"
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT, value=".", index=1, path="$.some | $.thing | $.other"
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=2,
+                path="$.some | $.thing | $.other",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=6,
                 path="$.some | $.thing | $.other",
             ),
             Token(
                 kind=TOKEN_UNION, value="|", index=7, path="$.some | $.thing | $.other"
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=8,
+                path="$.some | $.thing | $.other",
+            ),
+            Token(
                 kind=TOKEN_ROOT, value="$", index=9, path="$.some | $.thing | $.other"
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT, value=".", index=10, path="$.some | $.thing | $.other"
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="thing",
                 index=11,
+                path="$.some | $.thing | $.other",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=16,
                 path="$.some | $.thing | $.other",
             ),
             Token(
                 kind=TOKEN_UNION, value="|", index=17, path="$.some | $.thing | $.other"
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=18,
+                path="$.some | $.thing | $.other",
+            ),
+            Token(
                 kind=TOKEN_ROOT, value="$", index=19, path="$.some | $.thing | $.other"
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT, value=".", index=20, path="$.some | $.thing | $.other"
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="other",
                 index=21,
                 path="$.some | $.thing | $.other",
@@ -606,12 +625,14 @@ TEST_CASES = [
         path="$.some & $.thing",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.some & $.thing"),
-            Token(kind=TOKEN_PROPERTY, value="some", index=2, path="$.some & $.thing"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.some & $.thing"),
+            Token(kind=TOKEN_NAME, value="some", index=2, path="$.some & $.thing"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=6, path="$.some & $.thing"),
             Token(kind=TOKEN_INTERSECTION, value="&", index=7, path="$.some & $.thing"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=8, path="$.some & $.thing"),
             Token(kind=TOKEN_ROOT, value="$", index=9, path="$.some & $.thing"),
-            Token(
-                kind=TOKEN_PROPERTY, value="thing", index=11, path="$.some & $.thing"
-            ),
+            Token(kind=TOKEN_DOT, value=".", index=10, path="$.some & $.thing"),
+            Token(kind=TOKEN_NAME, value="thing", index=11, path="$.some & $.thing"),
         ],
     ),
     Case(
@@ -619,7 +640,7 @@ TEST_CASES = [
         path="[?(@.some > 1 and @.some < 5)]",
         want=[
             Token(
-                kind=TOKEN_LIST_START,
+                kind=TOKEN_LBRACKET,
                 value="[",
                 index=0,
                 path="[?(@.some > 1 and @.some < 5)]",
@@ -643,9 +664,21 @@ TEST_CASES = [
                 path="[?(@.some > 1 and @.some < 5)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=4,
+                path="[?(@.some > 1 and @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=5,
+                path="[?(@.some > 1 and @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=9,
                 path="[?(@.some > 1 and @.some < 5)]",
             ),
             Token(
@@ -655,9 +688,21 @@ TEST_CASES = [
                 path="[?(@.some > 1 and @.some < 5)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=11,
+                path="[?(@.some > 1 and @.some < 5)]",
+            ),
+            Token(
                 kind=TOKEN_INT,
                 value="1",
                 index=12,
+                path="[?(@.some > 1 and @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=13,
                 path="[?(@.some > 1 and @.some < 5)]",
             ),
             Token(
@@ -667,21 +712,45 @@ TEST_CASES = [
                 path="[?(@.some > 1 and @.some < 5)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=17,
+                path="[?(@.some > 1 and @.some < 5)]",
+            ),
+            Token(
                 kind=TOKEN_SELF,
                 value="@",
                 index=18,
                 path="[?(@.some > 1 and @.some < 5)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=19,
+                path="[?(@.some > 1 and @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=20,
+                path="[?(@.some > 1 and @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=24,
                 path="[?(@.some > 1 and @.some < 5)]",
             ),
             Token(
                 kind=TOKEN_LT,
                 value="<",
                 index=25,
+                path="[?(@.some > 1 and @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=26,
                 path="[?(@.some > 1 and @.some < 5)]",
             ),
             Token(
@@ -709,7 +778,7 @@ TEST_CASES = [
         path="[?(@.some == 1 or @.some == 5)]",
         want=[
             Token(
-                kind=TOKEN_LIST_START,
+                kind=TOKEN_LBRACKET,
                 value="[",
                 index=0,
                 path="[?(@.some == 1 or @.some == 5)]",
@@ -733,9 +802,21 @@ TEST_CASES = [
                 path="[?(@.some == 1 or @.some == 5)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=4,
+                path="[?(@.some == 1 or @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=5,
+                path="[?(@.some == 1 or @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=9,
                 path="[?(@.some == 1 or @.some == 5)]",
             ),
             Token(
@@ -745,9 +826,21 @@ TEST_CASES = [
                 path="[?(@.some == 1 or @.some == 5)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=12,
+                path="[?(@.some == 1 or @.some == 5)]",
+            ),
+            Token(
                 kind=TOKEN_INT,
                 value="1",
                 index=13,
+                path="[?(@.some == 1 or @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=14,
                 path="[?(@.some == 1 or @.some == 5)]",
             ),
             Token(
@@ -757,21 +850,45 @@ TEST_CASES = [
                 path="[?(@.some == 1 or @.some == 5)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=17,
+                path="[?(@.some == 1 or @.some == 5)]",
+            ),
+            Token(
                 kind=TOKEN_SELF,
                 value="@",
                 index=18,
                 path="[?(@.some == 1 or @.some == 5)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=19,
+                path="[?(@.some == 1 or @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=20,
+                path="[?(@.some == 1 or @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=24,
                 path="[?(@.some == 1 or @.some == 5)]",
             ),
             Token(
                 kind=TOKEN_EQ,
                 value="==",
                 index=25,
+                path="[?(@.some == 1 or @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=27,
                 path="[?(@.some == 1 or @.some == 5)]",
             ),
             Token(
@@ -799,7 +916,7 @@ TEST_CASES = [
         path="[?(@.some == 1 || @.some == 5)]",
         want=[
             Token(
-                kind=TOKEN_LIST_START,
+                kind=TOKEN_LBRACKET,
                 value="[",
                 index=0,
                 path="[?(@.some == 1 || @.some == 5)]",
@@ -823,9 +940,21 @@ TEST_CASES = [
                 path="[?(@.some == 1 || @.some == 5)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=4,
+                path="[?(@.some == 1 || @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=5,
+                path="[?(@.some == 1 || @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=9,
                 path="[?(@.some == 1 || @.some == 5)]",
             ),
             Token(
@@ -835,9 +964,21 @@ TEST_CASES = [
                 path="[?(@.some == 1 || @.some == 5)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=12,
+                path="[?(@.some == 1 || @.some == 5)]",
+            ),
+            Token(
                 kind=TOKEN_INT,
                 value="1",
                 index=13,
+                path="[?(@.some == 1 || @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=14,
                 path="[?(@.some == 1 || @.some == 5)]",
             ),
             Token(
@@ -847,21 +988,45 @@ TEST_CASES = [
                 path="[?(@.some == 1 || @.some == 5)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=17,
+                path="[?(@.some == 1 || @.some == 5)]",
+            ),
+            Token(
                 kind=TOKEN_SELF,
                 value="@",
                 index=18,
                 path="[?(@.some == 1 || @.some == 5)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=19,
+                path="[?(@.some == 1 || @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=20,
+                path="[?(@.some == 1 || @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=24,
                 path="[?(@.some == 1 || @.some == 5)]",
             ),
             Token(
                 kind=TOKEN_EQ,
                 value="==",
                 index=25,
+                path="[?(@.some == 1 || @.some == 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=27,
                 path="[?(@.some == 1 || @.some == 5)]",
             ),
             Token(
@@ -889,33 +1054,34 @@ TEST_CASES = [
         path="[?(@.thing in [1, '1'])]",
         want=[
             Token(
-                kind=TOKEN_LIST_START,
-                value="[",
-                index=0,
-                path="[?(@.thing in [1, '1'])]",
+                kind=TOKEN_LBRACKET, value="[", index=0, path="[?(@.thing in [1, '1'])]"
             ),
             Token(
-                kind=TOKEN_FILTER,
-                value="?",
-                index=1,
-                path="[?(@.thing in [1, '1'])]",
+                kind=TOKEN_FILTER, value="?", index=1, path="[?(@.thing in [1, '1'])]"
             ),
             Token(
-                kind=TOKEN_LPAREN,
-                value="(",
-                index=2,
-                path="[?(@.thing in [1, '1'])]",
+                kind=TOKEN_LPAREN, value="(", index=2, path="[?(@.thing in [1, '1'])]"
             ),
             Token(kind=TOKEN_SELF, value="@", index=3, path="[?(@.thing in [1, '1'])]"),
+            Token(kind=TOKEN_DOT, value=".", index=4, path="[?(@.thing in [1, '1'])]"),
             Token(
-                kind=TOKEN_PROPERTY,
-                value="thing",
-                index=5,
+                kind=TOKEN_NAME, value="thing", index=5, path="[?(@.thing in [1, '1'])]"
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=10,
                 path="[?(@.thing in [1, '1'])]",
             ),
             Token(kind=TOKEN_IN, value="in", index=11, path="[?(@.thing in [1, '1'])]"),
             Token(
-                kind=TOKEN_LIST_START,
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=13,
+                path="[?(@.thing in [1, '1'])]",
+            ),
+            Token(
+                kind=TOKEN_LBRACKET,
                 value="[",
                 index=14,
                 path="[?(@.thing in [1, '1'])]",
@@ -923,6 +1089,12 @@ TEST_CASES = [
             Token(kind=TOKEN_INT, value="1", index=15, path="[?(@.thing in [1, '1'])]"),
             Token(
                 kind=TOKEN_COMMA, value=",", index=16, path="[?(@.thing in [1, '1'])]"
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=17,
+                path="[?(@.thing in [1, '1'])]",
             ),
             Token(
                 kind=TOKEN_SINGLE_QUOTE_STRING,
@@ -937,10 +1109,7 @@ TEST_CASES = [
                 path="[?(@.thing in [1, '1'])]",
             ),
             Token(
-                kind=TOKEN_RPAREN,
-                value=")",
-                index=22,
-                path="[?(@.thing in [1, '1'])]",
+                kind=TOKEN_RPAREN, value=")", index=22, path="[?(@.thing in [1, '1'])]"
             ),
             Token(
                 kind=TOKEN_RBRACKET,
@@ -955,7 +1124,7 @@ TEST_CASES = [
         path="[?(@.some == 1 or not @.some < 5)]",
         want=[
             Token(
-                kind=TOKEN_LIST_START,
+                kind=TOKEN_LBRACKET,
                 value="[",
                 index=0,
                 path="[?(@.some == 1 or not @.some < 5)]",
@@ -979,9 +1148,21 @@ TEST_CASES = [
                 path="[?(@.some == 1 or not @.some < 5)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=4,
+                path="[?(@.some == 1 or not @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=5,
+                path="[?(@.some == 1 or not @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=9,
                 path="[?(@.some == 1 or not @.some < 5)]",
             ),
             Token(
@@ -991,9 +1172,21 @@ TEST_CASES = [
                 path="[?(@.some == 1 or not @.some < 5)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=12,
+                path="[?(@.some == 1 or not @.some < 5)]",
+            ),
+            Token(
                 kind=TOKEN_INT,
                 value="1",
                 index=13,
+                path="[?(@.some == 1 or not @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=14,
                 path="[?(@.some == 1 or not @.some < 5)]",
             ),
             Token(
@@ -1003,9 +1196,21 @@ TEST_CASES = [
                 path="[?(@.some == 1 or not @.some < 5)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=17,
+                path="[?(@.some == 1 or not @.some < 5)]",
+            ),
+            Token(
                 kind=TOKEN_NOT,
                 value="not",
                 index=18,
+                path="[?(@.some == 1 or not @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=21,
                 path="[?(@.some == 1 or not @.some < 5)]",
             ),
             Token(
@@ -1015,15 +1220,33 @@ TEST_CASES = [
                 path="[?(@.some == 1 or not @.some < 5)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=23,
+                path="[?(@.some == 1 or not @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=24,
+                path="[?(@.some == 1 or not @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=28,
                 path="[?(@.some == 1 or not @.some < 5)]",
             ),
             Token(
                 kind=TOKEN_LT,
                 value="<",
                 index=29,
+                path="[?(@.some == 1 or not @.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=30,
                 path="[?(@.some == 1 or not @.some < 5)]",
             ),
             Token(
@@ -1051,7 +1274,7 @@ TEST_CASES = [
         path="[?(@.some == 1 or !@.some < 5)]",
         want=[
             Token(
-                kind=TOKEN_LIST_START,
+                kind=TOKEN_LBRACKET,
                 value="[",
                 index=0,
                 path="[?(@.some == 1 or !@.some < 5)]",
@@ -1075,9 +1298,21 @@ TEST_CASES = [
                 path="[?(@.some == 1 or !@.some < 5)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=4,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=5,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=9,
                 path="[?(@.some == 1 or !@.some < 5)]",
             ),
             Token(
@@ -1087,15 +1322,33 @@ TEST_CASES = [
                 path="[?(@.some == 1 or !@.some < 5)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=12,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
                 kind=TOKEN_INT,
                 value="1",
                 index=13,
                 path="[?(@.some == 1 or !@.some < 5)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=14,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
                 kind=TOKEN_OR,
                 value="or",
                 index=15,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=17,
                 path="[?(@.some == 1 or !@.some < 5)]",
             ),
             Token(
@@ -1111,15 +1364,33 @@ TEST_CASES = [
                 path="[?(@.some == 1 or !@.some < 5)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=20,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=21,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=25,
                 path="[?(@.some == 1 or !@.some < 5)]",
             ),
             Token(
                 kind=TOKEN_LT,
                 value="<",
                 index=26,
+                path="[?(@.some == 1 or !@.some < 5)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=27,
                 path="[?(@.some == 1 or !@.some < 5)]",
             ),
             Token(
@@ -1146,26 +1417,15 @@ TEST_CASES = [
         description="filter true and false",
         path="[?(true == false)]",
         want=[
-            Token(
-                kind=TOKEN_LIST_START,
-                value="[",
-                index=0,
-                path="[?(true == false)]",
-            ),
-            Token(
-                kind=TOKEN_FILTER,
-                value="?",
-                index=1,
-                path="[?(true == false)]",
-            ),
-            Token(
-                kind=TOKEN_LPAREN,
-                value="(",
-                index=2,
-                path="[?(true == false)]",
-            ),
+            Token(kind=TOKEN_LBRACKET, value="[", index=0, path="[?(true == false)]"),
+            Token(kind=TOKEN_FILTER, value="?", index=1, path="[?(true == false)]"),
+            Token(kind=TOKEN_LPAREN, value="(", index=2, path="[?(true == false)]"),
             Token(kind=TOKEN_TRUE, value="true", index=3, path="[?(true == false)]"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=7, path="[?(true == false)]"),
             Token(kind=TOKEN_EQ, value="==", index=8, path="[?(true == false)]"),
+            Token(
+                kind=TOKEN_WHITESPACE, value=" ", index=10, path="[?(true == false)]"
+            ),
             Token(kind=TOKEN_FALSE, value="false", index=11, path="[?(true == false)]"),
             Token(kind=TOKEN_RPAREN, value=")", index=16, path="[?(true == false)]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=17, path="[?(true == false)]"),
@@ -1176,7 +1436,7 @@ TEST_CASES = [
         path="[?(nil == none && nil == null)]",
         want=[
             Token(
-                kind=TOKEN_LIST_START,
+                kind=TOKEN_LBRACKET,
                 value="[",
                 index=0,
                 path="[?(nil == none && nil == null)]",
@@ -1200,9 +1460,21 @@ TEST_CASES = [
                 path="[?(nil == none && nil == null)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=6,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
                 kind=TOKEN_EQ,
                 value="==",
                 index=7,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=9,
                 path="[?(nil == none && nil == null)]",
             ),
             Token(
@@ -1212,9 +1484,21 @@ TEST_CASES = [
                 path="[?(nil == none && nil == null)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=14,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
                 kind=TOKEN_AND,
                 value="&&",
                 index=15,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=17,
                 path="[?(nil == none && nil == null)]",
             ),
             Token(
@@ -1224,9 +1508,21 @@ TEST_CASES = [
                 path="[?(nil == none && nil == null)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=21,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
                 kind=TOKEN_EQ,
                 value="==",
                 index=22,
+                path="[?(nil == none && nil == null)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=24,
                 path="[?(nil == none && nil == null)]",
             ),
             Token(
@@ -1254,7 +1550,7 @@ TEST_CASES = [
         path="$['some', 'thing']",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$['some', 'thing']"),
-            Token(kind=TOKEN_LIST_START, value="[", index=1, path="$['some', 'thing']"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=1, path="$['some', 'thing']"),
             Token(
                 kind=TOKEN_SINGLE_QUOTE_STRING,
                 value="some",
@@ -1262,6 +1558,7 @@ TEST_CASES = [
                 path="$['some', 'thing']",
             ),
             Token(kind=TOKEN_COMMA, value=",", index=8, path="$['some', 'thing']"),
+            Token(kind=TOKEN_WHITESPACE, value=" ", index=9, path="$['some', 'thing']"),
             Token(
                 kind=TOKEN_SINGLE_QUOTE_STRING,
                 value="thing",
@@ -1282,13 +1579,19 @@ TEST_CASES = [
                 path="$.some[?(length(@.thing) < 2)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=1,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="some",
                 index=2,
                 path="$.some[?(length(@.thing) < 2)]",
             ),
             Token(
-                kind=TOKEN_LIST_START,
+                kind=TOKEN_LBRACKET,
                 value="[",
                 index=6,
                 path="$.some[?(length(@.thing) < 2)]",
@@ -1306,9 +1609,15 @@ TEST_CASES = [
                 path="$.some[?(length(@.thing) < 2)]",
             ),
             Token(
-                kind=TOKEN_FUNCTION,
+                kind=TOKEN_NAME,
                 value="length",
                 index=9,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_LPAREN,
+                value="(",
+                index=15,
                 path="$.some[?(length(@.thing) < 2)]",
             ),
             Token(
@@ -1318,7 +1627,13 @@ TEST_CASES = [
                 path="$.some[?(length(@.thing) < 2)]",
             ),
             Token(
-                kind=TOKEN_PROPERTY,
+                kind=TOKEN_DOT,
+                value=".",
+                index=17,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_NAME,
                 value="thing",
                 index=18,
                 path="$.some[?(length(@.thing) < 2)]",
@@ -1330,9 +1645,21 @@ TEST_CASES = [
                 path="$.some[?(length(@.thing) < 2)]",
             ),
             Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=24,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
                 kind=TOKEN_LT,
                 value="<",
                 index=25,
+                path="$.some[?(length(@.thing) < 2)]",
+            ),
+            Token(
+                kind=TOKEN_WHITESPACE,
+                value=" ",
+                index=26,
                 path="$.some[?(length(@.thing) < 2)]",
             ),
             Token(
@@ -1360,7 +1687,9 @@ TEST_CASES = [
         path="$.thing.~",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.thing.~"),
-            Token(kind=TOKEN_PROPERTY, value="thing", index=2, path="$.thing.~"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.thing.~"),
+            Token(kind=TOKEN_NAME, value="thing", index=2, path="$.thing.~"),
+            Token(kind=TOKEN_DOT, value=".", index=7, path="$.thing.~"),
             Token(kind=TOKEN_KEYS, value="~", index=8, path="$.thing.~"),
         ],
     ),
@@ -1369,8 +1698,9 @@ TEST_CASES = [
         path="$.thing[~]",
         want=[
             Token(kind=TOKEN_ROOT, value="$", index=0, path="$.thing[~]"),
-            Token(kind=TOKEN_PROPERTY, value="thing", index=2, path="$.thing[~]"),
-            Token(kind=TOKEN_LIST_START, value="[", index=7, path="$.thing[~]"),
+            Token(kind=TOKEN_DOT, value=".", index=1, path="$.thing[~]"),
+            Token(kind=TOKEN_NAME, value="thing", index=2, path="$.thing[~]"),
+            Token(kind=TOKEN_LBRACKET, value="[", index=7, path="$.thing[~]"),
             Token(kind=TOKEN_KEYS, value="~", index=8, path="$.thing[~]"),
             Token(kind=TOKEN_RBRACKET, value="]", index=9, path="$.thing[~]"),
         ],
@@ -1378,81 +1708,49 @@ TEST_CASES = [
     Case(
         description="implicit root selector, name selector starts with `and`",
         path="anderson",
-        want=[
-            Token(kind=TOKEN_BARE_PROPERTY, value="anderson", index=0, path="anderson"),
-        ],
+        want=[Token(kind=TOKEN_NAME, value="anderson", index=0, path="anderson")],
     ),
     Case(
         description="implicit root selector, name selector starts with `or`",
         path="order",
-        want=[
-            Token(kind=TOKEN_BARE_PROPERTY, value="order", index=0, path="order"),
-        ],
+        want=[Token(kind=TOKEN_NAME, value="order", index=0, path="order")],
     ),
     Case(
         description="implicit root selector, name selector starts with `true`",
         path="trueblue",
-        want=[
-            Token(kind=TOKEN_BARE_PROPERTY, value="trueblue", index=0, path="trueblue"),
-        ],
+        want=[Token(kind=TOKEN_NAME, value="trueblue", index=0, path="trueblue")],
     ),
     Case(
         description="implicit root selector, name selector starts with `false`",
         path="falsehood",
-        want=[
-            Token(
-                kind=TOKEN_BARE_PROPERTY, value="falsehood", index=0, path="falsehood"
-            ),
-        ],
+        want=[Token(kind=TOKEN_NAME, value="falsehood", index=0, path="falsehood")],
     ),
     Case(
         description="implicit root selector, name selector starts with `not`",
         path="nottingham",
-        want=[
-            Token(
-                kind=TOKEN_BARE_PROPERTY, value="nottingham", index=0, path="nottingham"
-            ),
-        ],
+        want=[Token(kind=TOKEN_NAME, value="nottingham", index=0, path="nottingham")],
     ),
     Case(
         description="implicit root selector, name selector starts with `null`",
         path="nullable",
-        want=[
-            Token(kind=TOKEN_BARE_PROPERTY, value="nullable", index=0, path="nullable"),
-        ],
+        want=[Token(kind=TOKEN_NAME, value="nullable", index=0, path="nullable")],
     ),
     Case(
         description="implicit root selector, name selector starts with `none`",
         path="nonexpert",
-        want=[
-            Token(
-                kind=TOKEN_BARE_PROPERTY, value="nonexpert", index=0, path="nonexpert"
-            ),
-        ],
+        want=[Token(kind=TOKEN_NAME, value="nonexpert", index=0, path="nonexpert")],
     ),
     Case(
         description="implicit root selector, name selector starts with `undefined`",
         path="undefinedness",
         want=[
-            Token(
-                kind=TOKEN_BARE_PROPERTY,
-                value="undefinedness",
-                index=0,
-                path="undefinedness",
-            ),
+            Token(kind=TOKEN_NAME, value="undefinedness", index=0, path="undefinedness")
         ],
     ),
     Case(
         description="implicit root selector, name selector starts with `missing`",
         path="missingly",
-        want=[
-            Token(
-                kind=TOKEN_BARE_PROPERTY,
-                value="missingly",
-                index=0,
-                path="missingly",
-            ),
-        ],
+        want=[Token(kind=TOKEN_NAME, value="missingly", index=0, path="missingly")],
     ),
 ]
 

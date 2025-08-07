@@ -4,6 +4,7 @@ from __future__ import annotations
 from collections import deque
 from typing import Deque
 from typing import Iterator
+from typing import Optional
 
 from .exceptions import JSONPathSyntaxError
 from .token import TOKEN_EOF
@@ -97,3 +98,17 @@ class TokenStream:
                 f"expected {_typ}, found {self.peek.kind!r}",
                 token=self.peek,
             )
+
+    def expect_peek_not(self, typ: str, message: str) -> None:
+        """Raise an exception if the next token kind of _typ_."""
+        if self.peek.kind == typ:
+            raise JSONPathSyntaxError(message, token=self.peek)
+
+    def eat(self, *typ: str) -> Token:
+        self.expect(*typ)
+        return self.next_token()
+
+    def skip(self, *typ: str) -> Optional[Token]:
+        if self.current.kind in typ:
+            return self.next_token()
+        return None
