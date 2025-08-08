@@ -92,8 +92,8 @@ class JSONPathEnvironment:
     ## Class attributes
 
     Attributes:
-        pseudo_root_token (str): The pattern used to select a "fake" root node, one level
-            above the real root node.
+        pseudo_root_token (str): The pattern used to select a "fake" root node, one
+            level above the real root node.
         filter_context_token (str): The pattern used to select extra filter context
             data. Defaults to `"_"`.
         intersection_token (str): The pattern used as the intersection operator.
@@ -180,24 +180,25 @@ class JSONPathEnvironment:
         """
         tokens = self.lexer.tokenize(path)
         stream = TokenStream(tokens)
-        pseudo_root = stream.current.kind == TOKEN_PSEUDO_ROOT
+        pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
         _path: Union[JSONPath, CompoundJSONPath] = JSONPath(
             env=self, segments=self.parser.parse(stream), pseudo_root=pseudo_root
         )
 
-        if stream.current.kind != TOKEN_EOF:
+        # TODO: better!
+        if stream.current().kind != TOKEN_EOF:
             _path = CompoundJSONPath(env=self, path=_path)
-            while stream.current.kind != TOKEN_EOF:
-                if stream.peek.kind == TOKEN_EOF:
+            while stream.current().kind != TOKEN_EOF:
+                if stream.peek().kind == TOKEN_EOF:
                     # trailing union or intersection
                     raise JSONPathSyntaxError(
-                        f"expected a path after {stream.current.value!r}",
-                        token=stream.current,
+                        f"expected a path after {stream.current().value!r}",
+                        token=stream.current(),
                     )
 
-                if stream.current.kind == TOKEN_UNION:
-                    stream.next_token()
-                    pseudo_root = stream.current.kind == TOKEN_PSEUDO_ROOT
+                if stream.current().kind == TOKEN_UNION:
+                    stream.next()
+                    pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
                     _path = _path.union(
                         JSONPath(
                             env=self,
@@ -205,9 +206,9 @@ class JSONPathEnvironment:
                             pseudo_root=pseudo_root,
                         )
                     )
-                elif stream.current.kind == TOKEN_INTERSECTION:
-                    stream.next_token()
-                    pseudo_root = stream.current.kind == TOKEN_PSEUDO_ROOT
+                elif stream.current().kind == TOKEN_INTERSECTION:
+                    stream.next()
+                    pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
                     _path = _path.intersection(
                         JSONPath(
                             env=self,
@@ -218,8 +219,8 @@ class JSONPathEnvironment:
                 else:  # pragma: no cover
                     # Parser.parse catches this too
                     raise JSONPathSyntaxError(  # noqa: TRY003
-                        f"unexpected token {stream.current.value!r}",
-                        token=stream.current,
+                        f"unexpected token {stream.current().value!r}",
+                        token=stream.current(),
                     )
 
         return _path

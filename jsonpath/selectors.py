@@ -150,15 +150,16 @@ class IndexSelector(JSONPathSelector):
         return self.index
 
     def resolve(self, node: JSONPathMatch) -> Iterable[JSONPathMatch]:
-        if isinstance(node.obj, Mapping):
-            # Try the string representation of the index as a key.
-            with suppress(KeyError):
-                match = node.new_child(
-                    self.env.getitem(node.obj, self._as_key), self.index
-                )
-                node.add_child(match)
-                yield match
-        elif isinstance(node.obj, Sequence) and not isinstance(node.obj, str):
+        # TODO: Optionally try string representation of int
+        # if isinstance(node.obj, Mapping):
+        #     # Try the string representation of the index as a key.
+        #     with suppress(KeyError):
+        #         match = node.new_child(
+        #             self.env.getitem(node.obj, self._as_key), self.index
+        #         )
+        #         node.add_child(match)
+        #         yield match
+        if isinstance(node.obj, Sequence) and not isinstance(node.obj, str):
             norm_index = self._normalized_index(node.obj)
             with suppress(IndexError):
                 match = node.new_child(
@@ -168,15 +169,16 @@ class IndexSelector(JSONPathSelector):
                 yield match
 
     async def resolve_async(self, node: JSONPathMatch) -> AsyncIterable[JSONPathMatch]:
-        if isinstance(node.obj, Mapping):
-            # Try the string representation of the index as a key.
-            with suppress(KeyError):
-                match = node.new_child(
-                    await self.env.getitem_async(node.obj, self._as_key), self.index
-                )
-                node.add_child(match)
-                yield match
-        elif isinstance(node.obj, Sequence) and not isinstance(node.obj, str):
+        # XXX
+        # if isinstance(node.obj, Mapping):
+        #     # Try the string representation of the index as a key.
+        #     with suppress(KeyError):
+        #         match = node.new_child(
+        #             await self.env.getitem_async(node.obj, self._as_key), self.index
+        #         )
+        #         node.add_child(match)
+        #         yield match
+        if isinstance(node.obj, Sequence) and not isinstance(node.obj, str):
             norm_index = self._normalized_index(node.obj)
             with suppress(IndexError):
                 match = node.new_child(

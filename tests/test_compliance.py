@@ -35,10 +35,10 @@ class Case:
 
 
 SKIP = {
-    "basic, no leading whitespace": "flexible whitespace policy",
+    # "basic, no leading whitespace": "flexible whitespace policy",
     "basic, no trailing whitespace": "flexible whitespace policy",
-    "basic, bald descendant segment": "almost has a consensus",
-    "filter, index segment on object, selects nothing": "flexible selector policy",
+    # "basic, bald descendant segment": "almost has a consensus",
+    # "filter, index segment on object, selects nothing": "flexible selector policy",
     "functions, match, dot matcher on \\u2028": "standard library re policy",
     "functions, match, dot matcher on \\u2029": "standard library re policy",
     "functions, search, dot matcher on \\u2028": "standard library re policy",
@@ -76,14 +76,14 @@ SKIP = {
     "name selector, double quotes, non-surrogate surrogate": "expected behavior policy",
     "name selector, double quotes, surrogate supplementary": "expected behavior policy",
     "name selector, double quotes, supplementary surrogate": "expected behavior policy",
-    "whitespace, selectors, space between dot and name": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, newline between dot and name": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, tab between dot and name": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, return between dot and name": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, space between recursive descent and name": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, newline between recursive descent and name": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, tab between recursive descent and name": "flexible whitespace policy",  # noqa: E501
-    "whitespace, selectors, return between recursive descent and name": "flexible whitespace policy",  # noqa: E501
+    # "whitespace, selectors, space between dot and name": "flexible whitespace policy",  # noqa: E501
+    # "whitespace, selectors, newline between dot and name": "flexible whitespace policy",  # noqa: E501
+    # "whitespace, selectors, tab between dot and name": "flexible whitespace policy",  # noqa: E501
+    # "whitespace, selectors, return between dot and name": "flexible whitespace policy",  # noqa: E501
+    # "whitespace, selectors, space between recursive descent and name": "flexible whitespace policy",  # noqa: E501
+    # "whitespace, selectors, newline between recursive descent and name": "flexible whitespace policy",  # noqa: E501
+    # "whitespace, selectors, tab between recursive descent and name": "flexible whitespace policy",  # noqa: E501
+    # "whitespace, selectors, return between recursive descent and name": "flexible whitespace policy",  # noqa: E501
 }
 
 

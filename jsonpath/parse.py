@@ -289,88 +289,190 @@ class Parser:
 
     def parse(self, stream: TokenStream) -> Iterator[JSONPathSegment]:
         """Parse a JSONPath from a stream of tokens."""
-        if stream.current.kind in {TOKEN_ROOT, TOKEN_PSEUDO_ROOT}:
-            stream.next_token()
+        # TODO: Optionally require TOKEN_ROOT
+        if stream.current().kind in {TOKEN_ROOT, TOKEN_PSEUDO_ROOT}:
+            stream.next()
 
-        yield from self.parse_path(stream, in_filter=False)
+        # TODO: Support "bare" paths. Those without a leading dot for shorthand
+        # selectors
 
-        if stream.current.kind not in (TOKEN_EOF, TOKEN_INTERSECTION, TOKEN_UNION):
+        yield from self.parse_path(stream)
+
+        if stream.current().kind not in (TOKEN_EOF, TOKEN_INTERSECTION, TOKEN_UNION):
             raise JSONPathSyntaxError(
-                f"unexpected token {stream.current.value!r}",
-                token=stream.current,
+                f"unexpected token {stream.current().value!r}",
+                token=stream.current(),
             )
 
-    def parse_path(
-        self,
-        stream: TokenStream,
-        *,
-        in_filter: bool = False,
-    ) -> Iterable[JSONPathSegment]:
-        """Parse a top-level JSONPath, or one that is nested in a filter."""
+    def parse_path(self, stream: TokenStream) -> Iterable[JSONPathSegment]:
+        """Parse a JSONPath query string.
+
+        This method assumes the root, current or pseudo root identifier has
+        already been consumed.
+        """
         while True:
-            if stream.current.kind == TOKEN_DDOT:
-                token = stream.next_token()
+            stream.skip_whitespace()
+            if stream.current().kind == TOKEN_DOT:
+                # Consume the dot.
+                stream.next()
+                # Assert that dot is followed by shorthand selector without whitespace.
+                stream.expect(TOKEN_NAME, TOKEN_WILD, TOKEN_KEYS)
+                token = stream.current()
+                selectors = self.parse_selectors(stream)
+                yield JSONPathChildSegment(
+                    env=self.env, token=token, selectors=selectors
+                )
+            elif stream.current().kind == TOKEN_DDOT:
+                token = stream.next()
                 selectors = self.parse_selectors(stream)
                 if not selectors:
                     raise JSONPathSyntaxError(
                         "missing selector for recursive descent segment",
-                        token=stream.current,
+                        token=stream.current(),
                     )
                 yield JSONPathRecursiveDescentSegment(
                     env=self.env, token=token, selectors=selectors
                 )
-            elif (
-                stream.skip(TOKEN_DOT)
-                and stream.current.kind
-                in {
-                    TOKEN_NAME,
-                    TOKEN_WILD,
-                    TOKEN_KEYS,
-                }
-            ) or stream.current.kind == TOKEN_LBRACKET:
-                token = stream.current
+            elif stream.current().kind == TOKEN_LBRACKET:
+                token = stream.current()
                 selectors = self.parse_selectors(stream)
                 yield JSONPathChildSegment(
                     env=self.env, token=token, selectors=selectors
                 )
             else:
-                if in_filter:
-                    stream.push(stream.current)
                 break
 
-            stream.next_token()
-
     def parse_selectors(self, stream: TokenStream) -> tuple[JSONPathSelector, ...]:
-        if stream.current.kind == TOKEN_NAME:
+        token = stream.next()
+
+        if token.kind == TOKEN_NAME:
             return (
                 PropertySelector(
                     env=self.env,
-                    token=stream.current,
-                    name=stream.current.value,
+                    token=token,
+                    name=token.value,
                     shorthand=True,
                 ),
             )
 
-        if stream.current.kind == TOKEN_WILD:
-            return (WildSelector(env=self.env, token=stream.current, shorthand=True),)
+        if token.kind == TOKEN_WILD:
+            return (
+                WildSelector(
+                    env=self.env,
+                    token=token,
+                    shorthand=True,
+                ),
+            )
 
-        if stream.current.kind == TOKEN_KEYS:
+        if token.kind == TOKEN_KEYS:
             return (
                 KeysSelector(
                     env=self.env,
-                    token=stream.current,
+                    token=token,
                     shorthand=True,
                 ),
             )
 
-        if stream.current.kind == TOKEN_LBRACKET:
+        if token.kind == TOKEN_LBRACKET:
+            stream.pos -= 1
             return tuple(self.parse_bracketed_selection(stream))
 
         return ()
 
+    def parse_bracketed_selection(self, stream: TokenStream) -> List[JSONPathSelector]:  # noqa: PLR0912
+        """Parse a comma separated list of JSONPath selectors."""
+        segment_token = stream.eat(TOKEN_LBRACKET)
+        selectors: List[JSONPathSelector] = []
+
+        while True:
+            stream.skip_whitespace()
+            token = stream.current()
+
+            if token.kind == TOKEN_RBRACKET:
+                break
+
+            if token.kind == TOKEN_INT:
+                if (
+                    stream.peek().kind == TOKEN_COLON
+                    or stream.peek(2).kind == TOKEN_COLON
+                ):
+                    selectors.append(self.parse_slice(stream))
+                else:
+                    self._raise_for_leading_zero(token)
+                    selectors.append(
+                        IndexSelector(
+                            env=self.env,
+                            token=token,
+                            index=int(token.value),
+                        )
+                    )
+                    stream.next()
+            elif token.kind in (
+                TOKEN_DOUBLE_QUOTE_STRING,
+                TOKEN_SINGLE_QUOTE_STRING,
+            ):
+                selectors.append(
+                    PropertySelector(
+                        env=self.env,
+                        token=token,
+                        name=self._decode_string_literal(token),
+                        shorthand=False,
+                    ),
+                )
+                stream.next()
+            elif token.kind == TOKEN_COLON:
+                selectors.append(self.parse_slice(stream))
+            elif token.kind == TOKEN_WILD:
+                selectors.append(
+                    WildSelector(
+                        env=self.env,
+                        token=token,
+                        shorthand=False,
+                    )
+                )
+                stream.next()
+            elif token.kind == TOKEN_KEYS:
+                selectors.append(
+                    KeysSelector(env=self.env, token=token, shorthand=False)
+                )
+                stream.next()
+            elif token.kind == TOKEN_FILTER:
+                selectors.append(self.parse_filter_selector(stream))
+            elif token.kind == TOKEN_EOF:
+                raise JSONPathSyntaxError("unexpected end of query", token=token)
+            else:
+                raise JSONPathSyntaxError(
+                    f"unexpected token in bracketed selection {token.kind!r}",
+                    token=token,
+                )
+
+            # XXX:
+            # if stream.peek().kind == TOKEN_EOF:
+            #     raise JSONPathSyntaxError(
+            #         "unexpected end of segment",
+            #         token=stream.current(),
+            #     )
+
+            stream.skip_whitespace()
+
+            if stream.current().kind != TOKEN_RBRACKET:
+                stream.eat(TOKEN_COMMA)
+                stream.skip_whitespace()
+                if stream.current().kind == TOKEN_RBRACKET:
+                    raise JSONPathSyntaxError(
+                        "unexpected trailing comma", token=stream.current()
+                    )
+
+        stream.eat(TOKEN_RBRACKET)
+
+        if not selectors:
+            raise JSONPathSyntaxError("empty bracketed segment", token=segment_token)
+
+        return selectors
+
     def parse_slice(self, stream: TokenStream) -> SliceSelector:
         """Parse a slice JSONPath expression from a stream of tokens."""
-        tok = stream.current
+        token = stream.current()
         start: Optional[int] = None
         stop: Optional[int] = None
         step: Optional[int] = None
@@ -385,116 +487,42 @@ class Parser:
             return False
 
         # 1: or :
-        if _maybe_index(stream.current):
-            start = int(stream.current.value)
-            stream.next_token()
+        if _maybe_index(stream.current()):
+            start = int(stream.current().value)
+            stream.next()
 
+        stream.skip_whitespace()
         stream.expect(TOKEN_COLON)
-        stream.next_token()
+        stream.next()
+        stream.skip_whitespace()
 
         # 1 or 1: or : or ?
-        if _maybe_index(stream.current):
-            stop = int(stream.current.value)
-            stream.next_token()
-            if stream.current.kind == TOKEN_COLON:
-                stream.next_token()
-        elif stream.current.kind == TOKEN_COLON:
+        if _maybe_index(stream.current()):
+            stop = int(stream.current().value)
+            stream.next()
+            stream.skip_whitespace()
+            if stream.current().kind == TOKEN_COLON:
+                stream.next()
+        elif stream.current().kind == TOKEN_COLON:
             stream.expect(TOKEN_COLON)
-            stream.next_token()
+            stream.next()
 
         # 1 or ?
-        if _maybe_index(stream.current):
-            step = int(stream.current.value)
-            stream.next_token()
-
-        stream.push(stream.current)
+        stream.skip_whitespace()
+        if _maybe_index(stream.current()):
+            step = int(stream.current().value)
+            stream.next()
 
         return SliceSelector(
             env=self.env,
-            token=tok,
+            token=token,
             start=start,
             stop=stop,
             step=step,
         )
 
-    def parse_bracketed_selection(self, stream: TokenStream) -> List[JSONPathSelector]:  # noqa: PLR0912
-        """Parse a comma separated list of JSONPath selectors."""
-        tok = stream.next_token()  # Skip LBRACKET
-        selectors: List[JSONPathSelector] = []
-
-        while stream.current.kind != TOKEN_RBRACKET:
-            if stream.current.kind == TOKEN_INT:
-                if stream.peek.kind == TOKEN_COLON:
-                    selectors.append(self.parse_slice(stream))
-                else:
-                    if (
-                        len(stream.current.value) > 1
-                        and stream.current.value.startswith("0")
-                    ) or stream.current.value.startswith("-0"):
-                        raise JSONPathSyntaxError(
-                            "leading zero in index selector", token=stream.current
-                        )
-                    selectors.append(
-                        IndexSelector(
-                            env=self.env,
-                            token=stream.current,
-                            index=int(stream.current.value),
-                        )
-                    )
-            elif stream.current.kind in (
-                TOKEN_DOUBLE_QUOTE_STRING,
-                TOKEN_SINGLE_QUOTE_STRING,
-            ):
-                selectors.append(
-                    PropertySelector(
-                        env=self.env,
-                        token=stream.current,
-                        name=self._decode_string_literal(stream.current),
-                        shorthand=False,
-                    ),
-                )
-            elif stream.current.kind == TOKEN_COLON:
-                selectors.append(self.parse_slice(stream))
-            elif stream.current.kind == TOKEN_WILD:
-                selectors.append(
-                    WildSelector(
-                        env=self.env,
-                        token=stream.current,
-                        shorthand=False,
-                    )
-                )
-            elif stream.current.kind == TOKEN_FILTER:
-                selectors.append(self.parse_filter_selector(stream))
-            elif stream.current.kind == TOKEN_EOF:
-                raise JSONPathSyntaxError(
-                    "unexpected end of query", token=stream.current
-                )
-            else:
-                raise JSONPathSyntaxError(
-                    f"unexpected token in bracketed selection {stream.current.kind!r}",
-                    token=stream.current,
-                )
-
-            if stream.peek.kind == TOKEN_EOF:
-                raise JSONPathSyntaxError(
-                    "unexpected end of selector list",
-                    token=stream.current,
-                )
-
-            if stream.peek.kind != TOKEN_RBRACKET:
-                stream.expect_peek(TOKEN_COMMA)
-                stream.next_token()
-                stream.expect_peek_not(TOKEN_RBRACKET, "unexpected trailing comma")
-
-            stream.next_token()
-
-        if not selectors:
-            raise JSONPathSyntaxError("empty bracketed segment", token=tok)
-
-        return selectors
-
     def parse_filter_selector(self, stream: TokenStream) -> Filter:
-        tok = stream.next_token()
+        token = stream.eat(TOKEN_FILTER)
         expr = self.parse_filter_expression(stream)
 
         if self.env.well_typed and isinstance(expr, FunctionExtension):
@@ -505,42 +533,44 @@ class Parser:
                 and func.return_type == ExpressionType.VALUE
             ):
                 raise JSONPathTypeError(
-                    f"result of {expr.name}() must be compared", token=tok
+                    f"result of {expr.name}() must be compared", token=token
                 )
 
         if isinstance(expr, (Literal, Nil)):
             raise JSONPathSyntaxError(
                 "filter expression literals outside of "
                 "function expressions must be compared",
-                token=tok,
+                token=token,
             )
 
-        return Filter(env=self.env, token=tok, expression=BooleanExpression(expr))
+        return Filter(env=self.env, token=token, expression=BooleanExpression(expr))
 
     def parse_boolean(self, stream: TokenStream) -> FilterExpression:
-        if stream.current.kind == TOKEN_TRUE:
+        if stream.next().kind == TOKEN_TRUE:
             return TRUE
         return FALSE
 
-    def parse_nil(self, _: TokenStream) -> FilterExpression:
+    def parse_nil(self, stream: TokenStream) -> FilterExpression:
+        stream.next()
         return NIL
 
-    def parse_undefined(self, _: TokenStream) -> FilterExpression:
+    def parse_undefined(self, stream: TokenStream) -> FilterExpression:
+        stream.next()
         return UNDEFINED_LITERAL
 
     def parse_string_literal(self, stream: TokenStream) -> FilterExpression:
-        return StringLiteral(value=self._decode_string_literal(stream.current))
+        return StringLiteral(value=self._decode_string_literal(stream.next()))
 
     def parse_integer_literal(self, stream: TokenStream) -> FilterExpression:
         # Convert to float first to handle scientific notation.
-        return IntegerLiteral(value=int(float(stream.current.value)))
+        return IntegerLiteral(value=int(float(stream.next().value)))
 
     def parse_float_literal(self, stream: TokenStream) -> FilterExpression:
-        return FloatLiteral(value=float(stream.current.value))
+        return FloatLiteral(value=float(stream.next().value))
 
     def parse_prefix_expression(self, stream: TokenStream) -> FilterExpression:
-        tok = stream.next_token()
-        assert tok.kind == TOKEN_NOT
+        token = stream.next()
+        assert token.kind == TOKEN_NOT
         return PrefixExpression(
             operator="!",
             right=self.parse_filter_expression(
@@ -551,169 +581,173 @@ class Parser:
     def parse_infix_expression(
         self, stream: TokenStream, left: FilterExpression
     ) -> FilterExpression:
-        tok = stream.next_token()
-        precedence = self.PRECEDENCES.get(tok.kind, self.PRECEDENCE_LOWEST)
+        token = stream.next()
+        precedence = self.PRECEDENCES.get(token.kind, self.PRECEDENCE_LOWEST)
         right = self.parse_filter_expression(stream, precedence)
-        operator = self.BINARY_OPERATORS[tok.kind]
+        operator = self.BINARY_OPERATORS[token.kind]
 
         if self.env.well_typed and operator in self.COMPARISON_OPERATORS:
-            self._raise_for_non_comparable_function(left, tok)
-            self._raise_for_non_comparable_function(right, tok)
+            self._raise_for_non_comparable_function(left, token)
+            self._raise_for_non_comparable_function(right, token)
 
         if operator not in self.INFIX_LITERAL_OPERATORS:
             if isinstance(left, (Literal, Nil)):
                 raise JSONPathSyntaxError(
                     "filter expression literals outside of "
                     "function expressions must be compared",
-                    token=tok,
+                    token=token,
                 )
             if isinstance(right, (Literal, Nil)):
                 raise JSONPathSyntaxError(
                     "filter expression literals outside of "
                     "function expressions must be compared",
-                    token=tok,
+                    token=token,
                 )
 
         return InfixExpression(left, operator, right)
 
     def parse_grouped_expression(self, stream: TokenStream) -> FilterExpression:
-        stream.next_token()
+        stream.eat(TOKEN_LPAREN)
         expr = self.parse_filter_expression(stream)
-        stream.next_token()
 
-        while stream.current.kind != TOKEN_RPAREN:
-            if stream.current.kind == TOKEN_EOF:
-                raise JSONPathSyntaxError(
-                    "unbalanced parentheses", token=stream.current
-                )
+        while stream.current().kind != TOKEN_RPAREN:
+            token = stream.current()
+            if token.kind == TOKEN_EOF:
+                raise JSONPathSyntaxError("unbalanced parentheses", token=token)
 
-            if stream.current.kind not in self.BINARY_OPERATORS:
+            if token.kind not in self.BINARY_OPERATORS:
                 raise JSONPathSyntaxError(
-                    f"expected an expression, found '{stream.current.value}'",
-                    token=stream.current,
+                    f"expected an expression, found '{token.value}'",
+                    token=token,
                 )
 
             expr = self.parse_infix_expression(stream, expr)
 
-        stream.expect(TOKEN_RPAREN)
+        stream.eat(TOKEN_RPAREN)
         return expr
 
     def parse_root_path(self, stream: TokenStream) -> FilterExpression:
-        root = stream.next_token()
+        root = stream.next()
         return RootFilterQuery(
             JSONPath(
                 env=self.env,
-                segments=self.parse_path(stream, in_filter=True),
+                segments=self.parse_path(stream),
                 pseudo_root=root.kind == TOKEN_PSEUDO_ROOT,
             )
         )
 
     def parse_self_path(self, stream: TokenStream) -> FilterExpression:
-        stream.next_token()
+        stream.next()
         return RelativeFilterQuery(
-            JSONPath(env=self.env, segments=self.parse_path(stream, in_filter=True))
+            JSONPath(env=self.env, segments=self.parse_path(stream))
         )
 
-    def parse_current_key(self, _: TokenStream) -> FilterExpression:
+    def parse_current_key(self, stream: TokenStream) -> FilterExpression:
+        stream.next()
         return CURRENT_KEY
 
     def parse_filter_context_path(self, stream: TokenStream) -> FilterExpression:
-        stream.next_token()
+        stream.next()
         return FilterContextPath(
-            JSONPath(env=self.env, segments=self.parse_path(stream, in_filter=True))
+            JSONPath(env=self.env, segments=self.parse_path(stream))
         )
 
     def parse_regex(self, stream: TokenStream) -> FilterExpression:
-        pattern = stream.current.value
+        pattern = stream.current().value
         flags = 0
-        if stream.peek.kind == TOKEN_RE_FLAGS:
-            stream.next_token()
-            for flag in set(stream.current.value):
+        if stream.peek().kind == TOKEN_RE_FLAGS:
+            stream.next()
+            for flag in set(stream.next().value):
                 flags |= self.RE_FLAG_MAP[flag]
         return RegexLiteral(value=re.compile(pattern, flags))
 
     def parse_list_literal(self, stream: TokenStream) -> FilterExpression:
-        stream.next_token()
+        stream.eat(TOKEN_LBRACKET)
         list_items: List[FilterExpression] = []
 
-        while stream.current.kind != TOKEN_RBRACKET:
+        while stream.current().kind != TOKEN_RBRACKET:
             try:
-                list_items.append(self.list_item_map[stream.current.kind](stream))
+                list_items.append(self.list_item_map[stream.current().kind](stream))
             except KeyError as err:
                 raise JSONPathSyntaxError(
-                    f"unexpected {stream.current.value!r}",
-                    token=stream.current,
+                    f"unexpected {stream.current().value!r}",
+                    token=stream.current(),
                 ) from err
 
-            if stream.peek.kind != TOKEN_RBRACKET:
+            if stream.peek().kind != TOKEN_RBRACKET:
                 stream.expect_peek(TOKEN_COMMA)
-                stream.next_token()
+                stream.next()
 
-            stream.next_token()
+            stream.next()
 
+        stream.eat(TOKEN_RBRACKET)
         return ListLiteral(list_items)
 
     def parse_function_extension(self, stream: TokenStream) -> FilterExpression:
         function_arguments: List[FilterExpression] = []
-        tok = stream.next_token()
+        function_token = stream.next()
+        stream.eat(TOKEN_LPAREN)
 
-        while stream.current.kind != TOKEN_RPAREN:
+        while True:
+            stream.skip_whitespace()
+            token = stream.current()
+
+            if token.kind == TOKEN_RPAREN:
+                break
+
             try:
-                func = self.function_argument_map[stream.current.kind]
+                func = self.function_argument_map[token.kind]
             except KeyError as err:
                 raise JSONPathSyntaxError(
-                    f"unexpected {stream.current.value!r}",
-                    token=stream.current,
+                    f"unexpected {token.value!r}", token=token
                 ) from err
 
             expr = func(stream)
+            stream.skip_whitespace()
 
-            # The argument could be a comparison or logical expression
-            peek_kind = stream.peek.kind
-            while peek_kind in self.BINARY_OPERATORS:
-                stream.next_token()
+            while stream.current().kind in self.BINARY_OPERATORS:
                 expr = self.parse_infix_expression(stream, expr)
-                peek_kind = stream.peek.kind
 
             function_arguments.append(expr)
+            stream.skip_whitespace()
 
-            if stream.peek.kind != TOKEN_RPAREN:
-                stream.expect_peek(TOKEN_COMMA)
-                stream.next_token()
+            if stream.current().kind != TOKEN_RPAREN:
+                stream.eat(TOKEN_COMMA)
 
-            stream.next_token()
+        stream.eat(TOKEN_RPAREN)
 
         return FunctionExtension(
-            tok.value,
-            self.env.validate_function_extension_signature(tok, function_arguments),
+            function_token.value,
+            self.env.validate_function_extension_signature(
+                function_token, function_arguments
+            ),
         )
 
     def parse_filter_expression(
         self, stream: TokenStream, precedence: int = PRECEDENCE_LOWEST
     ) -> FilterExpression:
+        stream.skip_whitespace()
+        token = stream.current()
+
         try:
-            left = self.token_map[stream.current.kind](stream)
+            left = self.token_map[token.kind](stream)
         except KeyError as err:
-            if stream.current.kind in (TOKEN_EOF, TOKEN_RBRACKET):
+            if token.kind in (TOKEN_EOF, TOKEN_RBRACKET):
                 msg = "end of expression"
             else:
-                msg = repr(stream.current.value)
-            raise JSONPathSyntaxError(
-                f"unexpected {msg}", token=stream.current
-            ) from err
+                msg = repr(token.value)
+            raise JSONPathSyntaxError(f"unexpected {msg}", token=token) from err
 
         while True:
-            peek_kind = stream.peek.kind
+            stream.skip_whitespace()
+            kind = stream.current().kind
+
             if (
-                peek_kind in (TOKEN_EOF, TOKEN_RBRACKET)
-                or self.PRECEDENCES.get(peek_kind, self.PRECEDENCE_LOWEST) < precedence
+                kind not in self.BINARY_OPERATORS
+                or self.PRECEDENCES.get(kind, self.PRECEDENCE_LOWEST) < precedence
             ):
                 break
 
-            if peek_kind not in self.BINARY_OPERATORS:
-                return left
-
-            stream.next_token()
             left = self.parse_infix_expression(stream, left)
 
         return left
@@ -748,3 +782,9 @@ class Parser:
                 raise JSONPathTypeError(
                     f"result of {expr.name}() is not comparable", token
                 )
+
+    def _raise_for_leading_zero(self, token: Token) -> None:
+        if (
+            len(token.value) > 1 and token.value.startswith("0")
+        ) or token.value.startswith("-0"):
+            raise JSONPathSyntaxError("leading zero in index selector", token=token)

@@ -22,7 +22,8 @@ TOKEN_PSEUDO_ROOT = sys.intern("TOKEN_PSEUDO_ROOT")
 TOKEN_RBRACKET = sys.intern("TOKEN_RBRACKET")
 TOKEN_ROOT = sys.intern("TOKEN_ROOT")
 TOKEN_WILD = sys.intern("TOKEN_WILD")
-TOKEN_NAME = sys.intern("TOKEN_NAME")  # An object property/key or a function name
+TOKEN_NAME = sys.intern("TOKEN_NAME")
+TOKEN_DOT_PROPERTY = sys.intern("TOKEN_DOT_PROPERTY")
 
 # Filter expression tokens
 TOKEN_AND = sys.intern("TOKEN_AND")

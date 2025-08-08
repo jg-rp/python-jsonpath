@@ -16,6 +16,7 @@ from jsonpath.token import TOKEN_EQ
 from jsonpath.token import TOKEN_FALSE
 from jsonpath.token import TOKEN_FILTER
 from jsonpath.token import TOKEN_FLOAT
+from jsonpath.token import TOKEN_FUNCTION
 from jsonpath.token import TOKEN_GT
 from jsonpath.token import TOKEN_IN
 from jsonpath.token import TOKEN_INT
@@ -1609,7 +1610,7 @@ TEST_CASES = [
                 path="$.some[?(length(@.thing) < 2)]",
             ),
             Token(
-                kind=TOKEN_NAME,
+                kind=TOKEN_FUNCTION,
                 value="length",
                 index=9,
                 path="$.some[?(length(@.thing) < 2)]",
