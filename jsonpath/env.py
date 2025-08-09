@@ -25,9 +25,9 @@ from .exceptions import JSONPathTypeError
 from .filter import UNDEFINED
 from .filter import VALUE_TYPE_EXPRESSIONS
 from .filter import FilterExpression
+from .filter import FilterQuery
 from .filter import FunctionExtension
 from .filter import InfixExpression
-from .filter import Path
 from .fluent_api import Query
 from .function_extensions import ExpressionType
 from .function_extensions import FilterFunction
@@ -40,8 +40,8 @@ from .path import CompoundJSONPath
 from .path import JSONPath
 from .stream import TokenStream
 from .token import TOKEN_EOF
-from .token import TOKEN_FAKE_ROOT
 from .token import TOKEN_INTERSECTION
+from .token import TOKEN_PSEUDO_ROOT
 from .token import TOKEN_UNION
 from .token import Token
 
@@ -92,8 +92,8 @@ class JSONPathEnvironment:
     ## Class attributes
 
     Attributes:
-        fake_root_token (str): The pattern used to select a "fake" root node, one level
-            above the real root node.
+        pseudo_root_token (str): The pattern used to select a "fake" root node, one
+            level above the real root node.
         filter_context_token (str): The pattern used to select extra filter context
             data. Defaults to `"_"`.
         intersection_token (str): The pattern used as the intersection operator.
@@ -117,7 +117,7 @@ class JSONPathEnvironment:
 
     # These should be unescaped strings. `re.escape` will be called
     # on them automatically when compiling lexer rules.
-    fake_root_token = "^"
+    pseudo_root_token = "^"
     filter_context_token = "_"
     intersection_token = "&"
     key_token = "#"
@@ -180,46 +180,52 @@ class JSONPathEnvironment:
         """
         tokens = self.lexer.tokenize(path)
         stream = TokenStream(tokens)
-        fake_root = stream.current.kind == TOKEN_FAKE_ROOT
+        pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
         _path: Union[JSONPath, CompoundJSONPath] = JSONPath(
-            env=self, selectors=self.parser.parse(stream), fake_root=fake_root
+            env=self, segments=self.parser.parse(stream), pseudo_root=pseudo_root
         )
 
-        if stream.current.kind != TOKEN_EOF:
+        # TODO: Optionally raise for trailing whitespace
+        stream.skip_whitespace()
+
+        # TODO: better!
+        if stream.current().kind != TOKEN_EOF:
             _path = CompoundJSONPath(env=self, path=_path)
-            while stream.current.kind != TOKEN_EOF:
-                if stream.peek.kind == TOKEN_EOF:
+            while stream.current().kind != TOKEN_EOF:
+                if stream.peek().kind == TOKEN_EOF:
                     # trailing union or intersection
                     raise JSONPathSyntaxError(
-                        f"expected a path after {stream.current.value!r}",
-                        token=stream.current,
+                        f"expected a path after {stream.current().value!r}",
+                        token=stream.current(),
                     )
 
-                if stream.current.kind == TOKEN_UNION:
-                    stream.next_token()
-                    fake_root = stream.current.kind == TOKEN_FAKE_ROOT
+                if stream.current().kind == TOKEN_UNION:
+                    stream.next()
+                    stream.skip_whitespace()
+                    pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
                     _path = _path.union(
                         JSONPath(
                             env=self,
-                            selectors=self.parser.parse(stream),
-                            fake_root=fake_root,
+                            segments=self.parser.parse(stream),
+                            pseudo_root=pseudo_root,
                         )
                     )
-                elif stream.current.kind == TOKEN_INTERSECTION:
-                    stream.next_token()
-                    fake_root = stream.current.kind == TOKEN_FAKE_ROOT
+                elif stream.current().kind == TOKEN_INTERSECTION:
+                    stream.next()
+                    stream.skip_whitespace()
+                    pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
                     _path = _path.intersection(
                         JSONPath(
                             env=self,
-                            selectors=self.parser.parse(stream),
-                            fake_root=fake_root,
+                            segments=self.parser.parse(stream),
+                            pseudo_root=pseudo_root,
                         )
                     )
                 else:  # pragma: no cover
                     # Parser.parse catches this too
                     raise JSONPathSyntaxError(  # noqa: TRY003
-                        f"unexpected token {stream.current.value!r}",
-                        token=stream.current,
+                        f"unexpected token {stream.current().value!r}",
+                        token=stream.current(),
                     )
 
         return _path
@@ -456,7 +462,7 @@ class JSONPathEnvironment:
             if typ == ExpressionType.VALUE:
                 if not (
                     isinstance(arg, VALUE_TYPE_EXPRESSIONS)
-                    or (isinstance(arg, Path) and arg.path.singular_query())
+                    or (isinstance(arg, FilterQuery) and arg.path.singular_query())
                     or (self._function_return_type(arg) == ExpressionType.VALUE)
                 ):
                     raise JSONPathTypeError(
@@ -464,13 +470,13 @@ class JSONPathEnvironment:
                         token=token,
                     )
             elif typ == ExpressionType.LOGICAL:
-                if not isinstance(arg, (Path, InfixExpression)):
+                if not isinstance(arg, (FilterQuery, InfixExpression)):
                     raise JSONPathTypeError(
                         f"{token.value}() argument {idx} must be of LogicalType",
                         token=token,
                     )
             elif typ == ExpressionType.NODES and not (
-                isinstance(arg, Path)
+                isinstance(arg, FilterQuery)
                 or self._function_return_type(arg) == ExpressionType.NODES
             ):
                 raise JSONPathTypeError(

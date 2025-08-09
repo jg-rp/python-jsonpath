@@ -21,12 +21,14 @@ class Case:
 
 
 TEST_CASES = [
-    Case(
-        description="property key that looks like an index",
-        path="$[some][0]",
-        data={"some": {"0": "thing"}},
-        want=["thing"],
-    ),
+    # XXX: We're replacing bare property names with the "singular path selector"
+    # https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/522
+    # Case(
+    #     description="property key that looks like an index",
+    #     path="$[some][0]",
+    #     data={"some": {"0": "thing"}},
+    #     want=["thing"],
+    # ),
     Case(
         description="slice a mapping",
         path="$.some[0:4]",
@@ -58,14 +60,14 @@ TEST_CASES = [
         want=[{"foo": 1}, {"foo": 2}],
     ),
     Case(
-        description="select root value using fake root",
-        path="^[?@some.thing > 7]",
+        description="select root value using pseudo root",
+        path="^[?@.some.thing > 7]",
         data={"some": {"thing": 42}},
         want=[{"some": {"thing": 42}}],
     ),
     Case(
-        description="fake root in a filter query",
-        path="^[?@some.thing > value(^.*.num)]",
+        description="pseudo root in a filter query",
+        path="^[?@.some.thing > value(^.*.num)]",
         data={"some": {"thing": 42}, "num": 7},
         want=[{"some": {"thing": 42}, "num": 7}],
     ),
@@ -129,25 +131,25 @@ TEST_CASES = [
     ),
     Case(
         description="issue 72, orders",
-        path="orders",
+        path="$.orders",
         data={"orders": [1, 2, 3]},
         want=[[1, 2, 3]],
     ),
     Case(
         description="issue 72, andy",
-        path="andy",
+        path="$.andy",
         data={"andy": [1, 2, 3]},
         want=[[1, 2, 3]],
     ),
     Case(
         description="quoted reserved word, and",
-        path="['and']",
+        path="$['and']",
         data={"and": [1, 2, 3]},
         want=[[1, 2, 3]],
     ),
     Case(
         description="quoted reserved word, or",
-        path="['or']",
+        path="$['or']",
         data={"or": [1, 2, 3]},
         want=[[1, 2, 3]],
     ),

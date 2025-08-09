@@ -1,4 +1,5 @@
 """Test that we can traverse filter expression trees."""
+
 import dataclasses
 import operator
 from typing import List
@@ -9,7 +10,6 @@ import jsonpath
 from jsonpath.filter import FilterExpression
 from jsonpath.filter import walk
 from jsonpath.selectors import Filter as FilterSelector
-from jsonpath.selectors import ListSelector
 
 
 @dataclasses.dataclass
@@ -63,13 +63,11 @@ def test_is_volatile(case: Case) -> None:
     assert isinstance(path, jsonpath.JSONPath)
 
     filter_selectors: List[FilterSelector] = []
-    for segment in path.selectors:
-        if isinstance(segment, ListSelector):
-            filter_selectors.extend(
-                selector
-                for selector in segment.items
-                if isinstance(selector, FilterSelector)
-            )
+
+    for segment in path.segments:
+        for selector in segment.selectors:
+            if isinstance(selector, FilterSelector):
+                filter_selectors.append(selector)
 
     assert len(filter_selectors) == 1
     assert is_volatile(filter_selectors[0].expression) is case.want
