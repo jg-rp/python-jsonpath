@@ -16,7 +16,8 @@ class TokenStream:
     def __init__(self, token_iter: Iterable[Token]):
         self.tokens = list(token_iter)
         self.pos = 0
-        self.eof = Token(TOKEN_EOF, "", -1, self.tokens[0].path)
+        path = self.tokens[0].path if self.tokens else ""
+        self.eof = Token(TOKEN_EOF, "", -1, path)
 
     def __str__(self) -> str:  # pragma: no cover
         return f"current: {self.current}\nnext: {self.peek}"

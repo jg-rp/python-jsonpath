@@ -50,7 +50,7 @@ def test_root_path_cache() -> None:
     env = JSONPathEnvironment(filter_caching=True)
     data = {"some": [{"a": 1}, {"a": 99}, {"a": 2}, {"a": 3}]}
     with mock.patch(
-        "jsonpath.filter.RootPath.evaluate", return_value=10
+        "jsonpath.filter.RootFilterQuery.evaluate", return_value=10
     ) as mock_root_path:
         path = env.compile("$.some[?@.a < $.thing].a")
         rv = path.findall(data)
@@ -63,7 +63,7 @@ def test_root_path_no_cache() -> None:
     env = JSONPathEnvironment(filter_caching=False)
     data = {"some": [{"a": 1}, {"a": 99}, {"a": 2}, {"a": 3}]}
     with mock.patch(
-        "jsonpath.filter.RootPath.evaluate", return_value=10
+        "jsonpath.filter.RootFilterQuery.evaluate", return_value=10
     ) as mock_root_path:
         path = env.compile("$.some[?@.a < $.thing].a")
         rv = path.findall(data)

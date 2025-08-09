@@ -1,4 +1,5 @@
 """JSONPathEnvironment API test cases."""
+
 import asyncio
 from typing import List
 
@@ -178,7 +179,7 @@ def test_custom_fake_root_identifier_token() -> None:
     """Test that we can change the non-standard fake root identifier."""
 
     class MyJSONPathEnvironment(JSONPathEnvironment):
-        fake_root_token = "$$"
+        pseudo_root_token = "$$"
 
     env = MyJSONPathEnvironment()
     data = {"foo": {"a": 1, "b": 2, "c": 3}}
@@ -191,7 +192,7 @@ def test_disable_fake_root_identifier() -> None:
     """Test that we can disable the non-standard fake root identifier."""
 
     class MyJSONPathEnvironment(JSONPathEnvironment):
-        fake_root_token = ""
+        pseudo_root_token = ""
 
     env = MyJSONPathEnvironment()
     with pytest.raises(JSONPathSyntaxError):

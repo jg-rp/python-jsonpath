@@ -185,6 +185,9 @@ class JSONPathEnvironment:
             env=self, segments=self.parser.parse(stream), pseudo_root=pseudo_root
         )
 
+        # TODO: Optionally raise for trailing whitespace
+        stream.skip_whitespace()
+
         # TODO: better!
         if stream.current().kind != TOKEN_EOF:
             _path = CompoundJSONPath(env=self, path=_path)
@@ -198,6 +201,7 @@ class JSONPathEnvironment:
 
                 if stream.current().kind == TOKEN_UNION:
                     stream.next()
+                    stream.skip_whitespace()
                     pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
                     _path = _path.union(
                         JSONPath(
@@ -208,6 +212,7 @@ class JSONPathEnvironment:
                     )
                 elif stream.current().kind == TOKEN_INTERSECTION:
                     stream.next()
+                    stream.skip_whitespace()
                     pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
                     _path = _path.intersection(
                         JSONPath(

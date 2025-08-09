@@ -241,6 +241,7 @@ class Parser:
             TOKEN_FUNCTION: self.parse_function_extension,
             TOKEN_INT: self.parse_integer_literal,
             TOKEN_KEY: self.parse_current_key,
+            TOKEN_LBRACKET: self.parse_list_literal,
             TOKEN_LPAREN: self.parse_grouped_expression,
             TOKEN_MISSING: self.parse_undefined,
             TOKEN_NIL: self.parse_nil,
@@ -293,9 +294,6 @@ class Parser:
         if stream.current().kind in {TOKEN_ROOT, TOKEN_PSEUDO_ROOT}:
             stream.next()
 
-        # TODO: Support "bare" paths. Those without a leading dot for shorthand
-        # selectors
-
         yield from self.parse_path(stream)
 
         if stream.current().kind not in (TOKEN_EOF, TOKEN_INTERSECTION, TOKEN_UNION):
@@ -312,9 +310,9 @@ class Parser:
         """
         while True:
             stream.skip_whitespace()
-            if stream.current().kind == TOKEN_DOT:
-                # Consume the dot.
-                stream.next()
+            _token = stream.current()
+            if _token.kind == TOKEN_DOT:
+                stream.eat(TOKEN_DOT)
                 # Assert that dot is followed by shorthand selector without whitespace.
                 stream.expect(TOKEN_NAME, TOKEN_WILD, TOKEN_KEYS)
                 token = stream.current()
@@ -322,8 +320,8 @@ class Parser:
                 yield JSONPathChildSegment(
                     env=self.env, token=token, selectors=selectors
                 )
-            elif stream.current().kind == TOKEN_DDOT:
-                token = stream.next()
+            elif _token.kind == TOKEN_DDOT:
+                token = stream.eat(TOKEN_DDOT)
                 selectors = self.parse_selectors(stream)
                 if not selectors:
                     raise JSONPathSyntaxError(
@@ -333,7 +331,14 @@ class Parser:
                 yield JSONPathRecursiveDescentSegment(
                     env=self.env, token=token, selectors=selectors
                 )
-            elif stream.current().kind == TOKEN_LBRACKET:
+            elif _token.kind == TOKEN_LBRACKET:
+                selectors = self.parse_selectors(stream)
+                yield JSONPathChildSegment(
+                    env=self.env, token=_token, selectors=selectors
+                )
+            elif _token.kind in {TOKEN_NAME, TOKEN_WILD, TOKEN_KEYS}:
+                # A non-standard "bare" path. One without a leading identifier (`$`,
+                # `@`, `^` or `_`).
                 token = stream.current()
                 selectors = self.parse_selectors(stream)
                 yield JSONPathChildSegment(
@@ -377,6 +382,7 @@ class Parser:
             stream.pos -= 1
             return tuple(self.parse_bracketed_selection(stream))
 
+        stream.pos -= 1
         return ()
 
     def parse_bracketed_selection(self, stream: TokenStream) -> List[JSONPathSelector]:  # noqa: PLR0912
@@ -446,14 +452,13 @@ class Parser:
                     token=token,
                 )
 
-            # XXX:
-            # if stream.peek().kind == TOKEN_EOF:
-            #     raise JSONPathSyntaxError(
-            #         "unexpected end of segment",
-            #         token=stream.current(),
-            #     )
-
             stream.skip_whitespace()
+
+            if stream.current().kind == TOKEN_EOF:
+                raise JSONPathSyntaxError(
+                    "unexpected end of segment",
+                    token=stream.current(),
+                )
 
             if stream.current().kind != TOKEN_RBRACKET:
                 stream.eat(TOKEN_COMMA)
@@ -665,7 +670,12 @@ class Parser:
         stream.eat(TOKEN_LBRACKET)
         list_items: List[FilterExpression] = []
 
-        while stream.current().kind != TOKEN_RBRACKET:
+        while True:
+            stream.skip_whitespace()
+
+            if stream.current().kind == TOKEN_RBRACKET:
+                break
+
             try:
                 list_items.append(self.list_item_map[stream.current().kind](stream))
             except KeyError as err:
@@ -674,11 +684,10 @@ class Parser:
                     token=stream.current(),
                 ) from err
 
-            if stream.peek().kind != TOKEN_RBRACKET:
-                stream.expect_peek(TOKEN_COMMA)
-                stream.next()
-
-            stream.next()
+            stream.skip_whitespace()
+            if stream.current().kind != TOKEN_RBRACKET:
+                stream.eat(TOKEN_COMMA)
+                stream.skip_whitespace()
 
         stream.eat(TOKEN_RBRACKET)
         return ListLiteral(list_items)

@@ -15,7 +15,7 @@ def env() -> JSONPathEnvironment:
 
 
 def test_unclosed_selection_list(env: JSONPathEnvironment) -> None:
-    with pytest.raises(JSONPathSyntaxError, match=r"unexpected end of selector list"):
+    with pytest.raises(JSONPathSyntaxError, match=r"unexpected end of segment"):
         env.compile("$[1,2")
 
 
@@ -37,6 +37,11 @@ def test_non_singular_query_is_not_comparable(env: JSONPathEnvironment) -> None:
 def test_unbalanced_parens(env: JSONPathEnvironment) -> None:
     with pytest.raises(JSONPathSyntaxError):
         env.compile("$[?((@.foo)]")
+
+
+def test_root_dot(env: JSONPathEnvironment) -> None:
+    with pytest.raises(JSONPathSyntaxError):
+        env.compile("$.")
 
 
 class FilterLiteralTestCase(NamedTuple):

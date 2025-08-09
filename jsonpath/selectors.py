@@ -71,11 +71,7 @@ class PropertySelector(JSONPathSelector):
         self.shorthand = shorthand
 
     def __str__(self) -> str:
-        return (
-            f"[{canonical_string(self.name)}]"
-            if self.shorthand
-            else f"{canonical_string(self.name)}"
-        )
+        return canonical_string(self.name)
 
     def __eq__(self, __value: object) -> bool:
         return (
@@ -203,11 +199,7 @@ class KeysSelector(JSONPathSelector):
         self.shorthand = shorthand
 
     def __str__(self) -> str:
-        return (
-            f"[{self.env.keys_selector_token}]"
-            if self.shorthand
-            else self.env.keys_selector_token
-        )
+        return self.env.keys_selector_token
 
     def __eq__(self, __value: object) -> bool:
         return isinstance(__value, KeysSelector) and self.token == __value.token
@@ -315,7 +307,7 @@ class WildSelector(JSONPathSelector):
         self.shorthand = shorthand
 
     def __str__(self) -> str:
-        return "[*]" if self.shorthand else "*"
+        return "*"
 
     def __eq__(self, __value: object) -> bool:
         return isinstance(__value, WildSelector) and self.token == __value.token
