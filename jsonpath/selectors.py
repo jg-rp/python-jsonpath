@@ -56,19 +56,11 @@ class JSONPathSelector(ABC):
 class PropertySelector(JSONPathSelector):
     """A shorthand or bracketed property selector."""
 
-    __slots__ = ("name", "shorthand")
+    __slots__ = ("name",)
 
-    def __init__(
-        self,
-        *,
-        env: JSONPathEnvironment,
-        token: Token,
-        name: str,
-        shorthand: bool,
-    ) -> None:
+    def __init__(self, *, env: JSONPathEnvironment, token: Token, name: str) -> None:
         super().__init__(env=env, token=token)
         self.name = name
-        self.shorthand = shorthand
 
     def __str__(self) -> str:
         return canonical_string(self.name)
@@ -190,13 +182,10 @@ class KeysSelector(JSONPathSelector):
     NOTE: This is a non-standard selector.
     """
 
-    __slots__ = ("shorthand",)
+    __slots__ = ()
 
-    def __init__(
-        self, *, env: JSONPathEnvironment, token: Token, shorthand: bool
-    ) -> None:
+    def __init__(self, *, env: JSONPathEnvironment, token: Token) -> None:
         super().__init__(env=env, token=token)
-        self.shorthand = shorthand
 
     def __str__(self) -> str:
         return self.env.keys_selector_token
@@ -298,13 +287,7 @@ class SliceSelector(JSONPathSelector):
 class WildSelector(JSONPathSelector):
     """Select all items from a sequence/array or values from a mapping/object."""
 
-    __slots__ = ("shorthand",)
-
-    def __init__(
-        self, *, env: JSONPathEnvironment, token: Token, shorthand: bool
-    ) -> None:
-        super().__init__(env=env, token=token)
-        self.shorthand = shorthand
+    __slots__ = ()
 
     def __str__(self) -> str:
         return "*"

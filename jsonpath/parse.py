@@ -356,7 +356,6 @@ class Parser:
                     env=self.env,
                     token=token,
                     name=token.value,
-                    shorthand=True,
                 ),
             )
 
@@ -365,7 +364,6 @@ class Parser:
                 WildSelector(
                     env=self.env,
                     token=token,
-                    shorthand=True,
                 ),
             )
 
@@ -374,7 +372,6 @@ class Parser:
                 KeysSelector(
                     env=self.env,
                     token=token,
-                    shorthand=True,
                 ),
             )
 
@@ -422,25 +419,16 @@ class Parser:
                         env=self.env,
                         token=token,
                         name=self._decode_string_literal(token),
-                        shorthand=False,
                     ),
                 )
                 stream.next()
             elif token.kind == TOKEN_COLON:
                 selectors.append(self.parse_slice(stream))
             elif token.kind == TOKEN_WILD:
-                selectors.append(
-                    WildSelector(
-                        env=self.env,
-                        token=token,
-                        shorthand=False,
-                    )
-                )
+                selectors.append(WildSelector(env=self.env, token=token))
                 stream.next()
             elif token.kind == TOKEN_KEYS:
-                selectors.append(
-                    KeysSelector(env=self.env, token=token, shorthand=False)
-                )
+                selectors.append(KeysSelector(env=self.env, token=token))
                 stream.next()
             elif token.kind == TOKEN_FILTER:
                 selectors.append(self.parse_filter_selector(stream))
