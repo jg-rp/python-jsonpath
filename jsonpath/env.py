@@ -102,6 +102,8 @@ class JSONPathEnvironment:
             filtering a mapping or sequence. Defaults to `"#"`.
         keys_selector_token (str): The pattern used as the "keys" selector. Defaults to
             `"~"`.
+        keys_filter_token (str): The pattern used as the "keys filter" selector.
+            Defaults to `"~?"`.
         lexer_class: The lexer to use when tokenizing path strings.
         max_int_index (int): The maximum integer allowed when selecting array items by
             index. Defaults to `(2**53) - 1`.
@@ -122,6 +124,7 @@ class JSONPathEnvironment:
     intersection_token = "&"
     key_token = "#"
     keys_selector_token = "~"
+    keys_filter_token = "~?"
     root_token = "$"
     self_token = "@"
     union_token = "|"

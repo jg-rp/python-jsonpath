@@ -15,6 +15,7 @@ from .token import TOKEN_COMMA
 from .token import TOKEN_CONTAINS
 from .token import TOKEN_DDOT
 from .token import TOKEN_DOT
+from .token import TOKEN_DOT_KEY_PROPERTY
 from .token import TOKEN_DOT_PROPERTY
 from .token import TOKEN_DOUBLE_QUOTE_STRING
 from .token import TOKEN_EQ
@@ -30,6 +31,7 @@ from .token import TOKEN_IN
 from .token import TOKEN_INT
 from .token import TOKEN_INTERSECTION
 from .token import TOKEN_KEY
+from .token import TOKEN_KEY_NAME
 from .token import TOKEN_KEYS
 from .token import TOKEN_KEYS_FILTER
 from .token import TOKEN_LBRACKET
@@ -103,6 +105,13 @@ class Lexer:
         # .thing
         self.dot_property_pattern = rf"(?P<G_DOT>\.)(?P<G_PROP>{self.key_pattern})"
 
+        # .~thing
+        self.dot_key_pattern = (
+            r"(?P<G_DOT_KEY>\.)"
+            rf"(?P<G_KEY>{re.escape(env.keys_selector_token)})"
+            rf"(?P<G_PROP_KEY>{self.key_pattern})"
+        )
+
         # /pattern/ or /pattern/flags
         self.re_pattern = r"/(?P<G_RE>.+?)/(?P<G_RE_FLAGS>[aims]*)"
 
@@ -122,12 +131,14 @@ class Lexer:
             (TOKEN_INTERSECTION, self.env.intersection_token),
             (TOKEN_FILTER_CONTEXT, self.env.filter_context_token),
             (TOKEN_KEYS, self.env.keys_selector_token),
+            (TOKEN_KEYS_FILTER, self.env.keys_filter_token),
         ]
 
         rules = [
             (TOKEN_DOUBLE_QUOTE_STRING, self.double_quote_pattern),
             (TOKEN_SINGLE_QUOTE_STRING, self.single_quote_pattern),
             (TOKEN_RE_PATTERN, self.re_pattern),
+            (TOKEN_DOT_KEY_PROPERTY, self.dot_key_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
             (TOKEN_FLOAT, r"-?\d+\.\d*(?:[eE][+-]?\d+)?"),
             (TOKEN_INT, r"-?\d+(?P<G_EXP>[eE][+\-]?\d+)?\b"),
@@ -144,7 +155,6 @@ class Lexer:
             ],
             (TOKEN_WILD, r"\*"),
             (TOKEN_FILTER, r"\?"),
-            (TOKEN_KEYS_FILTER, r"~\?"),  # TODO: get from env
             (TOKEN_IN, r"in\b"),
             (TOKEN_TRUE, r"[Tt]rue\b"),
             (TOKEN_FALSE, r"[Ff]alse\b"),
@@ -198,6 +208,17 @@ class Lexer:
                     kind=TOKEN_NAME,
                     value=match.group("G_PROP"),
                     index=match.start("G_PROP"),
+                )
+            elif kind == TOKEN_DOT_KEY_PROPERTY:
+                yield _token(
+                    kind=TOKEN_DOT,
+                    value=match.group("G_DOT_KEY"),
+                    index=match.start("G_DOT_KEY"),
+                )
+                yield _token(
+                    kind=TOKEN_KEY_NAME,
+                    value=match.group("G_PROP_KEY"),
+                    index=match.start("G_PROP_KEY"),
                 )
             elif kind == TOKEN_DOUBLE_QUOTE_STRING:
                 yield _token(

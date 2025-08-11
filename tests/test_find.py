@@ -52,6 +52,12 @@ TEST_CASES = [
         want=[{"foo": 1}, {"foo": 2}],
     ),
     Case(
+        description="filter current key, array data",
+        path="$.abc[?(# >= 1)]",
+        data={"abc": [1, 2, 3], "def": [4, 5], "abx": [6], "aby": []},
+        want=[2, 3],
+    ),
+    Case(
         description="select root value using pseudo root",
         path="^[?@.some.thing > 7]",
         data={"some": {"thing": 42}},

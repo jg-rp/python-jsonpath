@@ -176,10 +176,57 @@ class IndexSelector(JSONPathSelector):
                 yield match
 
 
+class KeySelector(JSONPathSelector):
+    """Select a single mapping/object name/key.
+
+    NOTE: This is a non-standard selector.
+
+    See https://jg-rp.github.io/json-p3/guides/jsonpath-extra#key-selector.
+    """
+
+    __slots__ = ("key",)
+
+    def __init__(self, *, env: JSONPathEnvironment, token: Token, key: str) -> None:
+        super().__init__(env=env, token=token)
+        self.key = key
+
+    def __str__(self) -> str:
+        return f"{self.env.keys_selector_token}{canonical_string(self.key)}"
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, KeySelector)
+            and self.token == __value.token
+            and self.key == __value.key
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.token, self.key))
+
+    def resolve(self, node: JSONPathMatch) -> Iterable[JSONPathMatch]:
+        if isinstance(node.obj, Mapping) and self.key in node.obj:
+            match = node.__class__(
+                filter_context=node.filter_context(),
+                obj=self.key,
+                parent=node,
+                parts=node.parts + (f"{self.env.keys_selector_token}{self.key}",),
+                path=f"{node.path}[{self}]",
+                root=node.root,
+            )
+            node.add_child(match)
+            yield match
+
+    async def resolve_async(self, node: JSONPathMatch) -> AsyncIterable[JSONPathMatch]:
+        for _node in self.resolve(node):
+            yield _node
+
+
 class KeysSelector(JSONPathSelector):
     """Select mapping/object keys/properties.
 
     NOTE: This is a non-standard selector.
+
+    See https://jg-rp.github.io/json-p3/guides/jsonpath-extra#keys-selector
     """
 
     __slots__ = ()
@@ -198,13 +245,13 @@ class KeysSelector(JSONPathSelector):
 
     def _keys(self, node: JSONPathMatch) -> Iterable[JSONPathMatch]:
         if isinstance(node.obj, Mapping):
-            for i, key in enumerate(node.obj.keys()):
+            for key in node.obj:
                 match = node.__class__(
                     filter_context=node.filter_context(),
                     obj=key,
                     parent=node,
                     parts=node.parts + (f"{self.env.keys_selector_token}{key}",),
-                    path=f"{node.path}[{self.env.keys_selector_token}][{i}]",
+                    path=f"{node.path}[{self.env.keys_selector_token}{canonical_string(key)}]",
                     root=node.root,
                 )
                 node.add_child(match)
@@ -447,6 +494,98 @@ class Filter(JSONPathSelector):
                     match = node.new_child(obj, i)
                     node.add_child(match)
                     yield match
+
+
+class KeysFilter(JSONPathSelector):
+    """Selects names from an object’s name/value members.
+
+    NOTE: This is a non-standard selector.
+
+    See https://jg-rp.github.io/json-p3/guides/jsonpath-extra#keys-filter-selector
+    """
+
+    __slots__ = ("expression",)
+
+    def __init__(
+        self,
+        *,
+        env: JSONPathEnvironment,
+        token: Token,
+        expression: BooleanExpression,
+    ) -> None:
+        super().__init__(env=env, token=token)
+        self.expression = expression
+
+    def __str__(self) -> str:
+        return f"~?{self.expression}"
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, Filter)
+            and self.expression == __value.expression
+            and self.token == __value.token
+        )
+
+    def __hash__(self) -> int:
+        return hash(("~", str(self.expression), self.token))
+
+    def resolve(self, node: JSONPathMatch) -> Iterable[JSONPathMatch]:
+        if isinstance(node.value, Mapping):
+            for key, val in node.value.items():
+                context = FilterContext(
+                    env=self.env,
+                    current=val,
+                    root=node.root,
+                    extra_context=node.filter_context(),
+                    current_key=key,
+                )
+
+                try:
+                    if self.expression.evaluate(context):
+                        match = node.__class__(
+                            filter_context=node.filter_context(),
+                            obj=key,
+                            parent=node,
+                            parts=node.parts
+                            + (f"{self.env.keys_selector_token}{key}",),
+                            path=f"{node.path}[{self.env.keys_selector_token}{canonical_string(key)}]",
+                            root=node.root,
+                        )
+                        node.add_child(match)
+                        yield match
+                except JSONPathTypeError as err:
+                    if not err.token:
+                        err.token = self.token
+                    raise
+
+    async def resolve_async(self, node: JSONPathMatch) -> AsyncIterable[JSONPathMatch]:
+        if isinstance(node.value, Mapping):
+            for key, val in node.value.items():
+                context = FilterContext(
+                    env=self.env,
+                    current=val,
+                    root=node.root,
+                    extra_context=node.filter_context(),
+                    current_key=key,
+                )
+
+                try:
+                    if await self.expression.evaluate_async(context):
+                        match = node.__class__(
+                            filter_context=node.filter_context(),
+                            obj=key,
+                            parent=node,
+                            parts=node.parts
+                            + (f"{self.env.keys_selector_token}{key}",),
+                            path=f"{node.path}[{self.env.keys_selector_token}{canonical_string(key)}]",
+                            root=node.root,
+                        )
+                        node.add_child(match)
+                        yield match
+                except JSONPathTypeError as err:
+                    if not err.token:
+                        err.token = self.token
+                    raise
 
 
 class FilterContext:

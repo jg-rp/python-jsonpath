@@ -24,6 +24,8 @@ TOKEN_ROOT = sys.intern("TOKEN_ROOT")
 TOKEN_WILD = sys.intern("TOKEN_WILD")
 TOKEN_NAME = sys.intern("TOKEN_NAME")
 TOKEN_DOT_PROPERTY = sys.intern("TOKEN_DOT_PROPERTY")
+TOKEN_DOT_KEY_PROPERTY = sys.intern("TOKEN_DOT_KEY_PROPERTY")
+TOKEN_KEY_NAME = sys.intern("TOKEN_KEY_NAME")
 
 # Filter expression tokens
 TOKEN_AND = sys.intern("TOKEN_AND")
