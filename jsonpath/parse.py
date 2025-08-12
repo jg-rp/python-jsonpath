@@ -352,7 +352,7 @@ class Parser:
             else:
                 break
 
-    def parse_selector(self, stream: TokenStream) -> tuple[JSONPathSelector, ...]:
+    def parse_selector(self, stream: TokenStream) -> tuple[JSONPathSelector, ...]:  # noqa: PLR0911
         token = stream.next()
 
         if token.kind == TOKEN_NAME:
@@ -382,6 +382,15 @@ class Parser:
             )
 
         if token.kind == TOKEN_KEYS:
+            if stream.current().kind == TOKEN_NAME:
+                return (
+                    KeySelector(
+                        env=self.env,
+                        token=token,
+                        key=self._decode_string_literal(stream.next()),
+                    ),
+                )
+
             return (
                 KeysSelector(
                     env=self.env,
@@ -442,8 +451,21 @@ class Parser:
                 selectors.append(WildSelector(env=self.env, token=token))
                 stream.next()
             elif token.kind == TOKEN_KEYS:
-                selectors.append(KeysSelector(env=self.env, token=token))
-                stream.next()
+                stream.eat(TOKEN_KEYS)
+                if stream.current().kind in (
+                    TOKEN_DOUBLE_QUOTE_STRING,
+                    TOKEN_SINGLE_QUOTE_STRING,
+                ):
+                    selectors.append(
+                        KeySelector(
+                            env=self.env,
+                            token=token,
+                            key=self._decode_string_literal(stream.next()),
+                        )
+                    )
+                else:
+                    selectors.append(KeysSelector(env=self.env, token=token))
+
             elif token.kind == TOKEN_FILTER:
                 selectors.append(self.parse_filter_selector(stream))
             elif token.kind == TOKEN_KEYS_FILTER:
