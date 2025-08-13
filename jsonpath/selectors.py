@@ -16,6 +16,7 @@ from typing import Union
 
 from .exceptions import JSONPathIndexError
 from .exceptions import JSONPathTypeError
+from .match import NodeList
 from .serialize import canonical_string
 
 if TYPE_CHECKING:
@@ -94,15 +95,7 @@ class PropertySelector(JSONPathSelector):
 
 
 class IndexSelector(JSONPathSelector):
-    """Select an element from an array by index.
-
-    XXX: Change to make unquoted keys/properties a "singular path selector"
-    https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/522
-
-    Considering we don't require mapping (JSON object) keys/properties to
-    be quoted, and that we support mappings with numeric keys, we also check
-    to see if the "index" is a mapping key, which is non-standard.
-    """
+    """Select an element from an array by index."""
 
     __slots__ = ("index", "_as_key")
 
@@ -404,12 +397,87 @@ class SingularQuerySelector(JSONPathSelector):
         return hash((self.query, self.token))
 
     def resolve(self, node: JSONPathMatch) -> Iterable[JSONPathMatch]:
-        # TODO:
-        raise Exception("not implemented")
+        if isinstance(node.obj, Mapping):
+            nodes = NodeList(self.query.finditer(node.root))
+
+            if nodes.empty():
+                return
+
+            value = nodes[0].value
+
+            if not isinstance(value, str):
+                return
+
+            with suppress(KeyError):
+                match = node.new_child(self.env.getitem(node.obj, value), value)
+                node.add_child(match)
+                yield match
+
+        if isinstance(node.obj, Sequence):
+            nodes = NodeList(self.query.finditer(node.root))
+
+            if nodes.empty():
+                return
+
+            value = nodes[0].value
+
+            if not isinstance(value, int):
+                return
+
+            index = self._normalized_index(node.obj, value)
+
+            with suppress(IndexError):
+                match = node.new_child(self.env.getitem(node.obj, index), index)
+                node.add_child(match)
+                yield match
 
     async def resolve_async(self, node: JSONPathMatch) -> AsyncIterable[JSONPathMatch]:
-        # TODO:
-        raise Exception("not implemented")
+        if isinstance(node.obj, Mapping):
+            nodes = NodeList(
+                [match async for match in await self.query.finditer_async(node.root)]
+            )
+
+            if nodes.empty():
+                return
+
+            value = nodes[0].value
+
+            if not isinstance(value, str):
+                return
+
+            with suppress(KeyError):
+                match = node.new_child(
+                    await self.env.getitem_async(node.obj, value), value
+                )
+                node.add_child(match)
+                yield match
+
+        if isinstance(node.obj, Sequence):
+            nodes = NodeList(
+                [match async for match in await self.query.finditer_async(node.root)]
+            )
+
+            if nodes.empty():
+                return
+
+            value = nodes[0].value
+
+            if not isinstance(value, int):
+                return
+
+            index = self._normalized_index(node.obj, value)
+
+            with suppress(IndexError):
+                match = node.new_child(
+                    await self.env.getitem_async(node.obj, index), index
+                )
+                node.add_child(match)
+                yield match
+
+    def _normalized_index(self, obj: Sequence[object], index: int) -> int:
+        if index < 0 and len(obj) >= abs(index):
+            return len(obj) + index
+        return index
 
 
 class Filter(JSONPathSelector):

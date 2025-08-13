@@ -44,6 +44,11 @@ def test_root_dot(env: JSONPathEnvironment) -> None:
         env.compile("$.")
 
 
+def test_embedded_query_is_not_singular(env: JSONPathEnvironment) -> None:
+    with pytest.raises(JSONPathSyntaxError):
+        env.compile("$.a[$.*]")
+
+
 class FilterLiteralTestCase(NamedTuple):
     description: str
     query: str

@@ -111,6 +111,46 @@ TEST_CASES = [
         data={"some": {"other": "foo", "thing": "bar", "else": {"other": "baz"}}},
         want=[],
     ),
+    Case(
+        description="object name from embedded singular query resolving to nothing",
+        path="$.a[$.foo]",
+        data={
+            "a": {"j": [1, 2, 3], "p": {"q": [4, 5, 6]}},
+            "b": ["j", "p", "q"],
+            "c d": {"x": {"y": 1}},
+        },
+        want=[],
+    ),
+    Case(
+        description="array index from embedded singular query resolving to nothing",
+        path="$.b[$.foo]",
+        data={
+            "a": {"j": [1, 2, 3], "p": {"q": [4, 5, 6]}},
+            "b": ["j", "p", "q"],
+            "c d": {"x": {"y": 1}},
+        },
+        want=[],
+    ),
+    Case(
+        description="array index from embedded singular query is not an int",
+        path="$.b[$.a.z]",
+        data={
+            "a": {"j": [1, 2, 3], "p": {"q": [4, 5, 6]}, "z": "foo"},
+            "b": ["j", "p", "q"],
+            "c d": {"x": {"y": 1}},
+        },
+        want=[],
+    ),
+    Case(
+        description="array index from embedded singular query is negative",
+        path="$.b[$.a.z]",
+        data={
+            "a": {"j": [1, 2, 3], "p": {"q": [4, 5, 6]}, "z": -1},
+            "b": ["j", "p", "q"],
+            "c d": {"x": {"y": 1}},
+        },
+        want=["q"],
+    ),
 ]
 
 

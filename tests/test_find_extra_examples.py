@@ -120,6 +120,39 @@ TEST_CASES = [
         want=[2, 3],
         want_paths=["$['abc'][1]", "$['abc'][2]"],
     ),
+    Case(
+        description="object name from embedded singular query",
+        path="$.a[$.b[1]]",
+        data={
+            "a": {"j": [1, 2, 3], "p": {"q": [4, 5, 6]}},
+            "b": ["j", "p", "q"],
+            "c d": {"x": {"y": 1}},
+        },
+        want=[{"q": [4, 5, 6]}],
+        want_paths=["$['a']['p']"],
+    ),
+    Case(
+        description="array index from embedded singular query",
+        path="$.a.j[$['c d'].x.y]",
+        data={
+            "a": {"j": [1, 2, 3], "p": {"q": [4, 5, 6]}},
+            "b": ["j", "p", "q"],
+            "c d": {"x": {"y": 1}},
+        },
+        want=[2],
+        want_paths=["$['a']['j'][1]"],
+    ),
+    Case(
+        description="embedded singular query does not resolve to a string or int value",
+        path="$.a[$.b]",
+        data={
+            "a": {"j": [1, 2, 3], "p": {"q": [4, 5, 6]}},
+            "b": ["j", "p", "q"],
+            "c d": {"x": {"y": 1}},
+        },
+        want=[],
+        want_paths=[],
+    ),
 ]
 
 
