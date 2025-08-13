@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from .env import JSONPathEnvironment
     from .filter import BooleanExpression
     from .match import JSONPathMatch
+    from .path import JSONPath
     from .token import Token
 
 # ruff: noqa: D102
@@ -370,6 +371,45 @@ class WildSelector(JSONPathSelector):
                 match = node.new_child(val, i)
                 node.add_child(match)
                 yield match
+
+
+class SingularQuerySelector(JSONPathSelector):
+    """An embedded absolute query.
+
+    The result of the embedded query is used as an object member name or array element
+    index.
+
+    NOTE: This is a non-standard selector.
+    """
+
+    __slots__ = ("query",)
+
+    def __init__(
+        self, *, env: JSONPathEnvironment, token: Token, query: JSONPath
+    ) -> None:
+        super().__init__(env=env, token=token)
+        self.query = query
+
+    def __str__(self) -> str:
+        return str(self.query)
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, SingularQuerySelector)
+            and self.query == __value.query
+            and self.token == __value.token
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.query, self.token))
+
+    def resolve(self, node: JSONPathMatch) -> Iterable[JSONPathMatch]:
+        # TODO:
+        raise Exception("not implemented")
+
+    async def resolve_async(self, node: JSONPathMatch) -> AsyncIterable[JSONPathMatch]:
+        # TODO:
+        raise Exception("not implemented")
 
 
 class Filter(JSONPathSelector):

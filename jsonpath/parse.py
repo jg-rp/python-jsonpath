@@ -50,6 +50,7 @@ from .selectors import KeySelector
 from .selectors import KeysFilter
 from .selectors import KeysSelector
 from .selectors import PropertySelector
+from .selectors import SingularQuerySelector
 from .selectors import SliceSelector
 from .selectors import WildSelector
 from .token import TOKEN_AND
@@ -239,7 +240,7 @@ class Parser:
 
         self.token_map: Dict[str, Callable[[TokenStream], FilterExpression]] = {
             TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
-            TOKEN_PSEUDO_ROOT: self.parse_root_path,
+            TOKEN_PSEUDO_ROOT: self.parse_absolute_query,
             TOKEN_FALSE: self.parse_boolean,
             TOKEN_FILTER_CONTEXT: self.parse_filter_context_path,
             TOKEN_FLOAT: self.parse_float_literal,
@@ -254,8 +255,8 @@ class Parser:
             TOKEN_NOT: self.parse_prefix_expression,
             TOKEN_NULL: self.parse_nil,
             TOKEN_RE_PATTERN: self.parse_regex,
-            TOKEN_ROOT: self.parse_root_path,
-            TOKEN_SELF: self.parse_self_path,
+            TOKEN_ROOT: self.parse_absolute_query,
+            TOKEN_SELF: self.parse_relative_query,
             TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
             TOKEN_UNDEFINED: self.parse_undefined,
@@ -277,7 +278,7 @@ class Parser:
             str, Callable[[TokenStream], FilterExpression]
         ] = {
             TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
-            TOKEN_PSEUDO_ROOT: self.parse_root_path,
+            TOKEN_PSEUDO_ROOT: self.parse_absolute_query,
             TOKEN_FALSE: self.parse_boolean,
             TOKEN_FILTER_CONTEXT: self.parse_filter_context_path,
             TOKEN_FLOAT: self.parse_float_literal,
@@ -287,8 +288,8 @@ class Parser:
             TOKEN_NIL: self.parse_nil,
             TOKEN_NONE: self.parse_nil,
             TOKEN_NULL: self.parse_nil,
-            TOKEN_ROOT: self.parse_root_path,
-            TOKEN_SELF: self.parse_self_path,
+            TOKEN_ROOT: self.parse_absolute_query,
+            TOKEN_SELF: self.parse_relative_query,
             TOKEN_SINGLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_TRUE: self.parse_boolean,
         }
@@ -299,7 +300,7 @@ class Parser:
         if stream.current().kind in {TOKEN_ROOT, TOKEN_PSEUDO_ROOT}:
             stream.next()
 
-        yield from self.parse_path(stream)
+        yield from self.parse_query(stream)
 
         if stream.current().kind not in (TOKEN_EOF, TOKEN_INTERSECTION, TOKEN_UNION):
             raise JSONPathSyntaxError(
@@ -307,7 +308,7 @@ class Parser:
                 token=stream.current(),
             )
 
-    def parse_path(self, stream: TokenStream) -> Iterable[JSONPathSegment]:
+    def parse_query(self, stream: TokenStream) -> Iterable[JSONPathSegment]:
         """Parse a JSONPath query string.
 
         This method assumes the root, current or pseudo root identifier has
@@ -405,7 +406,7 @@ class Parser:
         stream.pos -= 1
         return ()
 
-    def parse_bracketed_selection(self, stream: TokenStream) -> List[JSONPathSelector]:  # noqa: PLR0912
+    def parse_bracketed_selection(self, stream: TokenStream) -> List[JSONPathSelector]:  # noqa: PLR0912, PLR0915
         """Parse a comma separated list of JSONPath selectors."""
         segment_token = stream.eat(TOKEN_LBRACKET)
         selectors: List[JSONPathSelector] = []
@@ -470,6 +471,8 @@ class Parser:
                 selectors.append(self.parse_filter_selector(stream))
             elif token.kind == TOKEN_KEYS_FILTER:
                 selectors.append(self.parse_filter_selector(stream, keys=True))
+            elif token.kind in (TOKEN_ROOT, TOKEN_NAME):
+                selectors.append(self.parse_singular_query_selector(stream))
             elif token.kind == TOKEN_EOF:
                 raise JSONPathSyntaxError("unexpected end of query", token=token)
             else:
@@ -664,20 +667,41 @@ class Parser:
         stream.eat(TOKEN_RPAREN)
         return expr
 
-    def parse_root_path(self, stream: TokenStream) -> FilterExpression:
+    def parse_absolute_query(self, stream: TokenStream) -> FilterExpression:
         root = stream.next()
         return RootFilterQuery(
             JSONPath(
                 env=self.env,
-                segments=self.parse_path(stream),
+                segments=self.parse_query(stream),
                 pseudo_root=root.kind == TOKEN_PSEUDO_ROOT,
             )
         )
 
-    def parse_self_path(self, stream: TokenStream) -> FilterExpression:
-        stream.next()
+    def parse_relative_query(self, stream: TokenStream) -> FilterExpression:
+        stream.eat(TOKEN_SELF)
         return RelativeFilterQuery(
-            JSONPath(env=self.env, segments=self.parse_path(stream))
+            JSONPath(env=self.env, segments=self.parse_query(stream))
+        )
+
+    def parse_singular_query_selector(
+        self, stream: TokenStream
+    ) -> SingularQuerySelector:
+        # TODO: optionally require root identifier
+        token = (
+            stream.next() if stream.current().kind == TOKEN_ROOT else stream.current()
+        )
+
+        query = JSONPath(env=self.env, segments=self.parse_query(stream))
+
+        if not query.singular_query():
+            raise JSONPathSyntaxError(
+                "embedded query selectors must be singular queries", token=token
+            )
+
+        return SingularQuerySelector(
+            env=self.env,
+            token=token,
+            query=query,
         )
 
     def parse_current_key(self, stream: TokenStream) -> FilterExpression:
@@ -687,7 +711,7 @@ class Parser:
     def parse_filter_context_path(self, stream: TokenStream) -> FilterExpression:
         stream.next()
         return FilterContextPath(
-            JSONPath(env=self.env, segments=self.parse_path(stream))
+            JSONPath(env=self.env, segments=self.parse_query(stream))
         )
 
     def parse_regex(self, stream: TokenStream) -> FilterExpression:
