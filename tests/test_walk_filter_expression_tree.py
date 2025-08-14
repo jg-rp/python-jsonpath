@@ -7,7 +7,7 @@ from typing import List
 import pytest
 
 import jsonpath
-from jsonpath.filter import FilterExpression
+from jsonpath.filter import BaseExpression
 from jsonpath.filter import walk
 from jsonpath.selectors import Filter as FilterSelector
 
@@ -53,7 +53,7 @@ TEST_CASES = [
 ]
 
 
-def is_volatile(expr: FilterExpression) -> bool:
+def is_volatile(expr: BaseExpression) -> bool:
     return any(expr.volatile for expr in walk(expr))
 
 

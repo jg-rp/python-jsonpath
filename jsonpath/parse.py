@@ -23,16 +23,16 @@ from .filter import FALSE
 from .filter import NIL
 from .filter import TRUE
 from .filter import UNDEFINED_LITERAL
-from .filter import BooleanExpression
+from .filter import BaseExpression
 from .filter import FilterContextPath
 from .filter import FilterExpression
+from .filter import FilterExpressionLiteral
 from .filter import FilterQuery
 from .filter import FloatLiteral
 from .filter import FunctionExtension
 from .filter import InfixExpression
 from .filter import IntegerLiteral
 from .filter import ListLiteral
-from .filter import Literal
 from .filter import Nil
 from .filter import PrefixExpression
 from .filter import RegexLiteral
@@ -49,10 +49,10 @@ from .selectors import JSONPathSelector
 from .selectors import KeySelector
 from .selectors import KeysFilter
 from .selectors import KeysSelector
-from .selectors import PropertySelector
+from .selectors import NameSelector
 from .selectors import SingularQuerySelector
 from .selectors import SliceSelector
-from .selectors import WildSelector
+from .selectors import WildcardSelector
 from .token import TOKEN_AND
 from .token import TOKEN_COLON
 from .token import TOKEN_COMMA
@@ -238,7 +238,7 @@ class Parser:
     def __init__(self, *, env: JSONPathEnvironment) -> None:
         self.env = env
 
-        self.token_map: Dict[str, Callable[[TokenStream], FilterExpression]] = {
+        self.token_map: Dict[str, Callable[[TokenStream], BaseExpression]] = {
             TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_PSEUDO_ROOT: self.parse_absolute_query,
             TOKEN_FALSE: self.parse_boolean,
@@ -262,7 +262,7 @@ class Parser:
             TOKEN_UNDEFINED: self.parse_undefined,
         }
 
-        self.list_item_map: Dict[str, Callable[[TokenStream], FilterExpression]] = {
+        self.list_item_map: Dict[str, Callable[[TokenStream], BaseExpression]] = {
             TOKEN_FALSE: self.parse_boolean,
             TOKEN_FLOAT: self.parse_float_literal,
             TOKEN_INT: self.parse_integer_literal,
@@ -275,7 +275,7 @@ class Parser:
         }
 
         self.function_argument_map: Dict[
-            str, Callable[[TokenStream], FilterExpression]
+            str, Callable[[TokenStream], BaseExpression]
         ] = {
             TOKEN_DOUBLE_QUOTE_STRING: self.parse_string_literal,
             TOKEN_PSEUDO_ROOT: self.parse_absolute_query,
@@ -358,7 +358,7 @@ class Parser:
 
         if token.kind == TOKEN_NAME:
             return (
-                PropertySelector(
+                NameSelector(
                     env=self.env,
                     token=token,
                     name=token.value,
@@ -376,7 +376,7 @@ class Parser:
 
         if token.kind == TOKEN_WILD:
             return (
-                WildSelector(
+                WildcardSelector(
                     env=self.env,
                     token=token,
                 ),
@@ -439,7 +439,7 @@ class Parser:
                 TOKEN_SINGLE_QUOTE_STRING,
             ):
                 selectors.append(
-                    PropertySelector(
+                    NameSelector(
                         env=self.env,
                         token=token,
                         name=self._decode_string_literal(token),
@@ -449,7 +449,7 @@ class Parser:
             elif token.kind == TOKEN_COLON:
                 selectors.append(self.parse_slice(stream))
             elif token.kind == TOKEN_WILD:
-                selectors.append(WildSelector(env=self.env, token=token))
+                selectors.append(WildcardSelector(env=self.env, token=token))
                 stream.next()
             elif token.kind == TOKEN_KEYS:
                 stream.eat(TOKEN_KEYS)
@@ -572,7 +572,7 @@ class Parser:
                     f"result of {expr.name}() must be compared", token=token
                 )
 
-        if isinstance(expr, (Literal, Nil)):
+        if isinstance(expr, (FilterExpressionLiteral, Nil)):
             raise JSONPathSyntaxError(
                 "filter expression literals outside of "
                 "function expressions must be compared",
@@ -581,35 +581,35 @@ class Parser:
 
         if keys:
             return KeysFilter(
-                env=self.env, token=token, expression=BooleanExpression(expr)
+                env=self.env, token=token, expression=FilterExpression(expr)
             )
 
-        return Filter(env=self.env, token=token, expression=BooleanExpression(expr))
+        return Filter(env=self.env, token=token, expression=FilterExpression(expr))
 
-    def parse_boolean(self, stream: TokenStream) -> FilterExpression:
+    def parse_boolean(self, stream: TokenStream) -> BaseExpression:
         if stream.next().kind == TOKEN_TRUE:
             return TRUE
         return FALSE
 
-    def parse_nil(self, stream: TokenStream) -> FilterExpression:
+    def parse_nil(self, stream: TokenStream) -> BaseExpression:
         stream.next()
         return NIL
 
-    def parse_undefined(self, stream: TokenStream) -> FilterExpression:
+    def parse_undefined(self, stream: TokenStream) -> BaseExpression:
         stream.next()
         return UNDEFINED_LITERAL
 
-    def parse_string_literal(self, stream: TokenStream) -> FilterExpression:
+    def parse_string_literal(self, stream: TokenStream) -> BaseExpression:
         return StringLiteral(value=self._decode_string_literal(stream.next()))
 
-    def parse_integer_literal(self, stream: TokenStream) -> FilterExpression:
+    def parse_integer_literal(self, stream: TokenStream) -> BaseExpression:
         # Convert to float first to handle scientific notation.
         return IntegerLiteral(value=int(float(stream.next().value)))
 
-    def parse_float_literal(self, stream: TokenStream) -> FilterExpression:
+    def parse_float_literal(self, stream: TokenStream) -> BaseExpression:
         return FloatLiteral(value=float(stream.next().value))
 
-    def parse_prefix_expression(self, stream: TokenStream) -> FilterExpression:
+    def parse_prefix_expression(self, stream: TokenStream) -> BaseExpression:
         token = stream.next()
         assert token.kind == TOKEN_NOT
         return PrefixExpression(
@@ -620,8 +620,8 @@ class Parser:
         )
 
     def parse_infix_expression(
-        self, stream: TokenStream, left: FilterExpression
-    ) -> FilterExpression:
+        self, stream: TokenStream, left: BaseExpression
+    ) -> BaseExpression:
         token = stream.next()
         precedence = self.PRECEDENCES.get(token.kind, self.PRECEDENCE_LOWEST)
         right = self.parse_filter_expression(stream, precedence)
@@ -632,13 +632,13 @@ class Parser:
             self._raise_for_non_comparable_function(right, token)
 
         if operator not in self.INFIX_LITERAL_OPERATORS:
-            if isinstance(left, (Literal, Nil)):
+            if isinstance(left, (FilterExpressionLiteral, Nil)):
                 raise JSONPathSyntaxError(
                     "filter expression literals outside of "
                     "function expressions must be compared",
                     token=token,
                 )
-            if isinstance(right, (Literal, Nil)):
+            if isinstance(right, (FilterExpressionLiteral, Nil)):
                 raise JSONPathSyntaxError(
                     "filter expression literals outside of "
                     "function expressions must be compared",
@@ -647,7 +647,7 @@ class Parser:
 
         return InfixExpression(left, operator, right)
 
-    def parse_grouped_expression(self, stream: TokenStream) -> FilterExpression:
+    def parse_grouped_expression(self, stream: TokenStream) -> BaseExpression:
         stream.eat(TOKEN_LPAREN)
         expr = self.parse_filter_expression(stream)
 
@@ -667,7 +667,7 @@ class Parser:
         stream.eat(TOKEN_RPAREN)
         return expr
 
-    def parse_absolute_query(self, stream: TokenStream) -> FilterExpression:
+    def parse_absolute_query(self, stream: TokenStream) -> BaseExpression:
         root = stream.next()
         return RootFilterQuery(
             JSONPath(
@@ -677,7 +677,7 @@ class Parser:
             )
         )
 
-    def parse_relative_query(self, stream: TokenStream) -> FilterExpression:
+    def parse_relative_query(self, stream: TokenStream) -> BaseExpression:
         stream.eat(TOKEN_SELF)
         return RelativeFilterQuery(
             JSONPath(env=self.env, segments=self.parse_query(stream))
@@ -704,17 +704,17 @@ class Parser:
             query=query,
         )
 
-    def parse_current_key(self, stream: TokenStream) -> FilterExpression:
+    def parse_current_key(self, stream: TokenStream) -> BaseExpression:
         stream.next()
         return CURRENT_KEY
 
-    def parse_filter_context_path(self, stream: TokenStream) -> FilterExpression:
+    def parse_filter_context_path(self, stream: TokenStream) -> BaseExpression:
         stream.next()
         return FilterContextPath(
             JSONPath(env=self.env, segments=self.parse_query(stream))
         )
 
-    def parse_regex(self, stream: TokenStream) -> FilterExpression:
+    def parse_regex(self, stream: TokenStream) -> BaseExpression:
         pattern = stream.current().value
         flags = 0
         if stream.peek().kind == TOKEN_RE_FLAGS:
@@ -723,9 +723,9 @@ class Parser:
                 flags |= self.RE_FLAG_MAP[flag]
         return RegexLiteral(value=re.compile(pattern, flags))
 
-    def parse_list_literal(self, stream: TokenStream) -> FilterExpression:
+    def parse_list_literal(self, stream: TokenStream) -> BaseExpression:
         stream.eat(TOKEN_LBRACKET)
-        list_items: List[FilterExpression] = []
+        list_items: List[BaseExpression] = []
 
         while True:
             stream.skip_whitespace()
@@ -749,8 +749,8 @@ class Parser:
         stream.eat(TOKEN_RBRACKET)
         return ListLiteral(list_items)
 
-    def parse_function_extension(self, stream: TokenStream) -> FilterExpression:
-        function_arguments: List[FilterExpression] = []
+    def parse_function_extension(self, stream: TokenStream) -> BaseExpression:
+        function_arguments: List[BaseExpression] = []
         function_token = stream.next()
         stream.eat(TOKEN_LPAREN)
 
@@ -791,7 +791,7 @@ class Parser:
 
     def parse_filter_expression(
         self, stream: TokenStream, precedence: int = PRECEDENCE_LOWEST
-    ) -> FilterExpression:
+    ) -> BaseExpression:
         stream.skip_whitespace()
         token = stream.current()
 
@@ -834,7 +834,7 @@ class Parser:
         return token.value
 
     def _raise_for_non_comparable_function(
-        self, expr: FilterExpression, token: Token
+        self, expr: BaseExpression, token: Token
     ) -> None:
         if isinstance(expr, FilterQuery) and not expr.path.singular_query():
             raise JSONPathTypeError("non-singular query is not comparable", token=token)

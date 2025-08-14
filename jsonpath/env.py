@@ -24,7 +24,7 @@ from .exceptions import JSONPathSyntaxError
 from .exceptions import JSONPathTypeError
 from .filter import UNDEFINED
 from .filter import VALUE_TYPE_EXPRESSIONS
-from .filter import FilterExpression
+from .filter import BaseExpression
 from .filter import FilterQuery
 from .filter import FunctionExtension
 from .filter import InfixExpression
@@ -449,7 +449,7 @@ class JSONPathEnvironment:
         self,
         token: Token,
         func: FilterFunction,
-        args: List[FilterExpression],
+        args: List[BaseExpression],
     ) -> None:
         """Check the well-typedness of a function's arguments at compile-time."""
         # Correct number of arguments?
@@ -487,7 +487,7 @@ class JSONPathEnvironment:
                     token=token,
                 )
 
-    def _function_return_type(self, expr: FilterExpression) -> Optional[ExpressionType]:
+    def _function_return_type(self, expr: BaseExpression) -> Optional[ExpressionType]:
         """Return the type returned from a filter function.
 
         If _expr_ is not a `FunctionExtension` or the registered function definition is

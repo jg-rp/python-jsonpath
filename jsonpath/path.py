@@ -20,7 +20,7 @@ from jsonpath.match import FilterContextVars
 from jsonpath.match import JSONPathMatch
 from jsonpath.segments import JSONPathRecursiveDescentSegment
 from jsonpath.selectors import IndexSelector
-from jsonpath.selectors import PropertySelector
+from jsonpath.selectors import NameSelector
 
 if TYPE_CHECKING:
     from io import IOBase
@@ -244,7 +244,7 @@ class JSONPath:
                 return False
 
             if len(segment.selectors) == 1 and isinstance(
-                segment.selectors[0], (PropertySelector, IndexSelector)
+                segment.selectors[0], (NameSelector, IndexSelector)
             ):
                 continue
 
@@ -470,6 +470,9 @@ class CompoundJSONPath:
             path=self.path,
             paths=self.paths + ((self.env.intersection_token, path),),
         )
+
+    # TODO: implement empty and singular for CompoundJSONPath
+    # TODO: add a `segments` property returning segments from all paths
 
 
 T = TypeVar("T")

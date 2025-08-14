@@ -4,7 +4,7 @@ from unittest import mock
 
 from jsonpath import JSONPath
 from jsonpath import JSONPathEnvironment
-from jsonpath.filter import BooleanExpression
+from jsonpath.filter import BaseExpression
 from jsonpath.filter import CachingFilterExpression
 from jsonpath.filter import FilterContextPath
 from jsonpath.filter import FilterExpression
@@ -28,8 +28,8 @@ def test_cache_root_path() -> None:
     assert filter_selector.cacheable_nodes is True
 
     # The original expression tree without caching nodes.
-    expr: FilterExpression = filter_selector.expression
-    assert isinstance(expr, BooleanExpression)
+    expr: BaseExpression = filter_selector.expression
+    assert isinstance(expr, FilterExpression)
     expr = expr.expression
     assert isinstance(expr, InfixExpression)
     assert isinstance(expr.left, RelativeFilterQuery)
@@ -37,7 +37,7 @@ def test_cache_root_path() -> None:
 
     # A caching copy of the original expression tree.
     expr = filter_selector.expression.cache_tree()
-    assert isinstance(expr, BooleanExpression)
+    assert isinstance(expr, FilterExpression)
     expr = expr.expression
     assert isinstance(expr, InfixExpression)
     assert isinstance(expr.left, RelativeFilterQuery)
@@ -83,8 +83,8 @@ def test_cache_context_path() -> None:
     assert filter_selector.cacheable_nodes is True
 
     # The original expression tree without caching nodes.
-    expr: FilterExpression = filter_selector.expression
-    assert isinstance(expr, BooleanExpression)
+    expr: BaseExpression = filter_selector.expression
+    assert isinstance(expr, FilterExpression)
     expr = expr.expression
     assert isinstance(expr, InfixExpression)
     assert isinstance(expr.left, FilterContextPath)
@@ -92,7 +92,7 @@ def test_cache_context_path() -> None:
 
     # A caching copy of the original expression tree.
     expr = filter_selector.expression.cache_tree()
-    assert isinstance(expr, BooleanExpression)
+    assert isinstance(expr, FilterExpression)
     expr = expr.expression
     assert isinstance(expr, InfixExpression)
     assert isinstance(expr.left, CachingFilterExpression)
@@ -154,8 +154,8 @@ def test_uncacheable_filter() -> None:
     assert filter_selector.cacheable_nodes is False
 
     # The original expression tree without caching nodes.
-    expr: FilterExpression = filter_selector.expression
-    assert isinstance(expr, BooleanExpression)
+    expr: BaseExpression = filter_selector.expression
+    assert isinstance(expr, FilterExpression)
     expr = expr.expression
     assert isinstance(expr, InfixExpression)
     assert isinstance(expr.left, InfixExpression)

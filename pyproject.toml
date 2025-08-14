@@ -186,4 +186,6 @@ convention = "google"
 [tool.ruff.lint.per-file-ignores]
 "jsonpath/__about__.py" = ["D100"]
 "jsonpath/__init__.py" = ["D104"]
+"jsonpath/selectors.py" = ["D102"]
+"jsonpath/filter.py" = ["D102", "PLW1641"]
 "tests/*" = ["D100", "D101", "D104", "D103"]

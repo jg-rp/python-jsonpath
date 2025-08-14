@@ -21,12 +21,10 @@ from .serialize import canonical_string
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
-    from .filter import BooleanExpression
+    from .filter import FilterExpression
     from .match import JSONPathMatch
     from .path import JSONPath
     from .token import Token
-
-# ruff: noqa: D102
 
 
 class JSONPathSelector(ABC):
@@ -55,8 +53,8 @@ class JSONPathSelector(ABC):
         """An async version of `resolve`."""
 
 
-class PropertySelector(JSONPathSelector):
-    """A shorthand or bracketed property selector."""
+class NameSelector(JSONPathSelector):
+    """Select at most one object member value given an object member name."""
 
     __slots__ = ("name",)
 
@@ -69,7 +67,7 @@ class PropertySelector(JSONPathSelector):
 
     def __eq__(self, __value: object) -> bool:
         return (
-            isinstance(__value, PropertySelector)
+            isinstance(__value, NameSelector)
             and self.name == __value.name
             and self.token == __value.token
         )
@@ -95,7 +93,7 @@ class PropertySelector(JSONPathSelector):
 
 
 class IndexSelector(JSONPathSelector):
-    """Select an element from an array by index."""
+    """Select at most one array element value given an index."""
 
     __slots__ = ("index", "_as_key")
 
@@ -171,7 +169,11 @@ class IndexSelector(JSONPathSelector):
 
 
 class KeySelector(JSONPathSelector):
-    """Select a single mapping/object name/key.
+    """Select at most one name from an object member, given the name.
+
+    The key selector is introduced to facilitate valid normalized paths for nodes
+    produced by the "keys selector" and the "keys filter selector". It is not expected
+    to be of much use elsewhere.
 
     NOTE: This is a non-standard selector.
 
@@ -216,7 +218,7 @@ class KeySelector(JSONPathSelector):
 
 
 class KeysSelector(JSONPathSelector):
-    """Select mapping/object keys/properties.
+    """Select all names from an object's name/value members.
 
     NOTE: This is a non-standard selector.
 
@@ -260,7 +262,7 @@ class KeysSelector(JSONPathSelector):
 
 
 class SliceSelector(JSONPathSelector):
-    """Sequence slicing selector."""
+    """Select array elements given a start index, a stop index and a step."""
 
     __slots__ = ("slice",)
 
@@ -325,8 +327,8 @@ class SliceSelector(JSONPathSelector):
             yield match
 
 
-class WildSelector(JSONPathSelector):
-    """Select all items from a sequence/array or values from a mapping/object."""
+class WildcardSelector(JSONPathSelector):
+    """Select nodes of all children of an object or array."""
 
     __slots__ = ()
 
@@ -334,7 +336,7 @@ class WildSelector(JSONPathSelector):
         return "*"
 
     def __eq__(self, __value: object) -> bool:
-        return isinstance(__value, WildSelector) and self.token == __value.token
+        return isinstance(__value, WildcardSelector) and self.token == __value.token
 
     def __hash__(self) -> int:
         return hash(self.token)
@@ -413,7 +415,7 @@ class SingularQuerySelector(JSONPathSelector):
                 node.add_child(match)
                 yield match
 
-        if isinstance(node.obj, Sequence):
+        if isinstance(node.obj, Sequence) and not isinstance(node.obj, str):
             nodes = NodeList(self.query.finditer(node.root))
 
             if nodes.empty():
@@ -452,7 +454,7 @@ class SingularQuerySelector(JSONPathSelector):
                 node.add_child(match)
                 yield match
 
-        if isinstance(node.obj, Sequence):
+        if isinstance(node.obj, Sequence) and not isinstance(node.obj, str):
             nodes = NodeList(
                 [match async for match in await self.query.finditer_async(node.root)]
             )
@@ -481,7 +483,7 @@ class SingularQuerySelector(JSONPathSelector):
 
 
 class Filter(JSONPathSelector):
-    """Filter sequence/array items or mapping/object values with a filter expression."""
+    """Select array elements or object values according to a filter expression."""
 
     __slots__ = ("expression", "cacheable_nodes")
 
@@ -490,7 +492,7 @@ class Filter(JSONPathSelector):
         *,
         env: JSONPathEnvironment,
         token: Token,
-        expression: BooleanExpression,
+        expression: FilterExpression,
     ) -> None:
         super().__init__(env=env, token=token)
         self.expression = expression
@@ -605,7 +607,7 @@ class Filter(JSONPathSelector):
 
 
 class KeysFilter(JSONPathSelector):
-    """Selects names from an object’s name/value members.
+    """Selects names from an object's name/value members.
 
     NOTE: This is a non-standard selector.
 
@@ -619,7 +621,7 @@ class KeysFilter(JSONPathSelector):
         *,
         env: JSONPathEnvironment,
         token: Token,
-        expression: BooleanExpression,
+        expression: FilterExpression,
     ) -> None:
         super().__init__(env=env, token=token)
         self.expression = expression
