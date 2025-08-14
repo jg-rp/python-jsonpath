@@ -18,7 +18,9 @@ from typing import Union
 
 import pytest
 
-import jsonpath
+from jsonpath import JSONPathEnvironment
+from jsonpath import JSONPathError
+from jsonpath import NodeList
 
 
 @dataclass
@@ -35,10 +37,6 @@ class Case:
 
 
 SKIP = {
-    # "basic, no leading whitespace": "flexible whitespace policy",
-    "basic, no trailing whitespace": "flexible whitespace policy",
-    # "basic, bald descendant segment": "almost has a consensus",
-    # "filter, index segment on object, selects nothing": "flexible selector policy",
     "functions, match, dot matcher on \\u2028": "standard library re policy",
     "functions, match, dot matcher on \\u2029": "standard library re policy",
     "functions, search, dot matcher on \\u2028": "standard library re policy",
@@ -76,14 +74,6 @@ SKIP = {
     "name selector, double quotes, non-surrogate surrogate": "expected behavior policy",
     "name selector, double quotes, surrogate supplementary": "expected behavior policy",
     "name selector, double quotes, supplementary surrogate": "expected behavior policy",
-    # "whitespace, selectors, space between dot and name": "flexible whitespace policy",  # noqa: E501
-    # "whitespace, selectors, newline between dot and name": "flexible whitespace policy",  # noqa: E501
-    # "whitespace, selectors, tab between dot and name": "flexible whitespace policy",  # noqa: E501
-    # "whitespace, selectors, return between dot and name": "flexible whitespace policy",  # noqa: E501
-    # "whitespace, selectors, space between recursive descent and name": "flexible whitespace policy",  # noqa: E501
-    # "whitespace, selectors, newline between recursive descent and name": "flexible whitespace policy",  # noqa: E501
-    # "whitespace, selectors, tab between recursive descent and name": "flexible whitespace policy",  # noqa: E501
-    # "whitespace, selectors, return between recursive descent and name": "flexible whitespace policy",  # noqa: E501
 }
 
 
@@ -101,13 +91,18 @@ def invalid_cases() -> List[Case]:
     return [case for case in cases() if case.invalid_selector]
 
 
+@pytest.fixture()
+def env() -> JSONPathEnvironment:
+    return JSONPathEnvironment(strict=True)
+
+
 @pytest.mark.parametrize("case", valid_cases(), ids=operator.attrgetter("name"))
-def test_compliance(case: Case) -> None:
+def test_compliance(env: JSONPathEnvironment, case: Case) -> None:
     if case.name in SKIP:
         pytest.skip(reason=SKIP[case.name])
 
     assert case.document is not None
-    nodes = jsonpath.NodeList(jsonpath.finditer(case.selector, case.document))
+    nodes = NodeList(env.finditer(case.selector, case.document))
 
     if case.results is not None:
         assert case.results_paths is not None
@@ -120,14 +115,14 @@ def test_compliance(case: Case) -> None:
 
 
 @pytest.mark.parametrize("case", valid_cases(), ids=operator.attrgetter("name"))
-def test_compliance_async(case: Case) -> None:
+def test_compliance_async(env: JSONPathEnvironment, case: Case) -> None:
     if case.name in SKIP:
         pytest.skip(reason=SKIP[case.name])
 
-    async def coro() -> jsonpath.NodeList:
+    async def coro() -> NodeList:
         assert case.document is not None
-        it = await jsonpath.finditer_async(case.selector, case.document)
-        return jsonpath.NodeList([node async for node in it])
+        it = await env.finditer_async(case.selector, case.document)
+        return NodeList([node async for node in it])
 
     nodes = asyncio.run(coro())
 
@@ -142,9 +137,9 @@ def test_compliance_async(case: Case) -> None:
 
 
 @pytest.mark.parametrize("case", invalid_cases(), ids=operator.attrgetter("name"))
-def test_invalid_selectors(case: Case) -> None:
+def test_invalid_selectors(env: JSONPathEnvironment, case: Case) -> None:
     if case.name in SKIP:
         pytest.skip(reason=SKIP[case.name])
 
-    with pytest.raises(jsonpath.JSONPathError):
-        jsonpath.compile(case.selector)
+    with pytest.raises(JSONPathError):
+        env.compile(case.selector)

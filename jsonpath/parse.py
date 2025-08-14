@@ -101,6 +101,7 @@ from .token import TOKEN_SINGLE_QUOTE_STRING
 from .token import TOKEN_TRUE
 from .token import TOKEN_UNDEFINED
 from .token import TOKEN_UNION
+from .token import TOKEN_WHITESPACE
 from .token import TOKEN_WILD
 from .token import Token
 
@@ -295,10 +296,29 @@ class Parser:
         }
 
     def parse(self, stream: TokenStream) -> Iterator[JSONPathSegment]:
-        """Parse a JSONPath from a stream of tokens."""
-        # TODO: Optionally require TOKEN_ROOT
-        if stream.current().kind in {TOKEN_ROOT, TOKEN_PSEUDO_ROOT}:
+        """Parse a JSONPath query from a stream of tokens."""
+        if stream.skip_whitespace() and self.env.strict:
+            raise JSONPathSyntaxError(
+                "unexpected leading whitespace", token=stream.current()
+            )
+
+        if (
+            self.env.strict
+            and len(stream.tokens)
+            and stream.tokens[-1].kind == TOKEN_WHITESPACE
+        ):
+            raise JSONPathSyntaxError(
+                "unexpected trailing whitespace", token=stream.tokens[-1]
+            )
+
+        token = stream.current()
+
+        if token.kind == TOKEN_ROOT or (
+            token.kind == TOKEN_PSEUDO_ROOT and not self.env.strict
+        ):
             stream.next()
+        elif self.env.strict:
+            stream.expect(TOKEN_ROOT)
 
         yield from self.parse_query(stream)
 

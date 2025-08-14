@@ -89,7 +89,9 @@ class TokenStream:
         if self.peek().kind == typ:
             raise JSONPathSyntaxError(message, token=self.peek())
 
-    def skip_whitespace(self) -> None:
+    def skip_whitespace(self) -> bool:
         """Skip whitespace."""
         if self.current().kind == TOKEN_WHITESPACE:
             self.pos += 1
+            return True
+        return False

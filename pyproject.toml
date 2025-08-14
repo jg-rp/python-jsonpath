@@ -48,11 +48,12 @@ include = ["/jsonpath"]
 dependencies = [
   "pytest",
   "pytest-cov",
-  "black",
   "mypy",
-  "ipython",
+  "regex",
+  "iregexp-check",
   "pyyaml",
   "types-pyyaml",
+  "types-regex",
   "twine",
   "ruff",
 ]
@@ -77,6 +78,9 @@ dependencies = ["black", "mkdocs", "mkdocstrings[python]", "mkdocs-material"]
 [tool.hatch.envs.docs.scripts]
 build = "mkdocs build --clean --strict"
 serve = "mkdocs serve --dev-addr localhost:8000"
+
+[tool.hatch.envs.no-regex]
+dependencies = ["pytest"]
 
 [tool.coverage.run]
 branch = true

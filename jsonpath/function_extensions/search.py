@@ -1,6 +1,9 @@
 """The standard `search` function extension."""
 
-import re
+try:
+    import regex as re
+except ImportError:
+    import re  # type: ignore
 
 from jsonpath.function_extensions import ExpressionType
 from jsonpath.function_extensions import FilterFunction

@@ -88,7 +88,8 @@ class JSONPathEnvironment:
             well-typedness as compile time.
 
             **New in version 0.10.0**
-
+        strict: When `True`, follow RFC 9535 strictly.
+            **New in version 2.0.0**
     ## Class attributes
 
     Attributes:
@@ -143,6 +144,7 @@ class JSONPathEnvironment:
         filter_caching: bool = True,
         unicode_escape: bool = True,
         well_typed: bool = True,
+        strict: bool = False,
     ) -> None:
         self.filter_caching: bool = filter_caching
         """Enable or disable filter expression caching."""
@@ -153,6 +155,14 @@ class JSONPathEnvironment:
 
         self.well_typed: bool = well_typed
         """Control well-typedness checks on filter function expressions."""
+
+        self.strict: bool = strict
+        """When `True`, follow RFC 9535 strictly.
+        
+        This includes things like enforcing a leading root identifier and
+        ensuring there's not leading or trailing whitespace when parsing a
+        JSONPath query.
+        """
 
         self.lexer: Lexer = self.lexer_class(env=self)
         """The lexer bound to this environment."""
@@ -188,8 +198,10 @@ class JSONPathEnvironment:
             env=self, segments=self.parser.parse(stream), pseudo_root=pseudo_root
         )
 
-        # TODO: Optionally raise for trailing whitespace
-        stream.skip_whitespace()
+        if stream.skip_whitespace() and self.strict:
+            raise JSONPathSyntaxError(
+                "unexpected whitespace", token=stream.tokens[stream.pos - 1]
+            )
 
         # TODO: better!
         if stream.current().kind != TOKEN_EOF:
