@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 1.3.2 (unreleased)
+
+**Fixes**
+
+- Fixed JSONPath filter context data in embedded JSONPath queries. We were failing to pass on said context data when resolving embedded queries. See [#103](https://github.com/jg-rp/python-jsonpath/issues/103).
+
 ## Version 1.3.1
 
 **Fixes**
