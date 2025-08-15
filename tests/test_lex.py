@@ -1,7 +1,7 @@
 import dataclasses
 import json
 import operator
-from typing import List, Any
+from typing import List, Any, Dict
 
 import pytest
 
@@ -30,11 +30,12 @@ def cases() -> List[Case]:
     # Backward-compatibility alias: some test data may use PSEUDO_ROOT to mean FAKE_ROOT
     kind_map.setdefault("TOKEN_PSEUDO_ROOT", tokmod.TOKEN_FAKE_ROOT)
     
-    def to_token(obj: dict[str, Any]) -> Token:
+    def to_token(obj: Dict[str, Any]) -> Token:
         try:
             kind_value = kind_map[obj["kind"]]
         except KeyError as e:
-            raise KeyError(f"Unknown token kind in test_lex.json: {obj.get('kind')}\nKnown kinds: {sorted(kind_map.keys())}") from e
+            raise KeyError(f"Unknown token kind in test_lex.json: {obj.get('kind')}\nKnown kinds: "
+                           f"{sorted(kind_map.keys())}") from e
         return Token(
             kind=kind_value,
             value=obj["value"],
