@@ -52,10 +52,6 @@ $ hatch run cov-html
 
 Then open `htmlcov/index.html` in your browser.
 
-## Documentation
-
-Documentation is currently in the [README](https://github.com/jg-rp/python-jsonpath/blob/main/README.md) and project source code only.
-
 ## Style Guides
 
 ### Git Commit Messages
