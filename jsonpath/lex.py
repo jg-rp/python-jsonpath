@@ -118,7 +118,7 @@ class Lexer:
         # func(
         self.function_pattern = r"(?P<G_FUNC>[a-z][a-z_0-9]+)(?P<G_FUNC_PAREN>\()"
 
-        self.rules = self.compile_rules()
+        self.rules = self.compile_strict_rules() if env.strict else self.compile_rules()
 
     def compile_rules(self) -> Pattern[str]:
         """Prepare regular expression rules."""
@@ -177,6 +177,62 @@ class Lexer:
             (TOKEN_LT, r"<"),
             (TOKEN_GT, r">"),
             (TOKEN_NOT, self.logical_not_pattern),  # Must go after "!="
+            (TOKEN_FUNCTION, self.function_pattern),
+            (TOKEN_NAME, self.key_pattern),  # Must go after reserved words
+            (TOKEN_LPAREN, r"\("),
+            (TOKEN_RPAREN, r"\)"),
+            (TOKEN_WHITESPACE, r"[ \n\t\r]+"),
+            (TOKEN_ERROR, r"."),
+        ]
+
+        return re.compile(
+            "|".join(f"(?P<{token}>{pattern})" for token, pattern in rules),
+            re.DOTALL,
+        )
+
+    def compile_strict_rules(self) -> Pattern[str]:
+        """Prepare regular expression rules in strict mode."""
+        env_tokens = [
+            (TOKEN_ROOT, self.env.root_token),
+            (TOKEN_SELF, self.env.self_token),
+        ]
+
+        rules = [
+            (TOKEN_DOUBLE_QUOTE_STRING, self.double_quote_pattern),
+            (TOKEN_SINGLE_QUOTE_STRING, self.single_quote_pattern),
+            (TOKEN_DOT_KEY_PROPERTY, self.dot_key_pattern),
+            (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
+            (TOKEN_FLOAT, r"-?\d+\.\d*(?:[eE][+-]?\d+)?"),
+            (TOKEN_INT, r"-?\d+(?P<G_EXP>[eE][+\-]?\d+)?\b"),
+            (TOKEN_DDOT, r"\.\."),
+            (TOKEN_DOT, r"\."),
+            (TOKEN_AND, r"&&"),
+            (TOKEN_OR, r"\|\|"),
+            *[
+                (token, re.escape(pattern))
+                for token, pattern in sorted(
+                    env_tokens, key=lambda x: len(x[1]), reverse=True
+                )
+                if pattern
+            ],
+            (TOKEN_WILD, r"\*"),
+            (TOKEN_FILTER, r"\?"),
+            (TOKEN_TRUE, r"true\b"),
+            (TOKEN_FALSE, r"false\b"),
+            (TOKEN_NULL, r"null\b"),
+            (TOKEN_LBRACKET, r"\["),
+            (TOKEN_RBRACKET, r"]"),
+            (TOKEN_COMMA, r","),
+            (TOKEN_COLON, r":"),
+            (TOKEN_EQ, r"=="),
+            (TOKEN_NE, r"!="),
+            (TOKEN_LG, r"<>"),
+            (TOKEN_LE, r"<="),
+            (TOKEN_GE, r">="),
+            (TOKEN_RE, r"=~"),
+            (TOKEN_LT, r"<"),
+            (TOKEN_GT, r">"),
+            (TOKEN_NOT, r"!"),  # Must go after "!="
             (TOKEN_FUNCTION, self.function_pattern),
             (TOKEN_NAME, self.key_pattern),  # Must go after reserved words
             (TOKEN_LPAREN, r"\("),

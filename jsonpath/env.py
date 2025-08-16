@@ -2,7 +2,20 @@
 
 from __future__ import annotations
 
-import re
+try:
+    import regex  # noqa: F401
+
+    REGEX_AVAILABLE = True
+except ImportError:
+    REGEX_AVAILABLE = False
+
+try:
+    import iregexp_check  # noqa: F401
+
+    IREGEXP_AVAILABLE = True
+except ImportError:
+    IREGEXP_AVAILABLE = False
+
 from decimal import Decimal
 from operator import getitem
 from typing import TYPE_CHECKING
@@ -90,6 +103,7 @@ class JSONPathEnvironment:
             **New in version 0.10.0**
         strict: When `True`, follow RFC 9535 strictly.
             **New in version 2.0.0**
+
     ## Class attributes
 
     Attributes:
@@ -160,8 +174,18 @@ class JSONPathEnvironment:
         """When `True`, follow RFC 9535 strictly.
         
         This includes things like enforcing a leading root identifier and
-        ensuring there's not leading or trailing whitespace when parsing a
+        ensuring there's no leading or trailing whitespace when parsing a
         JSONPath query.
+        """
+
+        self.regex_available: bool = REGEX_AVAILABLE
+        """When `True`, the third party `regex` package is available."""
+
+        self.iregexp_available: bool = IREGEXP_AVAILABLE
+        """When `True`, the iregexp_check package is available.
+        
+        iregexp_check will be used to validate regular expressions against RFC 9485,
+        if available.
         """
 
         self.lexer: Lexer = self.lexer_class(env=self)
@@ -589,7 +613,8 @@ class JSONPathEnvironment:
             return left in right
         if operator == "contains" and isinstance(left, (Mapping, Sequence)):
             return right in left
-        if operator == "=~" and isinstance(right, re.Pattern) and isinstance(left, str):
+        if operator == "=~" and hasattr(right, "fullmatch") and isinstance(left, str):
+            # Right should be a regex.Pattern or an re.Pattern.
             return bool(right.fullmatch(left))
         return False
 

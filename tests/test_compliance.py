@@ -37,17 +37,7 @@ class Case:
 
 
 SKIP = {
-    "functions, match, dot matcher on \\u2028": "standard library re policy",
-    "functions, match, dot matcher on \\u2029": "standard library re policy",
-    "functions, search, dot matcher on \\u2028": "standard library re policy",
-    "functions, search, dot matcher on \\u2029": "standard library re policy",
-    "functions, match, filter, match function, unicode char class, uppercase": "\\p not supported",  # noqa: E501
-    "functions, match, filter, match function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
-    "functions, search, filter, search function, unicode char class, uppercase": "\\p not supported",  # noqa: E501
-    "functions, search, filter, search function, unicode char class negated, uppercase": "\\P not supported",  # noqa: E501
-    "filter, equals number, decimal fraction, no fractional digit": "expected behavior policy",  # noqa: E501
-    "filter, equals number, decimal fraction, no int digit": "expected behavior policy",
-    "filter, equals number, invalid no int digit": "expected behavior policy",
+    # "filter, equals number, invalid no int digit": "expected behavior policy",
     "filter, equals number, invalid 00": "expected behavior policy",
     "filter, equals number, invalid leading 0": "expected behavior policy",
     "filter, equals number, invalid no fractional digit": "expected behavior policy",
@@ -63,9 +53,9 @@ SKIP = {
     "slice selector, step, minus space": "expected behavior policy",
     "slice selector, step, -0": "expected behavior policy",
     "slice selector, step, leading -0": "expected behavior policy",
-    "filter, true, incorrectly capitalized": "flexible literal policy",
-    "filter, false, incorrectly capitalized": "flexible literal policy",
-    "filter, null, incorrectly capitalized": "flexible literal policy",
+    # "filter, true, incorrectly capitalized": "flexible literal policy",
+    # "filter, false, incorrectly capitalized": "flexible literal policy",
+    # "filter, null, incorrectly capitalized": "flexible literal policy",
     "name selector, double quotes, single high surrogate": "expected behavior policy",
     "name selector, double quotes, single low surrogate": "expected behavior policy",
     "name selector, double quotes, high high surrogate": "expected behavior policy",
@@ -75,6 +65,17 @@ SKIP = {
     "name selector, double quotes, surrogate supplementary": "expected behavior policy",
     "name selector, double quotes, supplementary surrogate": "expected behavior policy",
 }
+
+# CTS test that will only pass if the third party `regex` package is installed.
+REGEX_ONLY = {
+    "functions, match, filter, match function, unicode char class, uppercase",
+    "functions, match, filter, match function, unicode char class negated, uppercase",
+    "functions, search, filter, search function, unicode char class, uppercase",
+    "functions, search, filter, search function, unicode char class negated, uppercase",
+}
+
+# TODO: Test compliance without strict mode. Assert expected failures.
+# TODO: Test runner in `no-regexp` env
 
 
 def cases() -> List[Case]:
@@ -98,6 +99,9 @@ def env() -> JSONPathEnvironment:
 
 @pytest.mark.parametrize("case", valid_cases(), ids=operator.attrgetter("name"))
 def test_compliance(env: JSONPathEnvironment, case: Case) -> None:
+    if not env.regex_available and case.name in REGEX_ONLY:
+        pytest.skip(reason="requires regex package")
+
     if case.name in SKIP:
         pytest.skip(reason=SKIP[case.name])
 
@@ -116,6 +120,9 @@ def test_compliance(env: JSONPathEnvironment, case: Case) -> None:
 
 @pytest.mark.parametrize("case", valid_cases(), ids=operator.attrgetter("name"))
 def test_compliance_async(env: JSONPathEnvironment, case: Case) -> None:
+    if not env.regex_available and case.name in REGEX_ONLY:
+        pytest.skip(reason="requires regex package")
+
     if case.name in SKIP:
         pytest.skip(reason=SKIP[case.name])
 
