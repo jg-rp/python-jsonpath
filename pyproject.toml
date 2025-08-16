@@ -192,4 +192,5 @@ convention = "google"
 "jsonpath/__init__.py" = ["D104"]
 "jsonpath/selectors.py" = ["D102"]
 "jsonpath/filter.py" = ["D102", "PLW1641"]
+"jsonpath/unescape.py" = ["PLR2004"]
 "tests/*" = ["D100", "D101", "D104", "D103"]

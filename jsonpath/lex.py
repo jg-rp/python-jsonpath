@@ -140,8 +140,11 @@ class Lexer:
             (TOKEN_RE_PATTERN, self.re_pattern),
             (TOKEN_DOT_KEY_PROPERTY, self.dot_key_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
-            (TOKEN_FLOAT, r"-?\d+\.\d*(?:[eE][+-]?\d+)?"),
-            (TOKEN_INT, r"-?\d+(?P<G_EXP>[eE][+\-]?\d+)?\b"),
+            (
+                TOKEN_FLOAT,
+                r"(:?-?[0-9]+\.[0-9]+(?:[eE][+-]?[0-9]+)?)|(-?[0-9]+[eE]-[0-9]+)",
+            ),
+            (TOKEN_INT, r"-?[0-9]+(?:[eE]\+?[0-9]+)?"),
             (TOKEN_DDOT, r"\.\."),
             (TOKEN_DOT, r"\."),
             (TOKEN_AND, self.logical_and_pattern),
@@ -202,8 +205,11 @@ class Lexer:
             (TOKEN_SINGLE_QUOTE_STRING, self.single_quote_pattern),
             (TOKEN_DOT_KEY_PROPERTY, self.dot_key_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
-            (TOKEN_FLOAT, r"-?\d+\.\d*(?:[eE][+-]?\d+)?"),
-            (TOKEN_INT, r"-?\d+(?P<G_EXP>[eE][+\-]?\d+)?\b"),
+            (
+                TOKEN_FLOAT,
+                r"(:?-?[0-9]+\.[0-9]+(?:[eE][+-]?[0-9]+)?)|(-?[0-9]+[eE]-[0-9]+)",
+            ),
+            (TOKEN_INT, r"-?[0-9]+(?:[eE]\+?[0-9]+)?"),
             (TOKEN_DDOT, r"\.\."),
             (TOKEN_DOT, r"\."),
             (TOKEN_AND, r"&&"),
@@ -288,19 +294,6 @@ class Lexer:
                     value=match.group("G_SQUOTE"),
                     index=match.start("G_SQUOTE"),
                 )
-            elif kind == TOKEN_INT:
-                if match.group("G_EXP") and match.group("G_EXP")[1] == "-":
-                    yield _token(
-                        kind=TOKEN_FLOAT,
-                        value=match.group(),
-                        index=match.start(),
-                    )
-                else:
-                    yield _token(
-                        kind=TOKEN_INT,
-                        value=match.group(),
-                        index=match.start(),
-                    )
             elif kind == TOKEN_RE_PATTERN:
                 yield _token(
                     kind=TOKEN_RE_PATTERN,

@@ -104,6 +104,7 @@ from .token import TOKEN_UNION
 from .token import TOKEN_WHITESPACE
 from .token import TOKEN_WILD
 from .token import Token
+from .unescape import unescape_string
 
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
@@ -623,11 +624,23 @@ class Parser:
         return StringLiteral(value=self._decode_string_literal(stream.next()))
 
     def parse_integer_literal(self, stream: TokenStream) -> BaseExpression:
+        token = stream.next()
+        value = token.value
+
+        if self.env.strict and value.startswith("0") and len(value) > 1:
+            raise JSONPathSyntaxError("invalid integer literal", token=token)
+
         # Convert to float first to handle scientific notation.
-        return IntegerLiteral(value=int(float(stream.next().value)))
+        return IntegerLiteral(value=int(float(value)))
 
     def parse_float_literal(self, stream: TokenStream) -> BaseExpression:
-        return FloatLiteral(value=float(stream.next().value))
+        token = stream.next()
+        value = token.value
+
+        if value.startswith("0") and len(value.split(".")[0]) > 1:
+            raise JSONPathSyntaxError("invalid float literal", token=token)
+
+        return FloatLiteral(value=float(value))
 
     def parse_prefix_expression(self, stream: TokenStream) -> BaseExpression:
         token = stream.next()
@@ -839,11 +852,19 @@ class Parser:
         return left
 
     def _decode_string_literal(self, token: Token) -> str:
+        if self.env.strict:
+            return unescape_string(
+                token.value,
+                token,
+                "'" if token.kind == TOKEN_SINGLE_QUOTE_STRING else '"',
+            )
+
         if self.env.unicode_escape:
             if token.kind == TOKEN_SINGLE_QUOTE_STRING:
                 value = token.value.replace('"', '\\"').replace("\\'", "'")
             else:
                 value = token.value
+
             try:
                 rv = json.loads(f'"{value}"')
                 assert isinstance(rv, str)
