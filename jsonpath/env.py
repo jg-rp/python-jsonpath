@@ -2,7 +2,20 @@
 
 from __future__ import annotations
 
-import re
+try:
+    import regex  # noqa: F401
+
+    REGEX_AVAILABLE = True
+except ImportError:
+    REGEX_AVAILABLE = False
+
+try:
+    import iregexp_check  # noqa: F401
+
+    IREGEXP_AVAILABLE = True
+except ImportError:
+    IREGEXP_AVAILABLE = False
+
 from decimal import Decimal
 from operator import getitem
 from typing import TYPE_CHECKING
@@ -24,10 +37,10 @@ from .exceptions import JSONPathSyntaxError
 from .exceptions import JSONPathTypeError
 from .filter import UNDEFINED
 from .filter import VALUE_TYPE_EXPRESSIONS
-from .filter import FilterExpression
+from .filter import BaseExpression
+from .filter import FilterQuery
 from .filter import FunctionExtension
 from .filter import InfixExpression
-from .filter import Path
 from .fluent_api import Query
 from .function_extensions import ExpressionType
 from .function_extensions import FilterFunction
@@ -40,8 +53,8 @@ from .path import CompoundJSONPath
 from .path import JSONPath
 from .stream import TokenStream
 from .token import TOKEN_EOF
-from .token import TOKEN_FAKE_ROOT
 from .token import TOKEN_INTERSECTION
+from .token import TOKEN_PSEUDO_ROOT
 from .token import TOKEN_UNION
 from .token import Token
 
@@ -88,12 +101,14 @@ class JSONPathEnvironment:
             well-typedness as compile time.
 
             **New in version 0.10.0**
+        strict: When `True`, follow RFC 9535 strictly.
+            **New in version 2.0.0**
 
     ## Class attributes
 
     Attributes:
-        fake_root_token (str): The pattern used to select a "fake" root node, one level
-            above the real root node.
+        pseudo_root_token (str): The pattern used to select a "fake" root node, one
+            level above the real root node.
         filter_context_token (str): The pattern used to select extra filter context
             data. Defaults to `"_"`.
         intersection_token (str): The pattern used as the intersection operator.
@@ -102,6 +117,8 @@ class JSONPathEnvironment:
             filtering a mapping or sequence. Defaults to `"#"`.
         keys_selector_token (str): The pattern used as the "keys" selector. Defaults to
             `"~"`.
+        keys_filter_token (str): The pattern used as the "keys filter" selector.
+            Defaults to `"~?"`.
         lexer_class: The lexer to use when tokenizing path strings.
         max_int_index (int): The maximum integer allowed when selecting array items by
             index. Defaults to `(2**53) - 1`.
@@ -117,11 +134,12 @@ class JSONPathEnvironment:
 
     # These should be unescaped strings. `re.escape` will be called
     # on them automatically when compiling lexer rules.
-    fake_root_token = "^"
+    pseudo_root_token = "^"
     filter_context_token = "_"
     intersection_token = "&"
     key_token = "#"
     keys_selector_token = "~"
+    keys_filter_token = "~?"
     root_token = "$"
     self_token = "@"
     union_token = "|"
@@ -140,6 +158,7 @@ class JSONPathEnvironment:
         filter_caching: bool = True,
         unicode_escape: bool = True,
         well_typed: bool = True,
+        strict: bool = False,
     ) -> None:
         self.filter_caching: bool = filter_caching
         """Enable or disable filter expression caching."""
@@ -150,6 +169,24 @@ class JSONPathEnvironment:
 
         self.well_typed: bool = well_typed
         """Control well-typedness checks on filter function expressions."""
+
+        self.strict: bool = strict
+        """When `True`, follow RFC 9535 strictly.
+        
+        This includes things like enforcing a leading root identifier and
+        ensuring there's no leading or trailing whitespace when parsing a
+        JSONPath query.
+        """
+
+        self.regex_available: bool = REGEX_AVAILABLE
+        """When `True`, the third party `regex` package is available."""
+
+        self.iregexp_available: bool = IREGEXP_AVAILABLE
+        """When `True`, the iregexp_check package is available.
+        
+        iregexp_check will be used to validate regular expressions against RFC 9485,
+        if available.
+        """
 
         self.lexer: Lexer = self.lexer_class(env=self)
         """The lexer bound to this environment."""
@@ -180,46 +217,54 @@ class JSONPathEnvironment:
         """
         tokens = self.lexer.tokenize(path)
         stream = TokenStream(tokens)
-        fake_root = stream.current.kind == TOKEN_FAKE_ROOT
+        pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
         _path: Union[JSONPath, CompoundJSONPath] = JSONPath(
-            env=self, selectors=self.parser.parse(stream), fake_root=fake_root
+            env=self, segments=self.parser.parse(stream), pseudo_root=pseudo_root
         )
 
-        if stream.current.kind != TOKEN_EOF:
+        if stream.skip_whitespace() and self.strict:
+            raise JSONPathSyntaxError(
+                "unexpected whitespace", token=stream.tokens[stream.pos - 1]
+            )
+
+        # TODO: better!
+        if stream.current().kind != TOKEN_EOF:
             _path = CompoundJSONPath(env=self, path=_path)
-            while stream.current.kind != TOKEN_EOF:
-                if stream.peek.kind == TOKEN_EOF:
+            while stream.current().kind != TOKEN_EOF:
+                if stream.peek().kind == TOKEN_EOF:
                     # trailing union or intersection
                     raise JSONPathSyntaxError(
-                        f"expected a path after {stream.current.value!r}",
-                        token=stream.current,
+                        f"expected a path after {stream.current().value!r}",
+                        token=stream.current(),
                     )
 
-                if stream.current.kind == TOKEN_UNION:
-                    stream.next_token()
-                    fake_root = stream.current.kind == TOKEN_FAKE_ROOT
+                if stream.current().kind == TOKEN_UNION:
+                    stream.next()
+                    stream.skip_whitespace()
+                    pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
                     _path = _path.union(
                         JSONPath(
                             env=self,
-                            selectors=self.parser.parse(stream),
-                            fake_root=fake_root,
+                            segments=self.parser.parse(stream),
+                            pseudo_root=pseudo_root,
                         )
                     )
-                elif stream.current.kind == TOKEN_INTERSECTION:
-                    stream.next_token()
-                    fake_root = stream.current.kind == TOKEN_FAKE_ROOT
+                elif stream.current().kind == TOKEN_INTERSECTION:
+                    stream.next()
+                    stream.skip_whitespace()
+                    pseudo_root = stream.current().kind == TOKEN_PSEUDO_ROOT
                     _path = _path.intersection(
                         JSONPath(
                             env=self,
-                            selectors=self.parser.parse(stream),
-                            fake_root=fake_root,
+                            segments=self.parser.parse(stream),
+                            pseudo_root=pseudo_root,
                         )
                     )
                 else:  # pragma: no cover
                     # Parser.parse catches this too
                     raise JSONPathSyntaxError(  # noqa: TRY003
-                        f"unexpected token {stream.current.value!r}",
-                        token=stream.current,
+                        f"unexpected token {stream.current().value!r}",
+                        token=stream.current(),
                     )
 
         return _path
@@ -440,7 +485,7 @@ class JSONPathEnvironment:
         self,
         token: Token,
         func: FilterFunction,
-        args: List[FilterExpression],
+        args: List[BaseExpression],
     ) -> None:
         """Check the well-typedness of a function's arguments at compile-time."""
         # Correct number of arguments?
@@ -456,7 +501,7 @@ class JSONPathEnvironment:
             if typ == ExpressionType.VALUE:
                 if not (
                     isinstance(arg, VALUE_TYPE_EXPRESSIONS)
-                    or (isinstance(arg, Path) and arg.path.singular_query())
+                    or (isinstance(arg, FilterQuery) and arg.path.singular_query())
                     or (self._function_return_type(arg) == ExpressionType.VALUE)
                 ):
                     raise JSONPathTypeError(
@@ -464,13 +509,13 @@ class JSONPathEnvironment:
                         token=token,
                     )
             elif typ == ExpressionType.LOGICAL:
-                if not isinstance(arg, (Path, InfixExpression)):
+                if not isinstance(arg, (FilterQuery, InfixExpression)):
                     raise JSONPathTypeError(
                         f"{token.value}() argument {idx} must be of LogicalType",
                         token=token,
                     )
             elif typ == ExpressionType.NODES and not (
-                isinstance(arg, Path)
+                isinstance(arg, FilterQuery)
                 or self._function_return_type(arg) == ExpressionType.NODES
             ):
                 raise JSONPathTypeError(
@@ -478,7 +523,7 @@ class JSONPathEnvironment:
                     token=token,
                 )
 
-    def _function_return_type(self, expr: FilterExpression) -> Optional[ExpressionType]:
+    def _function_return_type(self, expr: BaseExpression) -> Optional[ExpressionType]:
         """Return the type returned from a filter function.
 
         If _expr_ is not a `FunctionExtension` or the registered function definition is
@@ -568,7 +613,8 @@ class JSONPathEnvironment:
             return left in right
         if operator == "contains" and isinstance(left, (Mapping, Sequence)):
             return right in left
-        if operator == "=~" and isinstance(right, re.Pattern) and isinstance(left, str):
+        if operator == "=~" and hasattr(right, "fullmatch") and isinstance(left, str):
+            # Right should be a regex.Pattern or an re.Pattern.
             return bool(right.fullmatch(left))
         return False
 

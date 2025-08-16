@@ -22,12 +22,6 @@ class Case:
 
 TEST_CASES = [
     Case(
-        description="property key that looks like an index",
-        path="$[some][0]",
-        data={"some": {"0": "thing"}},
-        want=["thing"],
-    ),
-    Case(
         description="slice a mapping",
         path="$.some[0:4]",
         data={"some": {"thing": "else"}},
@@ -58,14 +52,20 @@ TEST_CASES = [
         want=[{"foo": 1}, {"foo": 2}],
     ),
     Case(
-        description="select root value using fake root",
-        path="^[?@some.thing > 7]",
+        description="filter current key, array data",
+        path="$.abc[?(# >= 1)]",
+        data={"abc": [1, 2, 3], "def": [4, 5], "abx": [6], "aby": []},
+        want=[2, 3],
+    ),
+    Case(
+        description="select root value using pseudo root",
+        path="^[?@.some.thing > 7]",
         data={"some": {"thing": 42}},
         want=[{"some": {"thing": 42}}],
     ),
     Case(
-        description="fake root in a filter query",
-        path="^[?@some.thing > value(^.*.num)]",
+        description="pseudo root in a filter query",
+        path="^[?@.some.thing > value(^.*.num)]",
         data={"some": {"thing": 42}, "num": 7},
         want=[{"some": {"thing": 42}, "num": 7}],
     ),
@@ -129,13 +129,13 @@ TEST_CASES = [
     ),
     Case(
         description="quoted reserved word, and",
-        path="['and']",
+        path="$['and']",
         data={"and": [1, 2, 3]},
         want=[[1, 2, 3]],
     ),
     Case(
         description="quoted reserved word, or",
-        path="['or']",
+        path="$['or']",
         data={"or": [1, 2, 3]},
         want=[[1, 2, 3]],
     ),

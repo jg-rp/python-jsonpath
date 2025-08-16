@@ -11,6 +11,7 @@ from typing import Tuple
 from typing import Union
 
 from .pointer import JSONPointer
+from .serialize import canonical_string
 
 FilterContextVars = Mapping[str, Any]
 PathPart = Union[int, str]
@@ -68,6 +69,18 @@ class JSONPathMatch:
     def add_child(self, *children: JSONPathMatch) -> None:
         """Append one or more children to this match."""
         self.children.extend(children)
+
+    def new_child(self, obj: object, key: Union[int, str]) -> JSONPathMatch:
+        """Return a new JSONPathMatch instance with this instance as its parent."""
+        return self.__class__(
+            filter_context=self.filter_context(),
+            obj=obj,
+            parent=self,
+            parts=self.parts + (key,),
+            path=self.path
+            + f"[{canonical_string(key) if isinstance(key, str) else key}]",
+            root=self.root,
+        )
 
     def filter_context(self) -> FilterContextVars:
         """Return filter context data for this match."""
