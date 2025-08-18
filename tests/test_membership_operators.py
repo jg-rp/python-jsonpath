@@ -24,15 +24,7 @@ with open("tests/membership_operators.json", encoding="utf8") as fd:
 def test_membership_operators(env: JSONPathEnvironment, case: Case) -> None:
     assert case.document is not None
     nodes = NodeList(env.finditer(case.selector, case.document))
-
-    if case.results is not None:
-        assert case.results_paths is not None
-        assert nodes.values() in case.results
-        assert nodes.paths() in case.results_paths
-    else:
-        assert case.result_paths is not None
-        assert nodes.values() == case.result
-        assert nodes.paths() == case.result_paths
+    case.assert_nodes(nodes)
 
 
 @pytest.mark.parametrize("case", data, ids=operator.attrgetter("name"))
@@ -43,15 +35,7 @@ def test_membership_operators_async(env: JSONPathEnvironment, case: Case) -> Non
         return NodeList([node async for node in it])
 
     nodes = asyncio.run(coro())
-
-    if case.results is not None:
-        assert case.results_paths is not None
-        assert nodes.values() in case.results
-        assert nodes.paths() in case.results_paths
-    else:
-        assert case.result_paths is not None
-        assert nodes.values() == case.result
-        assert nodes.paths() == case.result_paths
+    case.assert_nodes(nodes)
 
 
 @pytest.mark.parametrize("case", data, ids=operator.attrgetter("name"))

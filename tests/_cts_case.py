@@ -10,6 +10,8 @@ from typing import Optional
 from typing import Sequence
 from typing import Union
 
+from jsonpath import NodeList
+
 
 @dataclass
 class Case:
@@ -45,3 +47,14 @@ class Case:
         rv["tags"] = self.tags
 
         return rv
+
+    def assert_nodes(self, nodes: NodeList) -> None:
+        """Assert that `nodes` matches this test case."""
+        if self.results is not None:
+            assert self.results_paths is not None
+            assert nodes.values() in self.results
+            assert nodes.paths() in self.results_paths
+        else:
+            assert self.result_paths is not None
+            assert nodes.values() == self.result
+            assert nodes.paths() == self.result_paths

@@ -1,0 +1,35 @@
+{
+  "tests": [
+    {
+      "name": "union of two paths",
+      "selector": "$.some | $.thing",
+      "document": {
+        "some": [1, 2, 3],
+        "thing": [4, 5, 6],
+        "other": ["a", "b", "c"]
+      },
+      "result": [
+        [1, 2, 3],
+        [4, 5, 6]
+      ],
+      "result_paths": ["$['some']", "$['thing']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "union of three paths",
+      "selector": "$.some | $.thing | $.other",
+      "document": {
+        "some": [1, 2, 3],
+        "thing": [4, 5, 6],
+        "other": ["a", "b", "c"]
+      },
+      "result": [
+        [1, 2, 3],
+        [4, 5, 6],
+        ["a", "b", "c"]
+      ],
+      "result_paths": ["$['some']", "$['thing']", "$['other']"],
+      "tags": ["extra"]
+    }
+  ]
+}

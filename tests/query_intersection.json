@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "intersection of two paths, no common items",
+      "selector": "$.some & $.thing",
+      "document": {
+        "some": [1, 2, 3],
+        "thing": [4, 5, 6],
+        "other": ["a", "b", "c"]
+      },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "intersection of two paths, with common items",
+      "selector": "$.some & $.thing",
+      "document": {
+        "some": [1, 2, 3],
+        "thing": [1, 2, 3],
+        "other": ["a", "b", "c"]
+      },
+      "result": [[1, 2, 3]],
+      "result_paths": ["$['some']"],
+      "tags": ["extra"]
+    }
+  ]
+}

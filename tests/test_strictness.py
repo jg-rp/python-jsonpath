@@ -30,3 +30,9 @@ def test_alternative_and(env: JSONPathEnvironment) -> None:
     query = "$[?@.a and @.b]"
     data = [{"a": True, "b": False}]
     assert env.findall(query, data) == [{"a": True, "b": False}]
+
+
+def test_alternative_or(env: JSONPathEnvironment) -> None:
+    query = "$[?@.a or @.c]"
+    data = [{"a": True, "b": False}, {"c": 99}]
+    assert env.findall(query, data) == [{"a": True, "b": False}, {"c": 99}]
