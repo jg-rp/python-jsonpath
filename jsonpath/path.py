@@ -123,12 +123,14 @@ class JSONPath:
                 an incompatible way.
         """
         _data = load_data(data)
+        path = self.env.pseudo_root_token if self.pseudo_root else self.env.root_token
+
         matches: Iterable[JSONPathMatch] = [
             JSONPathMatch(
                 filter_context=filter_context or {},
                 obj=[_data] if self.pseudo_root else _data,
                 parent=None,
-                path=self.env.root_token,
+                path=path,
                 parts=(),
                 root=_data,
             )
@@ -161,13 +163,14 @@ class JSONPath:
     ) -> AsyncIterable[JSONPathMatch]:
         """An async version of `finditer()`."""
         _data = load_data(data)
+        path = self.env.pseudo_root_token if self.pseudo_root else self.env.root_token
 
         async def root_iter() -> AsyncIterable[JSONPathMatch]:
             yield self.env.match_class(
                 filter_context=filter_context or {},
                 obj=[_data] if self.pseudo_root else _data,
                 parent=None,
-                path=self.env.root_token,
+                path=path,
                 parts=(),
                 root=_data,
             )

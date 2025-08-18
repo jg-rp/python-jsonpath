@@ -16,12 +16,12 @@ def env() -> JSONPathEnvironment:
     return JSONPathEnvironment(strict=False)
 
 
-with open("tests/keys_selector.json", encoding="utf8") as fd:
+with open("tests/pseudo_root_identifier.json", encoding="utf8") as fd:
     data = [Case(**case) for case in json.load(fd)["tests"]]
 
 
 @pytest.mark.parametrize("case", data, ids=operator.attrgetter("name"))
-def test_keys_selector(env: JSONPathEnvironment, case: Case) -> None:
+def test_pseudo_root_identifier(env: JSONPathEnvironment, case: Case) -> None:
     assert case.document is not None
     nodes = NodeList(env.finditer(case.selector, case.document))
 
@@ -36,7 +36,7 @@ def test_keys_selector(env: JSONPathEnvironment, case: Case) -> None:
 
 
 @pytest.mark.parametrize("case", data, ids=operator.attrgetter("name"))
-def test_keys_selector_async(env: JSONPathEnvironment, case: Case) -> None:
+def test_pseudo_root_identifier_async(env: JSONPathEnvironment, case: Case) -> None:
     async def coro() -> NodeList:
         assert case.document is not None
         it = await env.finditer_async(case.selector, case.document)
@@ -55,7 +55,7 @@ def test_keys_selector_async(env: JSONPathEnvironment, case: Case) -> None:
 
 
 @pytest.mark.parametrize("case", data, ids=operator.attrgetter("name"))
-def test_keys_selector_fails_in_strict_mode(case: Case) -> None:
+def test_pseudo_root_identifier_fails_in_strict_mode(case: Case) -> None:
     env = JSONPathEnvironment(strict=True)
 
     with pytest.raises(JSONPathSyntaxError):

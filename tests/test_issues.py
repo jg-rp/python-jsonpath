@@ -67,3 +67,15 @@ def test_issue_103() -> None:
     ]
 
     assert findall(query, data, filter_context=filter_context) == want
+
+
+def test_quoted_reserved_word_and() -> None:
+    query = "$['and']"
+    data = {"and": [1, 2, 3]}
+    assert findall(query, data) == [[1, 2, 3]]
+
+
+def test_quoted_reserved_word_or() -> None:
+    query = "$['or']"
+    data = {"or": [1, 2, 3]}
+    assert findall(query, data) == [[1, 2, 3]]

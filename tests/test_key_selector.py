@@ -1,3 +1,4 @@
+import asyncio
 import json
 import operator
 
@@ -23,6 +24,25 @@ with open("tests/key_selector.json", encoding="utf8") as fd:
 def test_key_selector(env: JSONPathEnvironment, case: Case) -> None:
     assert case.document is not None
     nodes = NodeList(env.finditer(case.selector, case.document))
+
+    if case.results is not None:
+        assert case.results_paths is not None
+        assert nodes.values() in case.results
+        assert nodes.paths() in case.results_paths
+    else:
+        assert case.result_paths is not None
+        assert nodes.values() == case.result
+        assert nodes.paths() == case.result_paths
+
+
+@pytest.mark.parametrize("case", data, ids=operator.attrgetter("name"))
+def test_key_selector_async(env: JSONPathEnvironment, case: Case) -> None:
+    async def coro() -> NodeList:
+        assert case.document is not None
+        it = await env.finditer_async(case.selector, case.document)
+        return NodeList([node async for node in it])
+
+    nodes = asyncio.run(coro())
 
     if case.results is not None:
         assert case.results_paths is not None
