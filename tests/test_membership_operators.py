@@ -15,12 +15,12 @@ def env() -> JSONPathEnvironment:
     return JSONPathEnvironment(strict=False)
 
 
-with open("tests/singular_path_selector.json", encoding="utf8") as fd:
+with open("tests/membership_operators.json", encoding="utf8") as fd:
     data = [Case(**case) for case in json.load(fd)["tests"]]
 
 
 @pytest.mark.parametrize("case", data, ids=operator.attrgetter("name"))
-def test_singular_path_selector(env: JSONPathEnvironment, case: Case) -> None:
+def test_membership_operators(env: JSONPathEnvironment, case: Case) -> None:
     assert case.document is not None
     nodes = NodeList(env.finditer(case.selector, case.document))
 
@@ -35,7 +35,7 @@ def test_singular_path_selector(env: JSONPathEnvironment, case: Case) -> None:
 
 
 @pytest.mark.parametrize("case", data, ids=operator.attrgetter("name"))
-def test_singular_path_selector_fails_in_strict_mode(case: Case) -> None:
+def test_membership_operators_fail_in_strict_mode(case: Case) -> None:
     env = JSONPathEnvironment(strict=True)
 
     with pytest.raises(JSONPathSyntaxError):

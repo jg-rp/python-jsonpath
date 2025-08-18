@@ -4,6 +4,7 @@ import operator
 import pytest
 
 from jsonpath import JSONPathEnvironment
+from jsonpath import JSONPathSyntaxError
 from jsonpath import NodeList
 
 from ._cts_case import Case
@@ -31,3 +32,11 @@ def test_key_selector(env: JSONPathEnvironment, case: Case) -> None:
         assert case.result_paths is not None
         assert nodes.values() == case.result
         assert nodes.paths() == case.result_paths
+
+
+@pytest.mark.parametrize("case", data, ids=operator.attrgetter("name"))
+def test_key_selector_fails_in_strict_mode(case: Case) -> None:
+    env = JSONPathEnvironment(strict=True)
+
+    with pytest.raises(JSONPathSyntaxError):
+        env.compile(case.selector)

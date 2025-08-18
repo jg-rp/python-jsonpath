@@ -1,0 +1,64 @@
+{
+  "tests": [
+    {
+      "name": "array contains literal string",
+      "selector": "$[?@.a contains 'foo']",
+      "document": [{ "a": ["foo", "bar"] }, { "a": ["bar"] }],
+      "result": [
+        {
+          "a": ["foo", "bar"]
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "object contains literal string",
+      "selector": "$[?@.a contains 'foo']",
+      "document": [{ "a": { "foo": "bar" } }, { "a": { "bar": "baz" } }],
+      "result": [
+        {
+          "a": { "foo": "bar" }
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "string literal in array",
+      "selector": "$[?'foo' in @.a]",
+      "document": [{ "a": ["foo", "bar"] }, { "a": ["bar"] }],
+      "result": [
+        {
+          "a": ["foo", "bar"]
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "string literal in object",
+      "selector": "$[?'foo' in @.a]",
+      "document": [{ "a": { "foo": "bar" } }, { "a": { "bar": "baz" } }],
+      "result": [
+        {
+          "a": { "foo": "bar" }
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "string from embedded query in object",
+      "selector": "$[?$[-1] in @.a]",
+      "document": [{ "a": { "foo": "bar" } }, { "a": { "bar": "baz" } }, "foo"],
+      "result": [
+        {
+          "a": { "foo": "bar" }
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    }
+  ]
+}

@@ -298,14 +298,16 @@ class Parser:
 
     def parse(self, stream: TokenStream) -> Iterator[JSONPathSegment]:
         """Parse a JSONPath query from a stream of tokens."""
+        # Leading whitespace is not allowed in strict mode.
         if stream.skip_whitespace() and self.env.strict:
             raise JSONPathSyntaxError(
                 "unexpected leading whitespace", token=stream.current()
             )
 
+        # Trailing whitespace is not allowed in strict mode.
         if (
             self.env.strict
-            and len(stream.tokens)
+            and stream.tokens
             and stream.tokens[-1].kind == TOKEN_WHITESPACE
         ):
             raise JSONPathSyntaxError(
@@ -319,6 +321,7 @@ class Parser:
         ):
             stream.next()
         elif self.env.strict:
+            # Raises a syntax error because the current token is not TOKEN_ROOT.
             stream.expect(TOKEN_ROOT)
 
         yield from self.parse_query(stream)
@@ -853,6 +856,9 @@ class Parser:
 
     def _decode_string_literal(self, token: Token) -> str:
         if self.env.strict:
+            # For strict compliance with RC 9535, we must unescape string literals
+            # ourself. RFC 9535 is more strict than json.loads when it comes to
+            # parsing \uXXXX escape sequences.
             return unescape_string(
                 token.value,
                 token,

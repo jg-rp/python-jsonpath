@@ -15,6 +15,7 @@ from typing import Optional
 from typing import Union
 
 from .exceptions import JSONPathIndexError
+from .exceptions import JSONPathSyntaxError
 from .exceptions import JSONPathTypeError
 from .match import NodeList
 from .serialize import canonical_string
@@ -383,6 +384,9 @@ class SingularQuerySelector(JSONPathSelector):
     ) -> None:
         super().__init__(env=env, token=token)
         self.query = query
+
+        if env.strict:
+            raise JSONPathSyntaxError("unexpected query selector", token=token)
 
     def __str__(self) -> str:
         return str(self.query)

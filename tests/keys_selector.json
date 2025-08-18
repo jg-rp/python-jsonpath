@@ -46,7 +46,7 @@
       "tags": ["extra"]
     },
     {
-      "name": "keys selector, object key",
+      "name": "object key",
       "selector": "$.a[0].~",
       "document": { "a": [{ "b": "x", "c": "z" }, { "b": "y" }] },
       "result": ["b", "c"],
@@ -54,7 +54,7 @@
       "tags": ["extra"]
     },
     {
-      "name": "keys selector, array key",
+      "name": "array key",
       "selector": "$.a.~",
       "document": { "a": [{ "b": "x", "c": "z" }, { "b": "y" }] },
       "result": [],
@@ -62,7 +62,7 @@
       "tags": ["extra"]
     },
     {
-      "name": "keys selector, descendant keys",
+      "name": "descendant keys",
       "selector": "$..[~]",
       "document": { "a": [{ "b": "x", "c": "z" }, { "b": "y" }] },
       "result": ["a", "b", "c", "b"],

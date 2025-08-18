@@ -203,7 +203,6 @@ class Lexer:
         rules = [
             (TOKEN_DOUBLE_QUOTE_STRING, self.double_quote_pattern),
             (TOKEN_SINGLE_QUOTE_STRING, self.single_quote_pattern),
-            (TOKEN_DOT_KEY_PROPERTY, self.dot_key_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
             (
                 TOKEN_FLOAT,
