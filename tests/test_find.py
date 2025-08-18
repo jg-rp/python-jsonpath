@@ -11,6 +11,8 @@ import pytest
 
 from jsonpath import JSONPathEnvironment
 
+# TODO: move the rest of these test cases and delete me
+
 
 @dataclasses.dataclass
 class Case:

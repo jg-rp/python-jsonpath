@@ -1,0 +1,48 @@
+{
+  "tests": [
+    {
+      "name": "filter keys from an object",
+      "selector": "$.some[~?match(@, '^b.*')]",
+      "document": { "some": { "other": "foo", "thing": "bar" } },
+      "result": ["thing"],
+      "result_paths": ["$['some'][~'thing']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "keys filter selector, conditionally select object keys",
+      "selector": "$.*[~?length(@) > 2]",
+      "document": [
+        { "a": [1, 2, 3], "b": [4, 5] },
+        { "c": { "x": [1, 2] } },
+        { "d": [1, 2, 3] }
+      ],
+      "result": ["a", "d"],
+      "result_paths": ["$[0][~'a']", "$[2][~'d']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "keys filter selector, existence test",
+      "selector": "$.*[~?@.x]",
+      "document": [
+        { "a": [1, 2, 3], "b": [4, 5] },
+        { "c": { "x": [1, 2] } },
+        { "d": [1, 2, 3] }
+      ],
+      "result": ["c"],
+      "result_paths": ["$[1][~'c']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "keys filter selector, keys from an array",
+      "selector": "$[~?(true == true)]",
+      "document": [
+        { "a": [1, 2, 3], "b": [4, 5] },
+        { "c": { "x": [1, 2] } },
+        { "d": [1, 2, 3] }
+      ],
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    }
+  ]
+}

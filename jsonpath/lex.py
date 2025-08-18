@@ -235,7 +235,6 @@ class Lexer:
             (TOKEN_LG, r"<>"),
             (TOKEN_LE, r"<="),
             (TOKEN_GE, r">="),
-            (TOKEN_RE, r"=~"),
             (TOKEN_LT, r"<"),
             (TOKEN_GT, r">"),
             (TOKEN_NOT, r"!"),  # Must go after "!="

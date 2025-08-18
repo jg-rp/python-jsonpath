@@ -1,0 +1,98 @@
+{
+  "tests": [
+    {
+      "name": "singular key from an object",
+      "selector": "$.some[~'other']",
+      "document": { "some": { "other": "foo", "thing": "bar" } },
+      "result": ["other"],
+      "result_paths": ["$['some'][~'other']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "singular key from an object, does not exist",
+      "selector": "$.some[~'else']",
+      "document": { "some": { "other": "foo", "thing": "bar" } },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "singular key from an array",
+      "selector": "$.some[~'1']",
+      "document": { "some": ["foo", "bar"] },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "singular key from an object, shorthand",
+      "selector": "$.some.~other",
+      "document": { "some": { "other": "foo", "thing": "bar" } },
+      "result": ["other"],
+      "result_paths": ["$['some'][~'other']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "recursive key from an object",
+      "selector": "$.some..[~'other']",
+      "document": {
+        "some": { "other": "foo", "thing": "bar", "else": { "other": "baz" } }
+      },
+      "result": ["other", "other"],
+      "result_paths": ["$['some'][~'other']", "$['some']['else'][~'other']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "recursive key from an object, shorthand",
+      "selector": "$.some..~other",
+      "document": {
+        "some": { "other": "foo", "thing": "bar", "else": { "other": "baz" } }
+      },
+      "result": ["other", "other"],
+      "result_paths": ["$['some'][~'other']", "$['some']['else'][~'other']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "recursive key from an object, does not exist",
+      "selector": "$.some..[~'nosuchthing']",
+      "document": {
+        "some": { "other": "foo", "thing": "bar", "else": { "other": "baz" } }
+      },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "key of nested object",
+      "selector": "$.a[0].~c",
+      "document": { "a": [{ "b": "x", "c": "z" }, { "b": "y" }] },
+      "result": ["c"],
+      "result_paths": ["$['a'][0][~'c']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "key does not exist",
+      "selector": "$.a[1].~c",
+      "document": { "a": [{ "b": "x", "c": "z" }, { "b": "y" }] },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "descendant, single quoted key",
+      "selector": "$..[~'b']",
+      "document": { "a": [{ "b": "x", "c": "z" }, { "b": "y" }] },
+      "result": ["b", "b"],
+      "result_paths": ["$['a'][0][~'b']", "$['a'][1][~'b']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "descendant, double quoted key",
+      "selector": "$..[~\"b\"]",
+      "document": { "a": [{ "b": "x", "c": "z" }, { "b": "y" }] },
+      "result": ["b", "b"],
+      "result_paths": ["$['a'][0][~'b']", "$['a'][1][~'b']"],
+      "tags": ["extra"]
+    }
+  ]
+}

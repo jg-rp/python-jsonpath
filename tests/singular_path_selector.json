@@ -1,0 +1,88 @@
+{
+  "tests": [
+    {
+      "name": "object name from embedded singular query",
+      "selector": "$.a[$.b[1]]",
+      "document": {
+        "a": { "j": [1, 2, 3], "p": { "q": [4, 5, 6] } },
+        "b": ["j", "p", "q"],
+        "c d": { "x": { "y": 1 } }
+      },
+      "result": [{ "q": [4, 5, 6] }],
+      "result_paths": ["$['a']['p']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "array index from embedded singular query",
+      "selector": "$.a.j[$['c d'].x.y]",
+      "document": {
+        "a": { "j": [1, 2, 3], "p": { "q": [4, 5, 6] } },
+        "b": ["j", "p", "q"],
+        "c d": { "x": { "y": 1 } }
+      },
+      "result": [2],
+      "result_paths": ["$['a']['j'][1]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "embedded singular query does not resolve to a string or int value",
+      "selector": "$.a[$.b]",
+      "document": {
+        "a": { "j": [1, 2, 3], "p": { "q": [4, 5, 6] } },
+        "b": ["j", "p", "q"],
+        "c d": { "x": { "y": 1 } }
+      },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "object name from embedded singular query resolving to nothing",
+      "selector": "$.a[$.foo]",
+      "document": {
+        "a": { "j": [1, 2, 3], "p": { "q": [4, 5, 6] } },
+        "b": ["j", "p", "q"],
+        "c d": { "x": { "y": 1 } }
+      },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "array index from embedded singular query resolving to nothing",
+      "selector": "$.b[$.foo]",
+      "document": {
+        "a": { "j": [1, 2, 3], "p": { "q": [4, 5, 6] } },
+        "b": ["j", "p", "q"],
+        "c d": { "x": { "y": 1 } }
+      },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "array index from embedded singular query is not an int",
+      "selector": "$.b[$.a.z]",
+      "document": {
+        "a": { "j": [1, 2, 3], "p": { "q": [4, 5, 6] }, "z": "foo" },
+        "b": ["j", "p", "q"],
+        "c d": { "x": { "y": 1 } }
+      },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "array index from embedded singular query is negative",
+      "selector": "$.b[$.a.z]",
+      "document": {
+        "a": { "j": [1, 2, 3], "p": { "q": [4, 5, 6] }, "z": -1 },
+        "b": ["j", "p", "q"],
+        "c d": { "x": { "y": 1 } }
+      },
+      "result": ["q"],
+      "result_paths": ["$['b'][2]"],
+      "tags": ["extra"]
+    }
+  ]
+}

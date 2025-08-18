@@ -7,20 +7,15 @@ The CTS is a submodule located in /tests/cts. After a git clone, run
 import asyncio
 import json
 import operator
-from dataclasses import dataclass
-from dataclasses import field
-from typing import Any
 from typing import List
-from typing import Mapping
-from typing import Optional
-from typing import Sequence
-from typing import Union
 
 import pytest
 
 from jsonpath import JSONPathEnvironment
 from jsonpath import JSONPathError
 from jsonpath import NodeList
+
+from ._cts_case import Case
 
 # CTS tests that are expected to fail when JSONPathEnvironment.strict is False.
 XFAIL_INVALID = {
@@ -56,22 +51,6 @@ REGEX_ONLY = {
     "functions, search, filter, search function, unicode char class, uppercase",
     "functions, search, filter, search function, unicode char class negated, uppercase",
 }
-
-# TODO: Test runner in `no-regexp` env
-
-
-@dataclass
-class Case:
-    name: str
-    selector: str
-    document: Union[Mapping[str, Any], Sequence[Any], None] = None
-    result: Any = None
-    results: Optional[List[Any]] = None
-    result_paths: Optional[List[str]] = None
-    results_paths: Optional[List[List[str]]] = None
-    invalid_selector: Optional[bool] = None
-    tags: List[str] = field(default_factory=list)
-
 
 with open("tests/cts/cts.json", encoding="utf8") as fd:
     data = json.load(fd)
