@@ -529,11 +529,9 @@ class RelativeFilterQuery(FilterQuery):
         return "@" + str(self.path)[1:]
 
     def evaluate(self, context: FilterContext) -> object:
-        if isinstance(context.current, str):  # TODO: refactor
-            if self.path.empty():
-                return context.current
-            return NodeList()
-        if not isinstance(context.current, (Sequence, Mapping)):
+        if isinstance(context.current, str) or not isinstance(
+            context.current, (Sequence, Mapping)
+        ):
             if self.path.empty():
                 return context.current
             return NodeList()
@@ -546,11 +544,9 @@ class RelativeFilterQuery(FilterQuery):
         )
 
     async def evaluate_async(self, context: FilterContext) -> object:
-        if isinstance(context.current, str):  # TODO: refactor
-            if self.path.empty():
-                return context.current
-            return NodeList()
-        if not isinstance(context.current, (Sequence, Mapping)):
+        if isinstance(context.current, str) or not isinstance(
+            context.current, (Sequence, Mapping)
+        ):
             if self.path.empty():
                 return context.current
             return NodeList()
@@ -660,7 +656,9 @@ class FunctionExtension(BaseExpression):
         try:
             func = context.env.function_extensions[self.name]
         except KeyError:
-            return UNDEFINED  # TODO: should probably raise an exception
+            # This can only happen if the environment's function register has been
+            # changed since the query was parsed.
+            return UNDEFINED
         args = [arg.evaluate(context) for arg in self.args]
         return func(*self._unpack_node_lists(func, args))
 
@@ -668,7 +666,9 @@ class FunctionExtension(BaseExpression):
         try:
             func = context.env.function_extensions[self.name]
         except KeyError:
-            return UNDEFINED  # TODO: should probably raise an exception
+            # This can only happen if the environment's function register has been
+            # changed since the query was parsed.
+            return UNDEFINED
         args = [await arg.evaluate_async(context) for arg in self.args]
         return func(*self._unpack_node_lists(func, args))
 

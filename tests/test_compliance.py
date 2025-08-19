@@ -78,15 +78,7 @@ def test_compliance_strict(env: JSONPathEnvironment, case: Case) -> None:
 
     assert case.document is not None
     nodes = NodeList(env.finditer(case.selector, case.document))
-
-    if case.results is not None:
-        assert case.results_paths is not None
-        assert nodes.values() in case.results
-        assert nodes.paths() in case.results_paths
-    else:
-        assert case.result_paths is not None
-        assert nodes.values() == case.result
-        assert nodes.paths() == case.result_paths
+    case.assert_nodes(nodes)
 
 
 @pytest.mark.parametrize("case", valid_cases(), ids=operator.attrgetter("name"))
@@ -100,15 +92,7 @@ def test_compliance_async_strict(env: JSONPathEnvironment, case: Case) -> None:
         return NodeList([node async for node in it])
 
     nodes = asyncio.run(coro())
-
-    if case.results is not None:
-        assert case.results_paths is not None
-        assert nodes.values() in case.results
-        assert nodes.paths() in case.results_paths
-    else:
-        assert case.result_paths is not None
-        assert nodes.values() == case.result
-        assert nodes.paths() == case.result_paths
+    case.assert_nodes(nodes)
 
 
 @pytest.mark.parametrize("case", invalid_cases(), ids=operator.attrgetter("name"))

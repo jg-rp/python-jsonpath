@@ -11,6 +11,8 @@ from typing import Mapping
 from typing import Sequence
 from typing import Tuple
 
+from .exceptions import JSONPathRecursionError
+
 if TYPE_CHECKING:
     from .env import JSONPathEnvironment
     from .match import JSONPathMatch
@@ -99,7 +101,8 @@ class JSONPathRecursiveDescentSegment(JSONPathSegment):
 
     def _visit(self, node: JSONPathMatch, depth: int = 1) -> Iterable[JSONPathMatch]:
         """Depth-first, pre-order node traversal."""
-        # TODO: check for recursion limit
+        if depth > self.env.max_recursion_depth:
+            raise JSONPathRecursionError("recursion limit exceeded", token=self.token)
 
         yield node
 

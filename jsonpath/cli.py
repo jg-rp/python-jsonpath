@@ -1,4 +1,5 @@
 """JSONPath, JSON Pointer and JSON Patch command line interface."""
+
 import argparse
 import json
 import sys
@@ -289,7 +290,6 @@ def handle_pointer_command(args: argparse.Namespace) -> None:
     if args.pointer is not None:
         pointer = args.pointer
     else:
-        # TODO: is a property with a trailing newline OK?
         pointer = args.pointer_file.read().strip()
 
     try:

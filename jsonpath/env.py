@@ -124,6 +124,9 @@ class JSONPathEnvironment:
             index. Defaults to `(2**53) - 1`.
         min_int_index (int): The minimum integer allowed when selecting array items by
             index. Defaults to `-(2**53) + 1`.
+        max_recursion_depth (int): The maximum number of dict/objects and/or arrays/
+            lists the recursive descent selector can visit before a
+            `JSONPathRecursionError` is thrown.
         parser_class: The parser to use when parsing tokens from the lexer.
         root_token (str): The pattern used to select the root node in a JSON document.
             Defaults to `"$"`.
@@ -132,8 +135,8 @@ class JSONPathEnvironment:
         union_token (str): The pattern used as the union operator. Defaults to `"|"`.
     """
 
-    # These should be unescaped strings. `re.escape` will be called
-    # on them automatically when compiling lexer rules.
+    # These should be unescaped strings. `re.escape` will be called on them
+    # automatically when compiling lexer rules.
     pseudo_root_token = "^"
     filter_context_token = "_"
     intersection_token = "&"
@@ -146,6 +149,7 @@ class JSONPathEnvironment:
 
     max_int_index = (2**53) - 1
     min_int_index = -(2**53) + 1
+    max_recursion_depth = 100
 
     # Override these to customize path tokenization and parsing.
     lexer_class: Type[Lexer] = Lexer
@@ -227,7 +231,6 @@ class JSONPathEnvironment:
                 "unexpected whitespace", token=stream.tokens[stream.pos - 1]
             )
 
-        # TODO: better!
         if stream.current().kind != TOKEN_EOF:
             _path = CompoundJSONPath(env=self, path=_path)
             while stream.current().kind != TOKEN_EOF:

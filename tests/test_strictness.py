@@ -36,3 +36,28 @@ def test_alternative_or(env: JSONPathEnvironment) -> None:
     query = "$[?@.a or @.c]"
     data = [{"a": True, "b": False}, {"c": 99}]
     assert env.findall(query, data) == [{"a": True, "b": False}, {"c": 99}]
+
+
+def test_implicit_root_identifier(
+    env: JSONPathEnvironment,
+) -> None:
+    query = "a['p']"
+    data = {
+        "a": {"j": [1, 2, 3], "p": {"q": [4, 5, 6]}},
+        "b": ["j", "p", "q"],
+    }
+
+    assert env.findall(query, data) == [{"q": [4, 5, 6]}]
+
+
+def test_singular_path_selector_without_root_identifier(
+    env: JSONPathEnvironment,
+) -> None:
+    query = "$.a[b[1]]"
+    data = {
+        "a": {"j": [1, 2, 3], "p": {"q": [4, 5, 6]}},
+        "b": ["j", "p", "q"],
+        "c d": {"x": {"y": 1}},
+    }
+
+    assert env.findall(query, data) == [{"q": [4, 5, 6]}]

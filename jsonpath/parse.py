@@ -722,7 +722,6 @@ class Parser:
     def parse_singular_query_selector(
         self, stream: TokenStream
     ) -> SingularQuerySelector:
-        # TODO: optionally require root identifier
         token = (
             stream.next() if stream.current().kind == TOKEN_ROOT else stream.current()
         )

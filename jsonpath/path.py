@@ -474,9 +474,6 @@ class CompoundJSONPath:
             paths=self.paths + ((self.env.intersection_token, path),),
         )
 
-    # TODO: implement empty and singular for CompoundJSONPath
-    # TODO: add a `segments` property returning segments from all paths
-
 
 T = TypeVar("T")
 
