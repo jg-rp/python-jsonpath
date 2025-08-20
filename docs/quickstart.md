@@ -4,14 +4,14 @@ This page gets you started using JSONPath, JSON Pointer and JSON Patch wih Pytho
 
 ## `findall(path, data)`
 
-Find all values matching a JSONPath expression using [`jsonpath.findall()`](api.md#jsonpath.JSONPathEnvironment.findall).
+Find all values matching a JSONPath query using [`jsonpath.findall()`](api.md#jsonpath.JSONPathEnvironment.findall).
 
 This function takes two arguments:
 
-- `path`: a JSONPath expression as a string (e.g., `"$.users[*].name"`)
+- `path`: a JSONPath query as a string (e.g., `"$.users[*].name"`)
 - `data`: the JSON document to query
 
-It always returns a **list** of matched values, even if the path resolves to a single result or nothing at all.
+It **always** returns a list of matched values, even if the path resolves to a single result or nothing at all.
 
 The `data` argument can be:
 
@@ -65,7 +65,7 @@ with open("users.json") as fd:
 
 ## `finditer(path, data)`
 
-Use [`jsonpath.finditer()`](api.md#jsonpath.JSONPathEnvironment.finditer) to iterate over instances of [`jsonpath.JSONPathMatch`](api.md#jsonpath.JSONPathMatch) for every object in _data_ that matches _path_. It accepts the same arguments as [`findall()`](#findallpath-data), a path string and data from which to select matches.
+Use [`jsonpath.finditer()`](api.md#jsonpath.JSONPathEnvironment.finditer) to iterate over instances of [`jsonpath.JSONPathMatch`](api.md#jsonpath.JSONPathMatch) for every object in _data_ that matches _path_. It accepts the same arguments as [`findall()`](#findallpath-data), a query string and data from which to select matches.
 
 ```python
 import jsonpath
@@ -109,7 +109,7 @@ The selected object is available from a [`JSONPathMatch`](api.md#jsonpath.JSONPa
 
 ## `compile(path)`
 
-When you have a JSONPath that needs to be matched against different data repeatedly, you can _compile_ the path ahead of time using [`jsonpath.compile()`](api.md#jsonpath.JSONPathEnvironment.compile). It takes a path as a string and returns a [`JSONPath`](api.md#jsonpath.JSONPath) instance. `JSONPath` has `findall()` and `finditer()` methods that behave similarly to package-level `findall()` and `finditer()`, just without the `path` argument.
+When you have a JSONPath query that needs to be matched against different data repeatedly, you can compile the path ahead of time using [`jsonpath.compile()`](api.md#jsonpath.JSONPathEnvironment.compile). It takes a query as a string and returns an instance of [`JSONPath`](api.md#jsonpath.JSONPath). `JSONPath` has `findall()` and `finditer()` methods that behave similarly to package-level `findall()` and `finditer()`, just without the `path` argument.
 
 ```python
 import jsonpath

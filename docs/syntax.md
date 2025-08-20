@@ -1,72 +1,240 @@
 # JSONPath Syntax
 
-Python JSONPath's default syntax is an opinionated combination of JSONPath features from existing, popular implementations and [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535). If you're already familiar with JSONPath syntax, skip to [notable differences](#notable-differences).
+By default, Python JSONPath extends the RFC 9535 specification with a few additional features and relaxed rules, making it more forgiving in everyday use. If you need strict compliance with RFC 9535, you can enable strict mode, which enforces the standard without these extensions. In this guide, we first outline the standard syntax (see the specification for the formal definition), and then describe the non-standard extensions and their semantics in detail.
 
-Imagine a JSON document as a tree structure, where each object (mapping) and array can contain more objects, arrays and scalar values. Every object, array and scalar value is a node in the tree, and the outermost object or array is the "root" node.
+## JSONPath Terminology
 
-For our purposes, a JSON "document" could be a file containing valid JSON data, a Python string containing valid JSON data, or a Python `Object` made up of dictionaries (or any [Mapping](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes)), lists (or any [Sequence](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes)), strings, etc.
+Think of a JSON document as a tree, objects (mappings) and arrays can contain other objects, arrays, or scalar values. Each of these (object, array, or scalar) is a _node_ in the tree. The outermost object or array is called the _root_ node.
 
-We chain _selectors_ together to retrieve nodes from the target document. Each selector operates on the nodes matched by preceding selectors. What follows is a description of those selectors.
+In this guide, a JSON "document" may refer to:
 
-## Selectors
+- A file containing valid JSON text
+- A Python string containing valid JSON text
+- A Python object composed of dictionaries (or any [Mapping](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes)), lists (or any [Sequence](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes)), strings, numbers, booleans, or `None`
 
-### Root (`$`)
+A JSONPath expression (aka "query") is made up of a sequence of **segments**. Each segment contains one or more **selectors**:
 
-`$` refers to the first node in the target document, be it an object or an array. Unless referencing the root node from inside a filter expression, `$` is optional. The following two examples are equivalent.
+- A _segment_ corresponds to a step in the path from one set of nodes to the next.
+- A _selector_ describes how to choose nodes within that step (for example, by name, by index, or by wildcard).
 
-```text
+What follows is a description of these selectors, starting with the standard ones defined in [RFC 9535](https://www.rfc-editor.org/rfc/rfc9535).
+
+## Standard selectors and identifiers
+
+### Root identifier (`$`)
+
+The root identifier, `$`, refers to the outermost node in the target document. This can be an object, an array, or a scalar value.
+
+A query containing only the root identifier simply returns the entire input document.
+
+#### Example query
+
+```
 $.categories.*.name
 ```
 
-```text
-categories.*.name
+```json title="data"
+{
+  "categories": [
+    { "id": 1, "name": "fiction" },
+    { "id": 2, "name": "non-fiction" }
+  ]
+}
 ```
 
-An empty path or a path containing just the root (`$`) selector returns the input data in its entirety.
+```text title="results"
+["fiction", "non-fiction"]
+```
 
-### Properties (`.thing`, `[thing]` or `['thing']`)
+### Name selector (`.thing` or `['thing']`)
 
-Select nodes by property/key name using dot notation (`.something`) or bracket notation (`[something]`). If a target property/key contains reserved characters, it must use bracket notation and be enclosed in quotes (`['thing']`).
+A _name selector_ matches the value of an object member by its key. You can write it in either **dot notation** (`.thing`) or **bracket notation** (`['thing']`).
 
-A dot in front of bracket notation is OK, but unnecessary. The following examples are equivalent.
+Dot notation is concise and preferred when the property name is a valid identifier. Bracket notation is required when the property name contains spaces, special characters, or starts with a number.
+
+#### Example query
+
+```text
+$.book.title
+```
+
+```json title="data"
+{
+  "book": {
+    "title": "Moby Dick",
+    "author": "Herman Melville"
+  }
+}
+```
+
+```text title="results"
+["Moby Dick"]
+```
+
+### Index selector (`[0]` or `[-1]`)
+
+Select an item from an array by its index. Indices are zero-based and enclosed in brackets. If the index is negative, items are selected from the end of the array.
+
+#### Example query
 
 ```text
 $.categories[0].name
 ```
 
-```text
-$.categories[0][name]
+```json title="data"
+{
+  "categories": [
+    { "id": 1, "name": "fiction" },
+    { "id": 2, "name": "non-fiction" }
+  ]
+}
 ```
 
-```text
-$.categories[0]['name']
+```text title="results"
+["fiction"]
 ```
 
-By default, `or`, `and`, `in`, `true`, `True`, `false`, `False`, `nil`, `Nil`, `null`, `Null`, `none`, `None`, `contains`, `undefined`, and `missing` are considered _reserved words_. In some cases you will need to use quoted property/name selector syntax if you're selecting a name that matches any of these words exactly. For example, `["and"]`.
+### Wildcard selector (`.*` or `[*]`)
 
-### Array indices (`[0]` or `[-1]`)
+A _wildcard selector_ matches all member values of an object or all items in an array. It can be written as `.*` (dot notation) or `[*]` (bracket notation).
 
-Select an item from an array by its index. Indices are zero-based and enclosed in brackets. If the index is negative, items are selected from the end of the array. Considering example data from the top of this page, the following examples are equivalent.
-
-```text
-$.categories[0]
-```
+#### Example query
 
 ```text
-$.categories[-1]
+$.categories[*].name
 ```
 
-### Wildcard (`.*` or `[*]`)
+```json title="data"
+{
+  "categories": [
+    { "id": 1, "name": "fiction" },
+    { "id": 2, "name": "non-fiction" }
+  ]
+}
+```
 
-Select all elements from an array or all values from an object using `*`. These two examples are equivalent.
+```text title="results"
+["fiction", "non-fiction"]
+```
+
+### Slice selector (`[start:end:step]`)
+
+The slice selector allows you to select a range of items from an array. You can specify a starting index, an ending index (exclusive), and an optional step to skip elements. Negative indices count from the end of the array, just like standard Python slicing.
+
+#### Example query
 
 ```text
-$.categories[0].products.*
+$.items[1:4:2]
 ```
 
-```text
-$.categories[0].products[*]
+```json title="data"
+{
+  "items": ["a", "b", "c", "d", "e", "f"]
+}
 ```
+
+```text title="results"
+["b", "d"]
+```
+
+### Filter selector (`[?expression]`)
+
+Filters allow you to remove nodes from a selection based on a Boolean expression. A filter expression evaluates each node in the context of either the root (`$`) or the current node (`@`).
+
+When filtering a mapping-like object, `@` identifies the current member value. When filtering a sequence-like object, `@` identifies the current item.
+
+Comparison operators include `==`, `!=`, `<`, `>`, `<=`, and `>=`. Logical operators `&&` (and) and `||` (or) can combine terms, and parentheses can be used to group expressions.
+
+A filter expression on its own - without a comparison - is treated as an existence test.
+
+#### Example query
+
+```text
+$..products[?(@.price < $.price_cap)]
+```
+
+```json title="data"
+{
+  "price_cap": 10,
+  "products": [
+    { "name": "apple", "price": 5 },
+    { "name": "orange", "price": 12 },
+    { "name": "banana", "price": 8 }
+  ]
+}
+```
+
+```text title="results"
+[
+  {"name": "apple", "price": 5},
+  {"name": "banana", "price": 8}
+]
+```
+
+Filter expressions can also call predefined [function extensions](functions.md).
+
+## More on segments
+
+So far we've seen shorthand notation and segments with just one selector. Here we cover the descendant segment and segments with multiple selectors.
+
+### Segments with multiple selectors
+
+A segment can include multiple selectors separated by commas and enclosed in square brackets (`[...]`). Any valid selector (names, indices, slices, filters, or wildcards) can appear in the list.
+
+#### Example query
+
+```text
+$.store.book[0,2]
+```
+
+```json title="data"
+{
+  "store": {
+    "book": [
+      { "title": "Book A", "price": 10 },
+      { "title": "Book B", "price": 12 },
+      { "title": "Book C", "price": 8 }
+    ]
+  }
+}
+```
+
+```text title="results"
+[
+  {"title": "Book A", "price": 10},
+  {"title": "Book C", "price": 8}
+]
+```
+
+### Descendant segment (`..`)
+
+The descendant segment (`..`) visits all object member values and array elements under the current object or array, applying the selector or selectors that follow to each visited node. It can be followed by any valid shorthand selector (names, wildcards, etc.) or a bracketed list of one or more selectors, making it highly flexible for querying nested structures.
+
+#### Example query
+
+```text
+$..price
+```
+
+```json title="data"
+{
+  "store": {
+    "book": [
+      { "title": "Book A", "price": 10 },
+      { "title": "Book B", "price": 12 }
+    ],
+    "bicycle": { "color": "red", "price": 19.95 }
+  }
+}
+```
+
+```text title="results"
+[10, 12, 19.95]
+```
+
+## Non-standard selectors and identifiers
+
+TODO:
 
 ### Keys (`.~` or `[~]`)
 
@@ -82,86 +250,12 @@ $.categories.~
 $.categories[~]
 ```
 
-### Slices (`[0:-1]` or `[-1:0:-1]`)
-
-Select a range of elements from an array using slice notation. The start index, stop index and step are all optional. These examples are equivalent.
-
-```text
-$.categories[0:]
-```
-
-```text
-$.categories[0:-1:]
-```
-
-```text
-$.categories[0:-1:1]
-```
-
-```text
-$.categories[::]
-```
-
 ### Lists (`[1, 2, 10:20]`)
 
 Select multiple indices, slices or properties using list notation (sometimes known as a "union" or "segment", we use "union" to mean something else).
 
 ```text
 $..products.*.[title, price]
-```
-
-### Recursive descent (`..`)
-
-The `..` selector visits every node beneath the current selection. If a property selector, using dot notation, follows `..`, the dot is optional. These two examples are equivalent.
-
-```text
-$..title
-```
-
-```text
-$...title
-```
-
-### Filters (`[?EXPRESSION]`)
-
-Filters allow you to remove nodes from a selection using a Boolean expression. A _filter query_ is a JSONPath query nested within a filter expression. Every filter query must start with the root identifier (`$`), the current node identifier (`@`) or the [filter context](advanced.md#filter-variables) identifier (`_`).
-
-```text
-$..products[?(@.price < $.price_cap)]
-```
-
-```text
-$..products[?@.price < $.price_cap]
-```
-
-When filtering a mapping-like object, `#` references the current key/property and `@` references the current value associated with `#`. When filtering a sequence-like object, `@` references the current item and `#` will hold the item's index in the sequence.
-
-Comparison operators include `==`, `!=`, `<`, `>`, `<=` and `>=`. Plus `<>` as an alias for `!=`.
-
-`in` and `contains` are membership operators. `left in right` is equivalent to `right contains left`.
-
-`&&` and `||` are logical operators and terms can be grouped with parentheses. `and` and `or` work too.
-
-`=~` matches the left value with a regular expression literal. Regular expressions use a syntax similar to that found in JavaScript, where the pattern to match is surrounded by slashes, optionally followed by flags.
-
-```text
-$..products[?(@.description =~ /.*trainers/i)]
-```
-
-A filter query on its own - one that is not part of a comparison expression - is an existence test. We also support comparing a filter query to the special `undefined` keyword. These two example are equivalent.
-
-```text
-$..products[?!@.sale_price]
-```
-
-```text
-$..products[?@.sale_price == undefined]
-```
-
-Filter expressions can call predefined [function extensions](functions.md) too.
-
-```text
-$.categories[?count(@.products.*) >= 2]
 ```
 
 ### Fake root (`^`)
@@ -173,6 +267,10 @@ This non-standard "fake root" identifier behaves like the standard root identifi
 ```text
 ^[?length(categories) > 0]
 ```
+
+## Non-standard operators
+
+TODO
 
 ### Union (`|`) and intersection (`&`)
 

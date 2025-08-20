@@ -257,23 +257,3 @@ env = MyJSONPathEnvironment()
 query = env.compile("$.users[999]")
 # jsonpath.exceptions.JSONPathIndexError: index out of range, line 1, column 8
 ```
-
-### Subclassing Lexer
-
-TODO:
-
-### Subclassing Parser
-
-TODO:
-
-### Get Item
-
-TODO:
-
-### Truthiness and Existence
-
-TODO:
-
-### Filter Infix Expressions
-
-TODO:
