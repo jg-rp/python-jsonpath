@@ -675,19 +675,13 @@ class Parser:
         return InfixExpression(left, operator, right)
 
     def parse_grouped_expression(self, stream: TokenStream) -> BaseExpression:
-        stream.eat(TOKEN_LPAREN)
+        _token = stream.eat(TOKEN_LPAREN)
         expr = self.parse_filter_expression(stream)
 
         while stream.current().kind != TOKEN_RPAREN:
             token = stream.current()
-            if token.kind == TOKEN_EOF:
-                raise JSONPathSyntaxError("unbalanced parentheses", token=token)
-
-            if token.kind not in self.BINARY_OPERATORS:
-                raise JSONPathSyntaxError(
-                    f"expected an expression, found '{token.value}'",
-                    token=token,
-                )
+            if token.kind in (TOKEN_EOF, TOKEN_RBRACKET):
+                raise JSONPathSyntaxError("unbalanced parentheses", token=_token)
 
             expr = self.parse_infix_expression(stream, expr)
 

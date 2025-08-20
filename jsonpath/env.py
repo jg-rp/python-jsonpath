@@ -493,8 +493,9 @@ class JSONPathEnvironment:
         """Check the well-typedness of a function's arguments at compile-time."""
         # Correct number of arguments?
         if len(args) != len(func.arg_types):
+            plural = "" if len(func.arg_types) == 1 else "s"
             raise JSONPathTypeError(
-                f"{token.value!r}() requires {len(func.arg_types)} arguments",
+                f"{token.value}() requires {len(func.arg_types)} argument{plural}",
                 token=token,
             )
 

@@ -22,7 +22,7 @@ def test_unclosed_selection_list(env: JSONPathEnvironment) -> None:
 
 
 def test_function_missing_param(env: JSONPathEnvironment) -> None:
-    with pytest.raises(JSONPathTypeError):
+    with pytest.raises(JSONPathTypeError, match=r"length\(\) requires 1 argument"):
         env.compile("$[?(length()==1)]")
 
 
