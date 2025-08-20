@@ -59,6 +59,30 @@
       ],
       "result_paths": ["$[0]"],
       "tags": ["extra"]
+    },
+    {
+      "name": "embedded query in list literal",
+      "selector": "$[?(@.a in ['bar', 'baz'])]",
+      "document": [{ "a": "foo" }, { "a": "bar" }],
+      "result": [
+        {
+          "a": "bar"
+        }
+      ],
+      "result_paths": ["$[1]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "list literal contains embedded query",
+      "selector": "$[?(['bar', 'baz'] contains @.a)]",
+      "document": [{ "a": "foo" }, { "a": "bar" }],
+      "result": [
+        {
+          "a": "bar"
+        }
+      ],
+      "result_paths": ["$[1]"],
+      "tags": ["extra"]
     }
   ]
 }

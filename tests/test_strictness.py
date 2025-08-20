@@ -38,6 +38,18 @@ def test_alternative_or(env: JSONPathEnvironment) -> None:
     assert env.findall(query, data) == [{"a": True, "b": False}, {"c": 99}]
 
 
+def test_alternative_null(env: JSONPathEnvironment) -> None:
+    query = "$[?@.a==Null]"
+    data = [{"a": None, "d": "e"}, {"a": "c", "d": "f"}]
+    assert env.findall(query, data) == [{"a": None, "d": "e"}]
+
+
+def test_none(env: JSONPathEnvironment) -> None:
+    query = "$[?@.a==None]"
+    data = [{"a": None, "d": "e"}, {"a": "c", "d": "f"}]
+    assert env.findall(query, data) == [{"a": None, "d": "e"}]
+
+
 def test_implicit_root_identifier(
     env: JSONPathEnvironment,
 ) -> None:

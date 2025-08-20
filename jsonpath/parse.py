@@ -338,100 +338,91 @@ class Parser:
         This method assumes the root, current or pseudo root identifier has
         already been consumed.
         """
+        if not self.env.strict and stream.current().kind in {
+            TOKEN_NAME,
+            TOKEN_WILD,
+            TOKEN_KEYS,
+            TOKEN_KEY_NAME,
+        }:
+            # A non-standard "bare" path. One that starts with a shorthand selector
+            # without a leading identifier (`$`, `@`, `^` or `_`).
+            #
+            # When no identifier is given, a root query (`$`) is assumed.
+            token = stream.current()
+            selector = self.parse_shorthand_selector(stream)
+            yield JSONPathChildSegment(env=self.env, token=token, selectors=(selector,))
+
         while True:
             stream.skip_whitespace()
-            _token = stream.current()
-            if _token.kind == TOKEN_DOT:
-                stream.eat(TOKEN_DOT)
-                # Assert that dot is followed by shorthand selector without whitespace.
-                stream.expect(TOKEN_NAME, TOKEN_WILD, TOKEN_KEYS, TOKEN_KEY_NAME)
-                token = stream.current()
-                selectors = self.parse_selector(stream)
+            token = stream.next()
+
+            if token.kind == TOKEN_DOT:
+                selector = self.parse_shorthand_selector(stream)
                 yield JSONPathChildSegment(
-                    env=self.env, token=token, selectors=selectors
+                    env=self.env, token=token, selectors=(selector,)
                 )
-            elif _token.kind == TOKEN_DDOT:
-                token = stream.eat(TOKEN_DDOT)
-                selectors = self.parse_selector(stream)
-                if not selectors:
-                    raise JSONPathSyntaxError(
-                        "missing selector for recursive descent segment",
-                        token=stream.current(),
-                    )
+            elif token.kind == TOKEN_DDOT:
+                if stream.current().kind == TOKEN_LBRACKET:
+                    selectors = tuple(self.parse_bracketed_selection(stream))
+                else:
+                    selectors = (self.parse_shorthand_selector(stream),)
+
                 yield JSONPathRecursiveDescentSegment(
                     env=self.env, token=token, selectors=selectors
                 )
-            elif _token.kind == TOKEN_LBRACKET:
-                selectors = self.parse_selector(stream)
+            elif token.kind == TOKEN_LBRACKET:
+                stream.pos -= 1
                 yield JSONPathChildSegment(
-                    env=self.env, token=_token, selectors=selectors
+                    env=self.env,
+                    token=token,
+                    selectors=tuple(self.parse_bracketed_selection(stream)),
                 )
-            elif _token.kind in {TOKEN_NAME, TOKEN_WILD, TOKEN_KEYS, TOKEN_KEY_NAME}:
-                # A non-standard "bare" path. One without a leading identifier (`$`,
-                # `@`, `^` or `_`).
-                token = stream.current()
-                selectors = self.parse_selector(stream)
-                yield JSONPathChildSegment(
-                    env=self.env, token=token, selectors=selectors
-                )
+            elif token.kind == TOKEN_EOF:
+                break
             else:
+                # An embedded query. Put the token back on the stream.
+                stream.pos -= 1
                 break
 
-    def parse_selector(self, stream: TokenStream) -> tuple[JSONPathSelector, ...]:  # noqa: PLR0911
+    def parse_shorthand_selector(self, stream: TokenStream) -> JSONPathSelector:
         token = stream.next()
 
         if token.kind == TOKEN_NAME:
-            return (
-                NameSelector(
-                    env=self.env,
-                    token=token,
-                    name=token.value,
-                ),
+            return NameSelector(
+                env=self.env,
+                token=token,
+                name=token.value,
             )
 
         if token.kind == TOKEN_KEY_NAME:
-            return (
-                KeySelector(
-                    env=self.env,
-                    token=token,
-                    key=token.value,
-                ),
+            return KeySelector(
+                env=self.env,
+                token=token,
+                key=token.value,
             )
 
         if token.kind == TOKEN_WILD:
-            return (
-                WildcardSelector(
-                    env=self.env,
-                    token=token,
-                ),
+            return WildcardSelector(
+                env=self.env,
+                token=token,
             )
 
         if token.kind == TOKEN_KEYS:
             if stream.current().kind == TOKEN_NAME:
-                return (
-                    KeySelector(
-                        env=self.env,
-                        token=token,
-                        key=self._decode_string_literal(stream.next()),
-                    ),
-                )
-
-            return (
-                KeysSelector(
+                return KeySelector(
                     env=self.env,
                     token=token,
-                ),
+                    key=self._decode_string_literal(stream.next()),
+                )
+
+            return KeysSelector(
+                env=self.env,
+                token=token,
             )
 
-        if token.kind == TOKEN_LBRACKET:
-            stream.pos -= 1
-            return tuple(self.parse_bracketed_selection(stream))
-
-        stream.pos -= 1
-        return ()
+        raise JSONPathSyntaxError("expected a shorthand selector", token=token)
 
     def parse_bracketed_selection(self, stream: TokenStream) -> List[JSONPathSelector]:  # noqa: PLR0912, PLR0915
-        """Parse a comma separated list of JSONPath selectors."""
         segment_token = stream.eat(TOKEN_LBRACKET)
         selectors: List[JSONPathSelector] = []
 
@@ -704,7 +695,7 @@ class Parser:
         return expr
 
     def parse_absolute_query(self, stream: TokenStream) -> BaseExpression:
-        root = stream.next()
+        root = stream.next()  # Could be TOKEN_ROOT or TOKEN_PSEUDO_ROOT
         return RootFilterQuery(
             JSONPath(
                 env=self.env,
