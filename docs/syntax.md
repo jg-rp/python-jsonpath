@@ -30,7 +30,7 @@ A query containing only the root identifier simply returns the entire input docu
 #### Example query
 
 ```
-$.categories.*.name
+$
 ```
 
 ```json title="data"
@@ -42,15 +42,22 @@ $.categories.*.name
 }
 ```
 
-```text title="results"
-["fiction", "non-fiction"]
+```json title="results"
+[
+  {
+    "categories": [
+      { "id": 1, "name": "fiction" },
+      { "id": 2, "name": "non-fiction" }
+    ]
+  }
+]
 ```
 
 ### Name selector (`.thing` or `['thing']`)
 
-A _name selector_ matches the value of an object member by its key. You can write it in either **dot notation** (`.thing`) or **bracket notation** (`['thing']`).
+A _name selector_ matches the value of an object member by its key. You can write it in either **shorthand notation** (`.thing`) or **bracket notation** (`['thing']`).
 
-Dot notation is concise and preferred when the property name is a valid identifier. Bracket notation is required when the property name contains spaces, special characters, or starts with a number.
+Dot notation can be used when the property name is a valid identifier. Bracket notation is required when the property name contains spaces, special characters, or starts with a number.
 
 #### Example query
 
@@ -67,13 +74,13 @@ $.book.title
 }
 ```
 
-```text title="results"
+```json title="results"
 ["Moby Dick"]
 ```
 
 ### Index selector (`[0]` or `[-1]`)
 
-Select an item from an array by its index. Indices are zero-based and enclosed in brackets. If the index is negative, items are selected from the end of the array.
+Select an element from an array by its index. Indices are zero-based and enclosed in brackets. If the index is negative, items are selected from the end of the array.
 
 #### Example query
 
@@ -90,13 +97,13 @@ $.categories[0].name
 }
 ```
 
-```text title="results"
+```json title="results"
 ["fiction"]
 ```
 
 ### Wildcard selector (`.*` or `[*]`)
 
-A _wildcard selector_ matches all member values of an object or all items in an array. It can be written as `.*` (dot notation) or `[*]` (bracket notation).
+The _wildcard selector_ matches all member values of an object or all elements in an array. It can be written as `.*` (shorthand notation) or `[*]` (bracket notation).
 
 #### Example query
 
@@ -113,13 +120,13 @@ $.categories[*].name
 }
 ```
 
-```text title="results"
+```json title="results"
 ["fiction", "non-fiction"]
 ```
 
 ### Slice selector (`[start:end:step]`)
 
-The slice selector allows you to select a range of items from an array. You can specify a starting index, an ending index (exclusive), and an optional step to skip elements. Negative indices count from the end of the array, just like standard Python slicing.
+The slice selector allows you to select a range of elements from an array. You can specify a starting index, an ending index (exclusive), and an optional step to skip elements. Negative indices count from the end of the array, just like standard Python slicing.
 
 #### Example query
 
@@ -133,7 +140,7 @@ $.items[1:4:2]
 }
 ```
 
-```text title="results"
+```json title="results"
 ["b", "d"]
 ```
 
@@ -141,7 +148,7 @@ $.items[1:4:2]
 
 Filters allow you to remove nodes from a selection based on a Boolean expression. A filter expression evaluates each node in the context of either the root (`$`) or the current node (`@`).
 
-When filtering a mapping-like object, `@` identifies the current member value. When filtering a sequence-like object, `@` identifies the current item.
+When filtering a mapping-like object, `@` identifies the current member value. When filtering a sequence-like object, `@` identifies the current element.
 
 Comparison operators include `==`, `!=`, `<`, `>`, `<=`, and `>=`. Logical operators `&&` (and) and `||` (or) can combine terms, and parentheses can be used to group expressions.
 
@@ -164,10 +171,10 @@ $..products[?(@.price < $.price_cap)]
 }
 ```
 
-```text title="results"
+```json title="results"
 [
-  {"name": "apple", "price": 5},
-  {"name": "banana", "price": 8}
+  { "name": "apple", "price": 5 },
+  { "name": "banana", "price": 8 }
 ]
 ```
 
@@ -199,16 +206,16 @@ $.store.book[0,2]
 }
 ```
 
-```text title="results"
+```json title="results"
 [
-  {"title": "Book A", "price": 10},
-  {"title": "Book C", "price": 8}
+  { "title": "Book A", "price": 10 },
+  { "title": "Book C", "price": 8 }
 ]
 ```
 
 ### Descendant segment (`..`)
 
-The descendant segment (`..`) visits all object member values and array elements under the current object or array, applying the selector or selectors that follow to each visited node. It can be followed by any valid shorthand selector (names, wildcards, etc.) or a bracketed list of one or more selectors, making it highly flexible for querying nested structures.
+The descendant segment (`..`) visits all object member values and array elements under the current object or array, applying the selector or selectors that follow to each visited node. It must be followed by a shorthand selector (names, wildcards, etc.) or a bracketed list of one or more selectors.
 
 #### Example query
 
@@ -228,27 +235,257 @@ $..price
 }
 ```
 
-```text title="results"
+```json title="results"
 [10, 12, 19.95]
 ```
 
 ## Non-standard selectors and identifiers
 
-TODO:
+The selectors and identifiers described in this section are an extension to RFC 9535. They are enabled by default. See [#strict-mode] for details on how to use JSONPath following RFC 9535 strictly.
 
-### Keys (`.~` or `[~]`)
+### Key selector
+
+**_New in version 2.0.0_**
+
+The key selector, `.~name` or `[~'name']`, selects at most one name from an object member. It is syntactically similar to the standard [name selector](https://datatracker.ietf.org/doc/html/rfc9535#name-name-selector), with the addition of a tilde (`~`) prefix.
+
+When applied to a JSON object, the key selector selects the _name_ from an object member, if that name exists, or nothing if it does not exist. This complements the standard name selector, which select the _value_ from a name/value pair.
+
+When applied to an array or primitive value, the key selector selects nothing.
+
+Key selector strings must follow the same processing semantics as name selector strings, as described in [section 2.3.2.1](https://datatracker.ietf.org/doc/html/rfc9535#section-2.3.1.2) of RFC 9535.
+
+!!! info
+
+    The key selector is introduced to facilitate valid normalized paths for nodes produced by the [keys selector](#keys-selector) and the [keys filter selector](#keys-filter-selector). I don't expect it will be of much use elsewhere.
+
+#### Syntax
+
+```
+selector             = name-selector /
+                       wildcard-selector /
+                       slice-selector /
+                       index-selector /
+                       filter-selector /
+                       key-selector /
+                       keys-selector /
+                       keys-filter-selector
+
+key-selector         = "~" name-selector
+
+child-segment        = bracketed-selection /
+                       ("."
+                        (wildcard-selector /
+                         member-name-shorthand /
+                         member-key-shorthand))
+
+descendant-segment   = ".." (bracketed-selection /
+                             wildcard-selector /
+                             member-name-shorthand /
+                             member-key-shorthand)
+
+member-key-shorthand = "~" name-first *name-char
+```
+
+#### Examples
+
+```json title="Example JSON document"
+{
+  "a": [{ "b": "x", "c": "z" }, { "b": "y" }]
+}
+```
+
+| Query       | Result            | Result Paths                              | Comment                       |
+| ----------- | ----------------- | ----------------------------------------- | ----------------------------- |
+| `$.a[0].~c` | `"c"`             | `$['a'][0][~'c']`                         | Key of nested object          |
+| `$.a[1].~c` |                   |                                           | Key does not exist            |
+| `$..[~'b']` | `"b"` <br/> `"b"` | `$['a'][0][~'b']` <br/> `$['a'][1][~'b']` | Descendant, single quoted key |
+| `$..[~"b"]` | `"b"` <br/> `"b"` | `$['a'][0][~'b']` <br/> `$['a'][1][~'b']` | Descendant, double quoted key |
+
+### Keys selector
 
 **_New in version 0.6.0_**
 
-Select keys/properties from an object using `~`.
+The keys selector, `~` or `[~]`, selects all names from an object’s name/value members. This complements the standard [wildcard selector](https://datatracker.ietf.org/doc/html/rfc9535#name-wildcard-selector), which selects all values from an object’s name/value pairs.
 
-```text
-$.categories.~
+As with the wildcard selector, the order of nodes resulting from a keys selector is not stipulated.
+
+When applied to an array or primitive value, the keys selector selects nothing.
+
+The normalized path of a node selected using the keys selector uses [key selector](#key-selector) syntax.
+
+#### Syntax
+
+```
+keys-selector       = "~"
 ```
 
-```text
-$.categories[~]
+#### Examples
+
+```json title="Example JSON document"
+{
+  "a": [{ "b": "x", "c": "z" }, { "b": "y" }]
+}
 ```
+
+| Query          | Result                                    | Result Paths                                                                              | Comment                    |
+| -------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------- |
+| `$.a[0].~`     | `"b"` <br/> `"c"`                         | `$['a'][0][~'b']` <br/> `$['a'][0][~'c']`                                                 | Object keys                |
+| `$.a.~`        |                                           |                                                                                           | Array keys                 |
+| `$.a[0][~, ~]` | `"b"` <br/> `"c"` <br/> `"c"` <br/> `"b"` | `$['a'][0][~'b']` <br/> `$['a'][0][~'c']` <br/> `$['a'][0][~'c']` <br/> `$['a'][0][~'b']` | Non-deterministic ordering |
+| `$..[~]`       | `"a"` <br/> `"b"` <br/> `"c"` <br/> `"b"` | `$[~'a']` <br/> `$['a'][0][~'b']` <br/> `$['a'][0][~'c']` <br/> `$['a'][1][~'b']`         | Descendant keys            |
+
+### Keys filter selector
+
+**_New in version 2.0.0_**
+
+The keys filter selector selects names from an object’s name/value members. It is syntactically similar to the standard [filter selector](https://datatracker.ietf.org/doc/html/rfc9535#name-filter-selector), with the addition of a tilde (`~`) prefix.
+
+```
+~?<logical-expr>
+```
+
+Whereas the standard filter selector will produce a node for each _value_ from an object’s name/value members - when its expression evaluates to logical true - the keys filter selector produces a node for each _name_ in an object’s name/value members.
+
+Logical expression syntax and semantics otherwise match that of the standard filter selector. `@` still refers to the current member value. See also the [current key identifier](#current-key-identifier).
+
+When applied to an array or primitive value, the keys filter selector selects nothing.
+
+The normalized path of a node selected using the keys filter selector uses [key selector](#key-selector) syntax.
+
+#### Syntax
+
+```
+filter-selector     = "~?" S logical-expr
+```
+
+#### Examples
+
+```json title="Example JSON document"
+[{ "a": [1, 2, 3], "b": [4, 5] }, { "c": { "x": [1, 2] } }, { "d": [1, 2, 3] }]
+```
+
+| Query                  | Result            | Result Paths                    | Comment                          |
+| ---------------------- | ----------------- | ------------------------------- | -------------------------------- |
+| `$.*[~?length(@) > 2]` | `"a"` <br/> `"d"` | `$[0][~'a']` <br/> `$[2][~'d']` | Conditionally select object keys |
+| `$.*[~?@.x]`           | `"c"`             | `$[1][~'c']`                    | Existence test                   |
+| `$[~?(true == true)]`  |                   |                                 | Keys from an array               |
+
+### Singular query selector
+
+The singular query selector consist of an embedded absolute singular query, the result of which is used as an object member name or array element index.
+
+If the embedded query resolves to a string or int value, at most one object member value or array element value is selected. Otherwise the singular query selector selects nothing.
+
+#### Syntax
+
+```
+selector                = name-selector /
+                          wildcard-selector /
+                          slice-selector /
+                          index-selector /
+                          filter-selector /
+                          singular-query-selector
+
+singular-query-selector = abs-singular-query
+```
+
+#### Examples
+
+```json
+{
+  "a": {
+    "j": [1, 2, 3],
+    "p": {
+      "q": [4, 5, 6]
+    }
+  },
+  "b": ["j", "p", "q"],
+  "c d": {
+    "x": {
+      "y": 1
+    }
+  }
+}
+```
+
+| Query                 | Result             | Result Path      | Comment                                                           |
+| --------------------- | ------------------ | ---------------- | ----------------------------------------------------------------- |
+| `$.a[$.b[1]]`         | `{"q": [4, 5, 6]}` | `$['a']['p']`    | Object name from embedded singular query                          |
+| `$.a.j[$['c d'].x.y]` | `2`                | `$['a']['j'][1]` | Array index from embedded singular query                          |
+| `$.a[$.b]`            |                    |                  | Embedded singular query does not resolve to a string or int value |
+
+### Current key identifier
+
+`#` is the _current key_ identifier. `#` will be the name of the current object member, or index of the current array element. This complements the current node identifier (`@`), which refers to a member value or array element, respectively.
+
+It is a syntax error to follow the current key identifier with segments, as if it were a filter query.
+
+When used as an argument to a function, the current key is of `ValueType`, and outside a function call it must be compared.
+
+#### Syntax
+
+```
+comparable             = literal /
+                         singular-query / ; singular query value
+                         function-expr  / ; ValueType
+                         current-key-identifier
+
+
+function-argument      = literal /
+                         filter-query / ; (includes singular-query)
+                         logical-expr /
+                         function-expr /
+                         current-key-identifier
+
+current-key-identifier = "#"
+```
+
+#### Examples
+
+```json title="Example JSON document"
+{ "abc": [1, 2, 3], "def": [4, 5], "abx": [6], "aby": [] }
+```
+
+| Query                                     | Result                | Result Path                       | Comment                     |
+| ----------------------------------------- | --------------------- | --------------------------------- | --------------------------- |
+| `$[?match(#, '^ab.*') && length(@) > 0 ]` | `[1,2,3]` <br/> `[6]` | `$['abc']` <br/> `$['abx']`       | Match on object names       |
+| `$.abc[?(# >= 1)]`                        | `2` <br/> `3`         | `$['abc'][1]` <br/> `$['abc'][2]` | Compare current array index |
+
+### Pseudo root identifier
+
+**_New in version 0.11.0_**
+
+The pseudo root identifier (`^`) behaves like the standard root identifier (`$`), but conceptually wraps the target JSON document in a single-element array. This allows the root document itself to be addressed by selectors such as filters, which normally only apply to elements within arrays.
+
+#### Syntax
+
+```
+jsonpath-query             = (root-identifier / pseudo-root-identifier) segments
+
+root-identifier            = "$"
+pseudo-root-identifier     = "^"
+```
+
+#### Examples
+
+TODO
+
+### Filter context identifier
+
+The filter context identifier (`_`) starts an embedded query, similar to the root identifier (`$`) and current node identifier (`@`), but targets JSON-like data passed as the `filter_context` argument to [`findall()`](api.md#jsonpath.JSONPath.findall) and [`finditer()`](api.md#jsonpath.JSONPath.finditer).
+
+#### Syntax
+
+TODO
+
+#### Examples
+
+TODO
+
+## Non-standard operators
+
+TODO
 
 ### Lists (`[1, 2, 10:20]`)
 
@@ -257,20 +494,6 @@ Select multiple indices, slices or properties using list notation (sometimes kno
 ```text
 $..products.*.[title, price]
 ```
-
-### Fake root (`^`)
-
-**_New in version 0.11.0_**
-
-This non-standard "fake root" identifier behaves like the standard root identifier (`$`), but wraps the target JSON document in a single-element array, so as to make it selectable with a filter selector.
-
-```text
-^[?length(categories) > 0]
-```
-
-## Non-standard operators
-
-TODO
 
 ### Union (`|`) and intersection (`&`)
 
