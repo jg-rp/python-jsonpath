@@ -1,6 +1,6 @@
 # JSONPath Syntax
 
-By default, Python JSONPath extends the RFC 9535 specification with a few additional features and relaxed rules, making it more forgiving in everyday use. If you need strict compliance with RFC 9535, you can enable strict mode, which enforces the standard without these extensions. In this guide, we first outline the standard syntax (see the specification for the formal definition), and then describe the non-standard extensions and their semantics in detail.
+By default, Python JSONPath extends the RFC 9535 specification with a few additional features and relaxed rules. If you need strict compliance with RFC 9535, you can enable strict mode, which enforces the standard without these extensions. In this guide, we first outline the standard syntax (see the specification for the formal definition), and then describe the non-standard extensions and their semantics in detail.
 
 ## JSONPath Terminology
 
@@ -241,7 +241,7 @@ $..price
 
 ## Non-standard selectors and identifiers
 
-The selectors and identifiers described in this section are an extension to RFC 9535. They are enabled by default. See [#strict-mode] for details on how to use JSONPath following RFC 9535 strictly.
+The selectors and identifiers described in this section are an extension to RFC 9535. They are enabled by default. See [#strict-mode] for details on how to use JSONPath without these extensions.
 
 ### Key selector
 
@@ -373,6 +373,8 @@ filter-selector     = "~?" S logical-expr
 
 ### Singular query selector
 
+**_New in version 2.0.0_**
+
 The singular query selector consist of an embedded absolute singular query, the result of which is used as an object member name or array element index.
 
 If the embedded query resolves to a string or int value, at most one object member value or array element value is selected. Otherwise the singular query selector selects nothing.
@@ -456,7 +458,7 @@ current-key-identifier = "#"
 
 **_New in version 0.11.0_**
 
-The pseudo root identifier (`^`) behaves like the standard root identifier (`$`), but conceptually wraps the target JSON document in a single-element array. This allows the root document itself to be addressed by selectors such as filters, which normally only apply to elements within arrays.
+The pseudo root identifier (`^`) behaves like the standard root identifier (`$`), but conceptually wraps the target JSON document in a single-element array. This allows the root document itself to be conditionally selected by filters.
 
 #### Syntax
 
@@ -469,7 +471,14 @@ pseudo-root-identifier     = "^"
 
 #### Examples
 
-TODO
+```json title="Example JSON data"
+{ "a": { "b": 42 }, "n": 7 }
+```
+
+| Query                      | Result                         | Result Path | Comment                             |
+| -------------------------- | ------------------------------ | ----------- | ----------------------------------- |
+| `^[?@.a.b > 7]`            | `{ "a": { "b": 42 } }`         | `^[0]`      | Conditionally select the root value |
+| `^[?@.a.v > value(^.*.n)]` | `{ "a": { "b": 42 }, "n": 7 }` | `^[0]`      | Embedded pseudo root query          |
 
 ### Filter context identifier
 
@@ -477,23 +486,96 @@ The filter context identifier (`_`) starts an embedded query, similar to the roo
 
 #### Syntax
 
-TODO
+```
+current-node-identifier  = "@"
+extra-context-identifier = "_"
+
+filter-query        = rel-query / extra-context-query / jsonpath-query
+rel-query           = current-node-identifier segments
+extra-context-query = extra-context-identifier segments
+
+singular-query      = rel-singular-query / abs-singular-query / extra-context-singular-query
+rel-singular-query  = current-node-identifier singular-query-segments
+abs-singular-query  = root-identifier singular-query-segments
+
+extra-context-singular-query = extra-context-identifier singular-query-segments
+```
 
 #### Examples
 
-TODO
+```json title="Example JSON data"
+{ "a": [{ "b": 42 }, { "b": 3 }] }
+```
+
+```json title="Extra JSON data"
+{ "c": 42 }
+```
+
+| Query              | Result        | Result Path | Comment                                      |
+| ------------------ | ------------- | ----------- | -------------------------------------------- |
+| `$.a[?@.b == _.c]` | `{ "b": 42 }` | `$['a'][0]` | Comparison with extra context singular query |
 
 ## Non-standard operators
 
-TODO
+In addition to the operators described below, the standard _logical and_ operator (`&&`) is aliased as `and`, the standard _logical or_ operator (`||`) is aliased as `or`, and `null` is aliased as `nil` and `none`.
 
-### Lists (`[1, 2, 10:20]`)
+Also, `true`, `false`, `null` and their aliases can start with an upper case letter.
 
-Select multiple indices, slices or properties using list notation (sometimes known as a "union" or "segment", we use "union" to mean something else).
+### Membership operators
 
-```text
-$..products.*.[title, price]
+The membership operators test whether one value occurs within another.
+
+An infix expression using `contains` evaluates to true if the right-hand side is a member of the left-hand side, and false otherwise.
+
+- If the left-hand side is an object and the right-hand side is a string, the result is true if the object has a member with that name.
+- If the left-hand side is an array, the result is true if any element of the array is equal to the right-hand side.
+- For scalars (strings, numbers, booleans, null), `contains` always evaluates to false.
+
+The `in` operator is equivalent to `contains` with operands reversed. This makes `contains` and `in` symmetric, so either form may be used depending on which reads more naturally in context.
+
+A list literal is a comma separated list of JSONPath expression literals. List should appear on the left-hand side of `contains` or the right-hand side of `in`.
+
+#### Syntax
+
 ```
+basic-expr          = paren-expr /
+                      comparison-expr /
+                      membership-expr /
+                      test-expr
+
+membership-expr     = comparable S membership-op S comparable
+
+membership-operator = "contains" / "in"
+
+membership-operand  = literal /
+                      singular-query / ; singular query value
+                      function-expr /  ; ValueType
+                      list-literal
+
+list-literal        = "[" S literal *(S "," S literal) S "]"
+```
+
+#### Examples
+
+```json title="Example JSON data"
+{
+  "x": [{ "a": ["foo", "bar"] }, { "a": ["bar"] }],
+  "y": [{ "a": { "foo": "bar" } }, { "a": { "bar": "baz" } }],
+  "z": [{ "a": "foo" }, { "a": "bar" }]
+}
+```
+
+| Query                                 | Result                  | Result Path | Comment                              |
+| ------------------------------------- | ----------------------- | ----------- | ------------------------------------ |
+| `$.x[?@.a contains 'foo']`            | `{"a": ["foo", "bar"]}` | `$['x'][0]` | Array contains string literal        |
+| `$.y[?@.a contains 'foo']`            | `{"a": ["foo", "bar"]}` | `$['y'][0]` | Object contains string literal       |
+| `$.x[?'foo' in @.a]`                  | `{"a": ["foo", "bar"]}` | `$['x'][0]` | String literal in array              |
+| `$.y[?'foo' in @.a]`                  | `{"a": ["foo", "bar"]}` | `$['y'][0]` | String literal in object             |
+| `$.z[?(['bar', 'baz'] contains @.a)]` | `{"a": "bar"}`          | `$['z'][1]` | List literal contains embedded query |
+
+### The regex operator
+
+TODO
 
 ### Union (`|`) and intersection (`&`)
 
@@ -513,38 +595,10 @@ $.categories[?(@.name == 'footwear')].products.* & $.categories[?(@.name == 'hea
 
 Note that `|` and `&` are not allowed inside filter expressions.
 
-## Notable differences
+## Other differences
 
-This is a list of things that you might find in other JSONPath implementation that we don't support (yet).
+This is a list of areas where Python JSONPath is more relaxed than [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535).
 
-- We don't support extension functions of the form `selector.func()`.
-- We always return a list of matches from `jsonpath.findall()`, never a scalar value.
-- We do not support arithmetic in filter expression.
-- We don't allow dotted array indices. An array index must be surrounded by square brackets.
-- Python JSONPath is strictly read only. There are no update "selectors", but we do provide methods for converting `JSONPathMatch` instances to `JSONPointer`s, and a `JSONPatch` builder API for modifying JSON-like data structures using said pointers.
-
-And this is a list of areas where we deviate from [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535). See [jsonpath-rfc9535](https://github.com/jg-rp/python-jsonpath-rfc9535) for an alternative implementation of JSONPath that does not deviate from RFC 9535.
-
-- The root token (default `$`) is optional and paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing`, `$[thing]` and `$["thing"]`.
-- The built-in `match()` and `search()` filter functions use Python's standard library `re` module, which, at least, doesn't support Unicode properties. We might add an implementation of `match()` and `search()` using the third party [regex](https://pypi.org/project/regex/) package in the future.
-- We don't check `match()` and `search()` regex arguments against RFC 9485. Any valid Python pattern is allowed.
-- We don't require property names to be quoted inside a bracketed selection, unless the name contains reserved characters.
-- We don't require the recursive descent segment to have a selector. `$..` is equivalent to `$..*`.
-- We support explicit comparisons to `undefined` as well as implicit existence tests.
-- Float literals without a fractional digit are OK or leading digit. `1.` is equivalent to `1.0`.
-- We treat literals (such as `true` and `false`) as valid "basic" expressions. For example, `$[?true || false]`, without an existence test or comparison either side of logical _or_, does not raise a syntax error.
-- By default, `and` is equivalent to `&&` and `or` is equivalent to `||`.
-- `none` and `nil` are aliases for `null`.
-- `null` (and its aliases), `true` and `false` can start with an upper or lower case letter.
-- We don't treat some invalid `\u` escape sequences in quoted name selectors and string literals as an error. We match the behavior of the JSON decoder in Python's standard library, which is less strict than RFC 9535.
-
-And this is a list of features that are uncommon or unique to Python JSONPath.
-
-- We support membership operators `in` and `contains`, plus list/array literals.
-- `|` is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.
-- `&` is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.
-- `#` is the current key/property or index identifier when filtering a mapping or sequence.
-- `_` is a filter context identifier. With usage similar to `$` and `@`, `_` exposes arbitrary data from the `filter_context` argument to `findall()` and `finditer()`.
-- `~` is a "keys" or "properties" selector.
-- `^` is a "fake root" identifier. It is equivalent to `$`, but wraps the target JSON document in a single-element array, so the root value can be conditionally selected with a filter selector.
-- `=~` is the the regex match operator, matching a value to a JavaScript-style regex literal.
+- The root token (`$`) is optional and paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing` and `$["thing"]`.
+- Leading and trailing whitespace is OK.
+- We support explicit comparisons to `undefined` (aka `missing`) as well as implicit existence tests.
