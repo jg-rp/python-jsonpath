@@ -1,4 +1,5 @@
 """Test cases for the command line interface."""
+
 import argparse
 import json
 import pathlib
@@ -289,6 +290,50 @@ def test_json_path(
 
     with open(outfile, "r") as fd:
         assert len(json.load(fd)) == 4  # noqa: PLR2004
+
+
+def test_json_path_strict(
+    parser: argparse.ArgumentParser,
+    sample_target: str,
+    outfile: str,
+) -> None:
+    """Test a valid JSONPath."""
+    args = parser.parse_args(
+        [
+            "--debug",
+            "path",
+            "-q",
+            "price_cap",  # No root identifier is an error in strict mode.
+            "-f",
+            sample_target,
+            "-o",
+            outfile,
+            "--strict",
+        ]
+    )
+
+    with pytest.raises(JSONPathSyntaxError):
+        handle_path_command(args)
+
+    args = parser.parse_args(
+        [
+            "path",
+            "-q",
+            "$.price_cap",  # With a root identifier is OK.
+            "-f",
+            sample_target,
+            "-o",
+            outfile,
+            "--strict",
+        ]
+    )
+
+    handle_path_command(args)
+    args.output.flush()
+
+    with open(outfile, "r") as fd:
+        rv = json.load(fd)
+        assert rv == [10]
 
 
 def test_pointer_command_invalid_target(

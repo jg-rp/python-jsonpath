@@ -19,8 +19,6 @@ def path_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     parser.set_defaults(func=handle_path_command)
     group = parser.add_mutually_exclusive_group(required=True)
 
-    # TODO: add "strict" argument
-
     group.add_argument(
         "-q",
         "--query",
@@ -60,6 +58,15 @@ def path_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
         "--no-type-checks",
         action="store_true",
         help="Disables filter expression well-typedness checks.",
+    )
+
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help=(
+            "Compile and evaluate JSONPath expressions with strict "
+            "compliance with RFC 9535."
+        ),
     )
 
 
@@ -251,6 +258,7 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
         path = jsonpath.JSONPathEnvironment(
             unicode_escape=not args.no_unicode_escape,
             well_typed=not args.no_type_checks,
+            strict=args.strict,
         ).compile(query)
     except JSONPathSyntaxError as err:
         if args.debug:
