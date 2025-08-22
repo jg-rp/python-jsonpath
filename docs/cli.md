@@ -62,6 +62,7 @@ optional arguments:
                         File to write resulting objects to, as a JSON array. Defaults to the standard
                         output stream.
   --no-type-checks      Disables filter expression well-typedness checks.
+  --strict              Compile and evaluate JSONPath expressions with strict compliance with RFC 9535.
 ```
 
 ## Global Options
@@ -190,6 +191,12 @@ $ json path -q "$.price_cap" -f /tmp/source.json --output result.json
 _New in version 0.10.0_
 
 Disables JSONPath filter expression well-typedness checks. The well-typedness of a filter expression is defined by RFC 9535.
+
+#### `--strict`
+
+_New in version 2.0.0_
+
+Compile and evaluate JSONPath expressions with strict compliance with RFC 9535.
 
 ### `pointer`
 

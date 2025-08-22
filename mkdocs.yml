@@ -53,6 +53,7 @@ nav:
       - JSON Pointers: "pointers.md"
       - Async Support: "async.md"
   - API Reference:
+      - Package Level Functions: "convenience.md"
       - High Level API: "api.md"
       - Low Level API: "custom_api.md"
       - Exceptions: "exceptions.md"
