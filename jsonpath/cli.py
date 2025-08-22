@@ -19,6 +19,8 @@ def path_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     parser.set_defaults(func=handle_path_command)
     group = parser.add_mutually_exclusive_group(required=True)
 
+    # TODO: add "strict" argument
+
     group.add_argument(
         "-q",
         "--query",

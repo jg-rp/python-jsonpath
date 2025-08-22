@@ -59,8 +59,7 @@ from .token import TOKEN_UNION
 from .token import Token
 
 if TYPE_CHECKING:
-    from io import IOBase
-
+    from ._types import JSONData
     from .match import FilterContextVars
 
 
@@ -275,7 +274,7 @@ class JSONPathEnvironment:
     def findall(
         self,
         path: str,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        data: JSONData,
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
@@ -305,7 +304,7 @@ class JSONPathEnvironment:
     def finditer(
         self,
         path: str,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        data: JSONData,
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> Iterable[JSONPathMatch]:
@@ -334,7 +333,7 @@ class JSONPathEnvironment:
     def match(
         self,
         path: str,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        data: JSONData,
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> Union[JSONPathMatch, None]:
@@ -363,7 +362,8 @@ class JSONPathEnvironment:
     def query(
         self,
         path: str,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        data: JSONData,
+        *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> Query:
         """Return a `Query` iterator over matches found by applying _path_ to _data_.
@@ -422,7 +422,7 @@ class JSONPathEnvironment:
     async def findall_async(
         self,
         path: str,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        data: JSONData,
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> List[object]:
@@ -434,7 +434,7 @@ class JSONPathEnvironment:
     async def finditer_async(
         self,
         path: str,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
+        data: JSONData,
         *,
         filter_context: Optional[FilterContextVars] = None,
     ) -> AsyncIterable[JSONPathMatch]:

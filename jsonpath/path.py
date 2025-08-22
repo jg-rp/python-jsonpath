@@ -1,15 +1,13 @@
-# noqa: D100
+"""A compiled JSONPath ready to be applied to a JSON string or Python object."""
+
 from __future__ import annotations
 
 import itertools
 from typing import TYPE_CHECKING
-from typing import Any
 from typing import AsyncIterable
 from typing import Iterable
 from typing import List
-from typing import Mapping
 from typing import Optional
-from typing import Sequence
 from typing import Tuple
 from typing import TypeVar
 from typing import Union
@@ -23,7 +21,7 @@ from jsonpath.selectors import IndexSelector
 from jsonpath.selectors import NameSelector
 
 if TYPE_CHECKING:
-    from io import IOBase
+    from jsonpath._types import JSONData
 
     from .env import JSONPathEnvironment
     from .segments import JSONPathSegment
@@ -68,10 +66,7 @@ class JSONPath:
         return hash(self.segments)
 
     def findall(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> List[object]:
         """Find all objects in `data` matching the given JSONPath `path`.
 
@@ -98,10 +93,7 @@ class JSONPath:
         ]
 
     def finditer(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> Iterable[JSONPathMatch]:
         """Generate `JSONPathMatch` objects for each match.
 
@@ -142,10 +134,7 @@ class JSONPath:
         return matches
 
     async def findall_async(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> List[object]:
         """An async version of `findall()`."""
         return [
@@ -156,10 +145,7 @@ class JSONPath:
         ]
 
     async def finditer_async(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> AsyncIterable[JSONPathMatch]:
         """An async version of `finditer()`."""
         _data = load_data(data)
@@ -183,10 +169,7 @@ class JSONPath:
         return matches
 
     def match(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> Union[JSONPathMatch, None]:
         """Return a `JSONPathMatch` instance for the first object found in _data_.
 
@@ -213,10 +196,7 @@ class JSONPath:
             return None
 
     def query(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> Query:
         """Return a `Query` iterator over matches found by applying this path to _data_.
 
@@ -290,10 +270,7 @@ class CompoundJSONPath:
         return hash((self.path, self.paths))
 
     def findall(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> List[object]:
         """Find all objects in `data` matching the given JSONPath `path`.
 
@@ -328,10 +305,7 @@ class CompoundJSONPath:
         return objs
 
     def finditer(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> Iterable[JSONPathMatch]:
         """Generate `JSONPathMatch` objects for each match.
 
@@ -366,10 +340,7 @@ class CompoundJSONPath:
         return matches
 
     def match(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> Union[JSONPathMatch, None]:
         """Return a `JSONPathMatch` instance for the first object found in _data_.
 
@@ -396,10 +367,7 @@ class CompoundJSONPath:
             return None
 
     async def findall_async(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> List[object]:
         """An async version of `findall()`."""
         objs = await self.path.findall_async(data, filter_context=filter_context)
@@ -415,10 +383,7 @@ class CompoundJSONPath:
         return objs
 
     async def finditer_async(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> AsyncIterable[JSONPathMatch]:
         """An async version of `finditer()`."""
         matches = await self.path.finditer_async(data, filter_context=filter_context)
@@ -435,10 +400,7 @@ class CompoundJSONPath:
         return matches
 
     def query(
-        self,
-        data: Union[str, IOBase, Sequence[Any], Mapping[str, Any]],
-        *,
-        filter_context: Optional[FilterContextVars] = None,
+        self, data: JSONData, *, filter_context: Optional[FilterContextVars] = None
     ) -> Query:
         """Return a `Query` iterator over matches found by applying this path to _data_.
 
