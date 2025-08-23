@@ -1,6 +1,8 @@
 # JSONPath Syntax
 
-By default, Python JSONPath extends the RFC 9535 specification with a few additional features and relaxed rules. If you need strict compliance with RFC 9535, you can enable strict mode, which enforces the standard without these extensions. In this guide, we first outline the standard syntax (see the specification for the formal definition), and then describe the non-standard extensions and their semantics in detail.
+Python JSONPath extends the [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535) specification with additional features and relaxed rules. If you need strict compliance with RFC 9535, set `strict=True` when calling [`findall()`](convenience.md#jsonpath.findall), [`finditer()`](convenience.md#jsonpath.finditer), etc., which enforces the standard without these extensions.
+
+In this guide, we first outline the standard syntax (see the specification for the formal definition), and then describe the non-standard extensions and their semantics in detail.
 
 ## JSONPath Terminology
 
@@ -21,13 +23,13 @@ What follows is a description of these selectors, starting with the standard one
 
 ## Standard selectors and identifiers
 
-### Root identifier (`$`)
+### Root identifier
 
 The root identifier, `$`, refers to the outermost node in the target document. This can be an object, an array, or a scalar value.
 
 A query containing only the root identifier simply returns the entire input document.
 
-#### Example query
+**Example query**
 
 ```
 $
@@ -53,13 +55,13 @@ $
 ]
 ```
 
-### Name selector (`.thing` or `['thing']`)
+### Name selector
 
-A _name selector_ matches the value of an object member by its key. You can write it in either **shorthand notation** (`.thing`) or **bracket notation** (`['thing']`).
+A _name selector_ matches the value of an object member by its key. You can write it in either **shorthand notation** (`.thing`) or **bracket notation** (`['thing']` or `["thing"]`).
 
 Dot notation can be used when the property name is a valid identifier. Bracket notation is required when the property name contains spaces, special characters, or starts with a number.
 
-#### Example query
+**Example query**
 
 ```text
 $.book.title
@@ -78,11 +80,11 @@ $.book.title
 ["Moby Dick"]
 ```
 
-### Index selector (`[0]` or `[-1]`)
+### Index selector
 
-Select an element from an array by its index. Indices are zero-based and enclosed in brackets. If the index is negative, items are selected from the end of the array.
+The index selector selects an element from an array by its index. Indices are zero-based and enclosed in brackets, `[0]`. If the index is negative, items are selected from the end of the array.
 
-#### Example query
+**Example query**
 
 ```text
 $.categories[0].name
@@ -101,11 +103,11 @@ $.categories[0].name
 ["fiction"]
 ```
 
-### Wildcard selector (`.*` or `[*]`)
+### Wildcard selector
 
 The _wildcard selector_ matches all member values of an object or all elements in an array. It can be written as `.*` (shorthand notation) or `[*]` (bracket notation).
 
-#### Example query
+**Example query**
 
 ```text
 $.categories[*].name
@@ -124,11 +126,11 @@ $.categories[*].name
 ["fiction", "non-fiction"]
 ```
 
-### Slice selector (`[start:end:step]`)
+### Slice selector
 
-The slice selector allows you to select a range of elements from an array. You can specify a starting index, an ending index (exclusive), and an optional step to skip elements. Negative indices count from the end of the array, just like standard Python slicing.
+The slice selector allows you to select a range of elements from an array. A start index, ending index and step size are all optional and separated by colons, `[start:end:step]`. Negative indices count from the end of the array, just like standard Python slicing.
 
-#### Example query
+**Example query**
 
 ```text
 $.items[1:4:2]
@@ -144,9 +146,9 @@ $.items[1:4:2]
 ["b", "d"]
 ```
 
-### Filter selector (`[?expression]`)
+### Filter selector
 
-Filters allow you to remove nodes from a selection based on a Boolean expression. A filter expression evaluates each node in the context of either the root (`$`) or the current node (`@`).
+Filters allow you to remove nodes from a selection based on a Boolean expression, `[?expression]`. A filter expression evaluates each node in the context of either the root (`$`) or current (`@`) node.
 
 When filtering a mapping-like object, `@` identifies the current member value. When filtering a sequence-like object, `@` identifies the current element.
 
@@ -154,7 +156,7 @@ Comparison operators include `==`, `!=`, `<`, `>`, `<=`, and `>=`. Logical opera
 
 A filter expression on its own - without a comparison - is treated as an existence test.
 
-#### Example query
+**Example query**
 
 ```text
 $..products[?(@.price < $.price_cap)]
@@ -182,13 +184,13 @@ Filter expressions can also call predefined [function extensions](functions.md).
 
 ## More on segments
 
-So far we've seen shorthand notation and segments with just one selector. Here we cover the descendant segment and segments with multiple selectors.
+So far we've seen shorthand notation (`.selector`) and segments with just one selector (`[selector]`). Here we cover the descendant segment and segments with multiple selectors.
 
 ### Segments with multiple selectors
 
-A segment can include multiple selectors separated by commas and enclosed in square brackets (`[...]`). Any valid selector (names, indices, slices, filters, or wildcards) can appear in the list.
+A segment can include multiple selectors separated by commas and enclosed in square brackets (`[selector, selector, ...]`). Any valid selector (names, indices, slices, filters, or wildcards) can appear in the list.
 
-#### Example query
+**Example query**
 
 ```text
 $.store.book[0,2]
@@ -213,11 +215,11 @@ $.store.book[0,2]
 ]
 ```
 
-### Descendant segment (`..`)
+### Descendant segment
 
 The descendant segment (`..`) visits all object member values and array elements under the current object or array, applying the selector or selectors that follow to each visited node. It must be followed by a shorthand selector (names, wildcards, etc.) or a bracketed list of one or more selectors.
 
-#### Example query
+**Example query**
 
 ```text
 $..price
@@ -241,7 +243,13 @@ $..price
 
 ## Non-standard selectors and identifiers
 
-The selectors and identifiers described in this section are an extension to RFC 9535. They are enabled by default. See [#strict-mode] for details on how to use JSONPath without these extensions.
+The selectors and identifiers described in this section are an extension to the RFC 9535 specification. They are enabled by default. Set `strict=True` when constructing a [`JSONPathEnvironment`](api.md#jsonpath.JSONPathEnvironment), calling [`findall()`](convenience.md#jsonpath.findall), [`finditer()`](convenience.md#jsonpath.finditer), etc. to disable all non-standard features.
+
+Also note that when `strict=False`:
+
+- The root identifier (`$`) is optional and paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing` and `$["thing"]`.
+- Leading and trailing whitespace is OK.
+- Explicit comparisons to `undefined` (aka `missing`) are supported as well as implicit existence tests.
 
 ### Key selector
 
@@ -573,32 +581,39 @@ list-literal        = "[" S literal *(S "," S literal) S "]"
 | `$.y[?'foo' in @.a]`                  | `{"a": ["foo", "bar"]}` | `$['y'][0]` | String literal in object             |
 | `$.z[?(['bar', 'baz'] contains @.a)]` | `{"a": "bar"}`          | `$['z'][1]` | List literal contains embedded query |
 
-### The regex operator
+### Regex operator
 
-TODO
+`=~` is an infix operator that matches the left-hand side with a regular expression literal on the right-hand side. Regular expression literals use a syntax similar to that found in JavaScript, where the pattern to match is surrounded by slashes, `/pattern/`, optionally followed by flags, `/pattern/flags`.
 
-### Union (`|`) and intersection (`&`)
+```
+$..products[?(@.description =~ /.*trainers/i)]
+```
 
-Union (`|`) and intersection (`&`) are similar to Python's set operations, but we don't dedupe the matches (matches will often contain unhashable objects).
+### Union and intersection operators
 
-The `|` operator combines matches from two or more paths. This example selects a single list of all prices, plus the price cap as the last element.
+The union or concatenation operator, `|`, combines matches from two or more paths.
+
+The intersection operator, `&`, produces matches that are common to both left and right paths.
+
+Note that compound queries are not allowed inside filter expressions.
+
+#### Syntax
+
+```
+jsonpath-query          = root-identifier segments
+
+compound-jsonpath-query = jsonpath-query compound-op jsonpath-query
+
+compound-op             = "|" /
+                          "&"
+```
+
+#### Examples
 
 ```text
 $..products.*.price | $.price_cap
 ```
 
-The `&` operator produces matches that are common to both left and right paths. This example would select the list of products that are common to both the "footwear" and "headwear" categories.
-
 ```text
 $.categories[?(@.name == 'footwear')].products.* & $.categories[?(@.name == 'headwear')].products.*
 ```
-
-Note that `|` and `&` are not allowed inside filter expressions.
-
-## Other differences
-
-This is a list of areas where Python JSONPath is more relaxed than [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535).
-
-- The root token (`$`) is optional and paths starting with a dot (`.`) are OK. `.thing` is the same as `$.thing`, as is `thing` and `$["thing"]`.
-- Leading and trailing whitespace is OK.
-- We support explicit comparisons to `undefined` (aka `missing`) as well as implicit existence tests.

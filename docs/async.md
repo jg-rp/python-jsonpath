@@ -59,7 +59,3 @@ data = {
 best_a_team_players = jsonpath.findall_async("$.teams['A Team'][?rank >= 8]", data)
 
 ```
-
-## Custom Async Item Getting
-
-TODO:

@@ -10,7 +10,7 @@ JSON Pointers are a fundamental component of JSON Patch ([RFC 6902](https://data
 
     We have extended RFC 6901 to support:
 
-    - Interoperability with the JSONPath [keys selector](syntax.md#keys-or) (`~`)
+    - Interoperability with the JSONPath [keys selector](syntax.md#keys-selector) (`~`)
     - A special non-standard syntax for targeting **keys or indices themselves**, used in conjunction with [Relative JSON Pointer](#torel)
 
     **Keys Selector Compatibility**
