@@ -1,5 +1,36 @@
 # Python JSONPath Change Log
 
+## Version 2.0.0 (unreleased)
+
+**JSONPath syntax changes**
+
+These breaking changes apply to Python JSONPath in its default configuration. We've also introduced a _strict mode_ where we follow the RFC 9535 specification exactly. See [optional dependencies](https://jg-rp.github.io/python-jsonpath/#optional-dependencies) and the [syntax guide](https://jg-rp.github.io/python-jsonpath/syntax/) for more information.
+
+- Using bracket notation, unquoted property names are no longer equivalent to quoted property names. These paths used to be equivalent, `$[foo]`, `$['foo']` and `$["foo"]`. Now, names without quotes start a _singular query selector_. With an implicit _root identifier_, `$.a[b]` is equivalent to `$.a[$.b]`. See [Singular query selector](https://jg-rp.github.io/python-jsonpath/syntax/#singular-query-selector) in the syntax guide.
+- In filter selector expressions, float literals now follow the specification. Previously `.1` and `1.` where allowed, now it must be `0.1` and `1.0`, with at least one digit either side of the decimal point.
+- Slice selector indexes and step now follow the specification. Previously leading zeros and negative zero were allowed, now they raise a `JSONPathSyntaxError`.
+- Whitespace is no longer allowed between a dot (`.` or `..`) and a name when using shorthand notation for the name selector. Whitespace before the dot is OK.
+
+**JSONPath features**
+
+- Added the [Keys filter selector](https://jg-rp.github.io/python-jsonpath/syntax/#keys-filter-selector).
+- Added the [Singular query selector](https://jg-rp.github.io/python-jsonpath/syntax/#singular-query-selector).
+- Use the [regex] package, if available, instead of `re` for match and search function extensions. See [optional dependencies](https://jg-rp.github.io/python-jsonpath/#optional-dependencies).
+- Added the `strict` argument to all [convenience functions](https://jg-rp.github.io/python-jsonpath/convenience/), the CLI and the `JSONPathEnvironment` constructor. When `strict=True`, all extensions to RFC 9535 and any lax parsing rules will be disabled.
+- Added class variable `JSONPathEnvironment.max_recursion_depth` to control the maximum recursion depth of descendant segments.
+- Added pretty exception messages.
+
+**Python API changes**
+
+- Renamed class variable `JSONPathEnvironment.fake_root_token` to `JSONPathEnvironment.pseudo_root_token`.
+
+**Low level API changes**
+
+These breaking changes will only affect you if you're customizing the JSONPath lexer or parser.
+
+- The tokens produced by the JSONPath lexer have changed. Previously we broadly skipped some punctuation and whitespace. Now the parser can make better choices about when to accept whitespace and do a better job of enforcing dots.
+- We've change the internal representation of compiled JSONPath queries. We now model segments and selectors explicitly and use terminology that matches RFC 9535.
+
 ## Version 1.3.2
 
 **Fixes**
