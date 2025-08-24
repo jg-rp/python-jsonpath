@@ -860,7 +860,8 @@ class Parser:
                 assert isinstance(rv, str)
                 return rv
             except json.JSONDecodeError as err:
-                raise JSONPathSyntaxError(str(err).split(":")[1], token=token) from None
+                message = f"decode error: {str(err).split(':')[1]}"
+                raise JSONPathSyntaxError(message, token=token) from None
 
         return token.value
 
