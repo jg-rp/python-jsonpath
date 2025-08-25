@@ -1,0 +1,92 @@
+{
+  "tests": [
+    {
+      "name": "explicit comparison to undefined",
+      "selector": "$[?@.a == undefined]",
+      "document": [
+        {
+          "a": "b",
+          "d": "e"
+        },
+        {
+          "b": "c",
+          "d": "f"
+        }
+      ],
+      "result": [
+        {
+          "b": "c",
+          "d": "f"
+        }
+      ],
+      "result_paths": ["$[1]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "explicit comparison to missing",
+      "selector": "$[?@.a == missing]",
+      "document": [
+        {
+          "a": "b",
+          "d": "e"
+        },
+        {
+          "b": "c",
+          "d": "f"
+        }
+      ],
+      "result": [
+        {
+          "b": "c",
+          "d": "f"
+        }
+      ],
+      "result_paths": ["$[1]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "explicit undefined is on the left",
+      "selector": "$[?undefined == @.a]",
+      "document": [
+        {
+          "a": "b",
+          "d": "e"
+        },
+        {
+          "b": "c",
+          "d": "f"
+        }
+      ],
+      "result": [
+        {
+          "b": "c",
+          "d": "f"
+        }
+      ],
+      "result_paths": ["$[1]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "not equal to undefined",
+      "selector": "$[?@.a != undefined]",
+      "document": [
+        {
+          "a": "b",
+          "d": "e"
+        },
+        {
+          "b": "c",
+          "d": "f"
+        }
+      ],
+      "result": [
+        {
+          "a": "b",
+          "d": "e"
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    }
+  ]
+}

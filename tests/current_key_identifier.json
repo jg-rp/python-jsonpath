@@ -1,0 +1,61 @@
+{
+  "tests": [
+    {
+      "name": "current key of an object",
+      "selector": "$.some[?match(#, '^b.*')]",
+      "document": {
+        "some": { "foo": "a", "bar": "b", "baz": "c", "qux": "d" }
+      },
+      "result": ["b", "c"],
+      "result_paths": ["$['some']['bar']", "$['some']['baz']"]
+    },
+    {
+      "name": "current key of an array",
+      "selector": "$.some[?# > 1]",
+      "document": { "some": ["other", "thing", "foo", "bar"] },
+      "result": ["foo", "bar"],
+      "result_paths": ["$['some'][2]", "$['some'][3]"]
+    },
+    {
+      "name": "current key of a string selects nothing",
+      "selector": "$.some[?# > 1]",
+      "document": { "some": "thing" },
+      "result": [],
+      "result_paths": []
+    },
+    {
+      "name": "current key of an object",
+      "selector": "$.some[?match(#, '^b.*')]",
+      "document": {
+        "some": { "foo": "a", "bar": "b", "baz": "c", "qux": "d" }
+      },
+      "result": ["b", "c"],
+      "result_paths": ["$['some']['bar']", "$['some']['baz']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "current key of an array",
+      "selector": "$.some[?# > 1]",
+      "document": { "some": ["other", "thing", "foo", "bar"] },
+      "result": ["foo", "bar"],
+      "result_paths": ["$['some'][2]", "$['some'][3]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "current key identifier, match on object names",
+      "selector": "$[?match(#, '^ab.*') && length(@) > 0 ]",
+      "document": { "abc": [1, 2, 3], "def": [4, 5], "abx": [6], "aby": [] },
+      "result": [[1, 2, 3], [6]],
+      "result_paths": ["$['abc']", "$['abx']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "current key identifier, compare current array index",
+      "selector": "$.abc[?(# >= 1)]",
+      "document": { "abc": [1, 2, 3], "def": [4, 5], "abx": [6], "aby": [] },
+      "result": [2, 3],
+      "result_paths": ["$['abc'][1]", "$['abc'][2]"],
+      "tags": ["extra"]
+    }
+  ]
+}

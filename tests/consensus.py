@@ -8,6 +8,7 @@ See https://github.com/cburgmer/json-path-comparison.
 We've deliberately named this file so as to exclude it when running `pytest` or
 `hatch run test`. Target it specifically using `pytest tests/consensus.py`.
 """
+
 import operator
 import unittest
 from dataclasses import dataclass
@@ -44,7 +45,7 @@ RENAME_MAP = {
 }
 
 SKIP = {
-    "bracket_notation_with_number_on_object": "We support unquoted property names",
+    # "bracket_notation_with_number_on_object": "We support unquoted property names",
     "dot_notation_with_number_-1": "conflict with compliance",
     "dot_notation_with_number_on_object": "conflict with compliance",
 }

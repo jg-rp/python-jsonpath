@@ -1,0 +1,36 @@
+{
+  "tests": [
+    {
+      "name": "regex literal, match",
+      "selector": "$.some[?(@.thing =~ /fo[a-z]/)]",
+      "document": { "some": [{ "thing": "foo" }] },
+      "result": [{ "thing": "foo" }],
+      "result_paths": ["$['some'][0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "regex literal, no match",
+      "selector": "$.some[?(@.thing =~ /fo[a-z]/)]",
+      "document": { "some": [{ "thing": "foO" }] },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "regex literal, case insensitive match",
+      "selector": "$.some[?(@.thing =~ /fo[a-z]/i)]",
+      "document": { "some": [{ "thing": "foO" }] },
+      "result": [{ "thing": "foO" }],
+      "result_paths": ["$['some'][0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "regex literal, escaped slash",
+      "selector": "$.some[?(@.thing =~ /fo\\\\[a-z]/)]",
+      "document": { "some": [{ "thing": "fo\\b" }] },
+      "result": [{ "thing": "fo\\b" }],
+      "result_paths": ["$['some'][0]"],
+      "tags": ["extra"]
+    }
+  ]
+}

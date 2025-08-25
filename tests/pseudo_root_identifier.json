@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "conditionally select root value",
+      "selector": "^[?@.some.thing > 7]",
+      "document": { "some": { "thing": 42 } },
+      "result": [{ "some": { "thing": 42 } }],
+      "result_paths": ["^[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "embedded pseudo root query",
+      "selector": "^[?@.some.thing > value(^.*.num)]",
+      "document": { "some": { "thing": 42 }, "num": 7 },
+      "result": [{ "some": { "thing": 42 }, "num": 7 }],
+      "result_paths": ["^[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "embedded root query",
+      "selector": "^[?@.some.thing > value($.num)]",
+      "document": { "some": { "thing": 42 }, "num": 7 },
+      "result": [{ "some": { "thing": 42 }, "num": 7 }],
+      "result_paths": ["^[0]"],
+      "tags": ["extra"]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Filter Functions
 
-A filter function is a named function that can be called as part of a [filter selector](syntax.md#filters-expression) expression. Here we describe built-in filters. You can [define your own function extensions](advanced.md#function-extensions) too.
+A filter function is a named function that can be called as part of a [filter selector](syntax.md#filter-selector). Here we describe built in filters. You can [define your own function extensions](advanced.md#function-extensions) too.
 
 ## `count()`
 

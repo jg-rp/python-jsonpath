@@ -1,0 +1,78 @@
+{
+  "tests": [
+    {
+      "name": "keys from an object",
+      "selector": "$.some[~]",
+      "document": { "some": { "other": "foo", "thing": "bar" } },
+      "result": ["other", "thing"],
+      "result_paths": ["$['some'][~'other']", "$['some'][~'thing']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "shorthand keys from an object",
+      "selector": "$.some.~",
+      "document": { "some": { "other": "foo", "thing": "bar" } },
+      "result": ["other", "thing"],
+      "result_paths": ["$['some'][~'other']", "$['some'][~'thing']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "keys from an array",
+      "selector": "$.some[~]",
+      "document": { "some": ["other", "thing"] },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "shorthand keys from an array",
+      "selector": "$.some.~",
+      "document": { "some": ["other", "thing"] },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "recurse object keys",
+      "selector": "$..~",
+      "document": { "some": { "thing": "else", "foo": { "bar": "baz" } } },
+      "result": ["some", "thing", "foo", "bar"],
+      "result_paths": [
+        "$[~'some']",
+        "$['some'][~'thing']",
+        "$['some'][~'foo']",
+        "$['some']['foo'][~'bar']"
+      ],
+      "tags": ["extra"]
+    },
+    {
+      "name": "object key",
+      "selector": "$.a[0].~",
+      "document": { "a": [{ "b": "x", "c": "z" }, { "b": "y" }] },
+      "result": ["b", "c"],
+      "result_paths": ["$['a'][0][~'b']", "$['a'][0][~'c']"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "array key",
+      "selector": "$.a.~",
+      "document": { "a": [{ "b": "x", "c": "z" }, { "b": "y" }] },
+      "result": [],
+      "result_paths": [],
+      "tags": ["extra"]
+    },
+    {
+      "name": "descendant keys",
+      "selector": "$..[~]",
+      "document": { "a": [{ "b": "x", "c": "z" }, { "b": "y" }] },
+      "result": ["a", "b", "c", "b"],
+      "result_paths": [
+        "$[~'a']",
+        "$['a'][0][~'b']",
+        "$['a'][0][~'c']",
+        "$['a'][1][~'b']"
+      ],
+      "tags": ["extra"]
+    }
+  ]
+}

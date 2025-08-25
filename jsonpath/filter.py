@@ -23,17 +23,14 @@ from .exceptions import JSONPathTypeError
 from .function_extensions import FilterFunction
 from .match import NodeList
 from .selectors import Filter as FilterSelector
-from .selectors import ListSelector
 from .serialize import canonical_string
 
 if TYPE_CHECKING:
     from .path import JSONPath
     from .selectors import FilterContext
 
-# ruff: noqa: D102, PLW1641
 
-
-class FilterExpression(ABC):
+class BaseExpression(ABC):
     """Base class for all filter expression nodes."""
 
     __slots__ = ("volatile",)
@@ -60,11 +57,11 @@ class FilterExpression(ABC):
         """An async version of `evaluate`."""
 
     @abstractmethod
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         """Return a list of direct child expressions."""
 
     @abstractmethod
-    def set_children(self, children: List[FilterExpression]) -> None:  # noqa: ARG002
+    def set_children(self, children: List[BaseExpression]) -> None:  # noqa: ARG002
         """Update this expression's child expressions.
 
         _children_ is assumed to have the same number of items as is returned
@@ -72,7 +69,7 @@ class FilterExpression(ABC):
         """
 
 
-class Nil(FilterExpression):
+class Nil(BaseExpression):
     """The constant `nil`.
 
     Also aliased as `null` and `None`, sometimes.
@@ -95,10 +92,10 @@ class Nil(FilterExpression):
     async def evaluate_async(self, _: FilterContext) -> None:
         return None
 
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         return []
 
-    def set_children(self, children: List[FilterExpression]) -> None:  # noqa: ARG002
+    def set_children(self, children: List[BaseExpression]) -> None:  # noqa: ARG002
         return
 
 
@@ -126,7 +123,7 @@ class _Undefined:
 UNDEFINED = _Undefined()
 
 
-class Undefined(FilterExpression):
+class Undefined(BaseExpression):
     """The constant `undefined`."""
 
     __slots__ = ()
@@ -147,10 +144,10 @@ class Undefined(FilterExpression):
     async def evaluate_async(self, _: FilterContext) -> object:
         return UNDEFINED
 
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         return []
 
-    def set_children(self, children: List[FilterExpression]) -> None:  # noqa: ARG002
+    def set_children(self, children: List[BaseExpression]) -> None:  # noqa: ARG002
         return
 
 
@@ -159,7 +156,7 @@ UNDEFINED_LITERAL = Undefined()
 LITERAL_EXPRESSION_T = TypeVar("LITERAL_EXPRESSION_T")
 
 
-class Literal(FilterExpression, Generic[LITERAL_EXPRESSION_T]):
+class FilterExpressionLiteral(BaseExpression, Generic[LITERAL_EXPRESSION_T]):
     """Base class for filter expression literals."""
 
     __slots__ = ("value",)
@@ -183,14 +180,14 @@ class Literal(FilterExpression, Generic[LITERAL_EXPRESSION_T]):
     async def evaluate_async(self, _: FilterContext) -> LITERAL_EXPRESSION_T:
         return self.value
 
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         return []
 
-    def set_children(self, children: List[FilterExpression]) -> None:  # noqa: ARG002
+    def set_children(self, children: List[BaseExpression]) -> None:  # noqa: ARG002
         return
 
 
-class BooleanLiteral(Literal[bool]):
+class BooleanLiteral(FilterExpressionLiteral[bool]):
     """A Boolean `True` or `False`."""
 
     __slots__ = ()
@@ -202,7 +199,7 @@ TRUE = BooleanLiteral(value=True)
 FALSE = BooleanLiteral(value=False)
 
 
-class StringLiteral(Literal[str]):
+class StringLiteral(FilterExpressionLiteral[str]):
     """A string literal."""
 
     __slots__ = ()
@@ -211,19 +208,19 @@ class StringLiteral(Literal[str]):
         return canonical_string(self.value)
 
 
-class IntegerLiteral(Literal[int]):
+class IntegerLiteral(FilterExpressionLiteral[int]):
     """An integer literal."""
 
     __slots__ = ()
 
 
-class FloatLiteral(Literal[float]):
+class FloatLiteral(FilterExpressionLiteral[float]):
     """A float literal."""
 
     __slots__ = ()
 
 
-class RegexLiteral(Literal[Pattern[str]]):
+class RegexLiteral(FilterExpressionLiteral[Pattern[str]]):
     """A regex literal."""
 
     __slots__ = ()
@@ -246,12 +243,12 @@ class RegexLiteral(Literal[Pattern[str]]):
         return f"/{self.value.pattern}/{''.join(flags)}"
 
 
-class ListLiteral(FilterExpression):
+class ListLiteral(BaseExpression):
     """A list literal."""
 
     __slots__ = ("items",)
 
-    def __init__(self, items: List[FilterExpression]) -> None:
+    def __init__(self, items: List[BaseExpression]) -> None:
         self.items = items
         super().__init__()
 
@@ -268,19 +265,19 @@ class ListLiteral(FilterExpression):
     async def evaluate_async(self, context: FilterContext) -> object:
         return [await item.evaluate_async(context) for item in self.items]
 
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         return self.items
 
-    def set_children(self, children: List[FilterExpression]) -> None:  # noqa: ARG002
+    def set_children(self, children: List[BaseExpression]) -> None:  # noqa: ARG002
         self.items = children
 
 
-class PrefixExpression(FilterExpression):
+class PrefixExpression(BaseExpression):
     """An expression composed of a prefix operator and another expression."""
 
     __slots__ = ("operator", "right")
 
-    def __init__(self, operator: str, right: FilterExpression):
+    def __init__(self, operator: str, right: BaseExpression):
         self.operator = operator
         self.right = right
         super().__init__()
@@ -306,24 +303,24 @@ class PrefixExpression(FilterExpression):
     async def evaluate_async(self, context: FilterContext) -> object:
         return self._evaluate(context, await self.right.evaluate_async(context))
 
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         return [self.right]
 
-    def set_children(self, children: List[FilterExpression]) -> None:
+    def set_children(self, children: List[BaseExpression]) -> None:
         assert len(children) == 1
         self.right = children[0]
 
 
-class InfixExpression(FilterExpression):
+class InfixExpression(BaseExpression):
     """A pair of expressions and a comparison or logical operator."""
 
     __slots__ = ("left", "operator", "right", "logical")
 
     def __init__(
         self,
-        left: FilterExpression,
+        left: BaseExpression,
         operator: str,
-        right: FilterExpression,
+        right: BaseExpression,
     ):
         self.left = left
         self.operator = operator
@@ -366,10 +363,10 @@ class InfixExpression(FilterExpression):
 
         return context.env.compare(left, self.operator, right)
 
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         return [self.left, self.right]
 
-    def set_children(self, children: List[FilterExpression]) -> None:
+    def set_children(self, children: List[BaseExpression]) -> None:
         assert len(children) == 2  # noqa: PLR2004
         self.left = children[0]
         self.right = children[1]
@@ -381,19 +378,19 @@ PRECEDENCE_LOGICAL_AND = 4
 PRECEDENCE_PREFIX = 7
 
 
-class BooleanExpression(FilterExpression):
-    """An expression that always evaluates to `True` or `False`."""
+class FilterExpression(BaseExpression):
+    """An expression that evaluates to `True` or `False`."""
 
     __slots__ = ("expression",)
 
-    def __init__(self, expression: FilterExpression):
+    def __init__(self, expression: BaseExpression):
         self.expression = expression
         super().__init__()
 
-    def cache_tree(self) -> BooleanExpression:
+    def cache_tree(self) -> FilterExpression:
         """Return a copy of _self.expression_ augmented with caching nodes."""
 
-        def _cache_tree(expr: FilterExpression) -> FilterExpression:
+        def _cache_tree(expr: BaseExpression) -> BaseExpression:
             children = expr.children()
             if expr.volatile:
                 _expr = copy.copy(expr)
@@ -404,7 +401,7 @@ class BooleanExpression(FilterExpression):
             _expr.set_children([_cache_tree(child) for child in children])
             return _expr
 
-        return BooleanExpression(_cache_tree(copy.copy(self.expression)))
+        return FilterExpression(_cache_tree(copy.copy(self.expression)))
 
     def cacheable_nodes(self) -> bool:
         """Return `True` if there are any cacheable nodes in this expression tree."""
@@ -418,11 +415,11 @@ class BooleanExpression(FilterExpression):
 
     def __eq__(self, other: object) -> bool:
         return (
-            isinstance(other, BooleanExpression) and self.expression == other.expression
+            isinstance(other, FilterExpression) and self.expression == other.expression
         )
 
     def _canonical_string(
-        self, expression: FilterExpression, parent_precedence: int
+        self, expression: BaseExpression, parent_precedence: int
     ) -> str:
         if isinstance(expression, InfixExpression):
             if expression.operator == "&&":
@@ -454,15 +451,15 @@ class BooleanExpression(FilterExpression):
     async def evaluate_async(self, context: FilterContext) -> bool:
         return context.env.is_truthy(await self.expression.evaluate_async(context))
 
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         return [self.expression]
 
-    def set_children(self, children: List[FilterExpression]) -> None:
+    def set_children(self, children: List[BaseExpression]) -> None:
         assert len(children) == 1
         self.expression = children[0]
 
 
-class CachingFilterExpression(FilterExpression):
+class CachingFilterExpression(BaseExpression):
     """A FilterExpression wrapper that caches the result."""
 
     __slots__ = (
@@ -472,7 +469,7 @@ class CachingFilterExpression(FilterExpression):
 
     _UNSET = object()
 
-    def __init__(self, expression: FilterExpression):
+    def __init__(self, expression: BaseExpression):
         self.volatile = False
         self._expr = expression
         self._cached: object = self._UNSET
@@ -487,14 +484,14 @@ class CachingFilterExpression(FilterExpression):
             self._cached = await self._expr.evaluate_async(context)
         return self._cached
 
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         return self._expr.children()
 
-    def set_children(self, children: List[FilterExpression]) -> None:
+    def set_children(self, children: List[BaseExpression]) -> None:
         self._expr.set_children(children)
 
 
-class Path(FilterExpression, ABC):
+class FilterQuery(BaseExpression, ABC):
     """Base expression for all _sub paths_ found in filter expressions."""
 
     __slots__ = ("path",)
@@ -504,25 +501,22 @@ class Path(FilterExpression, ABC):
         super().__init__()
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, Path) and str(self) == str(other)
+        return isinstance(other, FilterQuery) and str(self) == str(other)
 
-    def children(self) -> List[FilterExpression]:
-        _children: List[FilterExpression] = []
-        for segment in self.path.selectors:
-            if isinstance(segment, ListSelector):
-                _children.extend(
-                    selector.expression
-                    for selector in segment.items
-                    if isinstance(selector, FilterSelector)
-                )
+    def children(self) -> List[BaseExpression]:
+        _children: List[BaseExpression] = []
+        for segment in self.path.segments:
+            for selector in segment.selectors:
+                if isinstance(selector, FilterSelector):
+                    _children.append(selector.expression)
         return _children
 
-    def set_children(self, children: List[FilterExpression]) -> None:  # noqa: ARG002
+    def set_children(self, children: List[BaseExpression]) -> None:  # noqa: ARG002
         # self.path has its own cache
         return
 
 
-class SelfPath(Path):
+class RelativeFilterQuery(FilterQuery):
     """A JSONPath starting at the current node."""
 
     __slots__ = ()
@@ -535,11 +529,9 @@ class SelfPath(Path):
         return "@" + str(self.path)[1:]
 
     def evaluate(self, context: FilterContext) -> object:
-        if isinstance(context.current, str):  # TODO: refactor
-            if self.path.empty():
-                return context.current
-            return NodeList()
-        if not isinstance(context.current, (Sequence, Mapping)):
+        if isinstance(context.current, str) or not isinstance(
+            context.current, (Sequence, Mapping)
+        ):
             if self.path.empty():
                 return context.current
             return NodeList()
@@ -552,11 +544,9 @@ class SelfPath(Path):
         )
 
     async def evaluate_async(self, context: FilterContext) -> object:
-        if isinstance(context.current, str):  # TODO: refactor
-            if self.path.empty():
-                return context.current
-            return NodeList()
-        if not isinstance(context.current, (Sequence, Mapping)):
+        if isinstance(context.current, str) or not isinstance(
+            context.current, (Sequence, Mapping)
+        ):
             if self.path.empty():
                 return context.current
             return NodeList()
@@ -572,7 +562,7 @@ class SelfPath(Path):
         )
 
 
-class RootPath(Path):
+class RootFilterQuery(FilterQuery):
     """A JSONPath starting at the root node."""
 
     __slots__ = ()
@@ -606,7 +596,7 @@ class RootPath(Path):
         )
 
 
-class FilterContextPath(Path):
+class FilterContextPath(FilterQuery):
     """A JSONPath starting at the root of any extra context data."""
 
     __slots__ = ()
@@ -641,12 +631,12 @@ class FilterContextPath(Path):
         )
 
 
-class FunctionExtension(FilterExpression):
+class FunctionExtension(BaseExpression):
     """A filter function."""
 
     __slots__ = ("name", "args")
 
-    def __init__(self, name: str, args: Sequence[FilterExpression]) -> None:
+    def __init__(self, name: str, args: Sequence[BaseExpression]) -> None:
         self.name = name
         self.args = args
         super().__init__()
@@ -666,7 +656,9 @@ class FunctionExtension(FilterExpression):
         try:
             func = context.env.function_extensions[self.name]
         except KeyError:
-            return UNDEFINED  # TODO: should probably raise an exception
+            # This can only happen if the environment's function register has been
+            # changed since the query was parsed.
+            return UNDEFINED
         args = [arg.evaluate(context) for arg in self.args]
         return func(*self._unpack_node_lists(func, args))
 
@@ -674,7 +666,9 @@ class FunctionExtension(FilterExpression):
         try:
             func = context.env.function_extensions[self.name]
         except KeyError:
-            return UNDEFINED  # TODO: should probably raise an exception
+            # This can only happen if the environment's function register has been
+            # changed since the query was parsed.
+            return UNDEFINED
         args = [await arg.evaluate_async(context) for arg in self.args]
         return func(*self._unpack_node_lists(func, args))
 
@@ -713,15 +707,15 @@ class FunctionExtension(FilterExpression):
             for obj in args
         ]
 
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         return list(self.args)
 
-    def set_children(self, children: List[FilterExpression]) -> None:
+    def set_children(self, children: List[BaseExpression]) -> None:
         assert len(children) == len(self.args)
         self.args = children
 
 
-class CurrentKey(FilterExpression):
+class CurrentKey(BaseExpression):
     """The key/property or index associated with the current object."""
 
     __slots__ = ()
@@ -744,17 +738,17 @@ class CurrentKey(FilterExpression):
     async def evaluate_async(self, context: FilterContext) -> object:
         return self.evaluate(context)
 
-    def children(self) -> List[FilterExpression]:
+    def children(self) -> List[BaseExpression]:
         return []
 
-    def set_children(self, children: List[FilterExpression]) -> None:  # noqa: ARG002
+    def set_children(self, children: List[BaseExpression]) -> None:  # noqa: ARG002
         return
 
 
 CURRENT_KEY = CurrentKey()
 
 
-def walk(expr: FilterExpression) -> Iterable[FilterExpression]:
+def walk(expr: BaseExpression) -> Iterable[BaseExpression]:
     """Walk the filter expression tree starting at _expr_."""
     yield expr
     for child in expr.children():
@@ -764,7 +758,7 @@ def walk(expr: FilterExpression) -> Iterable[FilterExpression]:
 VALUE_TYPE_EXPRESSIONS = (
     Nil,
     Undefined,
-    Literal,
+    FilterExpressionLiteral,
     ListLiteral,
     CurrentKey,
 )

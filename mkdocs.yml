@@ -7,12 +7,14 @@ theme:
   palette:
     - scheme: "default"
       media: "(prefers-color-scheme: light)"
+      primary: "blue"
       toggle:
         icon: "material/weather-sunny"
         name: "Switch to dark mode"
     - scheme: "slate"
       media: "(prefers-color-scheme: dark)"
       primary: "blue"
+      accent: blue
       toggle:
         icon: "material/weather-night"
         name: "Switch to light mode"
@@ -51,6 +53,7 @@ nav:
       - JSON Pointers: "pointers.md"
       - Async Support: "async.md"
   - API Reference:
+      - Package Level Functions: "convenience.md"
       - High Level API: "api.md"
       - Low Level API: "custom_api.md"
       - Exceptions: "exceptions.md"

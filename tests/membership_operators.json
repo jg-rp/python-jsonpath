@@ -1,0 +1,88 @@
+{
+  "tests": [
+    {
+      "name": "array contains literal string",
+      "selector": "$[?@.a contains 'foo']",
+      "document": [{ "a": ["foo", "bar"] }, { "a": ["bar"] }],
+      "result": [
+        {
+          "a": ["foo", "bar"]
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "object contains literal string",
+      "selector": "$[?@.a contains 'foo']",
+      "document": [{ "a": { "foo": "bar" } }, { "a": { "bar": "baz" } }],
+      "result": [
+        {
+          "a": { "foo": "bar" }
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "string literal in array",
+      "selector": "$[?'foo' in @.a]",
+      "document": [{ "a": ["foo", "bar"] }, { "a": ["bar"] }],
+      "result": [
+        {
+          "a": ["foo", "bar"]
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "string literal in object",
+      "selector": "$[?'foo' in @.a]",
+      "document": [{ "a": { "foo": "bar" } }, { "a": { "bar": "baz" } }],
+      "result": [
+        {
+          "a": { "foo": "bar" }
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "string from embedded query in object",
+      "selector": "$[?$[-1] in @.a]",
+      "document": [{ "a": { "foo": "bar" } }, { "a": { "bar": "baz" } }, "foo"],
+      "result": [
+        {
+          "a": { "foo": "bar" }
+        }
+      ],
+      "result_paths": ["$[0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "embedded query in list literal",
+      "selector": "$[?(@.a in ['bar', 'baz'])]",
+      "document": [{ "a": "foo" }, { "a": "bar" }],
+      "result": [
+        {
+          "a": "bar"
+        }
+      ],
+      "result_paths": ["$[1]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "list literal contains embedded query",
+      "selector": "$[?(['bar', 'baz'] contains @.a)]",
+      "document": [{ "a": "foo" }, { "a": "bar" }],
+      "result": [
+        {
+          "a": "bar"
+        }
+      ],
+      "result_paths": ["$[1]"],
+      "tags": ["extra"]
+    }
+  ]
+}

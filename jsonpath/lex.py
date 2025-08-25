@@ -10,14 +10,16 @@ from typing import Pattern
 
 from .exceptions import JSONPathSyntaxError
 from .token import TOKEN_AND
-from .token import TOKEN_BARE_PROPERTY
+from .token import TOKEN_COLON
 from .token import TOKEN_COMMA
 from .token import TOKEN_CONTAINS
 from .token import TOKEN_DDOT
+from .token import TOKEN_DOT
+from .token import TOKEN_DOT_KEY_PROPERTY
 from .token import TOKEN_DOT_PROPERTY
 from .token import TOKEN_DOUBLE_QUOTE_STRING
 from .token import TOKEN_EQ
-from .token import TOKEN_FAKE_ROOT
+from .token import TOKEN_ERROR
 from .token import TOKEN_FALSE
 from .token import TOKEN_FILTER
 from .token import TOKEN_FILTER_CONTEXT
@@ -25,26 +27,27 @@ from .token import TOKEN_FLOAT
 from .token import TOKEN_FUNCTION
 from .token import TOKEN_GE
 from .token import TOKEN_GT
-from .token import TOKEN_ILLEGAL
 from .token import TOKEN_IN
 from .token import TOKEN_INT
 from .token import TOKEN_INTERSECTION
 from .token import TOKEN_KEY
+from .token import TOKEN_KEY_NAME
 from .token import TOKEN_KEYS
+from .token import TOKEN_KEYS_FILTER
+from .token import TOKEN_LBRACKET
 from .token import TOKEN_LE
 from .token import TOKEN_LG
-from .token import TOKEN_LIST_SLICE
-from .token import TOKEN_LIST_START
 from .token import TOKEN_LPAREN
 from .token import TOKEN_LT
 from .token import TOKEN_MISSING
+from .token import TOKEN_NAME
 from .token import TOKEN_NE
 from .token import TOKEN_NIL
 from .token import TOKEN_NONE
 from .token import TOKEN_NOT
 from .token import TOKEN_NULL
 from .token import TOKEN_OR
-from .token import TOKEN_PROPERTY
+from .token import TOKEN_PSEUDO_ROOT
 from .token import TOKEN_RBRACKET
 from .token import TOKEN_RE
 from .token import TOKEN_RE_FLAGS
@@ -53,13 +56,10 @@ from .token import TOKEN_ROOT
 from .token import TOKEN_RPAREN
 from .token import TOKEN_SELF
 from .token import TOKEN_SINGLE_QUOTE_STRING
-from .token import TOKEN_SKIP
-from .token import TOKEN_SLICE_START
-from .token import TOKEN_SLICE_STEP
-from .token import TOKEN_SLICE_STOP
 from .token import TOKEN_TRUE
 from .token import TOKEN_UNDEFINED
 from .token import TOKEN_UNION
+from .token import TOKEN_WHITESPACE
 from .token import TOKEN_WILD
 from .token import Token
 
@@ -87,7 +87,7 @@ class Lexer:
 
     key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
 
-    # `not` or !
+    # ! or `not`
     logical_not_pattern = r"(?:not\b)|!"
 
     # && or `and`
@@ -103,45 +103,50 @@ class Lexer:
         self.single_quote_pattern = r"'(?P<G_SQUOTE>(?:(?!(?<!\\)').)*)'"
 
         # .thing
-        self.dot_property_pattern = rf"\.(?P<G_PROP>{self.key_pattern})"
+        self.dot_property_pattern = rf"(?P<G_DOT>\.)(?P<G_PROP>{self.key_pattern})"
 
-        self.slice_list_pattern = (
-            r"(?P<G_LSLICE_START>\-?\d*)\s*"
-            r":\s*(?P<G_LSLICE_STOP>\-?\d*)\s*"
-            r"(?::\s*(?P<G_LSLICE_STEP>\-?\d*))?"
+        # .~thing
+        self.dot_key_pattern = (
+            r"(?P<G_DOT_KEY>\.)"
+            rf"(?P<G_KEY>{re.escape(env.keys_selector_token)})"
+            rf"(?P<G_PROP_KEY>{self.key_pattern})"
         )
 
         # /pattern/ or /pattern/flags
         self.re_pattern = r"/(?P<G_RE>.+?)/(?P<G_RE_FLAGS>[aims]*)"
 
         # func(
-        self.function_pattern = r"(?P<G_FUNC>[a-z][a-z_0-9]+)\(\s*"
+        self.function_pattern = r"(?P<G_FUNC>[a-z][a-z_0-9]+)(?P<G_FUNC_PAREN>\()"
 
-        self.rules = self.compile_rules()
+        self.rules = self.compile_strict_rules() if env.strict else self.compile_rules()
 
     def compile_rules(self) -> Pattern[str]:
         """Prepare regular expression rules."""
         env_tokens = [
             (TOKEN_ROOT, self.env.root_token),
-            (TOKEN_FAKE_ROOT, self.env.fake_root_token),
+            (TOKEN_PSEUDO_ROOT, self.env.pseudo_root_token),
             (TOKEN_SELF, self.env.self_token),
             (TOKEN_KEY, self.env.key_token),
             (TOKEN_UNION, self.env.union_token),
             (TOKEN_INTERSECTION, self.env.intersection_token),
             (TOKEN_FILTER_CONTEXT, self.env.filter_context_token),
             (TOKEN_KEYS, self.env.keys_selector_token),
+            (TOKEN_KEYS_FILTER, self.env.keys_filter_token),
         ]
 
         rules = [
             (TOKEN_DOUBLE_QUOTE_STRING, self.double_quote_pattern),
             (TOKEN_SINGLE_QUOTE_STRING, self.single_quote_pattern),
             (TOKEN_RE_PATTERN, self.re_pattern),
-            (TOKEN_LIST_SLICE, self.slice_list_pattern),
-            (TOKEN_FUNCTION, self.function_pattern),
+            (TOKEN_DOT_KEY_PROPERTY, self.dot_key_pattern),
             (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
-            (TOKEN_FLOAT, r"-?\d+\.\d*(?:[eE][+-]?\d+)?"),
-            (TOKEN_INT, r"-?\d+(?P<G_EXP>[eE][+\-]?\d+)?\b"),
+            (
+                TOKEN_FLOAT,
+                r"(:?-?[0-9]+\.[0-9]+(?:[eE][+-]?[0-9]+)?)|(-?[0-9]+[eE]-[0-9]+)",
+            ),
+            (TOKEN_INT, r"-?[0-9]+(?:[eE]\+?[0-9]+)?"),
             (TOKEN_DDOT, r"\.\."),
+            (TOKEN_DOT, r"\."),
             (TOKEN_AND, self.logical_and_pattern),
             (TOKEN_OR, self.logical_or_pattern),
             *[
@@ -162,9 +167,10 @@ class Lexer:
             (TOKEN_CONTAINS, r"contains\b"),
             (TOKEN_UNDEFINED, r"undefined\b"),
             (TOKEN_MISSING, r"missing\b"),
-            (TOKEN_LIST_START, r"\["),
+            (TOKEN_LBRACKET, r"\["),
             (TOKEN_RBRACKET, r"]"),
             (TOKEN_COMMA, r","),
+            (TOKEN_COLON, r":"),
             (TOKEN_EQ, r"=="),
             (TOKEN_NE, r"!="),
             (TOKEN_LG, r"<>"),
@@ -173,12 +179,70 @@ class Lexer:
             (TOKEN_RE, r"=~"),
             (TOKEN_LT, r"<"),
             (TOKEN_GT, r">"),
-            (TOKEN_NOT, self.logical_not_pattern),
-            (TOKEN_BARE_PROPERTY, self.key_pattern),
+            (TOKEN_NOT, self.logical_not_pattern),  # Must go after "!="
+            (TOKEN_FUNCTION, self.function_pattern),
+            (TOKEN_NAME, self.key_pattern),  # Must go after reserved words
             (TOKEN_LPAREN, r"\("),
             (TOKEN_RPAREN, r"\)"),
-            (TOKEN_SKIP, r"[ \n\t\r\.]+"),
-            (TOKEN_ILLEGAL, r"."),
+            (TOKEN_WHITESPACE, r"[ \n\t\r]+"),
+            (TOKEN_ERROR, r"."),
+        ]
+
+        return re.compile(
+            "|".join(f"(?P<{token}>{pattern})" for token, pattern in rules),
+            re.DOTALL,
+        )
+
+    def compile_strict_rules(self) -> Pattern[str]:
+        """Prepare regular expression rules in strict mode."""
+        env_tokens = [
+            (TOKEN_ROOT, self.env.root_token),
+            (TOKEN_SELF, self.env.self_token),
+        ]
+
+        rules = [
+            (TOKEN_DOUBLE_QUOTE_STRING, self.double_quote_pattern),
+            (TOKEN_SINGLE_QUOTE_STRING, self.single_quote_pattern),
+            (TOKEN_DOT_PROPERTY, self.dot_property_pattern),
+            (
+                TOKEN_FLOAT,
+                r"(:?-?[0-9]+\.[0-9]+(?:[eE][+-]?[0-9]+)?)|(-?[0-9]+[eE]-[0-9]+)",
+            ),
+            (TOKEN_INT, r"-?[0-9]+(?:[eE]\+?[0-9]+)?"),
+            (TOKEN_DDOT, r"\.\."),
+            (TOKEN_DOT, r"\."),
+            (TOKEN_AND, r"&&"),
+            (TOKEN_OR, r"\|\|"),
+            *[
+                (token, re.escape(pattern))
+                for token, pattern in sorted(
+                    env_tokens, key=lambda x: len(x[1]), reverse=True
+                )
+                if pattern
+            ],
+            (TOKEN_WILD, r"\*"),
+            (TOKEN_FILTER, r"\?"),
+            (TOKEN_TRUE, r"true\b"),
+            (TOKEN_FALSE, r"false\b"),
+            (TOKEN_NULL, r"null\b"),
+            (TOKEN_LBRACKET, r"\["),
+            (TOKEN_RBRACKET, r"]"),
+            (TOKEN_COMMA, r","),
+            (TOKEN_COLON, r":"),
+            (TOKEN_EQ, r"=="),
+            (TOKEN_NE, r"!="),
+            (TOKEN_LG, r"<>"),
+            (TOKEN_LE, r"<="),
+            (TOKEN_GE, r">="),
+            (TOKEN_LT, r"<"),
+            (TOKEN_GT, r">"),
+            (TOKEN_NOT, r"!"),  # Must go after "!="
+            (TOKEN_FUNCTION, self.function_pattern),
+            (TOKEN_NAME, self.key_pattern),  # Must go after reserved words
+            (TOKEN_LPAREN, r"\("),
+            (TOKEN_RPAREN, r"\)"),
+            (TOKEN_WHITESPACE, r"[ \n\t\r]+"),
+            (TOKEN_ERROR, r"."),
         ]
 
         return re.compile(
@@ -196,31 +260,25 @@ class Lexer:
 
             if kind == TOKEN_DOT_PROPERTY:
                 yield _token(
-                    kind=TOKEN_PROPERTY,
+                    kind=TOKEN_DOT,
+                    value=match.group("G_DOT"),
+                    index=match.start("G_DOT"),
+                )
+                yield _token(
+                    kind=TOKEN_NAME,
                     value=match.group("G_PROP"),
                     index=match.start("G_PROP"),
                 )
-            elif kind == TOKEN_BARE_PROPERTY:
+            elif kind == TOKEN_DOT_KEY_PROPERTY:
                 yield _token(
-                    kind=TOKEN_BARE_PROPERTY,
-                    value=match.group(),
-                    index=match.start(),
-                )
-            elif kind == TOKEN_LIST_SLICE:
-                yield _token(
-                    kind=TOKEN_SLICE_START,
-                    value=match.group("G_LSLICE_START"),
-                    index=match.start("G_LSLICE_START"),
+                    kind=TOKEN_DOT,
+                    value=match.group("G_DOT_KEY"),
+                    index=match.start("G_DOT_KEY"),
                 )
                 yield _token(
-                    kind=TOKEN_SLICE_STOP,
-                    value=match.group("G_LSLICE_STOP"),
-                    index=match.start("G_LSLICE_STOP"),
-                )
-                yield _token(
-                    kind=TOKEN_SLICE_STEP,
-                    value=match.group("G_LSLICE_STEP") or "",
-                    index=match.start("G_LSLICE_STEP"),
+                    kind=TOKEN_KEY_NAME,
+                    value=match.group("G_PROP_KEY"),
+                    index=match.start("G_PROP_KEY"),
                 )
             elif kind == TOKEN_DOUBLE_QUOTE_STRING:
                 yield _token(
@@ -234,19 +292,6 @@ class Lexer:
                     value=match.group("G_SQUOTE"),
                     index=match.start("G_SQUOTE"),
                 )
-            elif kind == TOKEN_INT:
-                if match.group("G_EXP") and match.group("G_EXP")[1] == "-":
-                    yield _token(
-                        kind=TOKEN_FLOAT,
-                        value=match.group(),
-                        index=match.start(),
-                    )
-                else:
-                    yield _token(
-                        kind=TOKEN_INT,
-                        value=match.group(),
-                        index=match.start(),
-                    )
             elif kind == TOKEN_RE_PATTERN:
                 yield _token(
                     kind=TOKEN_RE_PATTERN,
@@ -270,13 +315,17 @@ class Lexer:
                     value=match.group("G_FUNC"),
                     index=match.start("G_FUNC"),
                 )
-            elif kind == TOKEN_SKIP:
-                continue
-            elif kind == TOKEN_ILLEGAL:
+
+                yield _token(
+                    kind=TOKEN_LPAREN,
+                    value=match.group("G_FUNC_PAREN"),
+                    index=match.start("G_FUNC_PAREN"),
+                )
+            elif kind == TOKEN_ERROR:
                 raise JSONPathSyntaxError(
                     f"unexpected token {match.group()!r}",
                     token=_token(
-                        TOKEN_ILLEGAL,
+                        TOKEN_ERROR,
                         value=match.group(),
                         index=match.start(),
                     ),
