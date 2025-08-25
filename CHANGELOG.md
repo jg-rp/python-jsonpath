@@ -6,16 +6,16 @@
 
 These breaking changes apply to Python JSONPath in its default configuration. We've also introduced a _strict mode_ where we follow the RFC 9535 specification exactly. See [optional dependencies](https://jg-rp.github.io/python-jsonpath/#optional-dependencies) and the [syntax guide](https://jg-rp.github.io/python-jsonpath/syntax/) for more information.
 
-- Using bracket notation, unquoted property names are no longer equivalent to quoted property names. These paths used to be equivalent, `$[foo]`, `$['foo']` and `$["foo"]`. Now, names without quotes start a _singular query selector_. With an implicit _root identifier_, `$.a[b]` is equivalent to `$.a[$.b]`. See [Singular query selector](https://jg-rp.github.io/python-jsonpath/syntax/#singular-query-selector) in the syntax guide.
+- Using bracket notation, unquoted property names are no longer interpreted as quoted property names. These paths used to be equivalent, `$[foo]`, `$['foo']` and `$["foo"]`. Now, names without quotes start a _singular query selector_. With an implicit _root identifier_, `$.a[b]` is equivalent to `$.a[$.b]`. See [Singular query selector](https://jg-rp.github.io/python-jsonpath/syntax/#singular-query-selector) in the syntax guide.
 - In filter selector expressions, float literals now follow the specification. Previously `.1` and `1.` where allowed, now it must be `0.1` and `1.0`, with at least one digit either side of the decimal point.
 - Slice selector indexes and step now follow the specification. Previously leading zeros and negative zero were allowed, now they raise a `JSONPathSyntaxError`.
-- Whitespace is no longer allowed between a dot (`.` or `..`) and a name when using shorthand notation for the name selector. Whitespace before the dot is OK.
+- Whitespace is no longer allowed between a dot (`.` or `..`) and a name when using shorthand notation for the name selector. Whitespace before the dot oor double dot is OK.
 
 **JSONPath features**
 
 - Added the [Keys filter selector](https://jg-rp.github.io/python-jsonpath/syntax/#keys-filter-selector).
 - Added the [Singular query selector](https://jg-rp.github.io/python-jsonpath/syntax/#singular-query-selector).
-- Use the [regex] package, if available, instead of `re` for match and search function extensions. See [optional dependencies](https://jg-rp.github.io/python-jsonpath/#optional-dependencies).
+- We now use the [regex] package, if available, instead of `re` for match and search function extensions. See [optional dependencies](https://jg-rp.github.io/python-jsonpath/#optional-dependencies).
 - Added the `strict` argument to all [convenience functions](https://jg-rp.github.io/python-jsonpath/convenience/), the CLI and the `JSONPathEnvironment` constructor. When `strict=True`, all extensions to RFC 9535 and any lax parsing rules will be disabled.
 - Added class variable `JSONPathEnvironment.max_recursion_depth` to control the maximum recursion depth of descendant segments.
 - Added pretty exception messages.
