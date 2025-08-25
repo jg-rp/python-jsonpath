@@ -8,6 +8,7 @@ from .keys import Keys
 from .length import Length
 from .match import Match
 from .search import Search
+from .starts_with import StartsWith
 from .typeof import TypeOf
 from .value import Value
 
@@ -20,6 +21,7 @@ __all__ = (
     "Length",
     "Match",
     "Search",
+    "StartsWith",
     "TypeOf",
     "validate",
     "Value",

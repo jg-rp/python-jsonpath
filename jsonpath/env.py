@@ -454,6 +454,7 @@ class JSONPathEnvironment:
         self.function_extensions["is"] = self.function_extensions["isinstance"]
         self.function_extensions["typeof"] = function_extensions.TypeOf()
         self.function_extensions["type"] = self.function_extensions["typeof"]
+        self.function_extensions["startswith"] = function_extensions.StartsWith()
 
     def validate_function_extension_signature(
         self, token: Token, args: List[Any]
