@@ -19,8 +19,6 @@ class Case:
     want: Union[Sequence[Any], Mapping[str, Any]]
 
 
-SOME_OBJECT = object()
-
 TEST_CASES = [
     Case(
         description="value in keys of an object",

@@ -119,6 +119,18 @@ If _pattern_ is a string literal, it will be compiled at compile time, and raise
 
 If _pattern_ is a query and the result is not a valid regex, `False` is returned.
 
+## `startswith()`
+
+```
+startswith(value: str, prefix: str) -> bool
+```
+
+Return `True` if `value` starts with `prefix`. If `value` or `prefix` are not strings, `False` is returned.
+
+```
+$[?startswith(@, 'ab')]
+```
+
 ## `typeof()`
 
 **_New in version 0.6.0_**
