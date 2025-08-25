@@ -47,6 +47,34 @@ And `is()` is an alias for `isinstance()`:
 $.categories[?is(@.length, 'number')]
 ```
 
+## `keys()`
+
+**_New in version 2.0.0_**
+
+```
+keys(value: object) -> Tuple[str, ...] | Nothing
+```
+
+Return a list of keys from an object/mapping. If `value` does not have a `keys()` method, the special _Nothing_ value is returned.
+
+!!! note
+
+    `keys()` is not registered with the default JSONPath environment. The [keys selector](syntax.md#keys-selector) and [keys filter selector](syntax.md#keys-filter-selector) are usually the better choice when strict compliance with the specification is not needed.
+
+    You can register `keys()` with your JSONPath environment like this:
+
+    ```python
+    from jsonpath import JSONPathEnvironment
+    from jsonpath import function_extensions
+
+    env = JSONPathEnvironment()
+    env.function_extensions["keys"] = function_extensions.Keys()
+    ```
+
+```
+$.some[?'thing' in keys(@)]
+```
+
 ## `length()`
 
 ```text

@@ -11,6 +11,10 @@ These breaking changes apply to Python JSONPath in its default configuration. We
 - Slice selector indexes and step now follow the specification. Previously leading zeros and negative zero were allowed, now they raise a `JSONPathSyntaxError`.
 - Whitespace is no longer allowed between a dot (`.` or `..`) and a name when using shorthand notation for the name selector. Whitespace before the dot oor double dot is OK.
 
+**JSONPath function extension changes**
+
+- The non-standard `keys()` function extension has been reimplemented. It used to be a simple Python function, `jsonpath.function_extensions.keys`. Now it is a "well-typed" class, `jsonpath.function_extensions.Keys`. See the [filter functions](https://jg-rp.github.io/python-jsonpath/functions/#keys) documentation.
+
 **JSONPath features**
 
 - Added the [Keys filter selector](https://jg-rp.github.io/python-jsonpath/syntax/#keys-filter-selector).
