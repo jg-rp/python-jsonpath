@@ -4,7 +4,7 @@ from .filter_function import ExpressionType
 from .filter_function import FilterFunction
 from .count import Count
 from .is_instance import IsInstance
-from .keys import keys
+from .keys import Keys
 from .length import Length
 from .match import Match
 from .search import Search
@@ -16,7 +16,7 @@ __all__ = (
     "ExpressionType",
     "FilterFunction",
     "IsInstance",
-    "keys",
+    "Keys",
     "Length",
     "Match",
     "Search",
