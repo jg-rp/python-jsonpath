@@ -121,6 +121,8 @@ If _pattern_ is a query and the result is not a valid regex, `False` is returned
 
 ## `startswith()`
 
+**_New in version 2.0.0_**
+
 ```
 startswith(value: str, prefix: str) -> bool
 ```
