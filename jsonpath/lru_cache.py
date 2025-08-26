@@ -5,6 +5,7 @@ from threading import Lock
 from typing import Generic
 from typing import Iterator
 from typing import Optional
+from typing import Tuple
 from typing import TypeVar
 from typing import Union
 from typing import overload
@@ -71,7 +72,7 @@ class LRUCache(Generic[_KT, _VT]):
         """Return an iterator over this cache's values."""
         return reversed(self._cache.values())
 
-    def items(self) -> Iterator[tuple[_KT, _VT]]:
+    def items(self) -> Iterator[Tuple[_KT, _VT]]:
         """Return an iterator over this cache's key/value pairs."""
         return reversed(self._cache.items())
 
@@ -123,7 +124,7 @@ class ThreadSafeLRUCache(LRUCache[_KT, _VT]):
         with self._lock:
             return super().values()
 
-    def items(self) -> Iterator[tuple[_KT, _VT]]:
+    def items(self) -> Iterator[Tuple[_KT, _VT]]:
         """Return an iterator over this cache's key/value pairs."""
         with self._lock:
             return super().items()
