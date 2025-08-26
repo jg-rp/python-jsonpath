@@ -59,8 +59,14 @@ dependencies = [
 ]
 
 [tool.hatch.envs.default.scripts]
-cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=jsonpath --cov=tests {args}"
-cov-html = "pytest --cov-report=html --cov-config=pyproject.toml --cov=jsonpath --cov=tests {args}"
+cov = [
+  "hatch run no-regex:cov",
+  "pytest --cov-append --cov-report=term-missing --cov-config=pyproject.toml --cov=jsonpath --cov=tests {args}"
+]
+cov-html = [
+  "hatch run no-regex:cov",
+  "pytest --cov-append --cov-report=html --cov-config=pyproject.toml --cov=jsonpath --cov=tests {args}",
+]
 no-cov = "cov --no-cov {args}"
 test = "pytest {args}"
 lint = "ruff check ."
@@ -80,7 +86,11 @@ build = "mkdocs build --clean --strict"
 serve = "mkdocs serve --dev-addr localhost:8000"
 
 [tool.hatch.envs.no-regex]
-dependencies = ["pytest"]
+dependencies = ["pytest", "pytest-cov"]
+
+[tool.hatch.envs.no-regex.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=jsonpath --cov=tests tests/test_compliance.py {args}"
+
 
 [tool.coverage.run]
 branch = true
