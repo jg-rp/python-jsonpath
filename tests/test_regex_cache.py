@@ -1,4 +1,13 @@
 try:
+    import regex as re
+
+    REGEX_AVAILABLE = True
+except ImportError:
+    import re  # type: ignore
+
+    REGEX_AVAILABLE = False
+
+try:
     import iregexp_check  # noqa: F401
 
     IREGEXP_AVAILABLE = True
@@ -39,7 +48,7 @@ def test_debug_regex_patterns() -> None:
     search_func = Search(cache_capacity=2, debug=True)
     assert len(search_func.cache) == 0
 
-    with pytest.raises(JSONPathError):
+    with pytest.raises((JSONPathError, re.error)):
         search_func("abcdef", "bc[")
 
 

@@ -46,7 +46,7 @@ class AbstractRegexFilterFunction(FilterFunction):
         debug: bool = False,
         thread_safe: bool = False,
     ):
-        self.cache: LRUCache[str, Optional[re.Pattern[str]]] = (
+        self.cache: LRUCache[str, Optional[re.Pattern]] = (  # type: ignore
             ThreadSafeLRUCache(capacity=cache_capacity)
             if thread_safe
             else LRUCache(capacity=cache_capacity)
@@ -54,7 +54,7 @@ class AbstractRegexFilterFunction(FilterFunction):
 
         self.debug = debug
 
-    def check_cache(self, pattern: str) -> Optional[re.Pattern[str]]:
+    def check_cache(self, pattern: str) -> Optional[re.Pattern]:  # type: ignore
         """Return a compiled re pattern if `pattern` is valid, or `None` otherwise."""
         try:
             _pattern = self.cache[pattern]
