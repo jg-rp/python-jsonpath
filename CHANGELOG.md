@@ -15,6 +15,7 @@ These breaking changes apply to Python JSONPath in its default configuration. We
 
 - Added the `startswith(value, prefix)` function extension. `startswith` returns `True` if both arguments are strings and the second argument is a prefix of the first argument. See the [filter functions](https://jg-rp.github.io/python-jsonpath/functions/#startswith) documentation.
 - The non-standard `keys()` function extension has been reimplemented. It used to be a simple Python function, `jsonpath.function_extensions.keys`. Now it is a "well-typed" class, `jsonpath.function_extensions.Keys`. See the [filter functions](https://jg-rp.github.io/python-jsonpath/functions/#keys) documentation.
+- Added `cache_capacity`, `debug` and `thread_safe` arguments to `jsonpath.function_extensions.Match` and `jsonpath.function_extensions.Search` constructors.
 
 **JSONPath features**
 
