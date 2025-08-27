@@ -2,6 +2,10 @@
 
 A filter function is a named function that can be called as part of a [filter selector](syntax.md#filter-selector). Here we describe built in filters. You can [define your own function extensions](advanced.md#function-extensions) too.
 
+!!! note
+
+    If you pass `strict=True` when calling [`findall()`](convenience.md#jsonpath.findall), [`finditer()`](convenience.md#jsonpath.finditer), etc., Only standard functions - those defined by RFC 9535 - will be enabled. The standard functions are `count`, `length`, `match`, `search` and `value`.
+
 ## `count()`
 
 ```text

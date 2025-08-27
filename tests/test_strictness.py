@@ -1,6 +1,7 @@
 import pytest
 
 from jsonpath import JSONPathEnvironment
+from jsonpath import JSONPathNameError
 
 
 @pytest.fixture()
@@ -73,3 +74,34 @@ def test_singular_path_selector_without_root_identifier(
     }
 
     assert env.findall(query, data) == [{"q": [4, 5, 6]}]
+
+
+def test_isinstance_is_disabled_in_strict_mode() -> None:
+    env = JSONPathEnvironment(strict=True)
+
+    query = "$.some[?is(@.thing, 'string')]"
+    with pytest.raises(JSONPathNameError):
+        env.compile(query)
+
+    query = "$.some[?isinstance(@.thing, 'string')]"
+    with pytest.raises(JSONPathNameError):
+        env.compile(query)
+
+
+def test_typeof_is_disabled_in_strict_mode() -> None:
+    env = JSONPathEnvironment(strict=True)
+
+    query = "$.some[?type(@.thing) == 'string']"
+    with pytest.raises(JSONPathNameError):
+        env.compile(query)
+
+    query = "$.some[?typeof(@.thing) == 'string']"
+    with pytest.raises(JSONPathNameError):
+        env.compile(query)
+
+
+def test_startswith_is_disabled_in_strict_mode() -> None:
+    env = JSONPathEnvironment(strict=True)
+    query = "$[?startswith(@, 'ab')]"
+    with pytest.raises(JSONPathNameError):
+        env.compile(query)
