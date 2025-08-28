@@ -1,0 +1,3083 @@
+{
+  "description" : "Test cases for test_lex unit tests.",
+  "tests": [
+    {
+      "description": "just root",
+      "path": "$",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$"
+        }
+      ]
+    },
+    {
+      "description": "just pseudo-root",
+      "path": "^",
+      "want": [
+        {
+          "kind": "TOKEN_PSEUDO_ROOT",
+          "value": "^",
+          "index": 0,
+          "path": "^"
+        }
+      ]
+    },
+    {
+      "description": "root dot property",
+      "path": "$.some.thing",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.some.thing"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.some.thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 2,
+          "path": "$.some.thing"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 6,
+          "path": "$.some.thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 7,
+          "path": "$.some.thing"
+        }
+      ]
+    },
+    {
+      "description": "pseudo root dot property",
+      "path": "^.some.thing",
+      "want": [
+        {
+          "kind": "TOKEN_PSEUDO_ROOT",
+          "value": "^",
+          "index": 0,
+          "path": "^.some.thing"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "^.some.thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 2,
+          "path": "^.some.thing"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 6,
+          "path": "^.some.thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 7,
+          "path": "^.some.thing"
+        }
+      ]
+    },
+    {
+      "description": "root bracket property",
+      "path": "$[some][thing]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$[some][thing]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 1,
+          "path": "$[some][thing]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 2,
+          "path": "$[some][thing]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 6,
+          "path": "$[some][thing]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 7,
+          "path": "$[some][thing]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 8,
+          "path": "$[some][thing]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 13,
+          "path": "$[some][thing]"
+        }
+      ]
+    },
+    {
+      "description": "root double quoted property",
+      "path": "$[\"some\"]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$[\"some\"]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 1,
+          "path": "$[\"some\"]"
+        },
+        {
+          "kind": "TOKEN_DOUBLE_QUOTE_STRING",
+          "value": "some",
+          "index": 3,
+          "path": "$[\"some\"]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 8,
+          "path": "$[\"some\"]"
+        }
+      ]
+    },
+    {
+      "description": "root single quoted property",
+      "path": "$['some']",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$['some']"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 1,
+          "path": "$['some']"
+        },
+        {
+          "kind": "TOKEN_SINGLE_QUOTE_STRING",
+          "value": "some",
+          "index": 3,
+          "path": "$['some']"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 8,
+          "path": "$['some']"
+        }
+      ]
+    },
+    {
+      "description": "root dot bracket property",
+      "path": "$.[some][thing]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.[some][thing]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.[some][thing]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 2,
+          "path": "$.[some][thing]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 3,
+          "path": "$.[some][thing]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 7,
+          "path": "$.[some][thing]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 8,
+          "path": "$.[some][thing]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 9,
+          "path": "$.[some][thing]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 14,
+          "path": "$.[some][thing]"
+        }
+      ]
+    },
+    {
+      "description": "root bracket index",
+      "path": "$[1]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$[1]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 1,
+          "path": "$[1]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 2,
+          "path": "$[1]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 3,
+          "path": "$[1]"
+        }
+      ]
+    },
+    {
+      "description": "root dot bracket index",
+      "path": "$.[1]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.[1]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.[1]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 2,
+          "path": "$.[1]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 3,
+          "path": "$.[1]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 4,
+          "path": "$.[1]"
+        }
+      ]
+    },
+    {
+      "description": "empty slice",
+      "path": "[:]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[:]"
+        },
+        {
+          "kind": "TOKEN_COLON",
+          "value": ":",
+          "index": 1,
+          "path": "[:]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 2,
+          "path": "[:]"
+        }
+      ]
+    },
+    {
+      "description": "empty slice empty step",
+      "path": "[::]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[::]"
+        },
+        {
+          "kind": "TOKEN_COLON",
+          "value": ":",
+          "index": 1,
+          "path": "[::]"
+        },
+        {
+          "kind": "TOKEN_COLON",
+          "value": ":",
+          "index": 2,
+          "path": "[::]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 3,
+          "path": "[::]"
+        }
+      ]
+    },
+    {
+      "description": "slice empty stop",
+      "path": "[1:]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[1:]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 1,
+          "path": "[1:]"
+        },
+        {
+          "kind": "TOKEN_COLON",
+          "value": ":",
+          "index": 2,
+          "path": "[1:]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 3,
+          "path": "[1:]"
+        }
+      ]
+    },
+    {
+      "description": "slice empty start",
+      "path": "[:-1]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[:-1]"
+        },
+        {
+          "kind": "TOKEN_COLON",
+          "value": ":",
+          "index": 1,
+          "path": "[:-1]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "-1",
+          "index": 2,
+          "path": "[:-1]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 4,
+          "path": "[:-1]"
+        }
+      ]
+    },
+    {
+      "description": "slice start and stop",
+      "path": "[1:7]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[1:7]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 1,
+          "path": "[1:7]"
+        },
+        {
+          "kind": "TOKEN_COLON",
+          "value": ":",
+          "index": 2,
+          "path": "[1:7]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "7",
+          "index": 3,
+          "path": "[1:7]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 4,
+          "path": "[1:7]"
+        }
+      ]
+    },
+    {
+      "description": "slice start, stop and step",
+      "path": "[1:7:2]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[1:7:2]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 1,
+          "path": "[1:7:2]"
+        },
+        {
+          "kind": "TOKEN_COLON",
+          "value": ":",
+          "index": 2,
+          "path": "[1:7:2]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "7",
+          "index": 3,
+          "path": "[1:7:2]"
+        },
+        {
+          "kind": "TOKEN_COLON",
+          "value": ":",
+          "index": 4,
+          "path": "[1:7:2]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "2",
+          "index": 5,
+          "path": "[1:7:2]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 6,
+          "path": "[1:7:2]"
+        }
+      ]
+    },
+    {
+      "description": "root dot wild",
+      "path": "$.*",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.*"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.*"
+        },
+        {
+          "kind": "TOKEN_WILD",
+          "value": "*",
+          "index": 2,
+          "path": "$.*"
+        }
+      ]
+    },
+    {
+      "description": "root bracket wild",
+      "path": "$[*]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$[*]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 1,
+          "path": "$[*]"
+        },
+        {
+          "kind": "TOKEN_WILD",
+          "value": "*",
+          "index": 2,
+          "path": "$[*]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 3,
+          "path": "$[*]"
+        }
+      ]
+    },
+    {
+      "description": "root dot bracket wild",
+      "path": "$.[*]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.[*]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.[*]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 2,
+          "path": "$.[*]"
+        },
+        {
+          "kind": "TOKEN_WILD",
+          "value": "*",
+          "index": 3,
+          "path": "$.[*]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 4,
+          "path": "$.[*]"
+        }
+      ]
+    },
+    {
+      "description": "root descend",
+      "path": "$..",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.."
+        },
+        {
+          "kind": "TOKEN_DDOT",
+          "value": "..",
+          "index": 1,
+          "path": "$.."
+        }
+      ]
+    },
+    {
+      "description": "root descend property",
+      "path": "$..thing",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$..thing"
+        },
+        {
+          "kind": "TOKEN_DDOT",
+          "value": "..",
+          "index": 1,
+          "path": "$..thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 3,
+          "path": "$..thing"
+        }
+      ]
+    },
+    {
+      "description": "root descend dot property",
+      "path": "$...thing",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$...thing"
+        },
+        {
+          "kind": "TOKEN_DDOT",
+          "value": "..",
+          "index": 1,
+          "path": "$...thing"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 3,
+          "path": "$...thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 4,
+          "path": "$...thing"
+        }
+      ]
+    },
+    {
+      "description": "root selector list of indices",
+      "path": "$[1,4,5]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$[1,4,5]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 1,
+          "path": "$[1,4,5]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 2,
+          "path": "$[1,4,5]"
+        },
+        {
+          "kind": "TOKEN_COMMA",
+          "value": ",",
+          "index": 3,
+          "path": "$[1,4,5]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "4",
+          "index": 4,
+          "path": "$[1,4,5]"
+        },
+        {
+          "kind": "TOKEN_COMMA",
+          "value": ",",
+          "index": 5,
+          "path": "$[1,4,5]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "5",
+          "index": 6,
+          "path": "$[1,4,5]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 7,
+          "path": "$[1,4,5]"
+        }
+      ]
+    },
+    {
+      "description": "root selector list with a slice",
+      "path": "$[1,4:9]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$[1,4:9]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 1,
+          "path": "$[1,4:9]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 2,
+          "path": "$[1,4:9]"
+        },
+        {
+          "kind": "TOKEN_COMMA",
+          "value": ",",
+          "index": 3,
+          "path": "$[1,4:9]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "4",
+          "index": 4,
+          "path": "$[1,4:9]"
+        },
+        {
+          "kind": "TOKEN_COLON",
+          "value": ":",
+          "index": 5,
+          "path": "$[1,4:9]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "9",
+          "index": 6,
+          "path": "$[1,4:9]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 7,
+          "path": "$[1,4:9]"
+        }
+      ]
+    },
+    {
+      "description": "root selector list of properties",
+      "path": "$[some,thing]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$[some,thing]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 1,
+          "path": "$[some,thing]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 2,
+          "path": "$[some,thing]"
+        },
+        {
+          "kind": "TOKEN_COMMA",
+          "value": ",",
+          "index": 6,
+          "path": "$[some,thing]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 7,
+          "path": "$[some,thing]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 12,
+          "path": "$[some,thing]"
+        }
+      ]
+    },
+    {
+      "description": "root dot filter on self dot property",
+      "path": "$.[?(@.some)]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.[?(@.some)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.[?(@.some)]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 2,
+          "path": "$.[?(@.some)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 3,
+          "path": "$.[?(@.some)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 4,
+          "path": "$.[?(@.some)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 5,
+          "path": "$.[?(@.some)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 6,
+          "path": "$.[?(@.some)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 7,
+          "path": "$.[?(@.some)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 11,
+          "path": "$.[?(@.some)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 12,
+          "path": "$.[?(@.some)]"
+        }
+      ]
+    },
+    {
+      "description": "root dot filter on root dot property",
+      "path": "$.[?($.some)]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.[?($.some)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.[?($.some)]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 2,
+          "path": "$.[?($.some)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 3,
+          "path": "$.[?($.some)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 4,
+          "path": "$.[?($.some)]"
+        },
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 5,
+          "path": "$.[?($.some)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 6,
+          "path": "$.[?($.some)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 7,
+          "path": "$.[?($.some)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 11,
+          "path": "$.[?($.some)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 12,
+          "path": "$.[?($.some)]"
+        }
+      ]
+    },
+    {
+      "description": "root dot filter on self index",
+      "path": "$.[?(@[1])]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.[?(@[1])]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.[?(@[1])]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 2,
+          "path": "$.[?(@[1])]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 3,
+          "path": "$.[?(@[1])]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 4,
+          "path": "$.[?(@[1])]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 5,
+          "path": "$.[?(@[1])]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 6,
+          "path": "$.[?(@[1])]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 7,
+          "path": "$.[?(@[1])]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 8,
+          "path": "$.[?(@[1])]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 9,
+          "path": "$.[?(@[1])]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 10,
+          "path": "$.[?(@[1])]"
+        }
+      ]
+    },
+    {
+      "description": "filter self dot property equality with float",
+      "path": "[?(@.some == 1.1)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 5,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 10,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 12,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_FLOAT",
+          "value": "1.1",
+          "index": 13,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 16,
+          "path": "[?(@.some == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 17,
+          "path": "[?(@.some == 1.1)]"
+        }
+      ]
+    },
+    {
+      "description": "filter self dot property equality float in scientific notation",
+      "path": "[?(@.some == 1.1e10)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 5,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 10,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 12,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_FLOAT",
+          "value": "1.1e10",
+          "index": 13,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 19,
+          "path": "[?(@.some == 1.1e10)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 20,
+          "path": "[?(@.some == 1.1e10)]"
+        }
+      ]
+    },
+    {
+      "description": "filter self index equality with float",
+      "path": "[?(@[1] == 1.1)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 4,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 5,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 6,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 7,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 8,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 10,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_FLOAT",
+          "value": "1.1",
+          "index": 11,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 14,
+          "path": "[?(@[1] == 1.1)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 15,
+          "path": "[?(@[1] == 1.1)]"
+        }
+      ]
+    },
+    {
+      "description": "filter self dot property equality with int",
+      "path": "[?(@.some == 1)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 5,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 10,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 12,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 13,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 14,
+          "path": "[?(@.some == 1)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 15,
+          "path": "[?(@.some == 1)]"
+        }
+      ]
+    },
+    {
+      "description": "filter self dot property equality with int in scientific notation",
+      "path": "[?(@.some == 1e10)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 5,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 10,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 12,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1e10",
+          "index": 13,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 17,
+          "path": "[?(@.some == 1e10)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 18,
+          "path": "[?(@.some == 1e10)]"
+        }
+      ]
+    },
+    {
+      "description": "filter self dot property regex",
+      "path": "[?(@.some =~ /foo|bar/i)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 5,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_RE",
+          "value": "=~",
+          "index": 10,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 12,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_RE_PATTERN",
+          "value": "foo|bar",
+          "index": 14,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_RE_FLAGS",
+          "value": "i",
+          "index": 22,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 23,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 24,
+          "path": "[?(@.some =~ /foo|bar/i)]"
+        }
+      ]
+    },
+    {
+      "description": "union of two paths",
+      "path": "$.some | $.thing",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.some | $.thing"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.some | $.thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 2,
+          "path": "$.some | $.thing"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 6,
+          "path": "$.some | $.thing"
+        },
+        {
+          "kind": "TOKEN_UNION",
+          "value": "|",
+          "index": 7,
+          "path": "$.some | $.thing"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 8,
+          "path": "$.some | $.thing"
+        },
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 9,
+          "path": "$.some | $.thing"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 10,
+          "path": "$.some | $.thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 11,
+          "path": "$.some | $.thing"
+        }
+      ]
+    },
+    {
+      "description": "union of three paths",
+      "path": "$.some | $.thing | $.other",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 2,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 6,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_UNION",
+          "value": "|",
+          "index": 7,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 8,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 9,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 10,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 11,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 16,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_UNION",
+          "value": "|",
+          "index": 17,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 18,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 19,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 20,
+          "path": "$.some | $.thing | $.other"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "other",
+          "index": 21,
+          "path": "$.some | $.thing | $.other"
+        }
+      ]
+    },
+    {
+      "description": "intersection two paths",
+      "path": "$.some & $.thing",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.some & $.thing"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.some & $.thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 2,
+          "path": "$.some & $.thing"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 6,
+          "path": "$.some & $.thing"
+        },
+        {
+          "kind": "TOKEN_INTERSECTION",
+          "value": "&",
+          "index": 7,
+          "path": "$.some & $.thing"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 8,
+          "path": "$.some & $.thing"
+        },
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 9,
+          "path": "$.some & $.thing"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 10,
+          "path": "$.some & $.thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 11,
+          "path": "$.some & $.thing"
+        }
+      ]
+    },
+    {
+      "description": "filter expression with logical and",
+      "path": "[?(@.some > 1 and @.some < 5)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 5,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_GT",
+          "value": ">",
+          "index": 10,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 11,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 12,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 13,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_AND",
+          "value": "and",
+          "index": 14,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 17,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 18,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 19,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 20,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 24,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_LT",
+          "value": "<",
+          "index": 25,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 26,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "5",
+          "index": 27,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 28,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 29,
+          "path": "[?(@.some > 1 and @.some < 5)]"
+        }
+      ]
+    },
+    {
+      "description": "filter expression with logical or",
+      "path": "[?(@.some == 1 or @.some == 5)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 5,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 10,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 12,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 13,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 14,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_OR",
+          "value": "or",
+          "index": 15,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 17,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 18,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 19,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 20,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 24,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 25,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 27,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "5",
+          "index": 28,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 29,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 30,
+          "path": "[?(@.some == 1 or @.some == 5)]"
+        }
+      ]
+    },
+    {
+      "description": "filter expression with logical ||",
+      "path": "[?(@.some == 1 || @.some == 5)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 5,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 10,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 12,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 13,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 14,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_OR",
+          "value": "||",
+          "index": 15,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 17,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 18,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 19,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 20,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 24,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 25,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 27,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "5",
+          "index": 28,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 29,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 30,
+          "path": "[?(@.some == 1 || @.some == 5)]"
+        }
+      ]
+    },
+    {
+      "description": "filter self dot property in list literal",
+      "path": "[?(@.thing in [1, '1'])]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 5,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 10,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_IN",
+          "value": "in",
+          "index": 11,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 13,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 14,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 15,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_COMMA",
+          "value": ",",
+          "index": 16,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 17,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_SINGLE_QUOTE_STRING",
+          "value": "1",
+          "index": 19,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 21,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 22,
+          "path": "[?(@.thing in [1, '1'])]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 23,
+          "path": "[?(@.thing in [1, '1'])]"
+        }
+      ]
+    },
+    {
+      "description": "filter expression with logical not",
+      "path": "[?(@.some == 1 or not @.some < 5)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 5,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 10,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 12,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 13,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 14,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_OR",
+          "value": "or",
+          "index": 15,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 17,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_NOT",
+          "value": "not",
+          "index": 18,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 21,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 22,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 23,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 24,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 28,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_LT",
+          "value": "<",
+          "index": 29,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 30,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "5",
+          "index": 31,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 32,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 33,
+          "path": "[?(@.some == 1 or not @.some < 5)]"
+        }
+      ]
+    },
+    {
+      "description": "filter expression with logical not using '!'",
+      "path": "[?(@.some == 1 or !@.some < 5)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 3,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 4,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 5,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 10,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 12,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "1",
+          "index": 13,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 14,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_OR",
+          "value": "or",
+          "index": 15,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 17,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_NOT",
+          "value": "!",
+          "index": 18,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 19,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 20,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 21,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 25,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_LT",
+          "value": "<",
+          "index": 26,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 27,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "5",
+          "index": 28,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 29,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 30,
+          "path": "[?(@.some == 1 or !@.some < 5)]"
+        }
+      ]
+    },
+    {
+      "description": "filter true and false",
+      "path": "[?(true == false)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(true == false)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(true == false)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(true == false)]"
+        },
+        {
+          "kind": "TOKEN_TRUE",
+          "value": "true",
+          "index": 3,
+          "path": "[?(true == false)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 7,
+          "path": "[?(true == false)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 8,
+          "path": "[?(true == false)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 10,
+          "path": "[?(true == false)]"
+        },
+        {
+          "kind": "TOKEN_FALSE",
+          "value": "false",
+          "index": 11,
+          "path": "[?(true == false)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 16,
+          "path": "[?(true == false)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 17,
+          "path": "[?(true == false)]"
+        }
+      ]
+    },
+    {
+      "description": "filter true and false",
+      "path": "[?(nil == none && nil == null)]",
+      "want": [
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 0,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 1,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 2,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_NIL",
+          "value": "nil",
+          "index": 3,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 6,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 7,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_NIL",
+          "value": "none",
+          "index": 10,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 14,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_AND",
+          "value": "&&",
+          "index": 15,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 17,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_NIL",
+          "value": "nil",
+          "index": 18,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 21,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_EQ",
+          "value": "==",
+          "index": 22,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 24,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_NIL",
+          "value": "null",
+          "index": 25,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 29,
+          "path": "[?(nil == none && nil == null)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 30,
+          "path": "[?(nil == none && nil == null)]"
+        }
+      ]
+    },
+    {
+      "description": "list of quoted properties",
+      "path": "$['some', 'thing']",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$['some', 'thing']"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 1,
+          "path": "$['some', 'thing']"
+        },
+        {
+          "kind": "TOKEN_SINGLE_QUOTE_STRING",
+          "value": "some",
+          "index": 3,
+          "path": "$['some', 'thing']"
+        },
+        {
+          "kind": "TOKEN_COMMA",
+          "value": ",",
+          "index": 8,
+          "path": "$['some', 'thing']"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 9,
+          "path": "$['some', 'thing']"
+        },
+        {
+          "kind": "TOKEN_SINGLE_QUOTE_STRING",
+          "value": "thing",
+          "index": 11,
+          "path": "$['some', 'thing']"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 17,
+          "path": "$['some', 'thing']"
+        }
+      ]
+    },
+    {
+      "description": "call a function",
+      "path": "$.some[?(length(@.thing) < 2)]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some",
+          "index": 2,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 6,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_FILTER",
+          "value": "?",
+          "index": 7,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 8,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_FUNCTION",
+          "value": "length",
+          "index": 9,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_LPAREN",
+          "value": "(",
+          "index": 15,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_SELF",
+          "value": "@",
+          "index": 16,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 17,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 18,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 23,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 24,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_LT",
+          "value": "<",
+          "index": 25,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_WHITESPACE",
+          "value": " ",
+          "index": 26,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_INT",
+          "value": "2",
+          "index": 27,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_RPAREN",
+          "value": ")",
+          "index": 28,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 29,
+          "path": "$.some[?(length(@.thing) < 2)]"
+        }
+      ]
+    },
+    {
+      "description": "keys selector",
+      "path": "$.thing.~",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.thing.~"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.thing.~"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 2,
+          "path": "$.thing.~"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 7,
+          "path": "$.thing.~"
+        },
+        {
+          "kind": "TOKEN_KEYS",
+          "value": "~",
+          "index": 8,
+          "path": "$.thing.~"
+        }
+      ]
+    },
+    {
+      "description": "keys in list selector",
+      "path": "$.thing[~]",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.thing[~]"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.thing[~]"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "thing",
+          "index": 2,
+          "path": "$.thing[~]"
+        },
+        {
+          "kind": "TOKEN_LBRACKET",
+          "value": "[",
+          "index": 7,
+          "path": "$.thing[~]"
+        },
+        {
+          "kind": "TOKEN_KEYS",
+          "value": "~",
+          "index": 8,
+          "path": "$.thing[~]"
+        },
+        {
+          "kind": "TOKEN_RBRACKET",
+          "value": "]",
+          "index": 9,
+          "path": "$.thing[~]"
+        }
+      ]
+    },
+    {
+      "description": "implicit root selector, name selector starts with `and`",
+      "path": "anderson",
+      "want": [
+        {
+          "kind": "TOKEN_NAME",
+          "value": "anderson",
+          "index": 0,
+          "path": "anderson"
+        }
+      ]
+    },
+    {
+      "description": "implicit root selector, name selector starts with `or`",
+      "path": "order",
+      "want": [
+        {
+          "kind": "TOKEN_NAME",
+          "value": "order",
+          "index": 0,
+          "path": "order"
+        }
+      ]
+    },
+    {
+      "description": "implicit root selector, name selector starts with `true`",
+      "path": "trueblue",
+      "want": [
+        {
+          "kind": "TOKEN_NAME",
+          "value": "trueblue",
+          "index": 0,
+          "path": "trueblue"
+        }
+      ]
+    },
+    {
+      "description": "implicit root selector, name selector starts with `false`",
+      "path": "falsehood",
+      "want": [
+        {
+          "kind": "TOKEN_NAME",
+          "value": "falsehood",
+          "index": 0,
+          "path": "falsehood"
+        }
+      ]
+    },
+    {
+      "description": "implicit root selector, name selector starts with `not`",
+      "path": "nottingham",
+      "want": [
+        {
+          "kind": "TOKEN_NAME",
+          "value": "nottingham",
+          "index": 0,
+          "path": "nottingham"
+        }
+      ]
+    },
+    {
+      "description": "implicit root selector, name selector starts with `null`",
+      "path": "nullable",
+      "want": [
+        {
+          "kind": "TOKEN_NAME",
+          "value": "nullable",
+          "index": 0,
+          "path": "nullable"
+        }
+      ]
+    },
+    {
+      "description": "implicit root selector, name selector starts with `none`",
+      "path": "nonexpert",
+      "want": [
+        {
+          "kind": "TOKEN_NAME",
+          "value": "nonexpert",
+          "index": 0,
+          "path": "nonexpert"
+        }
+      ]
+    },
+    {
+      "description": "implicit root selector, name selector starts with `undefined`",
+      "path": "undefinedness",
+      "want": [
+        {
+          "kind": "TOKEN_NAME",
+          "value": "undefinedness",
+          "index": 0,
+          "path": "undefinedness"
+        }
+      ]
+    },
+    {
+      "description": "implicit root selector, name selector starts with `missing`",
+      "path": "missingly",
+      "want": [
+        {
+          "kind": "TOKEN_NAME",
+          "value": "missingly",
+          "index": 0,
+          "path": "missingly"
+        }
+      ]
+    }
+  ]
+}
