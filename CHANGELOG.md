@@ -22,7 +22,7 @@ These breaking changes apply to Python JSONPath in its default configuration. We
 - Added the [Keys filter selector](https://jg-rp.github.io/python-jsonpath/syntax/#keys-filter-selector).
 - Added the [Singular query selector](https://jg-rp.github.io/python-jsonpath/syntax/#singular-query-selector).
 - We now use the [regex] package, if available, instead of `re` for match and search function extensions. See [optional dependencies](https://jg-rp.github.io/python-jsonpath/#optional-dependencies).
-- Added the `strict` argument to all [convenience functions](https://jg-rp.github.io/python-jsonpath/convenience/), the CLI and the `JSONPathEnvironment` constructor. When `strict=True`, all extensions to RFC 9535 and any lax parsing rules will be disabled.
+- Added the `strict` argument to all [convenience functions](https://jg-rp.github.io/python-jsonpath/convenience/), the CLI and the `JSONPathEnvironment` constructor. When `strict=True`, all extensions to RFC 9535, any non-standard function extensions and any lax parsing rules will be disabled.
 - Added class variable `JSONPathEnvironment.max_recursion_depth` to control the maximum recursion depth of descendant segments.
 - Added pretty exception messages.
 
