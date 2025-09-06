@@ -78,7 +78,9 @@ ENV/
 # IDE
 .vscode/
 .idea/
-python-jsonpath.iml
+*.iml
+*.ipr
+.junie
 
 # Dev utils
 dev.py
