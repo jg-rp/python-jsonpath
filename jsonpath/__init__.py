@@ -92,7 +92,7 @@ __all__ = (
 
 # For convenience and to delegate to strict or non-strict environments.
 DEFAULT_ENV = JSONPathEnvironment()
-STRICT_ENV = JSONPathEnvironment(strict=True)
+_STRICT_ENV = JSONPathEnvironment(strict=True)
 
 
 def compile(path: str, *, strict: bool = False) -> Union[JSONPath, CompoundJSONPath]:  # noqa: A001
@@ -112,7 +112,7 @@ def compile(path: str, *, strict: bool = False) -> Union[JSONPath, CompoundJSONP
         JSONPathTypeError: If filter functions are given arguments of an
             unacceptable type.
     """
-    return STRICT_ENV.compile(path) if strict else DEFAULT_ENV.compile(path)
+    return _STRICT_ENV.compile(path) if strict else DEFAULT_ENV.compile(path)
 
 
 def findall(
@@ -146,7 +146,7 @@ def findall(
             an incompatible way.
     """
     return (
-        STRICT_ENV.findall(path, data, filter_context=filter_context)
+        _STRICT_ENV.findall(path, data, filter_context=filter_context)
         if strict
         else DEFAULT_ENV.findall(path, data, filter_context=filter_context)
     )
@@ -183,7 +183,7 @@ async def findall_async(
             an incompatible way.
     """
     return (
-        await STRICT_ENV.findall_async(path, data, filter_context=filter_context)
+        await _STRICT_ENV.findall_async(path, data, filter_context=filter_context)
         if strict
         else await DEFAULT_ENV.findall_async(path, data, filter_context=filter_context)
     )
@@ -219,7 +219,7 @@ def finditer(
             an incompatible way.
     """
     return (
-        STRICT_ENV.finditer(path, data, filter_context=filter_context)
+        _STRICT_ENV.finditer(path, data, filter_context=filter_context)
         if strict
         else DEFAULT_ENV.finditer(path, data, filter_context=filter_context)
     )
@@ -256,7 +256,7 @@ async def finditer_async(
             an incompatible way.
     """
     return (
-        await STRICT_ENV.finditer_async(path, data, filter_context=filter_context)
+        await _STRICT_ENV.finditer_async(path, data, filter_context=filter_context)
         if strict
         else await DEFAULT_ENV.finditer_async(path, data, filter_context=filter_context)
     )
@@ -292,7 +292,7 @@ def match(
             an incompatible way.
     """
     return (
-        STRICT_ENV.match(path, data, filter_context=filter_context)
+        _STRICT_ENV.match(path, data, filter_context=filter_context)
         if strict
         else DEFAULT_ENV.match(path, data, filter_context=filter_context)
     )
@@ -359,7 +359,7 @@ def query(
             an incompatible way.
     """
     return (
-        STRICT_ENV.query(path, data, filter_context=filter_context)
+        _STRICT_ENV.query(path, data, filter_context=filter_context)
         if strict
         else DEFAULT_ENV.query(path, data, filter_context=filter_context)
     )
