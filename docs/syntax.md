@@ -1,8 +1,35 @@
 # JSONPath Syntax
 
-Python JSONPath extends the [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535) specification with additional features and relaxed rules. If you need strict compliance with RFC 9535, set `strict=True` when calling [`findall()`](convenience.md#jsonpath.findall), [`finditer()`](convenience.md#jsonpath.finditer), etc., which enforces the standard without these extensions.
+Python JSONPath extends the [RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535) specification with extra selectors and relaxed rules for convenience. If you need strict compliance with RFC 9535, pass `strict=True` when calling [`findall()`](convenience.md#jsonpath.findall), [`finditer()`](convenience.md#jsonpath.finditer), and similar functions. In strict mode, the syntax and behavior conform to the specification, and no non-standard extensions are registered by default. You can still add them manually if needed.
 
-In this guide, we first outline the standard syntax (see the specification for the formal definition), and then describe the non-standard extensions and their semantics in detail.
+This guide first introduces the standard JSONPath syntax (see the RFC for the formal definition), then explains the non-standard extensions and their semantics.
+
+??? info "Preconfigured JSONPath Environments"
+
+    Python JSONPath provides two ready-to-use environments:
+
+    - **Default environment** – includes relaxed syntax, non-standard selectors, and additional function extensions.
+    - **Strict environment** – starts with only the RFC 9535 selectors and functions registered. Non-standard extensions can still be enabled explicitly.
+
+    For custom setups, subclass [`JSONPathEnvironment`](./api.md#jsonpath.JSONPathEnvironment) and override `setup_function_extensions()`:
+
+    ```python
+    from jsonpath import JSONPathEnvironment
+    from jsonpath.function_extensions import StartsWith
+
+
+    class MyJSONPathEnvironment(JSONPathEnvironment):
+        def __init__(self) -> None:
+            super().__init__(strict=True)
+
+        def setup_function_extensions(self) -> None:
+            super().setup_function_extensions()
+            self.function_extensions["startswith"] = StartsWith()
+
+
+    jsonpath = MyJSONPathEnvironment()
+    query = jsonpath.compile("...")
+    ```
 
 ## JSONPath Terminology
 

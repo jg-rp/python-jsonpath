@@ -34,11 +34,20 @@ conda install -c conda-forge python-jsonpath
 
 ### Optional dependencies
 
-By default, and without any additional dependencies, the syntax supported by Python JSONPath is **very close** to RFC 9535. For strict compatibility with the specification, install [regex](https://pypi.org/project/regex/) and [iregexp-check](https://pypi.org/project/iregexp-check/) packages too.
+Python JSONPath works out of the box with **no extra dependencies**, and its syntax is already **very close** to [RFC 9535](https://www.rfc-editor.org/rfc/rfc9535).
 
-With these two packages installed, the [`match()`](functions.md#match) and [`search()`](functions.md#search) filter functions will use [regex](https://pypi.org/project/regex/) instead of `re` from the standard library, and will validate regular expression patterns against [RFC 9485](https://datatracker.ietf.org/doc/html/rfc9485).
+For strict compliance with the specification, [strict mode](syntax.md) and the `strict` extra were added in **version 2.0.0**.
 
-See the [syntax guide](syntax.md) for more information about strict compatibility with RFC 9535 and extensions to the specification.
+```console
+pip install python-jsonpath[strict]
+```
+
+This installs [`regex`](https://pypi.org/project/regex/) and [`iregexp-check`](https://pypi.org/project/iregexp-check/), enabling:
+
+- [`match()`](functions.md#match) and [`search()`](functions.md#search) to use `regex` instead of Python's built-in `re` module.
+- Validation of regular expressions against [RFC 9485](https://datatracker.ietf.org/doc/html/rfc9485).
+
+See the [syntax guide](syntax.md) for strict mode details and specification extensions.
 
 ## Example
 
