@@ -8,7 +8,7 @@ description = 'JSONPath, JSON Pointer and JSON Patch for Python.'
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
-keywords = []
+keywords = ["JSON", "JSONPath", "JSON Path", "JSON Pointer", "JSON Patch", "RFC 9535"]
 authors = [{ name = "James Prior", email = "jamesgr.prior@gmail.com" }]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -31,6 +31,9 @@ dynamic = ["version"]
 Documentation = "https://jg-rp.github.io/python-jsonpath/"
 Issues = "https://github.com/jg-rp/python-jsonpath/issues"
 Source = "https://github.com/jg-rp/python-jsonpath"
+
+[project.optional-dependencies]
+strict = ["regex", "iregexp-check>=0.1.4"]
 
 [tool.hatch.version]
 path = "jsonpath/__about__.py"
