@@ -66,9 +66,9 @@ conda install -c conda-forge python-jsonpath
 
 ## Related projects
 
-- [JSONPath RFC 9535](https://github.com/jg-rp/python-jsonpath-rfc9535) - A Python implementation of JSONPath that follows RFC 9535 much more strictly. If you require maximum interoperability with JSONPath implemented in other languages - at the expense of extra features - choose [jsonpath-rfc9535](https://pypi.org/project/jsonpath-rfc9535/) over [python-jsonpath](https://pypi.org/project/python-jsonpath/).
+- [JSONPath RFC 9535](https://github.com/jg-rp/python-jsonpath-rfc9535) - A minimal, slightly cleanr Python implementation of RFC 9535. If you're not interested JSONPath sytax beyond that defined in RFC 9535, you might choose [jsonpath-rfc9535](https://pypi.org/project/jsonpath-rfc9535/) over [python-jsonpath](https://pypi.org/project/python-jsonpath/).
 
-  jsonpath-rfc9535 matches RFC 9535's JSONPath model internally and is careful to use the spec's terminology. It also includes utilities for verifying and testing the [JSONPath Compliance Test Suite](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite). Most notably the nondeterministic behavior of some JSONPath selectors.
+  jsonpath-rfc9535 also includes utilities for verifying and testing the [JSONPath Compliance Test Suite](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite). Most notably the nondeterministic behavior of some JSONPath selectors.
 
 - [JSON P3](https://github.com/jg-rp/json-p3) - RFC 9535 implemented in TypeScript. JSON P3 does not include all the non-standard features of Python JSONPath, but does define some optional [extra syntax](https://jg-rp.github.io/json-p3/guides/jsonpath-extra).
 
