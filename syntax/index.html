@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
     
     
       
@@ -71,7 +71,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -129,7 +129,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
@@ -139,7 +139,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
@@ -498,109 +498,73 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#selectors" class="md-nav__link">
+  <a href="#jsonpath-terminology" class="md-nav__link">
     <span class="md-ellipsis">
-      Selectors
+      JSONPath Terminology
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Selectors">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standard-selectors-and-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Standard selectors and identifiers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Standard selectors and identifiers">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#root" class="md-nav__link">
+  <a href="#root-identifier" class="md-nav__link">
     <span class="md-ellipsis">
-      Root ($)
+      Root identifier
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#properties-thing-thing-or-thing" class="md-nav__link">
+  <a href="#name-selector" class="md-nav__link">
     <span class="md-ellipsis">
-      Properties (.thing, [thing] or ['thing'])
+      Name selector
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#array-indices-0-or-1" class="md-nav__link">
+  <a href="#index-selector" class="md-nav__link">
     <span class="md-ellipsis">
-      Array indices ([0] or [-1])
+      Index selector
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#wildcard-or" class="md-nav__link">
+  <a href="#wildcard-selector" class="md-nav__link">
     <span class="md-ellipsis">
-      Wildcard (.* or [*])
+      Wildcard selector
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#keys-or" class="md-nav__link">
+  <a href="#slice-selector" class="md-nav__link">
     <span class="md-ellipsis">
-      Keys (.~ or [~])
+      Slice selector
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#slices-0-1-or-10-1" class="md-nav__link">
+  <a href="#filter-selector" class="md-nav__link">
     <span class="md-ellipsis">
-      Slices ([0:-1] or [-1:0:-1])
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lists-1-2-1020" class="md-nav__link">
-    <span class="md-ellipsis">
-      Lists ([1, 2, 10:20])
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#recursive-descent" class="md-nav__link">
-    <span class="md-ellipsis">
-      Recursive descent (..)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#filters-expression" class="md-nav__link">
-    <span class="md-ellipsis">
-      Filters ([?EXPRESSION])
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#fake-root" class="md-nav__link">
-    <span class="md-ellipsis">
-      Fake root (^)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#union-and-intersection" class="md-nav__link">
-    <span class="md-ellipsis">
-      Union (|) and intersection (&amp;)
+      Filter selector
     </span>
   </a>
   
@@ -612,11 +576,371 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#notable-differences" class="md-nav__link">
+  <a href="#more-on-segments" class="md-nav__link">
     <span class="md-ellipsis">
-      Notable differences
+      More on segments
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="More on segments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#segments-with-multiple-selectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Segments with multiple selectors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#descendant-segment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Descendant segment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-standard-selectors-and-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Non-standard selectors and identifiers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-standard selectors and identifiers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-selector" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key selector
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key selector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keys-selector" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keys selector
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Keys selector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keys-filter-selector" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keys filter selector
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Keys filter selector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#singular-query-selector" class="md-nav__link">
+    <span class="md-ellipsis">
+      Singular query selector
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Singular query selector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#current-key-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current key identifier
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Current key identifier">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pseudo-root-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pseudo root identifier
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pseudo root identifier">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter-context-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter context identifier
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filter context identifier">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-standard-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Non-standard operators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-standard operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#membership-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Membership operators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Membership operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regex-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Regex operator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#union-and-intersection-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Union and intersection operators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Union and intersection operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -778,6 +1102,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../convenience/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Package Level Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/" class="md-nav__link">
         
   
@@ -874,109 +1221,73 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#selectors" class="md-nav__link">
+  <a href="#jsonpath-terminology" class="md-nav__link">
     <span class="md-ellipsis">
-      Selectors
+      JSONPath Terminology
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Selectors">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standard-selectors-and-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Standard selectors and identifiers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Standard selectors and identifiers">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#root" class="md-nav__link">
+  <a href="#root-identifier" class="md-nav__link">
     <span class="md-ellipsis">
-      Root ($)
+      Root identifier
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#properties-thing-thing-or-thing" class="md-nav__link">
+  <a href="#name-selector" class="md-nav__link">
     <span class="md-ellipsis">
-      Properties (.thing, [thing] or ['thing'])
+      Name selector
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#array-indices-0-or-1" class="md-nav__link">
+  <a href="#index-selector" class="md-nav__link">
     <span class="md-ellipsis">
-      Array indices ([0] or [-1])
+      Index selector
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#wildcard-or" class="md-nav__link">
+  <a href="#wildcard-selector" class="md-nav__link">
     <span class="md-ellipsis">
-      Wildcard (.* or [*])
+      Wildcard selector
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#keys-or" class="md-nav__link">
+  <a href="#slice-selector" class="md-nav__link">
     <span class="md-ellipsis">
-      Keys (.~ or [~])
+      Slice selector
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#slices-0-1-or-10-1" class="md-nav__link">
+  <a href="#filter-selector" class="md-nav__link">
     <span class="md-ellipsis">
-      Slices ([0:-1] or [-1:0:-1])
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lists-1-2-1020" class="md-nav__link">
-    <span class="md-ellipsis">
-      Lists ([1, 2, 10:20])
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#recursive-descent" class="md-nav__link">
-    <span class="md-ellipsis">
-      Recursive descent (..)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#filters-expression" class="md-nav__link">
-    <span class="md-ellipsis">
-      Filters ([?EXPRESSION])
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#fake-root" class="md-nav__link">
-    <span class="md-ellipsis">
-      Fake root (^)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#union-and-intersection" class="md-nav__link">
-    <span class="md-ellipsis">
-      Union (|) and intersection (&amp;)
+      Filter selector
     </span>
   </a>
   
@@ -988,11 +1299,371 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#notable-differences" class="md-nav__link">
+  <a href="#more-on-segments" class="md-nav__link">
     <span class="md-ellipsis">
-      Notable differences
+      More on segments
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="More on segments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#segments-with-multiple-selectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Segments with multiple selectors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#descendant-segment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Descendant segment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-standard-selectors-and-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Non-standard selectors and identifiers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-standard selectors and identifiers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-selector" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key selector
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key selector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keys-selector" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keys selector
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Keys selector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keys-filter-selector" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keys filter selector
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Keys filter selector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#singular-query-selector" class="md-nav__link">
+    <span class="md-ellipsis">
+      Singular query selector
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Singular query selector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#current-key-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current key identifier
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Current key identifier">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pseudo-root-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pseudo root identifier
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pseudo root identifier">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter-context-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter context identifier
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filter context identifier">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-standard-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Non-standard operators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-standard operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#membership-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Membership operators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Membership operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regex-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Regex operator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#union-and-intersection-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Union and intersection operators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Union and intersection operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1013,137 +1684,646 @@
 
 
 <h1 id="jsonpath-syntax">JSONPath Syntax</h1>
-<p>Python JSONPath's default syntax is an opinionated combination of JSONPath features from existing, popular implementations and <a href="https://datatracker.ietf.org/doc/html/rfc9535">RFC 9535</a>. If you're already familiar with JSONPath syntax, skip to <a href="#notable-differences">notable differences</a>.</p>
-<p>Imagine a JSON document as a tree structure, where each object (mapping) and array can contain more objects, arrays and scalar values. Every object, array and scalar value is a node in the tree, and the outermost object or array is the "root" node.</p>
-<p>For our purposes, a JSON "document" could be a file containing valid JSON data, a Python string containing valid JSON data, or a Python <code>Object</code> made up of dictionaries (or any <a href="https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes">Mapping</a>), lists (or any <a href="https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes">Sequence</a>), strings, etc.</p>
-<p>We chain <em>selectors</em> together to retrieve nodes from the target document. Each selector operates on the nodes matched by preceding selectors. What follows is a description of those selectors.</p>
-<h2 id="selectors">Selectors</h2>
-<h3 id="root">Root (<code>$</code>)</h3>
-<p><code>$</code> refers to the first node in the target document, be it an object or an array. Unless referencing the root node from inside a filter expression, <code>$</code> is optional. The following two examples are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$.categories.*.name
+<p>Python JSONPath extends the <a href="https://datatracker.ietf.org/doc/html/rfc9535">RFC 9535</a> specification with extra selectors and relaxed rules for convenience. If you need strict compliance with RFC 9535, pass <code>strict=True</code> when calling <a href="../convenience/#jsonpath.findall"><code>findall()</code></a>, <a href="../convenience/#jsonpath.finditer"><code>finditer()</code></a>, and similar functions. In strict mode, the syntax and behavior conform to the specification, and no non-standard extensions are registered by default. You can still add them manually if needed.</p>
+<p>This guide first introduces the standard JSONPath syntax (see the RFC for the formal definition), then explains the non-standard extensions and their semantics.</p>
+<details class="info">
+<summary>Preconfigured JSONPath Environments</summary>
+<p>Python JSONPath provides two ready-to-use environments:</p>
+<ul>
+<li><strong>Default environment</strong> – includes relaxed syntax, non-standard selectors, and additional function extensions.</li>
+<li><strong>Strict environment</strong> – starts with only the RFC 9535 selectors and functions registered. Non-standard extensions can still be enabled explicitly.</li>
+</ul>
+<p>For custom setups, subclass <a href="../api/#jsonpath.JSONPathEnvironment"><code>JSONPathEnvironment</code></a> and override <code>setup_function_extensions()</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jsonpath</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONPathEnvironment</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jsonpath.function_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StartsWith</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyJSONPathEnvironment</span><span class="p">(</span><span class="n">JSONPathEnvironment</span><span class="p">):</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_function_extensions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup_function_extensions</span><span class="p">()</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">function_extensions</span><span class="p">[</span><span class="s2">&quot;startswith&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">StartsWith</span><span class="p">()</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="n">jsonpath</span> <span class="o">=</span> <span class="n">MyJSONPathEnvironment</span><span class="p">()</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="n">query</span> <span class="o">=</span> <span class="n">jsonpath</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>categories.*.name
+</details>
+<h2 id="jsonpath-terminology">JSONPath Terminology</h2>
+<p>Think of a JSON document as a tree, objects (mappings) and arrays can contain other objects, arrays, or scalar values. Each of these (object, array, or scalar) is a <em>node</em> in the tree. The outermost object or array is called the <em>root</em> node.</p>
+<p>In this guide, a JSON "document" may refer to:</p>
+<ul>
+<li>A file containing valid JSON text</li>
+<li>A Python string containing valid JSON text</li>
+<li>A Python object composed of dictionaries (or any <a href="https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes">Mapping</a>), lists (or any <a href="https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes">Sequence</a>), strings, numbers, booleans, or <code>None</code></li>
+</ul>
+<p>A JSONPath expression (aka "query") is made up of a sequence of <strong>segments</strong>. Each segment contains one or more <strong>selectors</strong>:</p>
+<ul>
+<li>A <em>segment</em> corresponds to a step in the path from one set of nodes to the next.</li>
+<li>A <em>selector</em> describes how to choose nodes within that step (for example, by name, by index, or by wildcard).</li>
+</ul>
+<p>What follows is a description of these selectors, starting with the standard ones defined in <a href="https://www.rfc-editor.org/rfc/rfc9535">RFC 9535</a>.</p>
+<h2 id="standard-selectors-and-identifiers">Standard selectors and identifiers</h2>
+<h3 id="root-identifier">Root identifier</h3>
+<p>The root identifier, <code>$</code>, refers to the outermost node in the target document. This can be an object, an array, or a scalar value.</p>
+<p>A query containing only the root identifier simply returns the entire input document.</p>
+<p><strong>Example query</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$
 </span></code></pre></div>
-<p>An empty path or a path containing just the root (<code>$</code>) selector returns the input data in its entirety.</p>
-<h3 id="properties-thing-thing-or-thing">Properties (<code>.thing</code>, <code>[thing]</code> or <code>['thing']</code>)</h3>
-<p>Select nodes by property/key name using dot notation (<code>.something</code>) or bracket notation (<code>[something]</code>). If a target property/key contains reserved characters, it must use bracket notation and be enclosed in quotes (<code>['thing']</code>).</p>
-<p>A dot in front of bracket notation is OK, but unnecessary. The following examples are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$.categories[0].name
+<div class="language-json highlight"><span class="filename">data</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fiction&quot;</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;non-fiction&quot;</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">}</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$.categories[0][name]
+<div class="language-json highlight"><span class="filename">results</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">[</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fiction&quot;</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;non-fiction&quot;</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="p">]</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="p">]</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$.categories[0][&#39;name&#39;]
+<h3 id="name-selector">Name selector</h3>
+<p>A <em>name selector</em> matches the value of an object member by its key. You can write it in either <strong>shorthand notation</strong> (<code>.thing</code>) or <strong>bracket notation</strong> (<code>['thing']</code> or <code>["thing"]</code>).</p>
+<p>Dot notation can be used when the property name is a valid identifier. Bracket notation is required when the property name contains spaces, special characters, or starts with a number.</p>
+<p><strong>Example query</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$.book.title
 </span></code></pre></div>
-<p>By default, <code>or</code>, <code>and</code>, <code>in</code>, <code>true</code>, <code>True</code>, <code>false</code>, <code>False</code>, <code>nil</code>, <code>Nil</code>, <code>null</code>, <code>Null</code>, <code>none</code>, <code>None</code>, <code>contains</code>, <code>undefined</code>, and <code>missing</code> are considered <em>reserved words</em>. In some cases you will need to use quoted property/name selector syntax if you're selecting a name that matches any of these words exactly. For example, <code>["and"]</code>.</p>
-<h3 id="array-indices-0-or-1">Array indices (<code>[0]</code> or <code>[-1]</code>)</h3>
-<p>Select an item from an array by its index. Indices are zero-based and enclosed in brackets. If the index is negative, items are selected from the end of the array. Considering example data from the top of this page, the following examples are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$.categories[0]
+<div class="language-json highlight"><span class="filename">data</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&quot;book&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Moby Dick&quot;</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nt">&quot;author&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Herman Melville&quot;</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="p">}</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$.categories[-1]
+<div class="language-json highlight"><span class="filename">results</span><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">[</span><span class="s2">&quot;Moby Dick&quot;</span><span class="p">]</span>
 </span></code></pre></div>
-<h3 id="wildcard-or">Wildcard (<code>.*</code> or <code>[*]</code>)</h3>
-<p>Select all elements from an array or all values from an object using <code>*</code>. These two examples are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$.categories[0].products.*
+<h3 id="index-selector">Index selector</h3>
+<p>The index selector selects an element from an array by its index. Indices are zero-based and enclosed in brackets, <code>[0]</code>. If the index is negative, items are selected from the end of the array.</p>
+<p><strong>Example query</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$.categories[0].name
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$.categories[0].products[*]
+<div class="language-json highlight"><span class="filename">data</span><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fiction&quot;</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;non-fiction&quot;</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="p">}</span>
 </span></code></pre></div>
-<h3 id="keys-or">Keys (<code>.~</code> or <code>[~]</code>)</h3>
+<div class="language-json highlight"><span class="filename">results</span><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">[</span><span class="s2">&quot;fiction&quot;</span><span class="p">]</span>
+</span></code></pre></div>
+<h3 id="wildcard-selector">Wildcard selector</h3>
+<p>The <em>wildcard selector</em> matches all member values of an object or all elements in an array. It can be written as <code>.*</code> (shorthand notation) or <code>[*]</code> (bracket notation).</p>
+<p><strong>Example query</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$.categories[*].name
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">data</span><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">{</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fiction&quot;</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;non-fiction&quot;</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">results</span><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">[</span><span class="s2">&quot;fiction&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;non-fiction&quot;</span><span class="p">]</span>
+</span></code></pre></div>
+<h3 id="slice-selector">Slice selector</h3>
+<p>The slice selector allows you to select a range of elements from an array. A start index, ending index and step size are all optional and separated by colons, <code>[start:end:step]</code>. Negative indices count from the end of the array, just like standard Python slicing.</p>
+<p><strong>Example query</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$.items[1:4:2]
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">data</span><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;d&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">results</span><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;d&quot;</span><span class="p">]</span>
+</span></code></pre></div>
+<h3 id="filter-selector">Filter selector</h3>
+<p>Filters allow you to remove nodes from a selection based on a Boolean expression, <code>[?expression]</code>. A filter expression evaluates each node in the context of either the root (<code>$</code>) or current (<code>@</code>) node.</p>
+<p>When filtering a mapping-like object, <code>@</code> identifies the current member value. When filtering a sequence-like object, <code>@</code> identifies the current element.</p>
+<p>Comparison operators include <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, and <code>&gt;=</code>. Logical operators <code>&amp;&amp;</code> (and) and <code>||</code> (or) can combine terms, and parentheses can be used to group expressions.</p>
+<p>A filter expression on its own - without a comparison - is treated as an existence test.</p>
+<p><strong>Example query</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$..products[?(@.price &lt; $.price_cap)]
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">data</span><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="p">{</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="nt">&quot;price_cap&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">  </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;apple&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;orange&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;banana&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">results</span><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="p">[</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;apple&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;banana&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="p">]</span>
+</span></code></pre></div>
+<p>Filter expressions can also call predefined <a href="../functions/">function extensions</a>.</p>
+<h2 id="more-on-segments">More on segments</h2>
+<p>So far we've seen shorthand notation (<code>.selector</code>) and segments with just one selector (<code>[selector]</code>). Here we cover the descendant segment and segments with multiple selectors.</p>
+<h3 id="segments-with-multiple-selectors">Segments with multiple selectors</h3>
+<p>A segment can include multiple selectors separated by commas and enclosed in square brackets (<code>[selector, selector, ...]</code>). Any valid selector (names, indices, slices, filters, or wildcards) can appear in the list.</p>
+<p><strong>Example query</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$.store.book[0,2]
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">data</span><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="p">{</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">  </span><span class="nt">&quot;store&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">    </span><span class="nt">&quot;book&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Book A&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Book B&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Book C&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="w">    </span><span class="p">]</span>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">results</span><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="p">[</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Book A&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Book C&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="p">]</span>
+</span></code></pre></div>
+<h3 id="descendant-segment">Descendant segment</h3>
+<p>The descendant segment (<code>..</code>) visits all object member values and array elements under the current object or array, applying the selector or selectors that follow to each visited node. It must be followed by a shorthand selector (names, wildcards, etc.) or a bracketed list of one or more selectors.</p>
+<p><strong>Example query</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$..price
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">data</span><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="p">{</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">  </span><span class="nt">&quot;store&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">    </span><span class="nt">&quot;book&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Book A&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Book B&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="w">    </span><span class="p">],</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="w">    </span><span class="nt">&quot;bicycle&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;red&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">19.95</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">results</span><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mf">19.95</span><span class="p">]</span>
+</span></code></pre></div>
+<h2 id="non-standard-selectors-and-identifiers">Non-standard selectors and identifiers</h2>
+<p>The selectors and identifiers described in this section are an extension to the RFC 9535 specification. They are enabled by default. Set <code>strict=True</code> when constructing a <a href="../api/#jsonpath.JSONPathEnvironment"><code>JSONPathEnvironment</code></a>, calling <a href="../convenience/#jsonpath.findall"><code>findall()</code></a>, <a href="../convenience/#jsonpath.finditer"><code>finditer()</code></a>, etc. to disable all non-standard features.</p>
+<p>Also note that when <code>strict=False</code>:</p>
+<ul>
+<li>The root identifier (<code>$</code>) is optional and paths starting with a dot (<code>.</code>) are OK. <code>.thing</code> is the same as <code>$.thing</code>, as is <code>thing</code> and <code>$["thing"]</code>.</li>
+<li>Leading and trailing whitespace is OK.</li>
+<li>Explicit comparisons to <code>undefined</code> (aka <code>missing</code>) are supported as well as implicit existence tests.</li>
+</ul>
+<h3 id="key-selector">Key selector</h3>
+<p><strong><em>New in version 2.0.0</em></strong></p>
+<p>The key selector, <code>.~name</code> or <code>[~'name']</code>, selects at most one name from an object member. It is syntactically similar to the standard <a href="https://datatracker.ietf.org/doc/html/rfc9535#name-name-selector">name selector</a>, with the addition of a tilde (<code>~</code>) prefix.</p>
+<p>When applied to a JSON object, the key selector selects the <em>name</em> from an object member, if that name exists, or nothing if it does not exist. This complements the standard name selector, which select the <em>value</em> from a name/value pair.</p>
+<p>When applied to an array or primitive value, the key selector selects nothing.</p>
+<p>Key selector strings must follow the same processing semantics as name selector strings, as described in <a href="https://datatracker.ietf.org/doc/html/rfc9535#section-2.3.1.2">section 2.3.2.1</a> of RFC 9535.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The key selector is introduced to facilitate valid normalized paths for nodes produced by the <a href="#keys-selector">keys selector</a> and the <a href="#keys-filter-selector">keys filter selector</a>. I don't expect it will be of much use elsewhere.</p>
+</div>
+<h4 id="syntax">Syntax</h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>selector             = name-selector /
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>                       wildcard-selector /
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>                       slice-selector /
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>                       index-selector /
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>                       filter-selector /
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>                       key-selector /
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a>                       keys-selector /
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a>                       keys-filter-selector
+</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a>
+</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a>key-selector         = &quot;~&quot; name-selector
+</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a>
+</span><span id="__span-25-12"><a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a>child-segment        = bracketed-selection /
+</span><span id="__span-25-13"><a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a>                       (&quot;.&quot;
+</span><span id="__span-25-14"><a id="__codelineno-25-14" name="__codelineno-25-14" href="#__codelineno-25-14"></a>                        (wildcard-selector /
+</span><span id="__span-25-15"><a id="__codelineno-25-15" name="__codelineno-25-15" href="#__codelineno-25-15"></a>                         member-name-shorthand /
+</span><span id="__span-25-16"><a id="__codelineno-25-16" name="__codelineno-25-16" href="#__codelineno-25-16"></a>                         member-key-shorthand))
+</span><span id="__span-25-17"><a id="__codelineno-25-17" name="__codelineno-25-17" href="#__codelineno-25-17"></a>
+</span><span id="__span-25-18"><a id="__codelineno-25-18" name="__codelineno-25-18" href="#__codelineno-25-18"></a>descendant-segment   = &quot;..&quot; (bracketed-selection /
+</span><span id="__span-25-19"><a id="__codelineno-25-19" name="__codelineno-25-19" href="#__codelineno-25-19"></a>                             wildcard-selector /
+</span><span id="__span-25-20"><a id="__codelineno-25-20" name="__codelineno-25-20" href="#__codelineno-25-20"></a>                             member-name-shorthand /
+</span><span id="__span-25-21"><a id="__codelineno-25-21" name="__codelineno-25-21" href="#__codelineno-25-21"></a>                             member-key-shorthand)
+</span><span id="__span-25-22"><a id="__codelineno-25-22" name="__codelineno-25-22" href="#__codelineno-25-22"></a>
+</span><span id="__span-25-23"><a id="__codelineno-25-23" name="__codelineno-25-23" href="#__codelineno-25-23"></a>member-key-shorthand = &quot;~&quot; name-first *name-char
+</span></code></pre></div>
+<h4 id="examples">Examples</h4>
+<div class="language-json highlight"><span class="filename">Example JSON document</span><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="p">{</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="w">  </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">&quot;b&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;z&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;b&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;y&quot;</span><span class="w"> </span><span class="p">}]</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="p">}</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Query</th>
+<th>Result</th>
+<th>Result Paths</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$.a[0].~c</code></td>
+<td><code>"c"</code></td>
+<td><code>$['a'][0][~'c']</code></td>
+<td>Key of nested object</td>
+</tr>
+<tr>
+<td><code>$.a[1].~c</code></td>
+<td></td>
+<td></td>
+<td>Key does not exist</td>
+</tr>
+<tr>
+<td><code>$..[~'b']</code></td>
+<td><code>"b"</code> <br/> <code>"b"</code></td>
+<td><code>$['a'][0][~'b']</code> <br/> <code>$['a'][1][~'b']</code></td>
+<td>Descendant, single quoted key</td>
+</tr>
+<tr>
+<td><code>$..[~"b"]</code></td>
+<td><code>"b"</code> <br/> <code>"b"</code></td>
+<td><code>$['a'][0][~'b']</code> <br/> <code>$['a'][1][~'b']</code></td>
+<td>Descendant, double quoted key</td>
+</tr>
+</tbody>
+</table>
+<h3 id="keys-selector">Keys selector</h3>
 <p><strong><em>New in version 0.6.0</em></strong></p>
-<p>Select keys/properties from an object using <code>~</code>.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$.categories.~
+<p>The keys selector, <code>~</code> or <code>[~]</code>, selects all names from an object’s name/value members. This complements the standard <a href="https://datatracker.ietf.org/doc/html/rfc9535#name-wildcard-selector">wildcard selector</a>, which selects all values from an object’s name/value pairs.</p>
+<p>As with the wildcard selector, the order of nodes resulting from a keys selector is not stipulated.</p>
+<p>When applied to an array or primitive value, the keys selector selects nothing.</p>
+<p>The normalized path of a node selected using the keys selector uses <a href="#key-selector">key selector</a> syntax.</p>
+<h4 id="syntax_1">Syntax</h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>keys-selector       = &quot;~&quot;
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$.categories[~]
+<h4 id="examples_1">Examples</h4>
+<div class="language-json highlight"><span class="filename">Example JSON document</span><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="p">{</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="w">  </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">&quot;b&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;z&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;b&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;y&quot;</span><span class="w"> </span><span class="p">}]</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="p">}</span>
 </span></code></pre></div>
-<h3 id="slices-0-1-or-10-1">Slices (<code>[0:-1]</code> or <code>[-1:0:-1]</code>)</h3>
-<p>Select a range of elements from an array using slice notation. The start index, stop index and step are all optional. These examples are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$.categories[0:]
+<table>
+<thead>
+<tr>
+<th>Query</th>
+<th>Result</th>
+<th>Result Paths</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$.a[0].~</code></td>
+<td><code>"b"</code> <br/> <code>"c"</code></td>
+<td><code>$['a'][0][~'b']</code> <br/> <code>$['a'][0][~'c']</code></td>
+<td>Object keys</td>
+</tr>
+<tr>
+<td><code>$.a.~</code></td>
+<td></td>
+<td></td>
+<td>Array keys</td>
+</tr>
+<tr>
+<td><code>$.a[0][~, ~]</code></td>
+<td><code>"b"</code> <br/> <code>"c"</code> <br/> <code>"c"</code> <br/> <code>"b"</code></td>
+<td><code>$['a'][0][~'b']</code> <br/> <code>$['a'][0][~'c']</code> <br/> <code>$['a'][0][~'c']</code> <br/> <code>$['a'][0][~'b']</code></td>
+<td>Non-deterministic ordering</td>
+</tr>
+<tr>
+<td><code>$..[~]</code></td>
+<td><code>"a"</code> <br/> <code>"b"</code> <br/> <code>"c"</code> <br/> <code>"b"</code></td>
+<td><code>$[~'a']</code> <br/> <code>$['a'][0][~'b']</code> <br/> <code>$['a'][0][~'c']</code> <br/> <code>$['a'][1][~'b']</code></td>
+<td>Descendant keys</td>
+</tr>
+</tbody>
+</table>
+<h3 id="keys-filter-selector">Keys filter selector</h3>
+<p><strong><em>New in version 2.0.0</em></strong></p>
+<p>The keys filter selector selects names from an object’s name/value members. It is syntactically similar to the standard <a href="https://datatracker.ietf.org/doc/html/rfc9535#name-filter-selector">filter selector</a>, with the addition of a tilde (<code>~</code>) prefix.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>~?&lt;logical-expr&gt;
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$.categories[0:-1:]
+<p>Whereas the standard filter selector will produce a node for each <em>value</em> from an object’s name/value members - when its expression evaluates to logical true - the keys filter selector produces a node for each <em>name</em> in an object’s name/value members.</p>
+<p>Logical expression syntax and semantics otherwise match that of the standard filter selector. <code>@</code> still refers to the current member value. See also the <a href="#current-key-identifier">current key identifier</a>.</p>
+<p>When applied to an array or primitive value, the keys filter selector selects nothing.</p>
+<p>The normalized path of a node selected using the keys filter selector uses <a href="#key-selector">key selector</a> syntax.</p>
+<h4 id="syntax_2">Syntax</h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>filter-selector     = &quot;~?&quot; S logical-expr
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$.categories[0:-1:1]
+<h4 id="examples_2">Examples</h4>
+<div class="language-json highlight"><span class="filename">Example JSON document</span><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="p">[{</span><span class="w"> </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;b&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;d&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="p">}]</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$.categories[::]
+<table>
+<thead>
+<tr>
+<th>Query</th>
+<th>Result</th>
+<th>Result Paths</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$.*[~?length(@) &gt; 2]</code></td>
+<td><code>"a"</code> <br/> <code>"d"</code></td>
+<td><code>$[0][~'a']</code> <br/> <code>$[2][~'d']</code></td>
+<td>Conditionally select object keys</td>
+</tr>
+<tr>
+<td><code>$.*[~?@.x]</code></td>
+<td><code>"c"</code></td>
+<td><code>$[1][~'c']</code></td>
+<td>Existence test</td>
+</tr>
+<tr>
+<td><code>$[~?(true == true)]</code></td>
+<td></td>
+<td></td>
+<td>Keys from an array</td>
+</tr>
+</tbody>
+</table>
+<h3 id="singular-query-selector">Singular query selector</h3>
+<p><strong><em>New in version 2.0.0</em></strong></p>
+<p>The singular query selector consist of an embedded absolute singular query, the result of which is used as an object member name or array element index.</p>
+<p>If the embedded query resolves to a string or int value, at most one object member value or array element value is selected. Otherwise the singular query selector selects nothing.</p>
+<h4 id="syntax_3">Syntax</h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>selector                = name-selector /
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>                          wildcard-selector /
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>                          slice-selector /
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>                          index-selector /
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>                          filter-selector /
+</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a>                          singular-query-selector
+</span><span id="__span-32-7"><a id="__codelineno-32-7" name="__codelineno-32-7" href="#__codelineno-32-7"></a>
+</span><span id="__span-32-8"><a id="__codelineno-32-8" name="__codelineno-32-8" href="#__codelineno-32-8"></a>singular-query-selector = abs-singular-query
 </span></code></pre></div>
-<h3 id="lists-1-2-1020">Lists (<code>[1, 2, 10:20]</code>)</h3>
-<p>Select multiple indices, slices or properties using list notation (sometimes known as a "union" or "segment", we use "union" to mean something else).</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$..products.*.[title, price]
+<h4 id="examples_3">Examples</h4>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="p">{</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="w">  </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="w">    </span><span class="nt">&quot;j&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="w">    </span><span class="nt">&quot;p&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="w">      </span><span class="nt">&quot;q&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">]</span>
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-33-7"><a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a><span class="w">  </span><span class="p">},</span>
+</span><span id="__span-33-8"><a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a><span class="w">  </span><span class="nt">&quot;b&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;j&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;p&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;q&quot;</span><span class="p">],</span>
+</span><span id="__span-33-9"><a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a><span class="w">  </span><span class="nt">&quot;c d&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-33-10"><a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a><span class="w">    </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-33-11"><a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a><span class="w">      </span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+</span><span id="__span-33-12"><a id="__codelineno-33-12" name="__codelineno-33-12" href="#__codelineno-33-12"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-33-13"><a id="__codelineno-33-13" name="__codelineno-33-13" href="#__codelineno-33-13"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-33-14"><a id="__codelineno-33-14" name="__codelineno-33-14" href="#__codelineno-33-14"></a><span class="p">}</span>
 </span></code></pre></div>
-<h3 id="recursive-descent">Recursive descent (<code>..</code>)</h3>
-<p>The <code>..</code> selector visits every node beneath the current selection. If a property selector, using dot notation, follows <code>..</code>, the dot is optional. These two examples are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$..title
+<table>
+<thead>
+<tr>
+<th>Query</th>
+<th>Result</th>
+<th>Result Path</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$.a[$.b[1]]</code></td>
+<td><code>{"q": [4, 5, 6]}</code></td>
+<td><code>$['a']['p']</code></td>
+<td>Object name from embedded singular query</td>
+</tr>
+<tr>
+<td><code>$.a.j[$['c d'].x.y]</code></td>
+<td><code>2</code></td>
+<td><code>$['a']['j'][1]</code></td>
+<td>Array index from embedded singular query</td>
+</tr>
+<tr>
+<td><code>$.a[$.b]</code></td>
+<td></td>
+<td></td>
+<td>Embedded singular query does not resolve to a string or int value</td>
+</tr>
+</tbody>
+</table>
+<h3 id="current-key-identifier">Current key identifier</h3>
+<p><code>#</code> is the <em>current key</em> identifier. <code>#</code> will be the name of the current object member, or index of the current array element. This complements the current node identifier (<code>@</code>), which refers to a member value or array element, respectively.</p>
+<p>It is a syntax error to follow the current key identifier with segments, as if it were a filter query.</p>
+<p>When used as an argument to a function, the current key is of <code>ValueType</code>, and outside a function call it must be compared.</p>
+<h4 id="syntax_4">Syntax</h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>comparable             = literal /
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>                         singular-query / ; singular query value
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>                         function-expr  / ; ValueType
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>                         current-key-identifier
+</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a>
+</span><span id="__span-34-6"><a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a>
+</span><span id="__span-34-7"><a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a>function-argument      = literal /
+</span><span id="__span-34-8"><a id="__codelineno-34-8" name="__codelineno-34-8" href="#__codelineno-34-8"></a>                         filter-query / ; (includes singular-query)
+</span><span id="__span-34-9"><a id="__codelineno-34-9" name="__codelineno-34-9" href="#__codelineno-34-9"></a>                         logical-expr /
+</span><span id="__span-34-10"><a id="__codelineno-34-10" name="__codelineno-34-10" href="#__codelineno-34-10"></a>                         function-expr /
+</span><span id="__span-34-11"><a id="__codelineno-34-11" name="__codelineno-34-11" href="#__codelineno-34-11"></a>                         current-key-identifier
+</span><span id="__span-34-12"><a id="__codelineno-34-12" name="__codelineno-34-12" href="#__codelineno-34-12"></a>
+</span><span id="__span-34-13"><a id="__codelineno-34-13" name="__codelineno-34-13" href="#__codelineno-34-13"></a>current-key-identifier = &quot;#&quot;
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$...title
+<h4 id="examples_4">Examples</h4>
+<div class="language-json highlight"><span class="filename">Example JSON document</span><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;abc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;def&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;abx&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;aby&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
-<h3 id="filters-expression">Filters (<code>[?EXPRESSION]</code>)</h3>
-<p>Filters allow you to remove nodes from a selection using a Boolean expression. A <em>filter query</em> is a JSONPath query nested within a filter expression. Every filter query must start with the root identifier (<code>$</code>), the current node identifier (<code>@</code>) or the <a href="../advanced/#filter-variables">filter context</a> identifier (<code>_</code>).</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$..products[?(@.price &lt; $.price_cap)]
-</span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$..products[?@.price &lt; $.price_cap]
-</span></code></pre></div>
-<p>When filtering a mapping-like object, <code>#</code> references the current key/property and <code>@</code> references the current value associated with <code>#</code>. When filtering a sequence-like object, <code>@</code> references the current item and <code>#</code> will hold the item's index in the sequence.</p>
-<p>Comparison operators include <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code> and <code>&gt;=</code>. Plus <code>&lt;&gt;</code> as an alias for <code>!=</code>.</p>
-<p><code>in</code> and <code>contains</code> are membership operators. <code>left in right</code> is equivalent to <code>right contains left</code>.</p>
-<p><code>&amp;&amp;</code> and <code>||</code> are logical operators and terms can be grouped with parentheses. <code>and</code> and <code>or</code> work too.</p>
-<p><code>=~</code> matches the left value with a regular expression literal. Regular expressions use a syntax similar to that found in JavaScript, where the pattern to match is surrounded by slashes, optionally followed by flags.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$..products[?(@.description =~ /.*trainers/i)]
-</span></code></pre></div>
-<p>A filter query on its own - one that is not part of a comparison expression - is an existence test. We also support comparing a filter query to the special <code>undefined</code> keyword. These two example are equivalent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$..products[?!@.sale_price]
-</span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$..products[?@.sale_price == undefined]
-</span></code></pre></div>
-<p>Filter expressions can call predefined <a href="../functions/">function extensions</a> too.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>$.categories[?count(@.products.*) &gt;= 2]
-</span></code></pre></div>
-<h3 id="fake-root">Fake root (<code>^</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Query</th>
+<th>Result</th>
+<th>Result Path</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$[?match(#, '^ab.*') &amp;&amp; length(@) &gt; 0 ]</code></td>
+<td><code>[1,2,3]</code> <br/> <code>[6]</code></td>
+<td><code>$['abc']</code> <br/> <code>$['abx']</code></td>
+<td>Match on object names</td>
+</tr>
+<tr>
+<td><code>$.abc[?(# &gt;= 1)]</code></td>
+<td><code>2</code> <br/> <code>3</code></td>
+<td><code>$['abc'][1]</code> <br/> <code>$['abc'][2]</code></td>
+<td>Compare current array index</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pseudo-root-identifier">Pseudo root identifier</h3>
 <p><strong><em>New in version 0.11.0</em></strong></p>
-<p>This non-standard "fake root" identifier behaves like the standard root identifier (<code>$</code>), but wraps the target JSON document in a single-element array, so as to make it selectable with a filter selector.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>^[?length(categories) &gt; 0]
+<p>The pseudo root identifier (<code>^</code>) behaves like the standard root identifier (<code>$</code>), but conceptually wraps the target JSON document in a single-element array. This allows the root document itself to be conditionally selected by filters.</p>
+<h4 id="syntax_5">Syntax</h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>jsonpath-query             = (root-identifier / pseudo-root-identifier) segments
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>root-identifier            = &quot;$&quot;
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>pseudo-root-identifier     = &quot;^&quot;
 </span></code></pre></div>
-<h3 id="union-and-intersection">Union (<code>|</code>) and intersection (<code>&amp;</code>)</h3>
-<p>Union (<code>|</code>) and intersection (<code>&amp;</code>) are similar to Python's set operations, but we don't dedupe the matches (matches will often contain unhashable objects).</p>
-<p>The <code>|</code> operator combines matches from two or more paths. This example selects a single list of all prices, plus the price cap as the last element.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>$..products.*.price | $.price_cap
+<h4 id="examples_5">Examples</h4>
+<div class="language-json highlight"><span class="filename">Example JSON data</span><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;b&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;n&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
-<p>The <code>&amp;</code> operator produces matches that are common to both left and right paths. This example would select the list of products that are common to both the "footwear" and "headwear" categories.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>$.categories[?(@.name == &#39;footwear&#39;)].products.* &amp; $.categories[?(@.name == &#39;headwear&#39;)].products.*
+<table>
+<thead>
+<tr>
+<th>Query</th>
+<th>Result</th>
+<th>Result Path</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>^[?@.a.b &gt; 7]</code></td>
+<td><code>{ "a": { "b": 42 } }</code></td>
+<td><code>^[0]</code></td>
+<td>Conditionally select the root value</td>
+</tr>
+<tr>
+<td><code>^[?@.a.v &gt; value(^.*.n)]</code></td>
+<td><code>{ "a": { "b": 42 }, "n": 7 }</code></td>
+<td><code>^[0]</code></td>
+<td>Embedded pseudo root query</td>
+</tr>
+</tbody>
+</table>
+<h3 id="filter-context-identifier">Filter context identifier</h3>
+<p>The filter context identifier (<code>_</code>) starts an embedded query, similar to the root identifier (<code>$</code>) and current node identifier (<code>@</code>), but targets JSON-like data passed as the <code>filter_context</code> argument to <a href="../api/#jsonpath.JSONPath.findall"><code>findall()</code></a> and <a href="../api/#jsonpath.JSONPath.finditer"><code>finditer()</code></a>.</p>
+<h4 id="syntax_6">Syntax</h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>current-node-identifier  = &quot;@&quot;
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>extra-context-identifier = &quot;_&quot;
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>filter-query        = rel-query / extra-context-query / jsonpath-query
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>rel-query           = current-node-identifier segments
+</span><span id="__span-38-6"><a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>extra-context-query = extra-context-identifier segments
+</span><span id="__span-38-7"><a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a>
+</span><span id="__span-38-8"><a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>singular-query      = rel-singular-query / abs-singular-query / extra-context-singular-query
+</span><span id="__span-38-9"><a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>rel-singular-query  = current-node-identifier singular-query-segments
+</span><span id="__span-38-10"><a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a>abs-singular-query  = root-identifier singular-query-segments
+</span><span id="__span-38-11"><a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a>
+</span><span id="__span-38-12"><a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a>extra-context-singular-query = extra-context-identifier singular-query-segments
 </span></code></pre></div>
-<p>Note that <code>|</code> and <code>&amp;</code> are not allowed inside filter expressions.</p>
-<h2 id="notable-differences">Notable differences</h2>
-<p>This is a list of things that you might find in other JSONPath implementation that we don't support (yet).</p>
+<h4 id="examples_6">Examples</h4>
+<div class="language-json highlight"><span class="filename">Example JSON data</span><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">&quot;b&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;b&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">}]</span><span class="w"> </span><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-json highlight"><span class="filename">Extra JSON data</span><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="w"> </span><span class="p">}</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Query</th>
+<th>Result</th>
+<th>Result Path</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$.a[?@.b == _.c]</code></td>
+<td><code>{ "b": 42 }</code></td>
+<td><code>$['a'][0]</code></td>
+<td>Comparison with extra context singular query</td>
+</tr>
+</tbody>
+</table>
+<h2 id="non-standard-operators">Non-standard operators</h2>
+<p>In addition to the operators described below, the standard <em>logical and</em> operator (<code>&amp;&amp;</code>) is aliased as <code>and</code>, the standard <em>logical or</em> operator (<code>||</code>) is aliased as <code>or</code>, and <code>null</code> is aliased as <code>nil</code> and <code>none</code>.</p>
+<p>Also, <code>true</code>, <code>false</code>, <code>null</code> and their aliases can start with an upper case letter.</p>
+<h3 id="membership-operators">Membership operators</h3>
+<p>The membership operators test whether one value occurs within another.</p>
+<p>An infix expression using <code>contains</code> evaluates to true if the right-hand side is a member of the left-hand side, and false otherwise.</p>
 <ul>
-<li>We don't support extension functions of the form <code>selector.func()</code>.</li>
-<li>We always return a list of matches from <code>jsonpath.findall()</code>, never a scalar value.</li>
-<li>We do not support arithmetic in filter expression.</li>
-<li>We don't allow dotted array indices. An array index must be surrounded by square brackets.</li>
-<li>Python JSONPath is strictly read only. There are no update "selectors", but we do provide methods for converting <code>JSONPathMatch</code> instances to <code>JSONPointer</code>s, and a <code>JSONPatch</code> builder API for modifying JSON-like data structures using said pointers.</li>
+<li>If the left-hand side is an object and the right-hand side is a string, the result is true if the object has a member with that name.</li>
+<li>If the left-hand side is an array, the result is true if any element of the array is equal to the right-hand side.</li>
+<li>For scalars (strings, numbers, booleans, null), <code>contains</code> always evaluates to false.</li>
 </ul>
-<p>And this is a list of areas where we deviate from <a href="https://datatracker.ietf.org/doc/html/rfc9535">RFC 9535</a>. See <a href="https://github.com/jg-rp/python-jsonpath-rfc9535">jsonpath-rfc9535</a> for an alternative implementation of JSONPath that does not deviate from RFC 9535.</p>
-<ul>
-<li>The root token (default <code>$</code>) is optional and paths starting with a dot (<code>.</code>) are OK. <code>.thing</code> is the same as <code>$.thing</code>, as is <code>thing</code>, <code>$[thing]</code> and <code>$["thing"]</code>.</li>
-<li>The built-in <code>match()</code> and <code>search()</code> filter functions use Python's standard library <code>re</code> module, which, at least, doesn't support Unicode properties. We might add an implementation of <code>match()</code> and <code>search()</code> using the third party <a href="https://pypi.org/project/regex/">regex</a> package in the future.</li>
-<li>We don't check <code>match()</code> and <code>search()</code> regex arguments against RFC 9485. Any valid Python pattern is allowed.</li>
-<li>We don't require property names to be quoted inside a bracketed selection, unless the name contains reserved characters.</li>
-<li>We don't require the recursive descent segment to have a selector. <code>$..</code> is equivalent to <code>$..*</code>.</li>
-<li>We support explicit comparisons to <code>undefined</code> as well as implicit existence tests.</li>
-<li>Float literals without a fractional digit are OK or leading digit. <code>1.</code> is equivalent to <code>1.0</code>.</li>
-<li>We treat literals (such as <code>true</code> and <code>false</code>) as valid "basic" expressions. For example, <code>$[?true || false]</code>, without an existence test or comparison either side of logical <em>or</em>, does not raise a syntax error.</li>
-<li>By default, <code>and</code> is equivalent to <code>&amp;&amp;</code> and <code>or</code> is equivalent to <code>||</code>.</li>
-<li><code>none</code> and <code>nil</code> are aliases for <code>null</code>.</li>
-<li><code>null</code> (and its aliases), <code>true</code> and <code>false</code> can start with an upper or lower case letter.</li>
-<li>We don't treat some invalid <code>\u</code> escape sequences in quoted name selectors and string literals as an error. We match the behavior of the JSON decoder in Python's standard library, which is less strict than RFC 9535.</li>
-</ul>
-<p>And this is a list of features that are uncommon or unique to Python JSONPath.</p>
-<ul>
-<li>We support membership operators <code>in</code> and <code>contains</code>, plus list/array literals.</li>
-<li><code>|</code> is a union operator, where matches from two or more JSONPaths are combined. This is not part of the Python API, but built-in to the JSONPath syntax.</li>
-<li><code>&amp;</code> is an intersection operator, where we exclude matches that don't exist in both left and right paths. This is not part of the Python API, but built-in to the JSONPath syntax.</li>
-<li><code>#</code> is the current key/property or index identifier when filtering a mapping or sequence.</li>
-<li><code>_</code> is a filter context identifier. With usage similar to <code>$</code> and <code>@</code>, <code>_</code> exposes arbitrary data from the <code>filter_context</code> argument to <code>findall()</code> and <code>finditer()</code>.</li>
-<li><code>~</code> is a "keys" or "properties" selector.</li>
-<li><code>^</code> is a "fake root" identifier. It is equivalent to <code>$</code>, but wraps the target JSON document in a single-element array, so the root value can be conditionally selected with a filter selector.</li>
-<li><code>=~</code> is the the regex match operator, matching a value to a JavaScript-style regex literal.</li>
-</ul>
+<p>The <code>in</code> operator is equivalent to <code>contains</code> with operands reversed. This makes <code>contains</code> and <code>in</code> symmetric, so either form may be used depending on which reads more naturally in context.</p>
+<p>A list literal is a comma separated list of JSONPath expression literals. List should appear on the left-hand side of <code>contains</code> or the right-hand side of <code>in</code>.</p>
+<h4 id="syntax_7">Syntax</h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>basic-expr          = paren-expr /
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>                      comparison-expr /
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>                      membership-expr /
+</span><span id="__span-41-4"><a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a>                      test-expr
+</span><span id="__span-41-5"><a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a>
+</span><span id="__span-41-6"><a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a>membership-expr     = comparable S membership-op S comparable
+</span><span id="__span-41-7"><a id="__codelineno-41-7" name="__codelineno-41-7" href="#__codelineno-41-7"></a>
+</span><span id="__span-41-8"><a id="__codelineno-41-8" name="__codelineno-41-8" href="#__codelineno-41-8"></a>membership-operator = &quot;contains&quot; / &quot;in&quot;
+</span><span id="__span-41-9"><a id="__codelineno-41-9" name="__codelineno-41-9" href="#__codelineno-41-9"></a>
+</span><span id="__span-41-10"><a id="__codelineno-41-10" name="__codelineno-41-10" href="#__codelineno-41-10"></a>membership-operand  = literal /
+</span><span id="__span-41-11"><a id="__codelineno-41-11" name="__codelineno-41-11" href="#__codelineno-41-11"></a>                      singular-query / ; singular query value
+</span><span id="__span-41-12"><a id="__codelineno-41-12" name="__codelineno-41-12" href="#__codelineno-41-12"></a>                      function-expr /  ; ValueType
+</span><span id="__span-41-13"><a id="__codelineno-41-13" name="__codelineno-41-13" href="#__codelineno-41-13"></a>                      list-literal
+</span><span id="__span-41-14"><a id="__codelineno-41-14" name="__codelineno-41-14" href="#__codelineno-41-14"></a>
+</span><span id="__span-41-15"><a id="__codelineno-41-15" name="__codelineno-41-15" href="#__codelineno-41-15"></a>list-literal        = &quot;[&quot; S literal *(S &quot;,&quot; S literal) S &quot;]&quot;
+</span></code></pre></div>
+<h4 id="examples_7">Examples</h4>
+<div class="language-json highlight"><span class="filename">Example JSON data</span><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="p">{</span>
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a><span class="w">  </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bar&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;bar&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}],</span>
+</span><span id="__span-42-3"><a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a><span class="w">  </span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;foo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bar&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;bar&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;baz&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}],</span>
+</span><span id="__span-42-4"><a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a><span class="w">  </span><span class="nt">&quot;z&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;foo&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;a&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bar&quot;</span><span class="w"> </span><span class="p">}]</span>
+</span><span id="__span-42-5"><a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a><span class="p">}</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Query</th>
+<th>Result</th>
+<th>Result Path</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$.x[?@.a contains 'foo']</code></td>
+<td><code>{"a": ["foo", "bar"]}</code></td>
+<td><code>$['x'][0]</code></td>
+<td>Array contains string literal</td>
+</tr>
+<tr>
+<td><code>$.y[?@.a contains 'foo']</code></td>
+<td><code>{"a": ["foo", "bar"]}</code></td>
+<td><code>$['y'][0]</code></td>
+<td>Object contains string literal</td>
+</tr>
+<tr>
+<td><code>$.x[?'foo' in @.a]</code></td>
+<td><code>{"a": ["foo", "bar"]}</code></td>
+<td><code>$['x'][0]</code></td>
+<td>String literal in array</td>
+</tr>
+<tr>
+<td><code>$.y[?'foo' in @.a]</code></td>
+<td><code>{"a": ["foo", "bar"]}</code></td>
+<td><code>$['y'][0]</code></td>
+<td>String literal in object</td>
+</tr>
+<tr>
+<td><code>$.z[?(['bar', 'baz'] contains @.a)]</code></td>
+<td><code>{"a": "bar"}</code></td>
+<td><code>$['z'][1]</code></td>
+<td>List literal contains embedded query</td>
+</tr>
+</tbody>
+</table>
+<h3 id="regex-operator">Regex operator</h3>
+<p><code>=~</code> is an infix operator that matches the left-hand side with a regular expression literal on the right-hand side. Regular expression literals use a syntax similar to that found in JavaScript, where the pattern to match is surrounded by slashes, <code>/pattern/</code>, optionally followed by flags, <code>/pattern/flags</code>.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>$..products[?(@.description =~ /.*trainers/i)]
+</span></code></pre></div>
+<h3 id="union-and-intersection-operators">Union and intersection operators</h3>
+<p>The union or concatenation operator, <code>|</code>, combines matches from two or more paths.</p>
+<p>The intersection operator, <code>&amp;</code>, produces matches that are common to both left and right paths.</p>
+<p>Note that compound queries are not allowed inside filter expressions.</p>
+<h4 id="syntax_8">Syntax</h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>jsonpath-query          = root-identifier segments
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>
+</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>compound-jsonpath-query = jsonpath-query compound-op jsonpath-query
+</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>
+</span><span id="__span-44-5"><a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>compound-op             = &quot;|&quot; /
+</span><span id="__span-44-6"><a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a>                          &quot;&amp;&quot;
+</span></code></pre></div>
+<h4 id="examples_8">Examples</h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>$..products.*.price | $.price_cap
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>$.categories[?(@.name == &#39;footwear&#39;)].products.* &amp; $.categories[?(@.name == &#39;headwear&#39;)].products.*
+</span></code></pre></div>
 
 
 
@@ -1192,10 +2372,10 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.50899def.min.js"></script>
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
       
     
   </body>
