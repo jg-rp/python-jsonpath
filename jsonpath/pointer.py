@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 from typing import Iterable
 from typing import Mapping
+from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import Union
@@ -58,14 +59,14 @@ class JSONPointer:
         max_int_index (int): The maximum integer allowed when resolving array
             items by index. Defaults to `(2**53) - 1`.
         min_int_index (int): The minimum integer allowed when resolving array
-            items by index. Defaults to `-(2**53) + 1`.
+            items by index. Defaults to `0`.
     """
 
     __slots__ = ("_s", "parts")
 
     keys_selector = "~"
     max_int_index = (2**53) - 1
-    min_int_index = -(2**53) + 1
+    min_int_index = 0
 
     def __init__(
         self,
@@ -75,11 +76,15 @@ class JSONPointer:
         unicode_escape: bool = True,
         uri_decode: bool = False,
     ) -> None:
-        self.parts = parts or self._parse(
-            pointer,
-            unicode_escape=unicode_escape,
-            uri_decode=uri_decode,
-        )
+        if parts:
+            self.parts = tuple(str(part) for part in parts)
+        else:
+            self.parts = self._parse(
+                pointer,
+                unicode_escape=unicode_escape,
+                uri_decode=uri_decode,
+            )
+
         self._s = self._encode(self.parts)
 
     def __str__(self) -> str:
@@ -91,7 +96,7 @@ class JSONPointer:
         *,
         unicode_escape: bool,
         uri_decode: bool,
-    ) -> Tuple[Union[int, str], ...]:
+    ) -> Tuple[str, ...]:
         if uri_decode:
             s = unquote(s)
         if unicode_escape:
@@ -103,43 +108,49 @@ class JSONPointer:
                 "pointer must start with a slash or be the empty string"
             )
 
-        return tuple(
-            self._index(p.replace("~1", "/").replace("~0", "~")) for p in s.split("/")
-        )[1:]
+        return tuple(p.replace("~1", "/").replace("~0", "~") for p in s.split("/"))[1:]
 
-    def _index(self, s: str) -> Union[str, int]:
-        # Reject non-zero ints that start with a zero and negative integers.
-        if len(s) > 1 and s.startswith(("0", "-")):
-            return s
+    def _index(self, key: str) -> Optional[int]:
+        """Return an array index for `key`.
+
+        Return `None` if key can't be converted to an index.
+        """
+        # Reject indexes that start with a zero.
+        if len(key) > 1 and key.startswith("0"):
+            return None
 
         try:
-            index = int(s)
-            if index < self.min_int_index or index > self.max_int_index:
-                raise JSONPointerError("index out of range")
-            return index
+            index = int(key)
         except ValueError:
-            return s
+            return None
 
-    def _getitem(self, obj: Any, key: Any) -> Any:
+        if index < self.min_int_index or index > self.max_int_index:
+            raise JSONPointerIndexError(
+                f"array indices must be between {self.min_int_index}"
+                f" and {self.max_int_index}"
+            )
+
+        return index
+
+    def _getitem(self, obj: Any, key: str) -> Any:
         try:
             # Handle the most common cases. A mapping with a string key, or a sequence
             # with an integer index.
-            #
-            # Note that `obj` does not have to be a Mapping or Sequence here. Any object
-            # implementing `__getitem__` will do.
+            if isinstance(obj, Sequence) and not isinstance(obj, str):
+                index = self._index(key)
+                if isinstance(index, int):
+                    return getitem(obj, index)
             return getitem(obj, key)
         except KeyError as err:
             return self._handle_key_error(obj, key, err)
         except TypeError as err:
             return self._handle_type_error(obj, key, err)
         except IndexError as err:
-            raise JSONPointerIndexError(f"index out of range: {key}") from err
+            if not isinstance(err, JSONPointerIndexError):
+                raise JSONPointerIndexError(f"index out of range: {key}") from err
+            raise
 
-    def _handle_key_error(self, obj: Any, key: Any, err: Exception) -> object:
-        if isinstance(key, int):
-            # Try a string repr of the index-like item as a mapping key.
-            return self._getitem(obj, str(key))
-
+    def _handle_key_error(self, obj: Any, key: str, err: Exception) -> object:
         # Handle non-standard key/property selector/pointer.
         #
         # For the benefit of `RelativeJSONPointer.to()` and `JSONPathMatch.pointer()`,
@@ -149,8 +160,7 @@ class JSONPointer:
         # Note that if a key with a leading `#`/`~` exists in `obj`, it will have been
         # handled by `_getitem`.
         if (
-            isinstance(key, str)
-            and isinstance(obj, Mapping)
+            isinstance(obj, Mapping)
             and key.startswith((self.keys_selector, "#"))
             and key[1:] in obj
         ):
@@ -158,16 +168,9 @@ class JSONPointer:
 
         raise JSONPointerKeyError(key) from err
 
-    def _handle_type_error(self, obj: Any, key: Any, err: Exception) -> object:
-        if (
-            isinstance(obj, str)
-            or not isinstance(obj, Sequence)
-            or not isinstance(key, str)
-        ):
+    def _handle_type_error(self, obj: Any, key: str, err: Exception) -> object:
+        if not isinstance(obj, Sequence) or not isinstance(key, str):
             raise JSONPointerTypeError(f"{key}: {err}") from err
-
-        # `obj` is array-like
-        # `key` is a string
 
         if key == "-":
             # "-" is a valid index when appending to a JSON array with JSON Patch, but
@@ -184,16 +187,6 @@ class JSONPointer:
             if _index >= len(obj):
                 raise JSONPointerIndexError(f"index out of range: {_index}") from err
             return _index
-
-        # Try int index. Reject non-zero ints that start with a zero.
-        index = self._index(key)
-        if isinstance(index, int):
-            return self._getitem(obj, index)
-
-        if re.match(r"-[0-9]+", index):
-            raise JSONPointerIndexError(
-                f"{key}: array indices must be positive integers or zero"
-            ) from err
 
         raise JSONPointerTypeError(f"{key}: {err}") from err
 
@@ -354,13 +347,13 @@ class JSONPointer:
         )
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, JSONPointer) and self.parts == other.parts
+        return isinstance(other, self.__class__) and self.parts == other.parts
 
     def __hash__(self) -> int:
-        return hash(self.parts)  # pragma: no cover
+        return hash((self.__class__, self.parts))  # pragma: no cover
 
     def __repr__(self) -> str:
-        return f"JSONPointer({self._s!r})"  # pragma: no cover
+        return f"{self.__class__.__name__}({self._s!r})"  # pragma: no cover
 
     def exists(
         self, data: Union[str, IOBase, Sequence[object], Mapping[str, object]]
@@ -396,7 +389,7 @@ class JSONPointer:
         if not self.parts:
             return self
         parent_parts = self.parts[:-1]
-        return JSONPointer(
+        return self.__class__(
             self._encode(parent_parts),
             parts=parent_parts,
             unicode_escape=False,
@@ -420,14 +413,13 @@ class JSONPointer:
 
         other = self._unicode_escape(other.lstrip())
         if other.startswith("/"):
-            return JSONPointer(other, unicode_escape=False, uri_decode=False)
+            return self.__class__(other, unicode_escape=False, uri_decode=False)
 
         parts = self.parts + tuple(
-            self._index(p.replace("~1", "/").replace("~0", "~"))
-            for p in other.split("/")
+            p.replace("~1", "/").replace("~0", "~") for p in other.split("/")
         )
 
-        return JSONPointer(
+        return self.__class__(
             self._encode(parts), parts=parts, unicode_escape=False, uri_decode=False
         )
 
@@ -617,7 +609,7 @@ class RelativeJSONPointer:
                 raise RelativeJSONPointerIndexError(
                     f"index offset out of range {new_index}"
                 )
-            parts[-1] = int(parts[-1]) + self.index
+            parts[-1] = str(int(parts[-1]) + self.index)
 
         # Pointer or index/property
         if isinstance(self.pointer, JSONPointer):

@@ -40,15 +40,11 @@ def test_resolve_with_default() -> None:
     assert pointer.resolve(data, default=None) is None
 
 
-def test_pointer_index_out_of_range() -> None:
-    max_plus_one = JSONPointer.max_int_index + 1
-    # min_minus_one = JSONPointer.min_int_index - 1
-
-    with pytest.raises(jsonpath.JSONPointerError):
-        JSONPointer(f"/some/thing/{max_plus_one}")
-
-    # with pytest.raises(jsonpath.JSONPointerError):
-    #     JSONPointer(f"/some/thing/{min_minus_one}")
+def test_pointer_min_int_index() -> None:
+    data = {"some": {"thing": [1, 2, 3]}}
+    pointer = JSONPointer(f"/some/thing/{JSONPointer.min_int_index - 1}")
+    with pytest.raises(jsonpath.JSONPointerIndexError):
+        pointer.resolve(data)
 
 
 def test_resolve_int_key() -> None:
@@ -320,3 +316,16 @@ def test_trailing_slash() -> None:
     data = {"foo": {"": [1, 2, 3], " ": [4, 5, 6]}}
     assert JSONPointer("/foo/").resolve(data) == [1, 2, 3]
     assert JSONPointer("/foo/ ").resolve(data) == [4, 5, 6]
+
+
+def test_index_token_on_string_value() -> None:
+    data = {"foo": "bar"}
+    pointer = JSONPointer("/foo/1")
+    with pytest.raises(JSONPointerTypeError):
+        pointer.resolve(data)
+
+
+def test_index_like_token_on_object_value() -> None:
+    data = {"foo": {"-1": "bar"}}
+    pointer = JSONPointer("/foo/-1")
+    assert pointer.resolve(data) == "bar"

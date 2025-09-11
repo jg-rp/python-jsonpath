@@ -4,7 +4,7 @@
 
 **Fixes**
 
-- Fixed JSON pointers using negative indices. The JSON Pointer specification (RFC 6901) does not allow negative array indexes. We now raise a `JSONPointerIndexError` if a JSON Pointer attempts to resolve an array item with a negative index. See [#115](https://github.com/jg-rp/python-jsonpath/issues/115).
+- Fixed JSON pointers using negative indices. The JSON Pointer specification (RFC 6901) does not allow negative array indexes. We now raise a `JSONPointerIndexError` if a JSON Pointer attempts to resolve an array item with a negative index. See [#115](https://github.com/jg-rp/python-jsonpath/issues/115). For anyone needing JSON Pointers that support negative indexes, set `JSONPointer.min_int_index` to a suitably negative integer, like `JSONPointer.min_int_index = -(2**53) + 1`.
 
 ## Version 2.0.0
 
