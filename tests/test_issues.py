@@ -1,5 +1,7 @@
 import pytest
 
+from jsonpath import JSONPatch
+from jsonpath import JSONPatchError
 from jsonpath import JSONPointerIndexError
 from jsonpath import findall
 from jsonpath import pointer
@@ -100,3 +102,16 @@ def test_issue_115() -> None:
     # Negative index
     with pytest.raises(JSONPointerIndexError):
         pointer.resolve("/users/-1/score", data)
+
+
+def test_issue_117() -> None:
+    # When the target value is an array of length 2, /foo/2 is the same as /foo/-
+    patch = JSONPatch().add(path="/foo/2", value=99)
+    data = {"foo": ["bar", "baz"]}
+    assert patch.apply(data) == {"foo": ["bar", "baz", 99]}
+
+    # Array length + 1 raises
+    patch = JSONPatch().add(path="/foo/3", value=99)
+    data = {"foo": ["bar", "baz"]}
+    with pytest.raises(JSONPatchError):
+        patch.apply(data)

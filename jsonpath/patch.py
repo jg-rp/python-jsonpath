@@ -7,6 +7,7 @@ import json
 from abc import ABC
 from abc import abstractmethod
 from io import IOBase
+from typing import Any
 from typing import Dict
 from typing import Iterable
 from typing import List
@@ -70,7 +71,11 @@ class OpAdd(Op):
                 if target == "-":
                     parent.append(self.value)
                 else:
-                    raise JSONPatchError("index out of range")
+                    index = self.path._index(target)  # noqa: SLF001
+                    if index == len(parent):
+                        parent.append(self.value)
+                    else:
+                        raise JSONPatchError("index out of range")
             else:
                 parent.insert(int(target), self.value)
         elif isinstance(parent, MutableMapping):
@@ -628,7 +633,7 @@ class JSONPatch:
 
     def apply(
         self,
-        data: Union[str, IOBase, MutableSequence[object], MutableMapping[str, object]],
+        data: Union[str, IOBase, MutableSequence[Any], MutableMapping[str, Any]],
     ) -> object:
         """Apply all operations from this patch to _data_.
 
@@ -676,7 +681,7 @@ class JSONPatch:
 
 def apply(
     patch: Union[str, IOBase, Iterable[Mapping[str, object]], None],
-    data: Union[str, IOBase, MutableSequence[object], MutableMapping[str, object]],
+    data: Union[str, IOBase, MutableSequence[Any], MutableMapping[str, Any]],
     *,
     unicode_escape: bool = True,
     uri_decode: bool = False,
