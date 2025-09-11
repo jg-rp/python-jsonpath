@@ -377,7 +377,7 @@ def test_pointer_command_resolution_error(
 
     captured = capsys.readouterr()
     assert err.value.code == 1
-    assert captured.err.startswith("pointer key error 'foo'")
+    assert captured.err.startswith("pointer key error: 'foo'")
 
 
 def test_pointer_command_resolution_error_debug(

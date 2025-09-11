@@ -30,6 +30,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 """
+
 import copy
 import dataclasses
 import re
@@ -181,7 +182,7 @@ def test_test_op_failure() -> None:
 def test_add_to_nonexistent_target() -> None:
     patch = JSONPatch().add(path="/baz/bat", value="qux")
     with pytest.raises(
-        JSONPatchError, match=re.escape("pointer key error 'baz' (add:0)")
+        JSONPatchError, match=re.escape("pointer key error: 'baz' (add:0)")
     ):
         patch.apply({"foo": "bar"})
 
