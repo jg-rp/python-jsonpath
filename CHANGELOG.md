@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 2.0.1 (unreleased)
+
+**Fixes**
+
+- Fixed JSON pointers using negative indices. The JSON Pointer specification (RFC 6901) does not allow negative array indexes. We now raise a `JSONPointerIndexError` if a JSON Pointer attempts to resolve an array item with a negative index. See [#115](https://github.com/jg-rp/python-jsonpath/issues/115).
+
 ## Version 2.0.0
 
 **JSONPath syntax changes**

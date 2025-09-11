@@ -42,13 +42,13 @@ def test_resolve_with_default() -> None:
 
 def test_pointer_index_out_of_range() -> None:
     max_plus_one = JSONPointer.max_int_index + 1
-    min_minus_one = JSONPointer.min_int_index - 1
+    # min_minus_one = JSONPointer.min_int_index - 1
 
     with pytest.raises(jsonpath.JSONPointerError):
         JSONPointer(f"/some/thing/{max_plus_one}")
 
-    with pytest.raises(jsonpath.JSONPointerError):
-        JSONPointer(f"/some/thing/{min_minus_one}")
+    # with pytest.raises(jsonpath.JSONPointerError):
+    #     JSONPointer(f"/some/thing/{min_minus_one}")
 
 
 def test_resolve_int_key() -> None:
@@ -104,7 +104,8 @@ def test_hyphen_index() -> None:
 def test_negative_index() -> None:
     data = {"some": {"thing": [1, 2, 3]}}
     pointer = JSONPointer("/some/thing/-2")
-    assert pointer.resolve(data) == 2  # noqa: PLR2004
+    with pytest.raises(JSONPointerIndexError):
+        pointer.resolve(data)
 
 
 def test_resolve_with_parent() -> None:

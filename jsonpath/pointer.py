@@ -108,8 +108,8 @@ class JSONPointer:
         )[1:]
 
     def _index(self, s: str) -> Union[str, int]:
-        # Reject non-zero ints that start with a zero.
-        if len(s) > 1 and s.startswith("0"):
+        # Reject non-zero ints that start with a zero and negative integers.
+        if len(s) > 1 and s.startswith(("0", "-")):
             return s
 
         try:
@@ -189,6 +189,11 @@ class JSONPointer:
         index = self._index(key)
         if isinstance(index, int):
             return self._getitem(obj, index)
+
+        if re.match(r"-[0-9]+", index):
+            raise JSONPointerIndexError(
+                f"{key}: array indices must be positive integers or zero"
+            ) from err
 
         raise JSONPointerTypeError(f"{key}: {err}") from err
 

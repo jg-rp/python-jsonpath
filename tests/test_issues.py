@@ -1,4 +1,8 @@
+import pytest
+
+from jsonpath import JSONPointerIndexError
 from jsonpath import findall
+from jsonpath import pointer
 
 
 def test_issue_72_andy() -> None:
@@ -79,3 +83,20 @@ def test_quoted_reserved_word_or() -> None:
     query = "$['or']"
     data = {"or": [1, 2, 3]}
     assert findall(query, data) == [[1, 2, 3]]
+
+
+def test_issue_115() -> None:
+    data = {
+        "users": [
+            {"name": "Sue", "score": 100},
+            {"name": "John", "score": 86},
+            {"name": "Sally", "score": 84},
+            {"name": "Jane", "score": 55},
+        ]
+    }
+
+    assert pointer.resolve("/users/0/score", data) == 100  # noqa: PLR2004
+
+    # Negative index
+    with pytest.raises(JSONPointerIndexError):
+        pointer.resolve("/users/-1/score", data)
