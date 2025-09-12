@@ -329,3 +329,17 @@ def test_index_like_token_on_object_value() -> None:
     data = {"foo": {"-1": "bar"}}
     pointer = JSONPointer("/foo/-1")
     assert pointer.resolve(data) == "bar"
+
+
+def test_dictionary_with_int_key() -> None:
+    # JSON object keys must be strings, but Python dicts can have integer keys.
+    data = {"foo": {1: "bar"}}
+    pointer = JSONPointer("/foo/1")
+    assert pointer.resolve(data) == "bar"
+
+
+def test_dictionary_with_float_key() -> None:
+    # JSON object keys must be strings, but Python dicts can have float keys.
+    data = {"foo": {1.1: "bar"}}
+    pointer = JSONPointer("/foo/1.1")
+    assert pointer.resolve(data) == "bar"
