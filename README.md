@@ -66,7 +66,7 @@ conda install -c conda-forge python-jsonpath
 
 ## Related projects
 
-- [JSONPath RFC 9535](https://github.com/jg-rp/python-jsonpath-rfc9535) - A minimal, slightly cleanr Python implementation of RFC 9535. If you're not interested JSONPath sytax beyond that defined in RFC 9535, you might choose [jsonpath-rfc9535](https://pypi.org/project/jsonpath-rfc9535/) over [python-jsonpath](https://pypi.org/project/python-jsonpath/).
+- [JSONPath RFC 9535](https://github.com/jg-rp/python-jsonpath-rfc9535) - A minimal, slightly cleaner Python implementation of RFC 9535. If you're not interested JSONPath sytax beyond that defined in RFC 9535, you might choose [jsonpath-rfc9535](https://pypi.org/project/jsonpath-rfc9535/) over [python-jsonpath](https://pypi.org/project/python-jsonpath/).
 
   jsonpath-rfc9535 also includes utilities for verifying and testing the [JSONPath Compliance Test Suite](https://github.com/jsonpath-standard/jsonpath-compliance-test-suite). Most notably the nondeterministic behavior of some JSONPath selectors.
 
