@@ -84,7 +84,7 @@ example_data = {"foo": [{"bar": [4, 5]}, {"bar": [1, 5]}]}
 print(env.findall("$.foo[?min(@.bar) > 1]", example_data))
 ```
 
-Now, when we use `env.finall()`, `env.finditer()` or `env.compile()`, our `min` function will be available for use in filter expressions.
+Now, when we use `env.findall()`, `env.finditer()` or `env.compile()`, our `min` function will be available for use in filter expressions.
 
 ```text
 $..products[?@.price == min($..products.price)]
@@ -156,7 +156,7 @@ Python JSONPath can be customized by subclassing [`JSONPathEnvironment`](api.md#
 
 ### Identifier Tokens
 
-The default identifier tokens, like `$` and `@`, can be changed by setting attributes a on `JSONPathEnvironment`. This example sets the root token (default `$`) to be `^`.
+The default identifier tokens, like `$` and `@`, can be changed by setting attributes on a `JSONPathEnvironment`. This example sets the root token (default `$`) to be `^`.
 
 ```python
 import JSONPathEnvironment
