@@ -2571,22 +2571,29 @@
 <p><code>=~</code> is an infix operator that matches the left-hand side with a regular expression literal on the right-hand side. Regular expression literals use a syntax similar to that found in JavaScript, where the pattern to match is surrounded by slashes, <code>/pattern/</code>, optionally followed by flags, <code>/pattern/flags</code>.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>$..products[?(@.description =~ /.*trainers/i)]
 </span></code></pre></div>
+<p>You can escape a solidus (<code>/</code>) with a reverse solidus (<code>\</code>).</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>$.some[?(@.thing =~ /fo\/[a-z]/)]
+</span></code></pre></div>
+<p>As a Python string literal, you'd need to double escape the reverse solidus or use a raw string literal.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="n">query</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;$.some[?(@.thing =~ /fo\/[a-z]/)]&quot;</span>
+</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;$.some[?(@.thing =~ /fo</span><span class="se">\\</span><span class="s2">/[a-z]/)]&quot;</span>
+</span></code></pre></div>
 <h3 id="union-and-intersection-operators">Union and intersection operators</h3>
 <p>The union or concatenation operator, <code>|</code>, combines matches from two or more paths.</p>
 <p>The intersection operator, <code>&amp;</code>, produces matches that are common to both left and right paths.</p>
 <p>Note that compound queries are not allowed inside filter expressions.</p>
 <h4 id="syntax_8">Syntax</h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>jsonpath-query          = root-identifier segments
-</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>
-</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>compound-jsonpath-query = jsonpath-query compound-op jsonpath-query
-</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>
-</span><span id="__span-44-5"><a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>compound-op             = &quot;|&quot; /
-</span><span id="__span-44-6"><a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a>                          &quot;&amp;&quot;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>jsonpath-query          = root-identifier segments
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>
+</span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a>compound-jsonpath-query = jsonpath-query compound-op jsonpath-query
+</span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a>
+</span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>compound-op             = &quot;|&quot; /
+</span><span id="__span-46-6"><a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a>                          &quot;&amp;&quot;
 </span></code></pre></div>
 <h4 id="examples_8">Examples</h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>$..products.*.price | $.price_cap
+<div class="language-text highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>$..products.*.price | $.price_cap
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>$.categories[?(@.name == &#39;footwear&#39;)].products.* &amp; $.categories[?(@.name == &#39;headwear&#39;)].products.*
+<div class="language-text highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>$.categories[?(@.name == &#39;footwear&#39;)].products.* &amp; $.categories[?(@.name == &#39;headwear&#39;)].products.*
 </span></code></pre></div>
 
 
