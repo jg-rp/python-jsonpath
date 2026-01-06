@@ -113,7 +113,7 @@ class Lexer:
         )
 
         # /pattern/ or /pattern/flags
-        self.re_pattern = r"/(?P<G_RE>.+?)/(?P<G_RE_FLAGS>[aims]*)"
+        self.re_pattern = r"/(?P<G_RE>(?:(?!(?<!\\)/).)*)/(?P<G_RE_FLAGS>[aims]*)"
 
         # func(
         self.function_pattern = r"(?P<G_FUNC>[a-z][a-z_0-9]+)(?P<G_FUNC_PAREN>\()"

@@ -25,10 +25,34 @@
       "tags": ["extra"]
     },
     {
-      "name": "regex literal, escaped slash",
+      "name": "regex literal, escaped backslash",
       "selector": "$.some[?(@.thing =~ /fo\\\\[a-z]/)]",
       "document": { "some": [{ "thing": "fo\\b" }] },
       "result": [{ "thing": "fo\\b" }],
+      "result_paths": ["$['some'][0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "regex literal, escaped slash",
+      "selector": "$.some[?(@.thing =~ /fo\\/[a-z]/)]",
+      "document": { "some": [{ "thing": "fo/b" }] },
+      "result": [{ "thing": "fo/b" }],
+      "result_paths": ["$['some'][0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "regex literal, escaped asterisk",
+      "selector": "$.some[?(@.thing =~ /fo\\*[a-z]/)]",
+      "document": { "some": [{ "thing": "fo*b" }] },
+      "result": [{ "thing": "fo*b" }],
+      "result_paths": ["$['some'][0]"],
+      "tags": ["extra"]
+    },
+    {
+      "name": "regex literal, escaped dot",
+      "selector": "$.some[?(@.thing =~ /fo\\.[a-z]/)]",
+      "document": { "some": [{ "thing": "fo.b" }] },
+      "result": [{ "thing": "fo.b" }],
       "result_paths": ["$['some'][0]"],
       "tags": ["extra"]
     }
