@@ -616,6 +616,19 @@ list-literal        = "[" S literal *(S "," S literal) S "]"
 $..products[?(@.description =~ /.*trainers/i)]
 ```
 
+You can escape a solidus (`/`) with a reverse solidus (`\`).
+
+```
+$.some[?(@.thing =~ /fo\/[a-z]/)]
+```
+
+As a Python string literal, you'd need to double escape the reverse solidus or use a raw string literal.
+
+```python
+query = r"$.some[?(@.thing =~ /fo\/[a-z]/)]"
+query = "$.some[?(@.thing =~ /fo\\/[a-z]/)]"
+```
+
 ### Union and intersection operators
 
 The union or concatenation operator, `|`, combines matches from two or more paths.

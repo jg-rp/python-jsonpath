@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Version 2.0.2 (unreleased)
+
+**Fixes**
+
+- Fixed parsing of non-standard JSONPath regular expression literals containing an escaped solidus (`/`). This affected queries using the regex operator `=~`, like `$.some[?(@.thing =~ /fo\/[a-z]/)]`, not standard `match` and `search` functions. See [#124](https://github.com/jg-rp/python-jsonpath/issues/124).
+
 ## Version 2.0.1
 
 **Fixes**

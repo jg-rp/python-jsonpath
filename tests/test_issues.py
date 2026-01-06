@@ -115,3 +115,19 @@ def test_issue_117() -> None:
     data = {"foo": ["bar", "baz"]}
     with pytest.raises(JSONPatchError):
         patch.apply(data)
+
+
+def test_issue_124() -> None:
+    query_raw = r"$[?@type =~ /studio\/material\/.*/]"
+    query = "$[?@type =~ /studio\\/material\\/.*/]"
+
+    data = [
+        {"type": "studio/material/a"},
+        {"type": "studio/material/b"},
+        {"type": "studio foo"},
+    ]
+
+    want = [{"type": "studio/material/a"}, {"type": "studio/material/b"}]
+
+    assert findall(query, data) == want
+    assert findall(query_raw, data) == want
