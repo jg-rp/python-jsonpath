@@ -107,6 +107,30 @@ $.book.title
 ["Moby Dick"]
 ```
 
+If a JSON object key contains a dot (`.`), space or other reserved symbol, use bracket notation instead of shorthand dot notation to select it.
+
+```text
+$["book.title"]
+```
+
+```json title="data"
+{
+  "book.title": "Moby Dick",
+  "book.author": "Herman Melville"
+}
+```
+
+```json title="results"
+["Moby Dick"]
+```
+
+When using bracket notation, names can be surrounded by single or double quotes. These two queries are equivalent.
+
+```text
+$["book.title"]
+$['book.title']
+```
+
 ### Index selector
 
 The index selector selects an element from an array by its index. Indices are zero-based and enclosed in brackets, `[0]`. If the index is negative, items are selected from the end of the array.
