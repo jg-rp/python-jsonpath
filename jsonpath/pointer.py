@@ -166,6 +166,20 @@ class JSONPointer:
         ):
             return key[1:]
 
+        # Handle dictionaries with integer or float keys. Note that JSON objects must
+        # have string keys. We are supporting this for historical reasons.
+        if isinstance(obj, Mapping):
+            try:
+                _key: Union[int, float] = int(key)
+            except ValueError:
+                try:
+                    _key = float(key)
+                except ValueError:
+                    raise JSONPointerKeyError(key) from err
+
+            if _key in obj:
+                return obj[_key]
+
         raise JSONPointerKeyError(key) from err
 
     def _handle_type_error(self, obj: Any, key: str, err: Exception) -> object:
