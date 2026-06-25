@@ -274,7 +274,7 @@ _data_ is the target JSON document to modify. If _data_ is a string or file-like
 
 !!! warning
 
-    Data passed to `patch.apply()` and `JSONPatch.apply()` is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling `apply()`, or use `JSONPatch.atomic()`, which performs a deep copy and merge on success.
+    Data passed to `patch.apply()` and `JSONPatch.apply()` is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling `apply()`, or use `JSONPatch.atomic()`, which performs a deep copy, then mutates input data on success.
 
 ```python
 from jsonpath import patch
@@ -332,7 +332,7 @@ print(data)  # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}
 
 **_New in version 2.1.0_**
 
-Data passed to `patch.apply()` and `JSONPatch.apply()` is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling `apply()`, or use `patch.atomic()`, which performs a deep copy and merge on success.
+Data passed to `patch.apply()` and `JSONPatch.apply()` is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling `apply()`, or use `patch.atomic()`, which performs a deep copy, then mutates input data on success.
 
 !!! note
 
