@@ -119,7 +119,10 @@ print(jane_score)  # 55
 
 ### JSON Patch
 
-We also include an [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902) compliant implementation of JSON Patch. See JSON Patch [quick start](https://jg-rp.github.io/python-jsonpath/quickstart/#patchapplypatch-data) and [API reference](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch)
+We also include an [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902) compliant implementation of JSON Patch. See JSON Patch [quick start](https://jg-rp.github.io/python-jsonpath/quickstart/#patchapplypatch-data) and the [API reference](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch).
+
+> [!NOTE]
+> Note that objects passed to `patch.apply()` and `JSONPatch.apply()` are modified in place, even if a patch operation fails.
 
 ```python
 from jsonpath import patch
@@ -134,7 +137,6 @@ patch_operations = [
 data = {"some": {"other": "thing"}}
 patch.apply(patch_operations, data)
 print(data) # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}}
-
 ```
 
 ## License

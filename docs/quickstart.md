@@ -272,6 +272,10 @@ _patch_ can be a string or file-like object containing a valid JSON Patch docume
 
 _data_ is the target JSON document to modify. If _data_ is a string or file-like object, it will be loaded with _json.loads_. Otherwise _data_ should be a JSON-like data structure and will be **modified in place**.
 
+!!! warning
+
+    Data passed to `patch.apply()` and `JSONPatch.apply()` is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling `apply()`, or use `JSONPatch.patch()`, which performs a deep copy for you.
+
 ```python
 from jsonpath import patch
 
@@ -322,6 +326,40 @@ patch = (
 data = {"some": {"other": "thing"}}
 patch.apply(data)
 print(data)  # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}}
+```
+
+## `JSONPatch.patch(data)`
+
+Data passed to `patch.apply()` and `JSONPatch.apply()` is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling `apply()`, or use `JSONPatch.patch()`, which performs a deep copy for you.
+
+!!! note
+
+    `JSONPatch.patch(data)` accepts JSON-like like dictionaries and lists, whereas `JSONPatch.apply(data)` accepts file-like objects, JSON-formatted strings or JSON-like data.
+
+```python
+import copy
+from typing import Any
+
+from jsonpath import JSONPatch
+from jsonpath import JSONPatchError
+
+patcher = JSONPatch(
+    [
+        {"op": "replace", "path": "/a/b/c", "value": 42},
+        {"op": "test", "path": "/a/b/c", "value": "C"},  # Always fails
+    ]
+)
+
+data: dict[str, Any] = {"a": {"b": {"c": 1}}}
+data_ = copy.deepcopy(data)
+
+try:
+    patcher.patch(data)
+except JSONPatchError:
+    # TODO: something
+    pass
+
+assert data == data_
 ```
 
 ## What's Next?

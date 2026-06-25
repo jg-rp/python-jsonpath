@@ -71,7 +71,7 @@ class OpAdd(Op):
                 if target == "-":
                     parent.append(self.value)
                 else:
-                    index = self.path._index(target)  # noqa: SLF001
+                    index = self.path._index(target)  # type: ignore # noqa: SLF001
                     if index == len(parent):
                         parent.append(self.value)
                     else:
@@ -303,12 +303,12 @@ class OpCopy(Op):
         self, data: Union[MutableSequence[object], MutableMapping[str, object]]
     ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
         """Apply this patch operation to _data_."""
-        source_parent, source_obj = self.source.resolve_parent(data)
+        _, source_obj = self.source.resolve_parent(data)
 
         if source_obj is UNDEFINED:
             raise JSONPatchError("source object does not exist")
 
-        dest_parent, dest_obj = self.dest.resolve_parent(data)
+        dest_parent, _ = self.dest.resolve_parent(data)
 
         if dest_parent is None:
             # Copy source to root
@@ -639,7 +639,7 @@ class JSONPatch:
 
         If _data_ is a string or file-like object, it will be loaded with
         _json.loads_. Otherwise _data_ should be a JSON-like data structure and
-        will be modified in place.
+        will be modified in place, even if a patch operation fails.
 
         When modifying _data_ in place, we return modified data too. This is
         to allow for replacing _data's_ root element, which is allowed by some
@@ -674,6 +674,25 @@ class JSONPatch:
 
         return _data
 
+    def patch(
+        self,
+        data: Union[MutableSequence[Any], MutableMapping[str, Any]],
+    ) -> object:
+        """Apply all operations from this patch to a deep copy of _data_.
+
+        Arguments:
+            data: A Python object representing JSON-like data.
+
+        Returns:
+            A patched, deep copy of _data_.
+
+        Raises:
+            JSONPatchError: When a patch operation fails.
+            JSONPatchTestFailure: When a _test_ operation does not pass.
+                `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
+        """
+        return self.apply(copy.deepcopy(data))
+
     def asdicts(self) -> List[Dict[str, object]]:
         """Return a list of this patch's operations as dictionaries."""
         return [op.asdict() for op in self.ops]
@@ -690,7 +709,7 @@ def apply(
 
     If _data_ is a string or file-like object, it will be loaded with
     _json.loads_. Otherwise _data_ should be a JSON-like data structure and
-    will be **modified in-place**.
+    will be **modified in-place**, even if a patch operation fails.
 
     When modifying _data_ in-place, we return modified data too. This is
     to allow for replacing _data's_ root element, which is allowed by some
@@ -711,10 +730,41 @@ def apply(
         JSONPatchError: When a patch operation fails.
         JSONPatchTestFailure: When a _test_ operation does not pass.
             `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
-
     """
     return JSONPatch(
         patch,
         unicode_escape=unicode_escape,
         uri_decode=uri_decode,
     ).apply(data)
+
+
+def patch(
+    patch: Union[str, IOBase, Iterable[Mapping[str, object]], None],
+    data: Union[MutableSequence[Any], MutableMapping[str, Any]],
+    *,
+    unicode_escape: bool = True,
+    uri_decode: bool = False,
+) -> object:
+    """Apply the JSON Patch _patch_ to a deep copy of _data_.
+
+    Arguments:
+        patch: A JSON Patch formatted document or equivalent Python objects.
+        data: A Python object representing JSON-like data.
+        unicode_escape: If `True`, UTF-16 escape sequences will be decoded
+            before parsing JSON pointers.
+        uri_decode: If `True`, JSON pointers will be unescaped using _urllib_
+            before being parsed.
+
+    Returns:
+        A patched, deep copy of _data_.
+
+    Raises:
+        JSONPatchError: When a patch operation fails.
+        JSONPatchTestFailure: When a _test_ operation does not pass.
+            `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
+    """
+    return JSONPatch(
+        patch,
+        unicode_escape=unicode_escape,
+        uri_decode=uri_decode,
+    ).patch(data)

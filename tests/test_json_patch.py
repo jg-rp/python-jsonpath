@@ -1,11 +1,15 @@
 """JSON Patch test cases."""
 
+import copy
 import json
 import re
 from collections.abc import Mapping
+from contextlib import suppress
 from io import StringIO
 from typing import Any
+from typing import Dict
 from typing import Iterator
+from typing import List
 
 import pytest
 
@@ -273,3 +277,38 @@ def test_non_standard_addap_op() -> None:
 def test_add_to_mapping_with_int_key() -> None:
     patch = JSONPatch().add(path="/1", value=99)
     assert patch.apply({"foo": 1}) == {"foo": 1, "1": 99}
+
+
+def test_apply_does_not_copy_data() -> None:
+    """Test that _apply_ modifies data in place, even if the patch fails."""
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "/a/b/c", "value": 42},
+        {"op": "test", "path": "/a/b/c", "value": "C"},
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    data_ = copy.deepcopy(data)
+
+    patch = JSONPatch(patch_doc)
+
+    with suppress(JSONPatchError):
+        patch.apply(data)
+
+    assert data != data_
+
+
+def test_patch_always_copies_data() -> None:
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "/a/b/c", "value": 42},
+        {"op": "test", "path": "/a/b/c", "value": "C"},
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    data_ = copy.deepcopy(data)
+
+    patcher = JSONPatch(patch_doc)
+
+    with suppress(JSONPatchError):
+        patcher.patch(data)
+
+    assert data == data_
