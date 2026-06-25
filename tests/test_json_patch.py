@@ -297,18 +297,58 @@ def test_apply_does_not_copy_data() -> None:
     assert data != data_
 
 
-def test_patch_always_copies_data() -> None:
+def test_atomic_patch_success() -> None:
     patch_doc: List[Dict[str, Any]] = [
         {"op": "replace", "path": "/a/b/c", "value": 42},
-        {"op": "test", "path": "/a/b/c", "value": "C"},
+        {"op": "add", "path": "/a/b/d", "value": 2},
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    patch = JSONPatch(patch_doc)
+    patch.atomic(data)
+    assert data == {"a": {"b": {"c": 42, "d": 2}}}
+
+
+def test_atomic_patch_fail() -> None:
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "/a/b/c", "value": 42},
+        {"op": "test", "path": "/a/b/c", "value": "C"},  # Always fails
     ]
 
     data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
     data_ = copy.deepcopy(data)
 
-    patcher = JSONPatch(patch_doc)
+    patch = JSONPatch(patch_doc)
 
     with suppress(JSONPatchError):
-        patcher.patch(data)
+        patch.atomic(data)
+
+    assert data == data_
+
+
+def test_atomic_patch_array_success() -> None:
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "add", "path": "/2", "value": "c"},
+    ]
+
+    data = ["a", "b"]
+    patch = JSONPatch(patch_doc)
+    patch.atomic(data)
+    assert data == ["a", "b", "c"]
+
+
+def test_atomic_patch_array_fail() -> None:
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "add", "path": "/2", "value": "c"},
+        {"op": "test", "path": "/2", "value": "x"},  # Always fails
+    ]
+
+    data = ["a", "b"]
+    data_ = copy.deepcopy(data)
+
+    patch = JSONPatch(patch_doc)
+
+    with suppress(JSONPatchError):
+        patch.atomic(data)
 
     assert data == data_

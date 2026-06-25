@@ -121,8 +121,8 @@ print(jane_score)  # 55
 
 We also include an [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902) compliant implementation of JSON Patch. See JSON Patch [quick start](https://jg-rp.github.io/python-jsonpath/quickstart/#patchapplypatch-data) and the [API reference](https://jg-rp.github.io/python-jsonpath/api/#jsonpath.JSONPatch).
 
-> [!NOTE]
-> Note that objects passed to `patch.apply()` and `JSONPatch.apply()` are modified in place, even if a patch operation fails.
+> [!WARNING]
+> Objects passed to `patch.apply()` and `JSONPatch.apply()` are modified in place, even if a patch operation fails. Use `patch.atomic()` or `JSONPatch.atomic()` if you need to preserve input data on patch failure.
 
 ```python
 from jsonpath import patch
@@ -137,6 +137,30 @@ patch_operations = [
 data = {"some": {"other": "thing"}}
 patch.apply(patch_operations, data)
 print(data) # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}}
+```
+
+Use `patch.atomic()` or `JSONPatch.atomic()` if you need to preserve input data on patch failure.
+
+```python
+import contextlib
+
+from jsonpath import JSONPatchError
+from jsonpath import patch
+
+patch_operations = [
+    {"op": "add", "path": "/some/foo", "value": {"foo": {}}},
+    {"op": "add", "path": "/some/foo", "value": {"bar": []}},
+    {"op": "copy", "from": "/some/other", "path": "/some/foo/else"},
+    {"op": "add", "path": "/some/foo/bar/-", "value": 1},
+    {"op": "test", "path": "/some/thing", "value": "baz"},  # Always fails
+]
+
+data = {"some": {"other": "thing"}}
+
+with contextlib.suppress(JSONPatchError):
+    patch.atomic(patch_operations, data)
+
+assert data == {"some": {"other": "thing"}}
 ```
 
 ## License

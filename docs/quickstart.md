@@ -274,7 +274,7 @@ _data_ is the target JSON document to modify. If _data_ is a string or file-like
 
 !!! warning
 
-    Data passed to `patch.apply()` and `JSONPatch.apply()` is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling `apply()`, or use `JSONPatch.patch()`, which performs a deep copy for you.
+    Data passed to `patch.apply()` and `JSONPatch.apply()` is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling `apply()`, or use `JSONPatch.atomic()`, which performs a deep copy and merge on success.
 
 ```python
 from jsonpath import patch
@@ -328,13 +328,15 @@ patch.apply(data)
 print(data)  # {'some': {'other': 'thing', 'foo': {'bar': [1], 'else': 'thing'}}}
 ```
 
-## `JSONPatch.patch(data)`
+## `patch.atomic(patch, data)`
 
-Data passed to `patch.apply()` and `JSONPatch.apply()` is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling `apply()`, or use `JSONPatch.patch()`, which performs a deep copy for you.
+**_New in version 2.1.0_**
+
+Data passed to `patch.apply()` and `JSONPatch.apply()` is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling `apply()`, or use `patch.atomic()`, which performs a deep copy and merge on success.
 
 !!! note
 
-    `JSONPatch.patch(data)` accepts JSON-like like dictionaries and lists, whereas `JSONPatch.apply(data)` accepts file-like objects, JSON-formatted strings or JSON-like data.
+    `patch.atomic()` and `JSONPatch.atomic()` are limited to JSON-like like dictionaries and lists, whereas `patch.apply()` and `JSONPatch.apply(data)` accept file-like objects, JSON-formatted strings or JSON-like data.
 
 ```python
 import copy
@@ -343,7 +345,7 @@ from typing import Any
 from jsonpath import JSONPatch
 from jsonpath import JSONPatchError
 
-patcher = JSONPatch(
+patch = JSONPatch(
     [
         {"op": "replace", "path": "/a/b/c", "value": 42},
         {"op": "test", "path": "/a/b/c", "value": "C"},  # Always fails
@@ -354,7 +356,7 @@ data: dict[str, Any] = {"a": {"b": {"c": 1}}}
 data_ = copy.deepcopy(data)
 
 try:
-    patcher.patch(data)
+    patch.atomic(data)
 except JSONPatchError:
     # TODO: something
     pass

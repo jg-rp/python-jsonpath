@@ -107,7 +107,7 @@ exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 [tool.mypy]
 files = ["jsonpath", "tests"]
 exclude = ["tests/nts", "tests/cts"]
-python_version = "3.11"
+python_version = "3.10"
 disallow_subclassing_any = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
@@ -152,8 +152,8 @@ exclude = [
 line-length = 88
 
 
-# Assume Python 3.10.
-target-version = "py310"
+# Assume Python 3.8.
+target-version = "py38"
 
 [tool.ruff.lint]
 select = [

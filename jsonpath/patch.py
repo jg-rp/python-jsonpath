@@ -674,24 +674,36 @@ class JSONPatch:
 
         return _data
 
-    def patch(
+    def atomic(
         self,
-        data: Union[MutableSequence[Any], MutableMapping[str, Any]],
+        data: Union[List[Any], Dict[str, Any]],
     ) -> object:
-        """Apply all operations from this patch to a deep copy of _data_.
+        """Apply this patch to _data_ atomically.
+
+        Unlike `apply()`, if any patch operation fails, _data_ remains
+        unchanged.
 
         Arguments:
             data: A Python object representing JSON-like data.
 
         Returns:
-            A patched, deep copy of _data_.
+            Patched _data_.
 
         Raises:
             JSONPatchError: When a patch operation fails.
             JSONPatchTestFailure: When a _test_ operation does not pass.
                 `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
         """
-        return self.apply(copy.deepcopy(data))
+        data_ = copy.deepcopy(data)
+        self.apply(data_)  # This could raise a JSONPatchError.
+        data.clear()
+
+        if isinstance(data, dict):
+            data.update(data_)
+        else:
+            data.extend(data_)
+
+        return data
 
     def asdicts(self) -> List[Dict[str, object]]:
         """Return a list of this patch's operations as dictionaries."""
@@ -738,14 +750,16 @@ def apply(
     ).apply(data)
 
 
-def patch(
+def atomic(
     patch: Union[str, IOBase, Iterable[Mapping[str, object]], None],
-    data: Union[MutableSequence[Any], MutableMapping[str, Any]],
+    data: Union[List[Any], Dict[str, Any]],
     *,
     unicode_escape: bool = True,
     uri_decode: bool = False,
 ) -> object:
-    """Apply the JSON Patch _patch_ to a deep copy of _data_.
+    """Apply patch operations from _patch_ to _data_ atomically.
+
+    Unlike `apply()`, if any patch operation fails, _data_ remains unchanged.
 
     Arguments:
         patch: A JSON Patch formatted document or equivalent Python objects.
@@ -756,7 +770,7 @@ def patch(
             before being parsed.
 
     Returns:
-        A patched, deep copy of _data_.
+        Patched _data_.
 
     Raises:
         JSONPatchError: When a patch operation fails.
@@ -767,4 +781,4 @@ def patch(
         patch,
         unicode_escape=unicode_escape,
         uri_decode=uri_decode,
-    ).patch(data)
+    ).atomic(data)

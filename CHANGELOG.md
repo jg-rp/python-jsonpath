@@ -2,7 +2,7 @@
 
 ## Version 2.1.0
 
-Added `JSONPatch.patch(data)` that performs a deep copy of `data` before applying the patch. In contrast, `JSONPatch.apply(data)` does not perform a deep copy, always modifying `data` in place, even if a patch operation fails. See [#129](https://github.com/jg-rp/python-jsonpath/issues/129).
+Added `patch.atomic(patch, data)` and `JSONPatch.atomic(data)`. `atomic()` is similar to `apply()`, but preserves input data if a patch operation fails. See [#129](https://github.com/jg-rp/python-jsonpath/issues/129).
 
 ## Version 2.0.2
 
