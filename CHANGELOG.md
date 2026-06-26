@@ -1,5 +1,9 @@
 # Python JSONPath Change Log
 
+## Version 2.1.0
+
+Added `patch.atomic(patch, data)` and `JSONPatch.atomic(data)`. `atomic()` is similar to `apply()`, but preserves input data if a patch operation fails. See [#129](https://github.com/jg-rp/python-jsonpath/issues/129).
+
 ## Version 2.0.2
 
 **Fixes**

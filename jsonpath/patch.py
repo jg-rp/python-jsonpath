@@ -71,7 +71,7 @@ class OpAdd(Op):
                 if target == "-":
                     parent.append(self.value)
                 else:
-                    index = self.path._index(target)  # noqa: SLF001
+                    index = self.path._index(target)  # type: ignore # noqa: SLF001
                     if index == len(parent):
                         parent.append(self.value)
                     else:
@@ -303,12 +303,12 @@ class OpCopy(Op):
         self, data: Union[MutableSequence[object], MutableMapping[str, object]]
     ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
         """Apply this patch operation to _data_."""
-        source_parent, source_obj = self.source.resolve_parent(data)
+        _, source_obj = self.source.resolve_parent(data)
 
         if source_obj is UNDEFINED:
             raise JSONPatchError("source object does not exist")
 
-        dest_parent, dest_obj = self.dest.resolve_parent(data)
+        dest_parent, _ = self.dest.resolve_parent(data)
 
         if dest_parent is None:
             # Copy source to root
@@ -639,7 +639,7 @@ class JSONPatch:
 
         If _data_ is a string or file-like object, it will be loaded with
         _json.loads_. Otherwise _data_ should be a JSON-like data structure and
-        will be modified in place.
+        will be modified in place, even if a patch operation fails.
 
         When modifying _data_ in place, we return modified data too. This is
         to allow for replacing _data's_ root element, which is allowed by some
@@ -674,6 +674,37 @@ class JSONPatch:
 
         return _data
 
+    def atomic(
+        self,
+        data: Union[List[Any], Dict[str, Any]],
+    ) -> object:
+        """Apply this patch to _data_ atomically.
+
+        Unlike `apply()`, if any patch operation fails, _data_ remains
+        unchanged.
+
+        Arguments:
+            data: A Python object representing JSON-like data.
+
+        Returns:
+            Patched _data_.
+
+        Raises:
+            JSONPatchError: When a patch operation fails.
+            JSONPatchTestFailure: When a _test_ operation does not pass.
+                `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
+        """
+        data_ = copy.deepcopy(data)
+        self.apply(data_)  # This could raise a JSONPatchError.
+        data.clear()
+
+        if isinstance(data, dict):
+            data.update(data_)
+        else:
+            data.extend(data_)
+
+        return data
+
     def asdicts(self) -> List[Dict[str, object]]:
         """Return a list of this patch's operations as dictionaries."""
         return [op.asdict() for op in self.ops]
@@ -690,7 +721,7 @@ def apply(
 
     If _data_ is a string or file-like object, it will be loaded with
     _json.loads_. Otherwise _data_ should be a JSON-like data structure and
-    will be **modified in-place**.
+    will be **modified in-place**, even if a patch operation fails.
 
     When modifying _data_ in-place, we return modified data too. This is
     to allow for replacing _data's_ root element, which is allowed by some
@@ -711,10 +742,43 @@ def apply(
         JSONPatchError: When a patch operation fails.
         JSONPatchTestFailure: When a _test_ operation does not pass.
             `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
-
     """
     return JSONPatch(
         patch,
         unicode_escape=unicode_escape,
         uri_decode=uri_decode,
     ).apply(data)
+
+
+def atomic(
+    patch: Union[str, IOBase, Iterable[Mapping[str, object]], None],
+    data: Union[List[Any], Dict[str, Any]],
+    *,
+    unicode_escape: bool = True,
+    uri_decode: bool = False,
+) -> object:
+    """Apply patch operations from _patch_ to _data_ atomically.
+
+    Unlike `apply()`, if any patch operation fails, _data_ remains unchanged.
+
+    Arguments:
+        patch: A JSON Patch formatted document or equivalent Python objects.
+        data: A Python object representing JSON-like data.
+        unicode_escape: If `True`, UTF-16 escape sequences will be decoded
+            before parsing JSON pointers.
+        uri_decode: If `True`, JSON pointers will be unescaped using _urllib_
+            before being parsed.
+
+    Returns:
+        Patched _data_.
+
+    Raises:
+        JSONPatchError: When a patch operation fails.
+        JSONPatchTestFailure: When a _test_ operation does not pass.
+            `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
+    """
+    return JSONPatch(
+        patch,
+        unicode_escape=unicode_escape,
+        uri_decode=uri_decode,
+    ).atomic(data)

@@ -1,11 +1,15 @@
 """JSON Patch test cases."""
 
+import copy
 import json
 import re
 from collections.abc import Mapping
+from contextlib import suppress
 from io import StringIO
 from typing import Any
+from typing import Dict
 from typing import Iterator
+from typing import List
 
 import pytest
 
@@ -273,3 +277,78 @@ def test_non_standard_addap_op() -> None:
 def test_add_to_mapping_with_int_key() -> None:
     patch = JSONPatch().add(path="/1", value=99)
     assert patch.apply({"foo": 1}) == {"foo": 1, "1": 99}
+
+
+def test_apply_does_not_copy_data() -> None:
+    """Test that _apply_ modifies data in place, even if the patch fails."""
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "/a/b/c", "value": 42},
+        {"op": "test", "path": "/a/b/c", "value": "C"},
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    data_ = copy.deepcopy(data)
+
+    patch = JSONPatch(patch_doc)
+
+    with suppress(JSONPatchError):
+        patch.apply(data)
+
+    assert data != data_
+
+
+def test_atomic_patch_success() -> None:
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "/a/b/c", "value": 42},
+        {"op": "add", "path": "/a/b/d", "value": 2},
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    patch = JSONPatch(patch_doc)
+    patch.atomic(data)
+    assert data == {"a": {"b": {"c": 42, "d": 2}}}
+
+
+def test_atomic_patch_fail() -> None:
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "/a/b/c", "value": 42},
+        {"op": "test", "path": "/a/b/c", "value": "C"},  # Always fails
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    data_ = copy.deepcopy(data)
+
+    patch = JSONPatch(patch_doc)
+
+    with suppress(JSONPatchError):
+        patch.atomic(data)
+
+    assert data == data_
+
+
+def test_atomic_patch_array_success() -> None:
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "add", "path": "/2", "value": "c"},
+    ]
+
+    data = ["a", "b"]
+    patch = JSONPatch(patch_doc)
+    patch.atomic(data)
+    assert data == ["a", "b", "c"]
+
+
+def test_atomic_patch_array_fail() -> None:
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "add", "path": "/2", "value": "c"},
+        {"op": "test", "path": "/2", "value": "x"},  # Always fails
+    ]
+
+    data = ["a", "b"]
+    data_ = copy.deepcopy(data)
+
+    patch = JSONPatch(patch_doc)
+
+    with suppress(JSONPatchError):
+        patch.atomic(data)
+
+    assert data == data_
