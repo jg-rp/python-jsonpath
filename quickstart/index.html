@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -464,6 +464,17 @@
     <span class="md-ellipsis">
       
         patch.apply(patch, data)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#patchatomicpatch-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        patch.atomic(patch, data)
       
     </span>
   </a>
@@ -1016,6 +1027,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#patchatomicpatch-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        patch.atomic(patch, data)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#whats-next" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1271,6 +1293,10 @@
 <p>Apply a JSON Patch (<a href="https://datatracker.ietf.org/doc/html/rfc6902">RFC 6902</a>) to some data. A JSON Patch defines update operation to perform on a JSON document.</p>
 <p><em>patch</em> can be a string or file-like object containing a valid JSON Patch document, or an iterable of dictionaries.</p>
 <p><em>data</em> is the target JSON document to modify. If <em>data</em> is a string or file-like object, it will be loaded with <em>json.loads</em>. Otherwise <em>data</em> should be a JSON-like data structure and will be <strong>modified in place</strong>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Data passed to <code>patch.apply()</code> and <code>JSONPatch.apply()</code> is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling <code>apply()</code>, or use <code>JSONPatch.atomic()</code>, which performs a deep copy, then mutates input data on success.</p>
+</div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jsonpath</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">patch_operations</span> <span class="o">=</span> <span class="p">[</span>
@@ -1315,10 +1341,41 @@
 </span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="n">patch</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># {&#39;some&#39;: {&#39;other&#39;: &#39;thing&#39;, &#39;foo&#39;: {&#39;bar&#39;: [1], &#39;else&#39;: &#39;thing&#39;}}}</span>
 </span></code></pre></div>
+<h2 id="patchatomicpatch-data"><code>patch.atomic(patch, data)</code></h2>
+<p><strong><em>New in version 2.1.0</em></strong></p>
+<p>Data passed to <code>patch.apply()</code> and <code>JSONPatch.apply()</code> is modified in place, even if a patch operation fails. If you need to preserve input data on failure, you should make a copy of your data before calling <code>apply()</code>, or use <code>patch.atomic()</code>, which performs a deep copy, then mutates input data on success.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>patch.atomic()</code> and <code>JSONPatch.atomic()</code> are limited to JSON-like like dictionaries and lists, whereas <code>patch.apply()</code> and <code>JSONPatch.apply(data)</code> accept file-like objects, JSON-formatted strings or JSON-like data.</p>
+</div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jsonpath</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONPatch</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jsonpath</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONPatchError</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="n">patch</span> <span class="o">=</span> <span class="n">JSONPatch</span><span class="p">(</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>    <span class="p">[</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>        <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/a/b/c&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">},</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>        <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/a/b/c&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;C&quot;</span><span class="p">},</span>  <span class="c1"># Always fails</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>    <span class="p">]</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="p">)</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}}</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="n">data_</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="k">try</span><span class="p">:</span>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>    <span class="n">patch</span><span class="o">.</span><span class="n">atomic</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="k">except</span> <span class="n">JSONPatchError</span><span class="p">:</span>
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>    <span class="c1"># TODO: something</span>
+</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a>    <span class="k">pass</span>
+</span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>
+</span><span id="__span-12-23"><a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a><span class="k">assert</span> <span class="n">data</span> <span class="o">==</span> <span class="n">data_</span>
+</span></code></pre></div>
 <h2 id="whats-next">What's Next?</h2>
 <p>Read about the <a href="../query/">Query Iterators</a> API or <a href="../advanced/#function-extensions">user-defined filter functions</a>. Also see how to make extra data available to filters with <a href="../advanced/#filter-variables">Extra Filter Context</a>.</p>
 <p><code>findall()</code>, <code>finditer()</code> and <code>compile()</code> are shortcuts that use the default<a href="../api/#jsonpath.JSONPathEnvironment"><code>JSONPathEnvironment</code></a>. <code>jsonpath.findall(path, data)</code> is equivalent to:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">jsonpath</span><span class="o">.</span><span class="n">JSONPathEnvironment</span><span class="p">()</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">jsonpath</span><span class="o">.</span><span class="n">JSONPathEnvironment</span><span class="p">()</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </span></code></pre></div>
 <p>If you would like to customize Python JSONPath, see <a href="../advanced/#custom-environments">Advanced Usage</a>.</p>
 

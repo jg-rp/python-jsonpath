@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -1886,6 +1886,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#jsonpath.JSONPatch.atomic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        atomic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#jsonpath.JSONPatch.copy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3155,6 +3166,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#jsonpath.JSONPatch.atomic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        atomic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#jsonpath.JSONPatch.copy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3696,7 +3718,7 @@ if available.</p>
   </span>
 
 </h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">lexer</span><span class="p">:</span> <span class="n">Lexer</span> <span class="o">=</span> <span class="n">lexer_class</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">lexer</span><span class="p">:</span> <span class="n">Lexer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lexer_class</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3720,7 +3742,7 @@ if available.</p>
   </span>
 
 </h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">parser</span><span class="p">:</span> <span class="n">Parser</span> <span class="o">=</span> <span class="n">parser_class</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">parser</span><span class="p">:</span> <span class="n">Parser</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser_class</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9257,7 +9279,7 @@ calls to JSON Patch operation methods.</p>
         <p>Apply all operations from this patch to <em>data</em>.</p>
 <p>If <em>data</em> is a string or file-like object, it will be loaded with
 <em>json.loads</em>. Otherwise <em>data</em> should be a JSON-like data structure and
-will be modified in place.</p>
+will be modified in place, even if a patch operation fails.</p>
 <p>When modifying <em>data</em> in place, we return modified data too. This is
 to allow for replacing <em>data's</em> root element, which is allowed by some
 patch operations.</p>
@@ -9370,6 +9392,117 @@ patch operations.</p>
     <div class="doc doc-contents ">
 
         <p>Return a list of this patch's operations as dictionaries.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="jsonpath.JSONPatch.atomic" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">atomic</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">atomic</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">object</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Apply this patch to <em>data</em> atomically.</p>
+<p>Unlike <code>apply()</code>, if any patch operation fails, <em>data</em> remains
+unchanged.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>data</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>A Python object representing JSON-like data.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="typing.Union">Union</span>[<span title="typing.List">List</span>[<span title="typing.Any">Any</span>], <span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="object">object</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Patched <em>data</em>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RAISES</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+              <span class="doc-raises-annotation">
+                  <code><a class="autorefs autorefs-internal" title="jsonpath.JSONPatchError (jsonpath.exceptions.JSONPatchError)" href="../exceptions/#jsonpath.JSONPatchError">JSONPatchError</a></code>
+              </span>
+            </td>
+            <td class="doc-raises-details">
+              <div class="doc-md-description">
+                <p>When a patch operation fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+              <span class="doc-raises-annotation">
+                  <code><a class="autorefs autorefs-internal" title="jsonpath.JSONPatchTestFailure (jsonpath.exceptions.JSONPatchTestFailure)" href="../exceptions/#jsonpath.JSONPatchTestFailure">JSONPatchTestFailure</a></code>
+              </span>
+            </td>
+            <td class="doc-raises-details">
+              <div class="doc-md-description">
+                <p>When a <em>test</em> operation does not pass.
+<code>JSONPatchTestFailure</code> is a subclass of <code>JSONPatchError</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
