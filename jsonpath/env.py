@@ -3,18 +3,18 @@
 from __future__ import annotations
 
 try:
-    import regex  # noqa: F401
+    import regex  # type: ignore # noqa: F401
 
     REGEX_AVAILABLE = True
 except ImportError:
-    REGEX_AVAILABLE = False
+    REGEX_AVAILABLE = False  # type: ignore
 
 try:
-    import iregexp_check  # noqa: F401
+    import iregexp_check  # type: ignore # noqa: F401
 
     IREGEXP_AVAILABLE = True
 except ImportError:
-    IREGEXP_AVAILABLE = False
+    IREGEXP_AVAILABLE = False  # type: ignore
 
 from decimal import Decimal
 from operator import getitem
