@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+## Unreleased
+
+**Fixes**
+
+- Fixed lexing of quoted name selectors ending in an escaped backslash, like `$['a\\']['b']`. The lexer's look-behind for the closing quote treated a quote following an escaped backslash (`\\`) as an escaped quote (`\'`), so these selectors failed to tokenize. This also broke the RFC 9535 normalized path round-trip: normalized paths produced for object keys containing backslashes could not be parsed back.
+
 ## Version 2.1.0
 
 Added `patch.atomic(patch, data)` and `JSONPatch.atomic(data)`. `atomic()` is similar to `apply()`, but preserves input data if a patch operation fails. See [#129](https://github.com/jg-rp/python-jsonpath/issues/129).

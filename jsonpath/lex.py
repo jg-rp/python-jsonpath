@@ -99,8 +99,8 @@ class Lexer:
     def __init__(self, *, env: JSONPathEnvironment) -> None:
         self.env = env
 
-        self.double_quote_pattern = r'"(?P<G_DQUOTE>(?:(?!(?<!\\)").)*)"'
-        self.single_quote_pattern = r"'(?P<G_SQUOTE>(?:(?!(?<!\\)').)*)'"
+        self.double_quote_pattern = r'"(?P<G_DQUOTE>(?:[^"\\]|\\.)*)"'
+        self.single_quote_pattern = r"'(?P<G_SQUOTE>(?:[^'\\]|\\.)*)'"
 
         # .thing
         self.dot_property_pattern = rf"(?P<G_DOT>\.)(?P<G_PROP>{self.key_pattern})"
