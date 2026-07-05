@@ -1919,6 +1919,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#jsonpath.JSONPatch.patched" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        patched
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#jsonpath.JSONPatch.remove" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3192,6 +3203,17 @@
     <span class="md-ellipsis">
       
         move
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jsonpath.JSONPatch.patched" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        patched
       
     </span>
   </a>
@@ -9686,6 +9708,115 @@ already been parsed.</p>
               <div class="doc-md-description">
                 <p>This <code>JSONPatch</code> instance, so we can build a JSON Patch by chaining
 calls to JSON Patch operation methods.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="jsonpath.JSONPatch.patched" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">patched</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">patched</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">object</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Apply this patch to a deep copy of <em>data</em>.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>data</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>JSON-like data.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="typing.Union">Union</span>[<span title="typing.List">List</span>[<span title="typing.Any">Any</span>], <span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="object">object</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>A patched copy of <em>data</em>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RAISES</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+              <span class="doc-raises-annotation">
+                  <code><a class="autorefs autorefs-internal" title="jsonpath.JSONPatchError (jsonpath.exceptions.JSONPatchError)" href="../exceptions/#jsonpath.JSONPatchError">JSONPatchError</a></code>
+              </span>
+            </td>
+            <td class="doc-raises-details">
+              <div class="doc-md-description">
+                <p>When a patch operation fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+              <span class="doc-raises-annotation">
+                  <code><a class="autorefs autorefs-internal" title="jsonpath.JSONPatchTestFailure (jsonpath.exceptions.JSONPatchTestFailure)" href="../exceptions/#jsonpath.JSONPatchTestFailure">JSONPatchTestFailure</a></code>
+              </span>
+            </td>
+            <td class="doc-raises-details">
+              <div class="doc-md-description">
+                <p>When a <em>test</em> operation does not pass.
+<code>JSONPatchTestFailure</code> is a subclass of <code>JSONPatchError</code>.</p>
               </div>
             </td>
           </tr>
