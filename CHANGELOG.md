@@ -5,6 +5,7 @@
 **Fixes**
 
 - Fixed lexing of quoted name selectors ending in an escaped backslash, like `$['a\\']['b']`. The lexer's look-behind for the closing quote treated a quote following an escaped backslash (`\\`) as an escaped quote (`\'`), so these selectors failed to tokenize. This also broke the RFC 9535 normalized path round-trip: normalized paths produced for object keys containing backslashes could not be parsed back. See [#132](https://github.com/jg-rp/python-jsonpath/pull/132).
+- Fixed atomic JSONPatch application when a patch op replaces the document root.
 
 **Features**
 
