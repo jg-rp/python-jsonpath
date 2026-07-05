@@ -354,6 +354,62 @@ def test_atomic_patch_array_fail() -> None:
     assert data == data_
 
 
+def test_atomically_replace_root() -> None:
+    ops: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "", "value": {"foo": "bar"}},
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    patched_data = patch.atomic(ops, data)
+
+    # Note that atomic patch application clears and updates `data` when
+    # the document root is replaced with a compatible object. `patch.apply()`
+    # does not do this.
+    assert data == patched_data
+    assert data == {"foo": "bar"}
+
+
+def test_atomically_replace_root_with_incompatible_type() -> None:
+    ops: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "", "value": [1, 2, 3]},
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    patched_data = patch.atomic(ops, data)
+
+    assert data != patched_data
+    assert data == {"a": {"b": {"c": 1}}}
+    assert patched_data == [1, 2, 3]
+
+
+def test_atomically_replace_root_primitive() -> None:
+    ops: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "", "value": "foo"},
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    patched_data = patch.atomic(ops, data)
+
+    assert data != patched_data
+    assert data == {"a": {"b": {"c": 1}}}
+    assert patched_data == "foo"
+
+
+def test_apply_replace_root() -> None:
+    ops: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "", "value": {"foo": "bar"}},
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    patched_data = patch.apply(ops, data)
+
+    # Note that patch application can not replace `data` when the document root
+    # is replaced.
+    assert data != patched_data
+    assert data == {"a": {"b": {"c": 1}}}
+    assert patched_data == {"foo": "bar"}
+
+
 def test_patched_does_not_mutate_data() -> None:
     """Test that _patched_ modifies a deep copy of data."""
     patch_doc: List[Dict[str, Any]] = [

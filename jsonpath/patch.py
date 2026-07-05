@@ -694,16 +694,19 @@ class JSONPatch:
             JSONPatchTestFailure: When a _test_ operation does not pass.
                 `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
         """
-        data_ = copy.deepcopy(data)
-        self.apply(data_)  # This could raise a JSONPatchError.
-        data.clear()
+        data_ = self.apply(copy.deepcopy(data))  # This could raise a JSONPatchError.
 
-        if isinstance(data, dict):
-            data.update(data_)
-        else:
-            data.extend(data_)
+        if isinstance(data, dict) and isinstance(data_, dict):
+            data.clear()
+            data.update(data_)  # type: ignore
+            return data
 
-        return data
+        if isinstance(data, list) and isinstance(data_, list):
+            data.clear()
+            data.extend(data_)  # type: ignore
+            return data
+
+        return data_
 
     def patched(
         self,
