@@ -705,6 +705,25 @@ class JSONPatch:
 
         return data
 
+    def patched(
+        self,
+        data: Union[List[Any], Dict[str, Any]],
+    ) -> object:
+        """Apply this patch to a deep copy of _data_.
+
+        Arguments:
+            data: JSON-like data.
+
+        Returns:
+            A patched copy of _data_.
+
+        Raises:
+            JSONPatchError: When a patch operation fails.
+            JSONPatchTestFailure: When a _test_ operation does not pass.
+                `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
+        """
+        return self.apply(copy.deepcopy(data))
+
     def asdicts(self) -> List[Dict[str, object]]:
         """Return a list of this patch's operations as dictionaries."""
         return [op.asdict() for op in self.ops]
@@ -751,7 +770,7 @@ def apply(
 
 
 def atomic(
-    patch: Union[str, IOBase, Iterable[Mapping[str, object]], None],
+    patch: Union[str, Iterable[Mapping[str, object]], None],
     data: Union[List[Any], Dict[str, Any]],
     *,
     unicode_escape: bool = True,
@@ -782,3 +801,35 @@ def atomic(
         unicode_escape=unicode_escape,
         uri_decode=uri_decode,
     ).atomic(data)
+
+
+def patched(
+    patch: Union[str, Iterable[Mapping[str, object]], None],
+    data: Union[List[Any], Dict[str, Any]],
+    *,
+    unicode_escape: bool = True,
+    uri_decode: bool = False,
+) -> object:
+    """Apply patch operations from _patch_ to a deep copy of _data_.
+
+    Arguments:
+        patch: A JSON Patch formatted document or equivalent Python objects.
+        data: JSON-like data.
+        unicode_escape: If `True`, UTF-16 escape sequences will be decoded
+            before parsing JSON pointers.
+        uri_decode: If `True`, JSON pointers will be unescaped using _urllib_
+            before being parsed.
+
+    Returns:
+        A patched copy of _data_.
+
+    Raises:
+        JSONPatchError: When a patch operation fails.
+        JSONPatchTestFailure: When a _test_ operation does not pass.
+            `JSONPatchTestFailure` is a subclass of `JSONPatchError`.
+    """
+    return JSONPatch(
+        patch,
+        unicode_escape=unicode_escape,
+        uri_decode=uri_decode,
+    ).patched(data)
