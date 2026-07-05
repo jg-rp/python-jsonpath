@@ -1,6 +1,6 @@
 # Python JSONPath Change Log
 
-## Version 2.2.0 (unreleased)
+## Version 2.2.0
 
 **Fixes**
 
@@ -9,7 +9,7 @@
 
 **Features**
 
-- Added `patch.patched(ops, data)` and `JSONPatch.patched(data)`. `patched()` is a non-mutating form of JSONPatch application. They always perform a deep copy of `data` and return the patched copy. See [#131](https://github.com/jg-rp/python-jsonpath/issues/131).
+- Added `patch.patched(ops, data)` and `JSONPatch.patched(data)`. `patched()` is a non-mutating form of JSONPatch application. It always performs a deep copy of `data` and returns the patched copy. See [#131](https://github.com/jg-rp/python-jsonpath/issues/131).
 
 ## Version 2.1.0
 
