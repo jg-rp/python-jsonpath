@@ -352,3 +352,18 @@ def test_atomic_patch_array_fail() -> None:
         patch.atomic(data)
 
     assert data == data_
+
+
+def test_patched_does_not_mutate_data() -> None:
+    """Test that _patched_ modifies a deep copy of data."""
+    patch_doc: List[Dict[str, Any]] = [
+        {"op": "replace", "path": "/a/b/c", "value": 42},
+        {"op": "add", "path": "/a/b/d", "value": 2},
+    ]
+
+    data: Dict[str, Any] = {"a": {"b": {"c": 1}}}
+    patch = JSONPatch(patch_doc)
+    patched_data = patch.patched(data)
+
+    assert data == {"a": {"b": {"c": 1}}}
+    assert patched_data == {"a": {"b": {"c": 42, "d": 2}}}

@@ -364,6 +364,28 @@ except JSONPatchError:
 assert data == data_
 ```
 
+## `patch.patched(patch, data)`
+
+**_New in version 2.2.0_**
+
+`patch.patched(ops, data)` and `JSONPatch.patched(data)` never mutate `data`. They apply patch operations to a deep copy of `data` and return the patched copy.
+
+```python
+from jsonpath import patch
+
+patch_operations = [
+    {"op": "add", "path": "/some/foo", "value": {"foo": {}}},
+    {"op": "add", "path": "/some/foo", "value": {"bar": []}},
+    {"op": "copy", "from": "/some/other", "path": "/some/foo/else"},
+    {"op": "add", "path": "/some/foo/bar/-", "value": 1},
+]
+
+data = {"some": {"other": "thing"}}
+patched_data = patch.patched(patch_operations, data)
+
+assert data != patched_data
+```
+
 ## What's Next?
 
 Read about the [Query Iterators](query.md) API or [user-defined filter functions](advanced.md#function-extensions). Also see how to make extra data available to filters with [Extra Filter Context](advanced.md#filter-variables).

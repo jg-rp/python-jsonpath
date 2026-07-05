@@ -1,10 +1,14 @@
 # Python JSONPath Change Log
 
-## Unreleased
+## Version 2.2.0 (unreleased)
 
 **Fixes**
 
-- Fixed lexing of quoted name selectors ending in an escaped backslash, like `$['a\\']['b']`. The lexer's look-behind for the closing quote treated a quote following an escaped backslash (`\\`) as an escaped quote (`\'`), so these selectors failed to tokenize. This also broke the RFC 9535 normalized path round-trip: normalized paths produced for object keys containing backslashes could not be parsed back.
+- Fixed lexing of quoted name selectors ending in an escaped backslash, like `$['a\\']['b']`. The lexer's look-behind for the closing quote treated a quote following an escaped backslash (`\\`) as an escaped quote (`\'`), so these selectors failed to tokenize. This also broke the RFC 9535 normalized path round-trip: normalized paths produced for object keys containing backslashes could not be parsed back. See [#132](https://github.com/jg-rp/python-jsonpath/pull/132).
+
+**Features**
+
+- Added `patch.patched(ops, data)` and `JSONPatch.patched(data)`. `patched()` is a non-mutating form of JSONPatch application. They always perform a deep copy of `data` and return the patched copy. See [#131](https://github.com/jg-rp/python-jsonpath/issues/131).
 
 ## Version 2.1.0
 

@@ -163,6 +163,24 @@ with contextlib.suppress(JSONPatchError):
 assert data == {"some": {"other": "thing"}}
 ```
 
+`patch.patched(ops, data)` and `JSONPatch.patched(data)` apply patch operations to a deep copy of `data`.
+
+```python
+from jsonpath import patch
+
+patch_operations = [
+    {"op": "add", "path": "/some/foo", "value": {"foo": {}}},
+    {"op": "add", "path": "/some/foo", "value": {"bar": []}},
+    {"op": "copy", "from": "/some/other", "path": "/some/foo/else"},
+    {"op": "add", "path": "/some/foo/bar/-", "value": 1},
+]
+
+data = {"some": {"other": "thing"}}
+patched_data = patch.patched(patch_operations, data)
+
+assert data != patched_data
+```
+
 ## License
 
 `python-jsonpath` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
