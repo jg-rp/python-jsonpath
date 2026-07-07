@@ -6,6 +6,10 @@ Python JSONPath is a non-evaluating, read-only implementation of JSONPath, suita
 
 We also include implementations of [JSON Pointer](pointers.md) ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) and [JSON Patch](api.md#jsonpath.JSONPatch) ([RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)), plus methods for converting a [JSONPathMatch](api.md#jsonpath.JSONPathMatch) to a `JSONPointer`.
 
+!!! warning
+
+    If you are accepting JSONPath queries from untrusted users, make sure you handle `JSONPathRecursionError` (a subclass of `JSONPathError` and Python's `RecursionError`). `JSONPathRecursionError` can be thrown at compile time if a query has been crafted to cause our recursive parser to reach Python's recursion limit. Or at path resolution time if `max_recursion_depth` is reached with the descendent segment.
+
 ## Install
 
 Install Python JSONPath using [pip](https://pip.pypa.io/en/stable/getting-started/):

@@ -16,6 +16,7 @@ from typing import Union
 from jsonpath.function_extensions.filter_function import ExpressionType
 from jsonpath.function_extensions.filter_function import FilterFunction
 
+from .exceptions import JSONPathRecursionError
 from .exceptions import JSONPathSyntaxError
 from .exceptions import JSONPathTypeError
 from .filter import CURRENT_KEY
@@ -324,7 +325,10 @@ class Parser:
             # Raises a syntax error because the current token is not TOKEN_ROOT.
             stream.expect(TOKEN_ROOT)
 
-        yield from self.parse_query(stream)
+        try:
+            yield from self.parse_query(stream)
+        except RecursionError as err:
+            raise JSONPathRecursionError(str(err), token=None) from err
 
         if stream.current().kind not in (TOKEN_EOF, TOKEN_INTERSECTION, TOKEN_UNION):
             raise JSONPathSyntaxError(

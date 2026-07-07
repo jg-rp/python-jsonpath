@@ -135,15 +135,19 @@ class JSONPathNameError(JSONPathError):
         self.token = token
 
 
-class JSONPathRecursionError(JSONPathError):
+class JSONPathRecursionError(JSONPathError, RecursionError):
     """An exception raised when the maximum recursion depth is reached.
+
+    This could be raised at parse time if a JSONPath query is constructed in
+    such a way to hit Python's recursion limit. Or at query resolution time
+    if `max_recursion_depth` is reached by the descendant segment (`..`).
 
     Arguments:
         args: Arguments passed to `Exception`.
         token: The token that caused the error.
     """
 
-    def __init__(self, *args: object, token: Token) -> None:
+    def __init__(self, *args: object, token: Optional[Token]) -> None:
         super().__init__(*args)
         self.token = token
 

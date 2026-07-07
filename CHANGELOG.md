@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+# Version 2.2.1 (unreleased)
+
+**Fixes**
+
+- JSONPath parser recursion limit failures now raise `JSONPathRecursionError`, preserving the original `RecursionError` as the cause. `JSONPathRecursionError` now also subclasses `RecursionError`, allowing existing except `RecursionError` handlers to continue working.
+
 ## Version 2.2.0
 
 **Fixes**
