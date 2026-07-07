@@ -217,6 +217,10 @@ class JSONPathEnvironment:
             JSONPathSyntaxError: If _path_ is invalid.
             JSONPathTypeError: If filter functions are given arguments of an
                 unacceptable type.
+            JSONPathRecursionError: If _path_ has been crafted in such a way as
+                to cause our recursive parser to reach Python's recursion limit.
+                JSONPathRecursionError inherits from both `JSONPathError` and
+                `RecursionError`.
         """
         tokens = self.lexer.tokenize(path)
         stream = TokenStream(tokens)
@@ -298,6 +302,10 @@ class JSONPathEnvironment:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: At path resolution time if `max_recursion_depth`
+                is reached with the descendent segment. Or at compile time if
+                _path_ has been crafted to cause our recursive parser to reach
+                Python's recursion limit.
         """
         return self.compile(path).findall(data, filter_context=filter_context)
 
@@ -327,6 +335,10 @@ class JSONPathEnvironment:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: At path resolution time if `max_recursion_depth`
+                is reached with the descendent segment. Or at compile time if
+                _path_ has been crafted to cause our recursive parser to reach
+                Python's recursion limit.
         """
         return self.compile(path).finditer(data, filter_context=filter_context)
 
@@ -356,6 +368,10 @@ class JSONPathEnvironment:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: At path resolution time if `max_recursion_depth`
+                is reached with the descendent segment. Or at compile time if
+                _path_ has been crafted to cause our recursive parser to reach
+                Python's recursion limit.
         """
         return self.compile(path).match(data, filter_context=filter_context)
 
@@ -416,6 +432,10 @@ class JSONPathEnvironment:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: At path resolution time if `max_recursion_depth`
+                is reached with the descendent segment. Or at compile time if
+                _path_ has been crafted to cause our recursive parser to reach
+                Python's recursion limit.
         """
         return Query(self.finditer(path, data, filter_context=filter_context), self)
 

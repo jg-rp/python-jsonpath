@@ -105,3 +105,11 @@ def test_low_recursion_limit() -> None:
 
     with pytest.raises(JSONPathRecursionError):
         env.findall(query, data)
+
+
+def test_compile_time_recursion_error(env: JSONPathEnvironment) -> None:
+    with pytest.raises(JSONPathRecursionError):
+        env.compile("$[?" + "!" * 493 + "@.a]")
+
+    with pytest.raises(RecursionError):
+        env.compile("$[?" + "!" * 493 + "@.a]")

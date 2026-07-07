@@ -111,6 +111,10 @@ def compile(path: str, *, strict: bool = False) -> Union[JSONPath, CompoundJSONP
         JSONPathSyntaxError: If _path_ is invalid.
         JSONPathTypeError: If filter functions are given arguments of an
             unacceptable type.
+        JSONPathRecursionError: If _path_ has been crafted in such a way as to
+            cause our recursive parser to reach Python's recursion limit.
+            `JSONPathRecursionError` inherits from both `JSONPathError` and
+            `RecursionError`.
     """
     return _STRICT_ENV.compile(path) if strict else DEFAULT_ENV.compile(path)
 
@@ -144,6 +148,10 @@ def findall(
         JSONPathSyntaxError: If the path is invalid.
         JSONPathTypeError: If a filter expression attempts to use types in
             an incompatible way.
+        JSONPathRecursionError: At path resolution time if `max_recursion_depth`
+            is reached with the descendent segment. Or at compile time if _path_
+            has been crafted to cause our recursive parser to reach Python's
+            recursion limit.
     """
     return (
         _STRICT_ENV.findall(path, data, filter_context=filter_context)
@@ -181,6 +189,10 @@ async def findall_async(
         JSONPathSyntaxError: If the path is invalid.
         JSONPathTypeError: If a filter expression attempts to use types in
             an incompatible way.
+        JSONPathRecursionError: At path resolution time if `max_recursion_depth`
+            is reached with the descendent segment. Or at compile time if _path_
+            has been crafted to cause our recursive parser to reach Python's
+            recursion limit.
     """
     return (
         await _STRICT_ENV.findall_async(path, data, filter_context=filter_context)
@@ -217,6 +229,10 @@ def finditer(
         JSONPathSyntaxError: If the path is invalid.
         JSONPathTypeError: If a filter expression attempts to use types in
             an incompatible way.
+        JSONPathRecursionError: At path resolution time if `max_recursion_depth`
+            is reached with the descendent segment. Or at compile time if _path_
+            has been crafted to cause our recursive parser to reach Python's
+            recursion limit.
     """
     return (
         _STRICT_ENV.finditer(path, data, filter_context=filter_context)
@@ -254,6 +270,10 @@ async def finditer_async(
         JSONPathSyntaxError: If the path is invalid.
         JSONPathTypeError: If a filter expression attempts to use types in
             an incompatible way.
+        JSONPathRecursionError: At path resolution time if `max_recursion_depth`
+            is reached with the descendent segment. Or at compile time if _path_
+            has been crafted to cause our recursive parser to reach Python's
+            recursion limit.
     """
     return (
         await _STRICT_ENV.finditer_async(path, data, filter_context=filter_context)
@@ -290,6 +310,10 @@ def match(
         JSONPathSyntaxError: If the path is invalid.
         JSONPathTypeError: If a filter expression attempts to use types in
             an incompatible way.
+        JSONPathRecursionError: At path resolution time if `max_recursion_depth`
+            is reached with the descendent segment. Or at compile time if _path_
+            has been crafted to cause our recursive parser to reach Python's
+            recursion limit.
     """
     return (
         _STRICT_ENV.match(path, data, filter_context=filter_context)
@@ -357,6 +381,10 @@ def query(
         JSONPathSyntaxError: If the path is invalid.
         JSONPathTypeError: If a filter expression attempts to use types in
             an incompatible way.
+        JSONPathRecursionError: At path resolution time if `max_recursion_depth`
+            is reached with the descendent segment. Or at compile time if _path_
+            has been crafted to cause our recursive parser to reach Python's
+            recursion limit.
     """
     return (
         _STRICT_ENV.query(path, data, filter_context=filter_context)

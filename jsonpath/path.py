@@ -87,6 +87,8 @@ class JSONPath:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: If `max_recursion_depth` is reached with
+                the descendent segment.
         """
         return [
             match.obj for match in self.finditer(data, filter_context=filter_context)
@@ -113,6 +115,8 @@ class JSONPath:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: If `max_recursion_depth` is reached with
+                the descendent segment.
         """
         _data = load_data(data)
         path = self.env.pseudo_root_token if self.pseudo_root else self.env.root_token
@@ -189,6 +193,8 @@ class JSONPath:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: If `max_recursion_depth` is reached with
+                the descendent segment.
         """
         try:
             return next(iter(self.finditer(data, filter_context=filter_context)))
@@ -213,6 +219,8 @@ class JSONPath:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: If `max_recursion_depth` is reached with
+                the descendent segment.
         """
         return Query(self.finditer(data, filter_context=filter_context), self.env)
 
@@ -291,6 +299,9 @@ class CompoundJSONPath:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: If `max_recursion_depth` is reached with
+                the descendent segment.
+
         """
         objs = self.path.findall(data, filter_context=filter_context)
 
@@ -325,6 +336,8 @@ class CompoundJSONPath:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: If `max_recursion_depth` is reached with
+                the descendent segment.
         """
         matches = self.path.finditer(data, filter_context=filter_context)
 
@@ -360,6 +373,8 @@ class CompoundJSONPath:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: If `max_recursion_depth` is reached with
+                the descendent segment.
         """
         try:
             return next(iter(self.finditer(data, filter_context=filter_context)))
@@ -417,6 +432,8 @@ class CompoundJSONPath:
             JSONPathSyntaxError: If the path is invalid.
             JSONPathTypeError: If a filter expression attempts to use types in
                 an incompatible way.
+            JSONPathRecursionError: If `max_recursion_depth` is reached with
+                the descendent segment.
         """
         return Query(self.finditer(data, filter_context=filter_context), self.env)
 
