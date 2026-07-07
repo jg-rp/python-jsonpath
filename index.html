@@ -989,6 +989,10 @@
 <p>JSONPath is a mini language for selecting values from data formatted in JavaScript Object Notation, or equivalent Python objects, like dictionaries and lists.</p>
 <p>Python JSONPath is a non-evaluating, read-only implementation of JSONPath, suitable for situations where JSONPath query authors are untrusted. We follow <a href="https://datatracker.ietf.org/doc/html/rfc9535">RFC 9535</a> and test against the <a href="https://github.com/jsonpath-standard/jsonpath-compliance-test-suite">JSONPath Compliance Test Suite</a>.</p>
 <p>We also include implementations of <a href="pointers/">JSON Pointer</a> (<a href="https://datatracker.ietf.org/doc/html/rfc6901">RFC 6901</a>) and <a href="api/#jsonpath.JSONPatch">JSON Patch</a> (<a href="https://datatracker.ietf.org/doc/html/rfc6902">RFC 6902</a>), plus methods for converting a <a href="api/#jsonpath.JSONPathMatch">JSONPathMatch</a> to a <code>JSONPointer</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you are accepting JSONPath queries from untrusted users, make sure you handle <code>JSONPathRecursionError</code> (a subclass of <code>JSONPathError</code> and Python's <code>RecursionError</code>). <code>JSONPathRecursionError</code> can be thrown at compile time if a query has been crafted to cause our recursive parser to reach Python's recursion limit. Or at path resolution time if <code>max_recursion_depth</code> is reached with the descendent segment.</p>
+</div>
 <h2 id="install">Install</h2>
 <p>Install Python JSONPath using <a href="https://pip.pypa.io/en/stable/getting-started/">pip</a>:</p>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="go">pip install python-jsonpath</span>
