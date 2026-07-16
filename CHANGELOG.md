@@ -5,6 +5,7 @@
 **Fixes**
 
 - JSONPath parser recursion limit failures now raise `JSONPathRecursionError`, preserving the original `RecursionError` as the cause. `JSONPathRecursionError` now also subclasses `RecursionError`, allowing existing except `RecursionError` handlers to continue working.
+- JSON Patch `move` and `copy` operations now use `add` semantics for their target locations. This allows appending to arrays with `-` and rejects indexes greater than the array's length, as required by RFC 6902.
 
 ## Version 2.2.0
 

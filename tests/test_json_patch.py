@@ -127,6 +127,11 @@ def test_move_to_root() -> None:
     assert patch.apply({"foo": {"bar": "baz"}}) == {"bar": "baz"}
 
 
+def test_move_appends_to_array() -> None:
+    patch = JSONPatch().move(from_="/foo/0", path="/foo/-")
+    assert patch.apply({"foo": ["bar", "baz"]}) == {"foo": ["baz", "bar"]}
+
+
 def test_move_to_immutable_mapping() -> None:
     patch = JSONPatch().move(from_="/foo/bar", path="/baz/bar")
     with pytest.raises(
@@ -148,6 +153,13 @@ def test_copy_to_root() -> None:
     assert patch.apply({"foo": {"bar": [1, 2, 3]}}) == [1, 2, 3]
 
 
+def test_copy_appends_to_array() -> None:
+    patch = JSONPatch().copy(from_="/foo/0", path="/foo/-")
+    assert patch.apply({"foo": ["bar", "baz"]}) == {
+        "foo": ["bar", "baz", "bar"]
+    }
+
+
 def test_copy_to_immutable_mapping() -> None:
     with pytest.raises(
         JSONPatchError,
@@ -156,6 +168,24 @@ def test_copy_to_immutable_mapping() -> None:
         JSONPatch().copy(from_="/foo/bar", path="/baz/bar").apply(
             {"foo": {"bar": [1, 2, 3]}, "baz": MockMapping()}
         )
+
+
+@pytest.mark.parametrize(
+    ("operation", "path"),
+    [
+        pytest.param("move", "/foo/3", id="move"),
+        pytest.param("copy", "/foo/4", id="copy"),
+    ],
+)
+def test_move_and_copy_reject_array_index_beyond_end(
+    operation: str, path: str
+) -> None:
+    patch = getattr(JSONPatch(), operation)(from_="/foo/0", path=path)
+
+    with pytest.raises(
+        JSONPatchError, match=re.escape(f"index out of range ({operation}:0)")
+    ):
+        patch.apply({"foo": ["bar", "baz", "qux"]})
 
 
 def test_patch_from_file_like() -> None:

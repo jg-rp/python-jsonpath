@@ -266,22 +266,7 @@ class OpMove(Op):
         if isinstance(source_parent, MutableMapping):
             del source_parent[str(self.source.parts[-1])]
 
-        dest_parent, _ = self.dest.resolve_parent(data)
-
-        if dest_parent is None:
-            # Move source to root
-            return source_obj  # type: ignore
-
-        if isinstance(dest_parent, MutableSequence):
-            dest_parent.insert(int(self.dest.parts[-1]), source_obj)
-        elif isinstance(dest_parent, MutableMapping):
-            dest_parent[str(self.dest.parts[-1])] = source_obj
-        else:
-            raise JSONPatchError(
-                f"unexpected operation on {dest_parent.__class__.__name__!r}"
-            )
-
-        return data
+        return OpAdd(self.dest, source_obj).apply(data)
 
     def asdict(self) -> Dict[str, object]:
         """Return a dictionary representation of this operation."""
@@ -308,22 +293,7 @@ class OpCopy(Op):
         if source_obj is UNDEFINED:
             raise JSONPatchError("source object does not exist")
 
-        dest_parent, _ = self.dest.resolve_parent(data)
-
-        if dest_parent is None:
-            # Copy source to root
-            return copy.deepcopy(source_obj)  # type: ignore
-
-        if isinstance(dest_parent, MutableSequence):
-            dest_parent.insert(int(self.dest.parts[-1]), copy.deepcopy(source_obj))
-        elif isinstance(dest_parent, MutableMapping):
-            dest_parent[str(self.dest.parts[-1])] = copy.deepcopy(source_obj)
-        else:
-            raise JSONPatchError(
-                f"unexpected operation on {dest_parent.__class__.__name__!r}"
-            )
-
-        return data
+        return OpAdd(self.dest, copy.deepcopy(source_obj)).apply(data)
 
     def asdict(self) -> Dict[str, object]:
         """Return a dictionary representation of this operation."""
