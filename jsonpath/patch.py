@@ -59,32 +59,7 @@ class OpAdd(Op):
         self, data: Union[MutableSequence[object], MutableMapping[str, object]]
     ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
         """Apply this patch operation to _data_."""
-        parent, obj = self.path.resolve_parent(data)
-        if parent is None:
-            # Replace the root object.
-            # The following op, if any, will raise a JSONPatchError if needed.
-            return self.value  # type: ignore
-
-        target = self.path.parts[-1]
-        if isinstance(parent, MutableSequence):
-            if obj is UNDEFINED:
-                if target == "-":
-                    parent.append(self.value)
-                else:
-                    index = self.path._index(target)  # type: ignore # noqa: SLF001
-                    if index == len(parent):
-                        parent.append(self.value)
-                    else:
-                        raise JSONPatchError("index out of range")
-            else:
-                parent.insert(int(target), self.value)
-        elif isinstance(parent, MutableMapping):
-            parent[str(target)] = self.value
-        else:
-            raise JSONPatchError(
-                f"unexpected operation on {parent.__class__.__name__!r}"
-            )
-        return data
+        return _add(data=data, path=self.path, value=self.value)
 
     def asdict(self) -> Dict[str, object]:
         """Return a dictionary representation of this operation."""
@@ -266,7 +241,7 @@ class OpMove(Op):
         if isinstance(source_parent, MutableMapping):
             del source_parent[str(self.source.parts[-1])]
 
-        return OpAdd(self.dest, source_obj).apply(data)
+        return _add(path=self.dest, value=source_obj, data=data)
 
     def asdict(self) -> Dict[str, object]:
         """Return a dictionary representation of this operation."""
@@ -293,7 +268,8 @@ class OpCopy(Op):
         if source_obj is UNDEFINED:
             raise JSONPatchError("source object does not exist")
 
-        return OpAdd(self.dest, copy.deepcopy(source_obj)).apply(data)
+        # return OpAdd(self.dest, copy.deepcopy(source_obj)).apply(data)
+        return _add(path=self.dest, value=copy.deepcopy(source_obj), data=data)
 
     def asdict(self) -> Dict[str, object]:
         """Return a dictionary representation of this operation."""
@@ -806,3 +782,39 @@ def patched(
         unicode_escape=unicode_escape,
         uri_decode=uri_decode,
     ).patched(data)
+
+
+_DataT = Union[MutableSequence[object], MutableMapping[str, object]]
+
+
+def _add(*, data: _DataT, path: JSONPointer, value: object) -> _DataT:
+    """Add _value_ to _data_ at _path_.
+
+    This is semantically the `add` operation, used by `OpAdd`, `OpMove` and
+    `OpCopy`.
+    """
+    parent, obj = path.resolve_parent(data)
+    if parent is None:
+        # Replace the root object.
+        # The following op, if any, will raise a JSONPatchError if needed.
+        return value  # type: ignore
+
+    target = path.parts[-1]
+
+    if isinstance(parent, MutableSequence):
+        if obj is UNDEFINED:
+            if target == "-":
+                parent.append(value)
+            else:
+                index = path._index(target)  # type: ignore # noqa: SLF001
+                if index == len(parent):
+                    parent.append(value)
+                else:
+                    raise JSONPatchError("index out of range")
+        else:
+            parent.insert(int(target), value)
+    elif isinstance(parent, MutableMapping):
+        parent[str(target)] = value
+    else:
+        raise JSONPatchError(f"unexpected operation on {parent.__class__.__name__!r}")
+    return data

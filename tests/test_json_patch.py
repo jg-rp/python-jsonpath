@@ -155,9 +155,7 @@ def test_copy_to_root() -> None:
 
 def test_copy_appends_to_array() -> None:
     patch = JSONPatch().copy(from_="/foo/0", path="/foo/-")
-    assert patch.apply({"foo": ["bar", "baz"]}) == {
-        "foo": ["bar", "baz", "bar"]
-    }
+    assert patch.apply({"foo": ["bar", "baz"]}) == {"foo": ["bar", "baz", "bar"]}
 
 
 def test_copy_to_immutable_mapping() -> None:
@@ -170,21 +168,17 @@ def test_copy_to_immutable_mapping() -> None:
         )
 
 
-@pytest.mark.parametrize(
-    ("operation", "path"),
-    [
-        pytest.param("move", "/foo/3", id="move"),
-        pytest.param("copy", "/foo/4", id="copy"),
-    ],
-)
-def test_move_and_copy_reject_array_index_beyond_end(
-    operation: str, path: str
-) -> None:
-    patch = getattr(JSONPatch(), operation)(from_="/foo/0", path=path)
+def test_move_past_array_end() -> None:
+    patch = JSONPatch().move("/foo/0", "/foo/3")
 
-    with pytest.raises(
-        JSONPatchError, match=re.escape(f"index out of range ({operation}:0)")
-    ):
+    with pytest.raises(JSONPatchError, match=re.escape("index out of range (move:0)")):
+        patch.apply({"foo": ["bar", "baz", "qux"]})
+
+
+def test_copy_past_array_end() -> None:
+    patch = JSONPatch().copy("/foo/0", "/foo/4")
+
+    with pytest.raises(JSONPatchError, match=re.escape("index out of range (copy:0)")):
         patch.apply({"foo": ["bar", "baz", "qux"]})
 
 
