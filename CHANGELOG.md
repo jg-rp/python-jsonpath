@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+# Version 2.2.2 (unreleased)
+
+**Fixes**
+
+- JSON Patch `move` and `copy` operations now use `add` semantics for their target locations. Previously it was not possible to move or copy to the end of an array with the special `-` index, and we would silently append to arrays given an index greater than the array's length. We now raise a `JSONPatchError` if the target index is greater than the number of elements in the array.
+
 # Version 2.2.1
 
 **Fixes**
