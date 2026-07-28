@@ -117,7 +117,7 @@ def test_move_to_child() -> None:
 
 def test_move_nonexistent_value() -> None:
     with pytest.raises(
-        JSONPatchError, match=re.escape("source object does not exist (move:0)")
+        JSONPatchError, match=re.escape("can't move nonexistent property (move:0)")
     ):
         JSONPatch().move(from_="/foo/bar", path="/bar").apply({"foo": {"baz": 1}})
 

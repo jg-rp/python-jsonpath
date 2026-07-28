@@ -152,22 +152,8 @@ class OpRemove(Op):
         self, data: Union[MutableSequence[object], MutableMapping[str, object]]
     ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
         """Apply this patch operation to _data_."""
-        parent, obj = self.path.resolve_parent(data)
-        if parent is None:
-            raise JSONPatchError("can't remove root")
-
-        if isinstance(parent, MutableSequence):
-            if obj is UNDEFINED:
-                raise JSONPatchError("can't remove nonexistent item")
-            del parent[int(self.path.parts[-1])]
-        elif isinstance(parent, MutableMapping):
-            if obj is UNDEFINED:
-                raise JSONPatchError("can't remove nonexistent property")
-            del parent[str(self.path.parts[-1])]
-        else:
-            raise JSONPatchError(
-                f"unexpected operation on {parent.__class__.__name__!r}"
-            )
+        # Note that it's not possible to remove the root value.
+        _remove(data=data, path=self.path, op=self.name)
         return data
 
     def asdict(self) -> Dict[str, object]:
@@ -231,17 +217,8 @@ class OpMove(Op):
         if self.dest.is_relative_to(self.source):
             raise JSONPatchError("can't move object to one of its own children")
 
-        source_parent, source_obj = self.source.resolve_parent(data)
-
-        if source_obj is UNDEFINED:
-            raise JSONPatchError("source object does not exist")
-
-        if isinstance(source_parent, MutableSequence):
-            del source_parent[int(self.source.parts[-1])]
-        if isinstance(source_parent, MutableMapping):
-            del source_parent[str(self.source.parts[-1])]
-
-        return _add(path=self.dest, value=source_obj, data=data)
+        obj = _remove(path=self.source, data=data, op=self.name)
+        return _add(path=self.dest, value=obj, data=data)
 
     def asdict(self) -> Dict[str, object]:
         """Return a dictionary representation of this operation."""
@@ -788,7 +765,7 @@ _DataT = Union[MutableSequence[object], MutableMapping[str, object]]
 
 
 def _add(*, data: _DataT, path: JSONPointer, value: object) -> _DataT:
-    """Add _value_ to _data_ at _path_.
+    """Add _value_ to _data_ at _path_ and return modified _data_.
 
     This is semantically the `add` operation, used by `OpAdd`, `OpMove` and
     `OpCopy`.
@@ -816,5 +793,32 @@ def _add(*, data: _DataT, path: JSONPointer, value: object) -> _DataT:
     elif isinstance(parent, MutableMapping):
         parent[str(target)] = value
     else:
-        raise JSONPatchError(f"unexpected operation on {parent.__class__.__name__!r}")
+        raise JSONPatchError(
+            f"unexpected operation on {parent.__class__.__name__!r}",
+        )
     return data
+
+
+def _remove(*, data: _DataT, path: JSONPointer, op: str) -> object:
+    """Remove value at _path_ from _data_ and return the removed value.
+
+    This is semantically the `remove` operation used by `OpRemove` and
+    `OpMove`.
+    """
+    parent, obj = path.resolve_parent(data)
+    if parent is None:
+        raise JSONPatchError(f"can't {op} root")
+
+    if isinstance(parent, MutableSequence):
+        if obj is UNDEFINED:
+            raise JSONPatchError(f"can't {op} nonexistent item")
+        del parent[int(path.parts[-1])]
+    elif isinstance(parent, MutableMapping):
+        if obj is UNDEFINED:
+            raise JSONPatchError(f"can't {op} nonexistent property")
+        del parent[str(path.parts[-1])]
+    else:
+        raise JSONPatchError(
+            f"unexpected operation on {parent.__class__.__name__!r}",
+        )
+    return obj
