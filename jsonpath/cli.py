@@ -3,8 +3,14 @@
 import argparse
 import json
 import sys
+from contextlib import AbstractContextManager
 from contextlib import nullcontext
+from typing import IO
+from typing import Any
+from typing import BinaryIO
 from typing import Literal
+from typing import TextIO
+from typing import overload
 
 import jsonpath
 from jsonpath.__about__ import __version__
@@ -370,12 +376,27 @@ def handle_patch_command(args: argparse.Namespace) -> None:
         json.dump(patched, of, indent=indent)
 
 
-def open_input(filename: str, mode: Literal["r", "rb"]):
+@overload
+def open_input(filename: str, mode: Literal["r"]) -> AbstractContextManager[TextIO]: ...
+
+
+@overload
+def open_input(
+    filename: str, mode: Literal["rb"]
+) -> AbstractContextManager[BinaryIO]: ...
+
+
+def open_input(
+    filename: str, mode: Literal["r", "rb"]
+) -> AbstractContextManager[IO[Any]]:
     """A context manager for opening input files from command line arguments."""
-    return nullcontext(sys.stdin) if filename == "-" else open(filename, mode)
+    if filename == "-":
+        stream = sys.stdin if mode == "r" else sys.stdin.buffer
+        return nullcontext(stream)
+    return open(filename, mode)
 
 
-def open_output(filename: str):
+def open_output(filename: str) -> AbstractContextManager[TextIO]:
     """A context manager for opening output files from command line arguments."""
     return nullcontext(sys.stdout) if filename == "-" else open(filename, "w")
 
