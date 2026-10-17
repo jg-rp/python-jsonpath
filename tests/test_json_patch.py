@@ -6,6 +6,7 @@ import re
 from collections.abc import Mapping
 from contextlib import suppress
 from io import StringIO
+from types import MappingProxyType
 from typing import Any
 from typing import Dict
 from typing import Iterator
@@ -117,7 +118,7 @@ def test_move_to_child() -> None:
 
 def test_move_nonexistent_value() -> None:
     with pytest.raises(
-        JSONPatchError, match=re.escape("source object does not exist (move:0)")
+        JSONPatchError, match=re.escape("can't move nonexistent property (move:0)")
     ):
         JSONPatch().move(from_="/foo/bar", path="/bar").apply({"foo": {"baz": 1}})
 
@@ -139,6 +140,24 @@ def test_move_to_immutable_mapping() -> None:
         match=re.escape("unexpected operation on 'MockMapping' (move:0)"),
     ):
         patch.apply({"foo": {"bar": "hello"}, "baz": MockMapping()})
+
+
+def test_move_from_immutable_mapping() -> None:
+    patch = JSONPatch().move(from_="/foo/bar", path="/baz/bar")
+    with pytest.raises(
+        JSONPatchError,
+        match=re.escape("unexpected operation on 'mappingproxy' (move:0)"),
+    ):
+        patch.apply({"foo": MappingProxyType({"bar": "hello"}), "baz": {}})
+
+
+def test_move_from_immutable_sequence() -> None:
+    patch = JSONPatch().move(from_="/foo/0", path="/baz/0")
+    with pytest.raises(
+        JSONPatchError,
+        match=re.escape("unexpected operation on 'tuple' (move:0)"),
+    ):
+        patch.apply({"foo": ("hello",), "baz": []})
 
 
 def test_copy_nonexistent_value() -> None:
