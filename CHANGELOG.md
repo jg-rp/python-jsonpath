@@ -1,11 +1,11 @@
 # Python JSONPath Change Log
 
-# Version 2.2.2 (unreleased)
+# Version 2.2.2
 
 **Fixes**
 
 - JSON Patch `move` and `copy` operations now use `add` semantics for their target locations. Previously it was not possible to move or copy to the end of an array with the special `-` index, and we would silently append to arrays given an index greater than the array's length. We now raise a `JSONPatchError` if the target index is greater than the number of elements in the array.
-- Fixed JSONPatch `move` operations with immutable Mapping or Sequence source objects. Previously we silently ignored the internal `remove` op if the source was immutable,making the operation a copy. Now we raise a `JSONPatchError`.
+- Fixed JSONPatch `move` operations with immutable Mapping or Sequence source objects. Previously we silently ignored the internal `remove` op if the source was immutable, making the operation a copy. Now we raise a `JSONPatchError`.
 
 # Version 2.2.1
 
