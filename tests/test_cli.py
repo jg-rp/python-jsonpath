@@ -3,6 +3,7 @@
 import argparse
 import json
 import pathlib
+from typing import Dict
 
 import pytest
 
@@ -18,7 +19,7 @@ from jsonpath.exceptions import JSONPathTypeError
 from jsonpath.exceptions import JSONPointerResolutionError
 from jsonpath.patch import JSONPatch
 
-SAMPLE_DATA = {
+SAMPLE_DATA: Dict[str, object] = {
     "categories": [
         {
             "name": "footwear",
@@ -286,7 +287,6 @@ def test_json_path(
     )
 
     handle_path_command(args)
-    args.output.flush()
 
     with open(outfile, "r") as fd:
         assert len(json.load(fd)) == 4  # noqa: PLR2004
@@ -329,7 +329,6 @@ def test_json_path_strict(
     )
 
     handle_path_command(args)
-    args.output.flush()
 
     with open(outfile, "r") as fd:
         rv = json.load(fd)
@@ -400,7 +399,6 @@ def test_json_pointer(
     )
 
     handle_pointer_command(args)
-    args.output.flush()
 
     with open(outfile, "r") as fd:
         assert json.load(fd) == "footwear"
@@ -413,7 +411,6 @@ def test_json_pointer_empty_string(
     args = parser.parse_args(["pointer", "-p", "", "-f", sample_target, "-o", outfile])
 
     handle_pointer_command(args)
-    args.output.flush()
 
     with open(outfile, "r") as fd:
         assert json.load(fd) == SAMPLE_DATA
@@ -435,7 +432,6 @@ def test_read_pointer_from_file(
     )
 
     handle_pointer_command(args)
-    args.output.flush()
 
     with open(outfile, "r") as fd:
         assert json.load(fd) == SAMPLE_DATA["price_cap"]
@@ -589,7 +585,6 @@ def test_json_patch(
     )
 
     handle_patch_command(args)
-    args.output.flush()
 
     with open(outfile, "r") as fd:
         patched = json.load(fd)

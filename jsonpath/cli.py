@@ -3,6 +3,8 @@
 import argparse
 import json
 import sys
+from contextlib import nullcontext
+from typing import Literal
 
 import jsonpath
 from jsonpath.__about__ import __version__
@@ -27,16 +29,15 @@ def path_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
 
     group.add_argument(
         "-r",
-        "--path-file",
-        type=argparse.FileType(mode="r"),
+        "--query-file",
+        default="-",
         help="Text file containing a JSONPath query.",
     )
 
     parser.add_argument(
         "-f",
         "--file",
-        type=argparse.FileType(mode="rb"),
-        default=sys.stdin,
+        default="-",
         help=(
             "File to read the target JSON document from. "
             "Defaults to reading from the standard input stream."
@@ -46,8 +47,7 @@ def path_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     parser.add_argument(
         "-o",
         "--output",
-        type=argparse.FileType(mode="w"),
-        default=sys.stdout,
+        default="-",
         help=(
             "File to write resulting objects to, as a JSON array. "
             "Defaults to the standard output stream."
@@ -83,15 +83,14 @@ def pointer_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     group.add_argument(
         "-r",
         "--pointer-file",
-        type=argparse.FileType(mode="r"),
+        default="-",
         help="Text file containing an RFC 6901 formatted JSON Pointer string.",
     )
 
     parser.add_argument(
         "-f",
         "--file",
-        type=argparse.FileType(mode="rb"),
-        default=sys.stdin,
+        default="-",
         help=(
             "File to read the target JSON document from. "
             "Defaults to reading from the standard input stream."
@@ -101,8 +100,7 @@ def pointer_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     parser.add_argument(
         "-o",
         "--output",
-        type=argparse.FileType(mode="w"),
-        default=sys.stdout,
+        default="-",
         help=(
             "File to write the resulting object to, in JSON format. "
             "Defaults to the standard output stream."
@@ -122,7 +120,7 @@ def patch_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
 
     parser.add_argument(
         "patch",
-        type=argparse.FileType(mode="rb"),
+        default="-",
         metavar="PATCH",
         help="File containing an RFC 6902 formatted JSON Patch.",
     )
@@ -130,8 +128,7 @@ def patch_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     parser.add_argument(
         "-f",
         "--file",
-        type=argparse.FileType(mode="rb"),
-        default=sys.stdin,
+        default="-",
         help=(
             "File to read the target JSON document from. "
             "Defaults to reading from the standard input stream."
@@ -141,8 +138,7 @@ def patch_sub_command(parser: argparse.ArgumentParser) -> None:  # noqa: D103
     parser.add_argument(
         "-o",
         "--output",
-        type=argparse.FileType(mode="w"),
-        default=sys.stdout,
+        default="-",
         help=(
             "File to write the resulting JSON document to. "
             "Defaults to the standard output stream."
@@ -252,7 +248,8 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
     if args.query is not None:
         query = args.query
     else:
-        query = args.query_file.read().strip()
+        with open_input(args.query_file, "r") as fd:
+            query = fd.read().strip()
 
     try:
         path = jsonpath.JSONPathEnvironment(
@@ -277,7 +274,8 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
         sys.exit(1)
 
     try:
-        matches = path.findall(args.file)
+        with open_input(args.file, "rb") as fd:
+            matches = path.findall(json.load(fd))
     except json.JSONDecodeError as err:
         if args.debug:
             raise
@@ -291,7 +289,9 @@ def handle_path_command(args: argparse.Namespace) -> None:  # noqa: PLR0912
         sys.exit(1)
 
     indent = INDENT if args.pretty else None
-    json.dump(matches, args.output, indent=indent)
+
+    with open_output(args.output) as of:
+        json.dump(matches, of, indent=indent)
 
 
 def handle_pointer_command(args: argparse.Namespace) -> None:
@@ -300,15 +300,17 @@ def handle_pointer_command(args: argparse.Namespace) -> None:
     if args.pointer is not None:
         pointer = args.pointer
     else:
-        pointer = args.pointer_file.read().strip()
+        with open_input(args.pointer_file, "r") as fd:
+            pointer = fd.read().strip()
 
     try:
-        match = jsonpath.pointer.resolve(
-            pointer,
-            args.file,
-            unicode_escape=not args.no_unicode_escape,
-            uri_decode=args.uri_decode,
-        )
+        with open_input(args.file, "rb") as fd:
+            match = jsonpath.pointer.resolve(
+                pointer,
+                json.load(fd),
+                unicode_escape=not args.no_unicode_escape,
+                uri_decode=args.uri_decode,
+            )
     except json.JSONDecodeError as err:
         if args.debug:
             raise
@@ -321,13 +323,16 @@ def handle_pointer_command(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     indent = INDENT if args.pretty else None
-    json.dump(match, args.output, indent=indent)
+
+    with open_output(args.output) as of:
+        json.dump(match, of, indent=indent)
 
 
 def handle_patch_command(args: argparse.Namespace) -> None:
     """Handle the `patch` sub command."""
     try:
-        patch = json.load(args.patch)
+        with open_input(args.patch, "rb") as fd:
+            patch = json.load(fd)
     except json.JSONDecodeError as err:
         if args.debug:
             raise
@@ -341,12 +346,13 @@ def handle_patch_command(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     try:
-        patched = jsonpath.patch.apply(
-            patch,
-            args.file,
-            unicode_escape=not args.no_unicode_escape,
-            uri_decode=args.uri_decode,
-        )
+        with open_input(args.file, "rb") as fd:
+            patched = jsonpath.patch.apply(
+                patch,  # type: ignore
+                json.load(fd),
+                unicode_escape=not args.no_unicode_escape,
+                uri_decode=args.uri_decode,
+            )
     except json.JSONDecodeError as err:
         if args.debug:
             raise
@@ -359,7 +365,19 @@ def handle_patch_command(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     indent = INDENT if args.pretty else None
-    json.dump(patched, args.output, indent=indent)
+
+    with open_output(args.output) as of:
+        json.dump(patched, of, indent=indent)
+
+
+def open_input(filename: str, mode: Literal["r", "rb"]):
+    """A context manager for opening input files from command line arguments."""
+    return nullcontext(sys.stdin) if filename == "-" else open(filename, mode)
+
+
+def open_output(filename: str):
+    """A context manager for opening output files from command line arguments."""
+    return nullcontext(sys.stdout) if filename == "-" else open(filename, "w")
 
 
 def main() -> None:
