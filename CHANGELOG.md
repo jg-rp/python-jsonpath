@@ -1,5 +1,11 @@
 # Python JSONPath Change Log
 
+# Unreleased
+
+**Fixes**
+
+- JSON Patch `test` now distinguishes booleans from numbers, including inside arrays and objects, while preserving numeric equality such as `1` and `1.0`.
+
 # Version 2.2.2
 
 **Fixes**

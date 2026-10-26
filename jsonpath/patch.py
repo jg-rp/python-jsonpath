@@ -14,6 +14,8 @@ from typing import List
 from typing import Mapping
 from typing import MutableMapping
 from typing import MutableSequence
+from typing import Set
+from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
@@ -269,7 +271,7 @@ class OpTest(Op):
     ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
         """Apply this patch operation to _data_."""
         _, obj = self.path.resolve_parent(data)
-        if not obj == self.value:
+        if not _equal(obj, self.value):
             raise JSONPatchTestFailure
         return data
 
@@ -822,3 +824,40 @@ def _remove(*, data: _DataT, path: JSONPointer, op: str) -> object:
             f"unexpected operation on {parent.__class__.__name__!r}",
         )
     return obj
+
+
+def _equal(left: object, right: object) -> bool:
+    """Compare JSON values without treating booleans as numbers."""
+    pending = [(left, right)]
+    seen: Set[Tuple[int, int]] = set()
+    while pending:
+        left, right = pending.pop()
+        if isinstance(left, bool) or isinstance(right, bool):
+            if left is not right:
+                return False
+            continue
+
+        children: Iterable[Tuple[object, object]]
+        if isinstance(left, list) and isinstance(right, list):
+            if len(left) != len(right):
+                return False
+            if left is right:
+                continue
+            children = zip(left, right)
+        elif isinstance(left, Mapping) and isinstance(right, Mapping):
+            if left.keys() != right.keys():
+                return False
+            if left is right:
+                continue
+            children = ((left[key], right[key]) for key in left)
+        else:
+            # Scalar subclasses can define inequality independently of equality.
+            if left == right:
+                continue
+            return False
+
+        pair = (id(left), id(right))
+        if pair not in seen:
+            seen.add(pair)
+            pending.extend(children)
+    return True

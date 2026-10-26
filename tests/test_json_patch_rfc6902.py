@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 import copy
 import dataclasses
+import json
 import re
 from operator import attrgetter
 from typing import Dict
@@ -198,3 +199,94 @@ def test_json_patch_constructor(case: Case) -> None:
     patch = JSONPatch([case.op])
     assert len(patch.ops) == 1
     assert patch.apply(copy.deepcopy(case.data)) == case.want
+
+
+@pytest.mark.parametrize(
+    ("actual", "expected", "matches"),
+    [
+        (True, 1, False),
+        (1, True, False),
+        (False, 0, False),
+        (0, False, False),
+        (True, 1.0, False),
+        (0.0, False, False),
+        ([True], [1], False),
+        ({"nested": False}, {"nested": 0}, False),
+        ({"nested": [{"flag": True}]}, {"nested": [{"flag": 1}]}, False),
+        (None, None, True),
+        (True, True, True),
+        (False, False, True),
+        (1, 1.0, True),
+        (0, -0.0, True),
+        ("value", "value", True),
+        ([True, 1, None], [True, 1.0, None], True),
+        ({"b": [2], "a": False}, {"a": False, "b": [2.0]}, True),
+        ([1, 2], [2, 1], False),
+        ({"a": True}, {"b": True}, False),
+        ([1], [1, 2], False),
+    ],
+)
+@pytest.mark.parametrize("serialized", [False, True])
+def test_test_op_json_equality(
+    actual: object, expected: object, *, matches: bool, serialized: bool
+) -> None:
+    """Test uses JSON equality, including inside arrays and objects."""
+    patch = (
+        JSONPatch(json.dumps([{"op": "test", "path": "/value", "value": expected}]))
+        if serialized
+        else JSONPatch().test("/value", expected)
+    )
+    data = {"value": actual}
+    if matches:
+        assert patch.apply(data) is data
+    else:
+        with pytest.raises(JSONPatchTestFailure):
+            patch.apply(data)
+
+
+def test_test_op_deep_json_equality() -> None:
+    """Nested JSON comparisons do not consume a Python frame per level."""
+    actual: object = 1
+    expected: object = 1.0
+    for _ in range(600):
+        actual = [actual]
+        expected = [expected]
+    data = {"value": actual}
+    assert JSONPatch().test("/value", expected).apply(data) is data
+
+
+def test_test_op_shared_containers() -> None:
+    """Repeated references compare by their JSON contents."""
+    left = {"value": [1, True]}
+    right = {"value": [1.0, True]}
+    data = {"value": [left, left]}
+    assert JSONPatch().test("/value", [right, right]).apply(data) is data
+
+
+def test_test_op_boolean_mismatch_stops_patch() -> None:
+    """A failing boolean/number comparison stops later operations."""
+    data = {"flag": True, "name": "original"}
+    patch = JSONPatch().test("/flag", 1).replace("/name", "changed")
+    with pytest.raises(JSONPatchTestFailure, match=re.escape("test failed (test:0)")):
+        patch.apply(data)
+    assert data == {"flag": True, "name": "original"}
+
+
+def test_test_op_boolean_mismatch_is_atomic() -> None:
+    """Atomic application preserves input when a later comparison fails."""
+    data = {"flag": True, "name": "original"}
+    patch = JSONPatch().replace("/name", "changed").test("/flag", 1)
+    with pytest.raises(JSONPatchTestFailure):
+        patch.atomic(data)
+    assert data == {"flag": True, "name": "original"}
+
+
+def test_test_op_uses_equality_for_string_subclasses() -> None:
+    """The Python builder keeps equality semantics for string subclasses."""
+
+    class StringValue(str):
+        def __ne__(self, _other: object) -> bool:
+            return True
+
+    data = {"value": StringValue("same")}
+    assert JSONPatch().test("/value", "same").apply(data) is data
