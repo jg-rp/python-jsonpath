@@ -14,6 +14,7 @@ from typing import List
 from typing import Mapping
 from typing import MutableMapping
 from typing import MutableSequence
+from typing import Sequence
 from typing import Set
 from typing import Tuple
 from typing import TypeVar
@@ -826,38 +827,58 @@ def _remove(*, data: _DataT, path: JSONPointer, op: str) -> object:
     return obj
 
 
-def _equal(left: object, right: object) -> bool:
+def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
     """Compare JSON values without treating booleans as numbers."""
     pending = [(left, right)]
     seen: Set[Tuple[int, int]] = set()
     while pending:
         left, right = pending.pop()
-        if isinstance(left, bool) or isinstance(right, bool):
-            if left is not right:
-                return False
+        if left is right:
             continue
 
-        children: Iterable[Tuple[object, object]]
-        if isinstance(left, list) and isinstance(right, list):
-            if len(left) != len(right):
-                return False
-            if left is right:
-                continue
-            children = zip(left, right)
-        elif isinstance(left, Mapping) and isinstance(right, Mapping):
-            if left.keys() != right.keys():
-                return False
-            if left is right:
-                continue
-            children = ((left[key], right[key]) for key in left)
-        else:
-            # Scalar subclasses can define inequality independently of equality.
+        if type(left) is bool or type(right) is bool:
+            return False
+
+        if isinstance(left, (str, bytes)) or isinstance(right, (str, bytes)):
             if left == right:
                 continue
             return False
 
         pair = (id(left), id(right))
-        if pair not in seen:
+        if pair in seen:
+            continue
+
+        if isinstance(left, Sequence) and isinstance(right, Sequence):
+            if not (
+                issubclass(type(left), type(right))
+                or issubclass(type(right), type(left))
+            ):
+                return False
+            if len(left) != len(right):
+                return False
             seen.add(pair)
-            pending.extend(children)
+            pending.extend(zip(left, right))
+        elif isinstance(left, Mapping) and isinstance(right, Mapping):
+            if not (
+                issubclass(type(left), type(right))
+                or issubclass(type(right), type(left))
+            ):
+                return False
+            if left.keys() != right.keys():
+                return False
+            if {key for key in left if type(key) is bool} != {
+                key for key in right if type(key) is bool
+            }:
+                return False
+            seen.add(pair)
+            pending.extend((left[key], right[key]) for key in left)
+        elif isinstance(left, (Sequence, Mapping)) or isinstance(
+            right, (Sequence, Mapping)
+        ):
+            return False
+        else:
+            # Scalar subclasses can define inequality independently of equality.
+            if left == right:
+                continue
+            return False
     return True
