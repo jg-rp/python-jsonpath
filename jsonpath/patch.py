@@ -882,19 +882,15 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
             right_keys: dict[object, object] = {key: key for key in right}  # pyright: ignore[reportUnknownVariableType]
 
             seen.add(pair)
+
             for left_key, left_value in left.items():  # pyright: ignore[reportUnknownVariableType]
                 right_key = right_keys.get(left_key, UNDEFINED)
 
                 if right_key is UNDEFINED:
                     return False
 
-                type_left_key = type(left_key)  # pyright: ignore[reportUnknownVariableType]
-                type_right_key = type(right_key)
-                if (
-                    type_left_key is bool or type_right_key is bool
-                ) and type_left_key is not type_right_key:
-                    return False
-
+                # Handle bool and composite keys too.
+                pending.append((left_key, right_key))
                 pending.append((left_value, right[right_key]))
 
         else:

@@ -56,6 +56,7 @@ class OtherDictValue(Dict[str, object]):
         (UserString("value"), "value", True),
         (bytearray(b"value"), b"value", True),
         ("value", b"value", False),
+        ({(True, False): "a"}, {(1, 0): "a"}, False),
     ],
 )
 @pytest.mark.parametrize("reverse", [False, True])
