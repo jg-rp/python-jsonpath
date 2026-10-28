@@ -850,7 +850,10 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
         if pair in seen:
             continue
 
-        if isinstance(left, Sequence) and isinstance(right, Sequence):
+        if isinstance(left, Sequence):
+            if not isinstance(right, Sequence):
+                return False
+
             if len(left) != len(right):
                 return False
 
@@ -863,7 +866,10 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
             seen.add(pair)
             pending.extend(zip(left, right))
 
-        elif isinstance(left, Mapping) and isinstance(right, Mapping):
+        elif isinstance(left, Mapping):
+            if not isinstance(right, Mapping):
+                return False
+
             if len(left) != len(right):
                 return False
 
@@ -871,9 +877,6 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
                 issubclass(type(left), type(right))
                 or issubclass(type(right), type(left))
             ):
-                return False
-
-            if left.keys() != right.keys():
                 return False
 
             right_keys: dict[object, object] = {key: key for key in right}  # pyright: ignore[reportUnknownVariableType]
@@ -894,14 +897,10 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
 
                 pending.append((left_value, right[right_key]))
 
-        elif isinstance(left, (Sequence, Mapping)) or isinstance(
-            right, (Sequence, Mapping)
-        ):
-            return False
-
         else:
             # Scalar subclasses can define inequality independently of equality.
             if left == right:
                 continue
             return False
+
     return True
