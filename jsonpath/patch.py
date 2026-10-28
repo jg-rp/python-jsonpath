@@ -1,4 +1,5 @@
 """JSON Patch, as per RFC 6902."""
+# pyright: reportUnknownArgumentType=false
 
 from __future__ import annotations
 
@@ -850,7 +851,7 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
 
         if isinstance(left, Sequence) and isinstance(right, Sequence):
             if not (
-                issubclass(type(left), type(right))
+                issubclass(type(left), type(right))  # pyright: ignore[reportUnknownArgumentType]
                 or issubclass(type(right), type(left))
             ):
                 return False
@@ -858,6 +859,7 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
                 return False
             seen.add(pair)
             pending.extend(zip(left, right))
+
         elif isinstance(left, Mapping) and isinstance(right, Mapping):
             if not (
                 issubclass(type(left), type(right))
@@ -872,6 +874,7 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
                 return False
             seen.add(pair)
             pending.extend((left[key], right[key]) for key in left)
+
         elif isinstance(left, (Sequence, Mapping)) or isinstance(
             right, (Sequence, Mapping)
         ):
