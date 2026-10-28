@@ -850,28 +850,38 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
             continue
 
         if isinstance(left, Sequence) and isinstance(right, Sequence):
-            if not (
-                issubclass(type(left), type(right))  # pyright: ignore[reportUnknownArgumentType]
-                or issubclass(type(right), type(left))
-            ):
-                return False
             if len(left) != len(right):
                 return False
-            seen.add(pair)
-            pending.extend(zip(left, right))
 
-        elif isinstance(left, Mapping) and isinstance(right, Mapping):
             if not (
                 issubclass(type(left), type(right))
                 or issubclass(type(right), type(left))
             ):
                 return False
+
+            seen.add(pair)
+            pending.extend(zip(left, right))
+
+        elif isinstance(left, Mapping) and isinstance(right, Mapping):
+            if len(left) != len(right):
+                return False
+
+            if not (
+                issubclass(type(left), type(right))
+                or issubclass(type(right), type(left))
+            ):
+                return False
+
             if left.keys() != right.keys():
                 return False
+
+            # These sets will have a maximum size of 2 each, {True, False}.
+            # But we're still iterating all of left and all of right, again.
             if {key for key in left if type(key) is bool} != {
                 key for key in right if type(key) is bool
             }:
                 return False
+
             seen.add(pair)
             pending.extend((left[key], right[key]) for key in left)
 
