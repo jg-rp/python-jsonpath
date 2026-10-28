@@ -832,6 +832,7 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
     """Compare JSON values without treating booleans as numbers."""
     pending = [(left, right)]
     seen: Set[Tuple[int, int]] = set()
+
     while pending:
         left, right = pending.pop()
         if left is right:
@@ -875,20 +876,29 @@ def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
             if left.keys() != right.keys():
                 return False
 
-            # These sets will have a maximum size of 2 each, {True, False}.
-            # But we're still iterating all of left and all of right, again.
-            if {key for key in left if type(key) is bool} != {
-                key for key in right if type(key) is bool
-            }:
-                return False
+            right_keys: dict[object, object] = {key: key for key in right}  # pyright: ignore[reportUnknownVariableType]
 
             seen.add(pair)
-            pending.extend((left[key], right[key]) for key in left)
+            for left_key, left_value in left.items():  # pyright: ignore[reportUnknownVariableType]
+                right_key = right_keys.get(left_key, UNDEFINED)
+
+                if right_key is UNDEFINED:
+                    return False
+
+                type_left_key = type(left_key)  # pyright: ignore[reportUnknownVariableType]
+                type_right_key = type(right_key)
+                if (
+                    type_left_key is bool or type_right_key is bool
+                ) and type_left_key is not type_right_key:
+                    return False
+
+                pending.append((left_value, right[right_key]))
 
         elif isinstance(left, (Sequence, Mapping)) or isinstance(
             right, (Sequence, Mapping)
         ):
             return False
+
         else:
             # Scalar subclasses can define inequality independently of equality.
             if left == right:
