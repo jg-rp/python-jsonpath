@@ -1,4 +1,5 @@
 """JSON Patch, as per RFC 6902."""
+# pyright: reportUnknownArgumentType=false
 
 from __future__ import annotations
 
@@ -14,6 +15,9 @@ from typing import List
 from typing import Mapping
 from typing import MutableMapping
 from typing import MutableSequence
+from typing import Sequence
+from typing import Set
+from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
@@ -269,7 +273,7 @@ class OpTest(Op):
     ) -> Union[MutableSequence[object], MutableMapping[str, object]]:
         """Apply this patch operation to _data_."""
         _, obj = self.path.resolve_parent(data)
-        if not obj == self.value:
+        if not _equal(obj, self.value):
             raise JSONPatchTestFailure
         return data
 
@@ -822,3 +826,77 @@ def _remove(*, data: _DataT, path: JSONPointer, op: str) -> object:
             f"unexpected operation on {parent.__class__.__name__!r}",
         )
     return obj
+
+
+def _equal(left: object, right: object) -> bool:  # noqa: PLR0911, PLR0912
+    """Compare JSON values without treating booleans as numbers."""
+    pending = [(left, right)]
+    seen: Set[Tuple[int, int]] = set()
+
+    while pending:
+        left, right = pending.pop()
+        if left is right:
+            continue
+
+        if type(left) is bool or type(right) is bool:
+            return False
+
+        if isinstance(left, (str, bytes)) or isinstance(right, (str, bytes)):
+            if left == right:
+                continue
+            return False
+
+        pair = (id(left), id(right))
+        if pair in seen:
+            continue
+
+        if isinstance(left, Sequence):
+            if not isinstance(right, Sequence):
+                return False
+
+            if len(left) != len(right):
+                return False
+
+            if not (
+                issubclass(type(left), type(right))
+                or issubclass(type(right), type(left))
+            ):
+                return False
+
+            seen.add(pair)
+            pending.extend(zip(left, right))
+
+        elif isinstance(left, Mapping):
+            if not isinstance(right, Mapping):
+                return False
+
+            if len(left) != len(right):
+                return False
+
+            if not (
+                issubclass(type(left), type(right))
+                or issubclass(type(right), type(left))
+            ):
+                return False
+
+            right_keys: dict[object, object] = {key: key for key in right}  # pyright: ignore[reportUnknownVariableType]
+
+            seen.add(pair)
+
+            for left_key, left_value in left.items():  # pyright: ignore[reportUnknownVariableType]
+                right_key = right_keys.get(left_key, UNDEFINED)
+
+                if right_key is UNDEFINED:
+                    return False
+
+                # Handle bool and composite keys too.
+                pending.append((left_key, right_key))
+                pending.append((left_value, right[right_key]))
+
+        else:
+            # Scalar subclasses can define inequality independently of equality.
+            if left == right:
+                continue
+            return False
+
+    return True
