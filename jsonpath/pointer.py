@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import codecs
 import re
 from functools import reduce
 from operator import getitem
@@ -37,6 +36,13 @@ class _Undefined:
 
 
 UNDEFINED = _Undefined()
+
+# Match only ASCII escape spellings, leaving native Unicode untouched.
+_ESCAPES = re.compile(
+    r"\\(?:[0-7]{1,3}|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}"
+    r"|U[0-9A-Fa-f]{8}|N\{[\x00-\x7f]*?\}|[\x00-\x7f]|$)"
+)
+_SURROGATES = re.compile(r"[\ud800-\udfff]+")
 
 
 class JSONPointer:
@@ -264,14 +270,26 @@ class JSONPointer:
             )
         return ""
 
-    def _unicode_escape(self, s: str) -> str:
-        # UTF-16 escape sequences - possibly surrogate pairs - inside UTF-8
-        # encoded strings. As per https://datatracker.ietf.org/doc/html/rfc4627
-        # section 2.5.
-        return (
-            codecs.decode(s.replace("\\/", "/"), "unicode-escape")
-            .encode("utf-16", "surrogatepass")
-            .decode("utf-16")
+    @staticmethod
+    def _unicode_escape(s: str) -> str:
+        # The codec accepts bytes. Encoding a complete native string as UTF-8
+        # makes those bytes look like separate Latin-1 characters to it.
+        s = s.replace("\\/", "/")
+        if s.isascii():
+            decoded = s.encode("ascii").decode("unicode-escape")
+        else:
+            if match := _SURROGATES.search(s):
+                raise UnicodeEncodeError(
+                    "utf-8", s, match.start(), match.end(), "surrogates not allowed"
+                )
+            decoded = _ESCAPES.sub(
+                lambda match: match[0].encode("ascii").decode("unicode-escape"), s
+            )
+        # Keep the existing pairing and validation of UTF-16 surrogate units
+        # without encoding the surrounding native Unicode characters.
+        return _SURROGATES.sub(
+            lambda match: match[0].encode("utf-16", "surrogatepass").decode("utf-16"),
+            decoded,
         )
 
     @classmethod
@@ -318,12 +336,7 @@ class JSONPointer:
         if uri_decode:
             _parts = (unquote(p) for p in _parts)
         if unicode_escape:
-            _parts = (
-                codecs.decode(p.replace("\\/", "/"), "unicode-escape")
-                .encode("utf-16", "surrogatepass")
-                .decode("utf-16")
-                for p in _parts
-            )
+            _parts = (cls._unicode_escape(p) for p in _parts)
 
         __parts = tuple(_parts)
 

@@ -37,6 +37,27 @@ JSON Pointers are a fundamental component of JSON Patch ([RFC 6902](https://data
     print(repr(rjp.to("/items/0/name")))  # JSONPointer('/items/#0')
     ```
 
+## Unicode and escape decoding
+
+Native Unicode characters in a pointer retain their code points. For example,
+`JSONPointer("/café")` points to the key `"café"`, not to a re-encoded spelling.
+Unicode normalization is not applied, so composed and decomposed keys remain
+distinct.
+
+The existing `unicode_escape=True` compatibility option also decodes escape
+spellings before resolving the pointer. Disable it when a pointer already
+contains the literal characters you want, including backslash sequences that
+were decoded from JSON text:
+
+```python
+pointer = JSONPointer(r"/literal\n", unicode_escape=False)
+assert pointer.resolve({r"literal\n": 7}) == 7
+```
+
+Percent decoding remains separate. For example,
+`JSONPointer("/caf%C3%A9", uri_decode=True)` resolves the key `"café"`.
+
+
 ## `resolve(data)`
 
 Resolve this pointer against _data_. _data_ can be a file-like object or string containing JSON formatted data, or a Python [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) or [`Sequence`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence), like a dictionary or list.
