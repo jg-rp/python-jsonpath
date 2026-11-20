@@ -22,6 +22,7 @@ XFAIL_INVALID = {
     "basic, no leading whitespace",
     "basic, no trailing whitespace",
     "basic, root node identifier in brackets without filter selector",
+    "basic, name shorthand, hyphen",
     "filter, equals number, invalid 00",
     "filter, equals number, invalid leading 0",
     "filter, true, incorrectly capitalized",

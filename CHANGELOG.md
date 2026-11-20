@@ -4,6 +4,10 @@
 
 **Fixes**
 
+- Fixed name shorthand selectors with characters outside the Basic Multilingual Plane, like `$.😀`. In strict mode, name shorthands no longer accept `-`, following RFC 9535. Non-strict mode still allows `$.a-b`.
+- Fixed escaped control characters in quoted name selectors and string literals, like `$["\u001f"]`. Only unescaped control characters are invalid.
+- Fixed `<`, `<=`, `>` and `>=` comparisons between booleans and numbers. Previously `$[?@.a<=true]` matched `{"a": 0}` because Python treats `True` as `1`.
+- Updated the JSONPath Compliance Test Suite submodule.
 - JSON Patch `test` now distinguishes booleans from numbers, including inside arrays and objects, while preserving numeric equality such as `1` and `1.0`.
 
 # Version 2.2.2

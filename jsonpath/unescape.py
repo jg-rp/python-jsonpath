@@ -50,8 +50,9 @@ def _decode_escape_sequence(  # noqa: PLR0911
     if ch == "t":
         return "\t", index
     if ch == "u":
+        # Escaped control characters, like `\u001f`, are allowed.
         codepoint, index = _decode_hex_char(value, index, token)
-        return _string_from_codepoint(codepoint, token), index
+        return chr(codepoint), index
 
     raise JSONPathSyntaxError(
         f"unknown escape sequence at index {token.index + index - 1}",

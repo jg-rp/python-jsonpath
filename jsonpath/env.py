@@ -674,6 +674,10 @@ class JSONPathEnvironment:
         if isinstance(left, str) and isinstance(right, str):
             return left < right
 
+        # Remember True and False are instances of int in Python.
+        if isinstance(left, bool) or isinstance(right, bool):
+            return False
+
         if isinstance(left, (int, float, Decimal)) and isinstance(
             right, (int, float, Decimal)
         ):

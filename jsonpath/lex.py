@@ -76,6 +76,9 @@ class Lexer:
     Attributes:
         key_pattern: The regular expression pattern used to match mapping
             keys/properties.
+        strict_key_pattern: The regular expression pattern used to match
+            mapping keys/properties in strict mode. This follows RFC 9535's
+            `name-first` and `name-char` rules, so it does not allow `-`.
         logical_not_pattern: The regular expression pattern used to match
             logical negation tokens. By default, `not` and `!` are
             equivalent.
@@ -85,7 +88,13 @@ class Lexer:
             logical _or_ tokens. By default, `or` and `||` are equivalent.
     """
 
-    key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
+    key_pattern = r"[\u0080-\U0010FFFFa-zA-Z_][\u0080-\U0010FFFFa-zA-Z0-9_-]*"
+
+    # RFC 9535 name-first and name-char, used in strict mode.
+    strict_key_pattern = (
+        r"[\u0080-\uD7FF\uE000-\U0010FFFFa-zA-Z_]"
+        r"[\u0080-\uD7FF\uE000-\U0010FFFFa-zA-Z0-9_]*"
+    )
 
     # ! or `not`
     logical_not_pattern = r"(?:not\b)|!"
@@ -98,18 +107,19 @@ class Lexer:
 
     def __init__(self, *, env: JSONPathEnvironment) -> None:
         self.env = env
+        key_pattern = self.strict_key_pattern if env.strict else self.key_pattern
 
         self.double_quote_pattern = r'"(?P<G_DQUOTE>(?:[^"\\]|\\.)*)"'
         self.single_quote_pattern = r"'(?P<G_SQUOTE>(?:[^'\\]|\\.)*)'"
 
         # .thing
-        self.dot_property_pattern = rf"(?P<G_DOT>\.)(?P<G_PROP>{self.key_pattern})"
+        self.dot_property_pattern = rf"(?P<G_DOT>\.)(?P<G_PROP>{key_pattern})"
 
         # .~thing
         self.dot_key_pattern = (
             r"(?P<G_DOT_KEY>\.)"
             rf"(?P<G_KEY>{re.escape(env.keys_selector_token)})"
-            rf"(?P<G_PROP_KEY>{self.key_pattern})"
+            rf"(?P<G_PROP_KEY>{key_pattern})"
         )
 
         # /pattern/ or /pattern/flags
@@ -238,7 +248,7 @@ class Lexer:
             (TOKEN_GT, r">"),
             (TOKEN_NOT, r"!"),  # Must go after "!="
             (TOKEN_FUNCTION, self.function_pattern),
-            (TOKEN_NAME, self.key_pattern),  # Must go after reserved words
+            (TOKEN_NAME, self.strict_key_pattern),  # Must go after reserved words
             (TOKEN_LPAREN, r"\("),
             (TOKEN_RPAREN, r"\)"),
             (TOKEN_WHITESPACE, r"[ \n\t\r]+"),
