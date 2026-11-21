@@ -1,5 +1,5 @@
 {
-  "description" : "Test cases for test_lex unit tests.",
+  "description": "Test cases for test_lex unit tests.",
   "tests": [
     {
       "description": "just root",
@@ -58,6 +58,30 @@
           "value": "thing",
           "index": 7,
           "path": "$.some.thing"
+        }
+      ]
+    },
+    {
+      "description": "root dot property with a hyphen",
+      "path": "$.some-thing",
+      "want": [
+        {
+          "kind": "TOKEN_ROOT",
+          "value": "$",
+          "index": 0,
+          "path": "$.some-thing"
+        },
+        {
+          "kind": "TOKEN_DOT",
+          "value": ".",
+          "index": 1,
+          "path": "$.some-thing"
+        },
+        {
+          "kind": "TOKEN_NAME",
+          "value": "some-thing",
+          "index": 2,
+          "path": "$.some-thing"
         }
       ]
     },

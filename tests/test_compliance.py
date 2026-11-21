@@ -19,6 +19,7 @@ from ._cts_case import Case
 
 # CTS tests that are expected to fail when JSONPathEnvironment.strict is False.
 XFAIL_INVALID = {
+    "basic, name shorthand, hyphen",
     "basic, no leading whitespace",
     "basic, no trailing whitespace",
     "basic, root node identifier in brackets without filter selector",
