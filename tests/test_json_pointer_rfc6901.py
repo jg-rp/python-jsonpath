@@ -30,6 +30,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 """
+
 import dataclasses
 
 import pytest
@@ -65,7 +66,7 @@ RFC6901_TEST_CASES = [
     Case(pointer="/c%d", want=2),
     Case(pointer="/e^f", want=3),
     Case(pointer="/g|h", want=4),
-    Case(pointer=r"/i\\j", want=5),
+    Case(pointer="/i\\j", want=5),
     Case(pointer='/k"l', want=6),
     Case(pointer="/ ", want=7),
     Case(pointer="/m~0n", want=8),
