@@ -85,7 +85,10 @@ class Lexer:
             logical _or_ tokens. By default, `or` and `||` are equivalent.
     """
 
-    key_pattern = r"[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*"
+    key_pattern = (
+        r"[\u0080-\uD7FF\uE000-\U0010FFFFa-zA-Z_]"
+        r"[\u0080-\u10FFFF\uE000-\U0010FFFFa-zA-Z0-9_]*"
+    )
 
     # ! or `not`
     logical_not_pattern = r"(?:not\b)|!"
