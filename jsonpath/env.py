@@ -642,7 +642,7 @@ class JSONPathEnvironment:
             return right in left
         if operator == "=~" and hasattr(right, "fullmatch") and isinstance(left, str):
             # Right should be a regex.Pattern or an re.Pattern.
-            return bool(right.fullmatch(left))
+            return bool(right.fullmatch(left))  # pyright: ignore[reportAttributeAccessIssue]
         return False
 
     def _eq(self, left: object, right: object) -> bool:  # noqa: PLR0911
@@ -662,15 +662,15 @@ class JSONPathEnvironment:
             return True
 
         # Remember 1 == True and 0 == False in Python
-        if isinstance(right, bool):
-            left, right = right, left
-
-        if isinstance(left, bool):
-            return isinstance(right, bool) and left == right
+        if type(left) is bool or type(right) is bool:
+            return left is right
 
         return left == right
 
     def _lt(self, left: object, right: object) -> bool:
+        if type(left) is bool or type(right) is bool:
+            return False
+
         if isinstance(left, str) and isinstance(right, str):
             return left < right
 

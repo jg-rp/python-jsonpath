@@ -844,7 +844,7 @@ class Parser:
 
     def _decode_string_literal(self, token: Token) -> str:
         if self.env.strict:
-            # For strict compliance with RC 9535, we must unescape string literals
+            # For strict compliance with RFC 9535, we must unescape string literals
             # ourself. RFC 9535 is more strict than json.loads when it comes to
             # parsing \uXXXX escape sequences.
             return unescape_string(
@@ -853,6 +853,7 @@ class Parser:
                 "'" if token.kind == TOKEN_SINGLE_QUOTE_STRING else '"',
             )
 
+        # Use json.loads to unescape the string.
         if self.env.unicode_escape:
             if token.kind == TOKEN_SINGLE_QUOTE_STRING:
                 value = token.value.replace('"', '\\"').replace("\\'", "'")
