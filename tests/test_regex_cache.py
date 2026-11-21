@@ -29,7 +29,7 @@ def test_malformed_patterns_are_cached() -> None:
 
 
 def test_invalid_iregexp_patterns_are_cached() -> None:
-    search_func = Search(cache_capacity=2)
+    search_func = Search(cache_capacity=2, check_iregexp=True)
     assert len(search_func.cache) == 0
     assert search_func("ab123cdef", "\\d+") is False
     assert len(search_func.cache) == 1
