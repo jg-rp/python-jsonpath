@@ -9,13 +9,6 @@ try:
 except ImportError:
     REGEX_AVAILABLE = False  # type: ignore
 
-try:
-    import iregexp_check  # type: ignore # noqa: F401
-
-    IREGEXP_AVAILABLE = True
-except ImportError:
-    IREGEXP_AVAILABLE = False  # type: ignore
-
 from decimal import Decimal
 from operator import getitem
 from typing import TYPE_CHECKING
@@ -184,12 +177,8 @@ class JSONPathEnvironment:
         self.regex_available: bool = REGEX_AVAILABLE
         """When `True`, the third party `regex` package is available."""
 
-        self.iregexp_available: bool = IREGEXP_AVAILABLE
-        """When `True`, the iregexp_check package is available.
-        
-        iregexp_check will be used to validate regular expressions against RFC 9485,
-        if available.
-        """
+        self.iregexp_available: bool = True
+        """Always True since version 2.3.0. I-Regexp validation is now built-in."""
 
         self.lexer: Lexer = self.lexer_class(env=self)
         """The lexer bound to this environment."""

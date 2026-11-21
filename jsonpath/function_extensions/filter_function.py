@@ -1,9 +1,10 @@
 """Classes modeling the JSONPath spec type system for function extensions."""
+
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
 from typing import Any
-from typing import List
+from typing import Sequence
 
 
 class ExpressionType(Enum):
@@ -19,7 +20,7 @@ class FilterFunction(ABC):
 
     @property
     @abstractmethod
-    def arg_types(self) -> List[ExpressionType]:
+    def arg_types(self) -> Sequence[ExpressionType]:
         """Argument types expected by the filter function."""
 
     @property

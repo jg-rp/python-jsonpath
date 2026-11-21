@@ -46,10 +46,7 @@ For strict compliance with the specification, [strict mode](syntax.md) and the `
 pip install python-jsonpath[strict]
 ```
 
-This installs [`regex`](https://pypi.org/project/regex/) and [`iregexp-check`](https://pypi.org/project/iregexp-check/), enabling:
-
-- [`match()`](functions.md#match) and [`search()`](functions.md#search) to use `regex` instead of Python's built-in `re` module.
-- Validation of regular expressions against [RFC 9485](https://datatracker.ietf.org/doc/html/rfc9485).
+This installs [`regex`](https://pypi.org/project/regex/), allowing [`match()`](functions.md#match) and [`search()`](functions.md#search) to use `regex` instead of Python's built-in `re` module.
 
 See the [syntax guide](syntax.md) for strict mode details and specification extensions.
 

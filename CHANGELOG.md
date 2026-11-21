@@ -1,6 +1,6 @@
 # Python JSONPath Change Log
 
-# 2.2.3 (unreleased)
+# 2.3.0 (unreleased)
 
 **Fixes**
 
@@ -9,6 +9,11 @@
 - Fixed JSONPath expression comparison between `bool` and `int` using the `<` or `>` operators. Previously we would treat `True` as `1` and `False` as `0`.
 - Fixed JSONPath property name parsing to accept the full range of allowed Unicode code points and reject names containing a hyphen (`-`) in strict mode.
 - Fixed parsing of JSONPath string literals containing escape sequences less than or equal to `\u001F`. Previously we would incorrectly reject such escape sequences, now they are allowed.
+
+**Changes**
+
+- Removed the `iregexp-check` dependency. We now include faster and more correct implementations of `check_iregexp` and `map_iregexp` in this project.
+- Added the `check_iregexp` argument to `jsonpath.function_extensions.Match` and `jsonpath.function_extensions.Search` for controlling I-Regexp validation. By default, `check_iregexp` is `True` if the `regex` package is installed.
 
 # Version 2.2.2
 
