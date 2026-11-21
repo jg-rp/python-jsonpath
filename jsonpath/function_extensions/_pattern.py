@@ -1,5 +1,5 @@
-from typing import List
 from typing import Optional
+from typing import Sequence
 
 try:
     import regex as re
@@ -10,18 +10,14 @@ except ImportError:
 
     REGEX_AVAILABLE = False
 
-try:
-    from iregexp_check import check
-
-    IREGEXP_AVAILABLE = True
-except ImportError:
-    IREGEXP_AVAILABLE = False
-
 from jsonpath.exceptions import JSONPathError
 from jsonpath.function_extensions import ExpressionType
 from jsonpath.function_extensions import FilterFunction
 from jsonpath.lru_cache import LRUCache
 from jsonpath.lru_cache import ThreadSafeLRUCache
+
+from .._iregexp import check_iregexp
+from .._iregexp import map_iregexp
 
 
 class AbstractRegexFilterFunction(FilterFunction):
@@ -34,10 +30,12 @@ class AbstractRegexFilterFunction(FilterFunction):
             silently ignores bad patterns.
         thread_safe: When `True`, use a `ThreadSafeLRUCache` instead of an
             instance of `LRUCache`.
+        check_iregexp: When `True`, check regular expression patterns for
+            I-Regexp compliance.
     """
 
-    arg_types = [ExpressionType.VALUE, ExpressionType.VALUE]
-    return_type = ExpressionType.LOGICAL
+    arg_types: Sequence[ExpressionType] = [ExpressionType.VALUE, ExpressionType.VALUE]
+    return_type: ExpressionType = ExpressionType.LOGICAL
 
     def __init__(
         self,
@@ -45,6 +43,7 @@ class AbstractRegexFilterFunction(FilterFunction):
         cache_capacity: int = 300,
         debug: bool = False,
         thread_safe: bool = False,
+        check_iregexp: bool = REGEX_AVAILABLE,
     ):
         self.cache: LRUCache[str, Optional[re.Pattern]] = (  # type: ignore
             ThreadSafeLRUCache(capacity=cache_capacity)
@@ -52,6 +51,7 @@ class AbstractRegexFilterFunction(FilterFunction):
             else LRUCache(capacity=cache_capacity)
         )
 
+        self.check_iregexp = check_iregexp
         self.debug = debug
 
     def check_cache(self, pattern: str) -> Optional[re.Pattern]:  # type: ignore
@@ -59,7 +59,7 @@ class AbstractRegexFilterFunction(FilterFunction):
         try:
             _pattern = self.cache[pattern]
         except KeyError:
-            if IREGEXP_AVAILABLE and not check(pattern):
+            if self.check_iregexp and not check_iregexp(pattern):
                 if self.debug:
                     raise JSONPathError(
                         "search pattern is not a valid I-Regexp", token=None
@@ -67,7 +67,7 @@ class AbstractRegexFilterFunction(FilterFunction):
                 _pattern = None
             else:
                 if REGEX_AVAILABLE:
-                    pattern = map_re(pattern)
+                    pattern = map_iregexp(pattern, escape_anchors=False, wrap=False)
 
                 try:
                     _pattern = re.compile(pattern)
@@ -79,34 +79,3 @@ class AbstractRegexFilterFunction(FilterFunction):
             self.cache[pattern] = _pattern
 
         return _pattern
-
-
-def map_re(pattern: str) -> str:
-    """Convert an I-Regexp pattern into a Python re pattern."""
-    escaped = False
-    char_class = False
-    parts: List[str] = []
-    for ch in pattern:
-        if escaped:
-            parts.append(ch)
-            escaped = False
-            continue
-
-        if ch == ".":
-            if not char_class:
-                parts.append(r"(?:(?![\r\n])\P{Cs}|\p{Cs}\p{Cs})")
-            else:
-                parts.append(ch)
-        elif ch == "\\":
-            escaped = True
-            parts.append(ch)
-        elif ch == "[":
-            char_class = True
-            parts.append(ch)
-        elif ch == "]":
-            char_class = False
-            parts.append(ch)
-        else:
-            parts.append(ch)
-
-    return "".join(parts)
