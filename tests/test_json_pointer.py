@@ -13,6 +13,7 @@ from jsonpath import JSONPointerIndexError
 from jsonpath import JSONPointerResolutionError
 from jsonpath import JSONPointerTypeError
 from jsonpath.pointer import UNDEFINED
+from jsonpath.pointer import _unescape
 
 
 def test_match_to_pointer() -> None:
@@ -329,3 +330,34 @@ def test_index_like_token_on_object_value() -> None:
     data = {"foo": {"-1": "bar"}}
     pointer = JSONPointer("/foo/-1")
     assert pointer.resolve(data) == "bar"
+
+
+@pytest.mark.parametrize(
+    ("pointer", "data", "want", "want_unescaped"),
+    [
+        ("/café", {"café": 7}, 7, 7),
+        ("/漢字", {"漢字": 7}, 7, 7),
+        ("/😀", {"😀": 7}, 7, 7),
+        ("/e\N{COMBINING ACUTE ACCENT}", {"é": 7}, 7, 7),
+        ("/café~1part~0name", {"café/part~name": 7}, 7, 7),
+        ("/café%2F", {"café%2F": 7}, 7, 7),
+        ('/café"quoted', {'café"quoted': 7}, 7, 7),
+        ("/café\n\t\0", {"café\n\t\0": 7}, 7, 7),
+        ("/café\\😀", {"café\\😀": 7}, 7, 7),
+        ("/café\\\\😀", {"café\\\\😀": 7}, 7, 7),
+        ("/\\uD83D\\uDE00", {"😀": 7, "\\uD83D\\uDE00": 42}, 42, 7),
+    ],
+)
+def test_unicode_pointer_tokens(
+    pointer: str,
+    data: dict[str, object],
+    want: object,
+    want_unescaped: object,
+) -> None:
+    p = JSONPointer(pointer, unicode_escape=False)
+    assert p.resolve(data) == want
+    assert str(p) == pointer
+
+    p_unescaped = JSONPointer(pointer, unicode_escape=True)
+    assert p_unescaped.resolve(data) == want_unescaped
+    assert str(p_unescaped) == _unescape(pointer)

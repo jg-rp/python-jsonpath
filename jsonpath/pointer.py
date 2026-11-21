@@ -73,7 +73,7 @@ class JSONPointer:
         pointer: str,
         *,
         parts: Tuple[Union[int, str], ...] = (),
-        unicode_escape: bool = True,
+        unicode_escape: bool = False,
         uri_decode: bool = False,
     ) -> None:
         if parts:
@@ -100,7 +100,7 @@ class JSONPointer:
         if uri_decode:
             s = unquote(s)
         if unicode_escape:
-            s = self._unicode_escape(s)
+            s = _unescape(s)
 
         s = s.lstrip()
         if s and not s.startswith("/"):
@@ -140,7 +140,7 @@ class JSONPointer:
                 index = self._index(key)
                 if isinstance(index, int):
                     return getitem(obj, index)
-            return getitem(obj, key)
+            return getitem(obj, key)  # pyright: ignore[reportArgumentType, reportCallIssue]
         except KeyError as err:
             return self._handle_key_error(obj, key, err)
         except TypeError as err:
@@ -263,16 +263,6 @@ class JSONPointer:
                 str(p).replace("~", "~0").replace("/", "~1") for p in parts
             )
         return ""
-
-    def _unicode_escape(self, s: str) -> str:
-        # UTF-16 escape sequences - possibly surrogate pairs - inside UTF-8
-        # encoded strings. As per https://datatracker.ietf.org/doc/html/rfc4627
-        # section 2.5.
-        return (
-            codecs.decode(s.replace("\\/", "/"), "unicode-escape")
-            .encode("utf-16", "surrogatepass")
-            .decode("utf-16")
-        )
 
     @classmethod
     def from_match(
@@ -411,7 +401,7 @@ class JSONPointer:
                 f"{self.__class__.__name__!r} and {other.__class__.__name__!r}"
             )
 
-        other = self._unicode_escape(other.lstrip())
+        other = _unescape(other.lstrip())
         if other.startswith("/"):
             return self.__class__(other, unicode_escape=False, uri_decode=False)
 
@@ -673,3 +663,64 @@ def resolve(
         if default is not UNDEFINED:
             return default
         raise
+
+
+_RE_ESCAPE_U = re.compile(r"(\\u[0-9a-fA-F]{4})")
+
+
+def _unescape(escaped: str) -> str:  # noqa: PLR0912
+    unescaped: list[str] = []
+    parts = [p for p in _RE_ESCAPE_U.split(escaped) if p]
+    length = len(parts)
+    pos = 0
+
+    while pos < length:
+        part = parts[pos]
+        pos += 1
+
+        if part.startswith("\\u"):
+            code_point = int(part[2:], 16)  # noqa: FURB166
+
+            if _is_low_surrogate(code_point):
+                # Invalid low surrogate
+                unescaped.append(part)
+                continue
+
+            if _is_high_surrogate(code_point):
+                if pos >= length:
+                    # Missing low surrogate
+                    unescaped.append(part)
+                    continue
+
+                next_part = parts[pos]
+                pos += 1
+
+                if not (len(next_part) == 6 and next_part.startswith("\\u")):  # noqa: PLR2004
+                    # Missing low surrogate
+                    unescaped.append(part)
+                    continue
+
+                low_surrogate = int(next_part[2:], 16)  # noqa: FURB166
+
+                if not _is_low_surrogate(low_surrogate):
+                    # Not a low surrogate
+                    unescaped.append(part)
+                    continue
+
+                code_point = 0x10000 + (
+                    ((code_point & 0x03FF) << 10) | (low_surrogate & 0x03FF)
+                )
+
+            unescaped.append(chr(code_point))
+        else:
+            unescaped.append(part)
+
+    return "".join(unescaped)
+
+
+def _is_high_surrogate(codepoint: int) -> bool:
+    return 0xD800 <= codepoint <= 0xDBFF  # noqa: PLR2004
+
+
+def _is_low_surrogate(codepoint: int) -> bool:
+    return 0xDC00 <= codepoint <= 0xDFFF  # noqa: PLR2004

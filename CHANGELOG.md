@@ -1,10 +1,11 @@
 # Python JSONPath Change Log
 
-# Unreleased
+# 2.2.3 (unreleased)
 
 **Fixes**
 
 - JSON Patch `test` now distinguishes booleans from numbers, including inside arrays and objects, while preserving numeric equality such as `1` and `1.0`.
+- Fixed handling of JSON Pointer UTF-16 escape sequences when the `unicode_escape` argument is `True`. Previously we were unintentionally mangling Unicode characters with `codecs.decode` and `unicode-escape`. Now we replace `\uXXXX` and `\uXXXX\uXXXX` sequences without touching Unicode characters. See [#140](https://github.com/jg-rp/python-jsonpath/pull/140).
 
 # Version 2.2.2
 
