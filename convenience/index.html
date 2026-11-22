@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -31,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -1453,7 +1453,7 @@ unacceptable type.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><span title="JSONPathRecursionError">JSONPathRecursionError</span></code>
+                  <code>JSONPathRecursionError</code>
               </span>
             </td>
             <td class="doc-raises-details">
@@ -1645,7 +1645,7 @@ an incompatible way.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><span title="JSONPathRecursionError">JSONPathRecursionError</span></code>
+                  <code>JSONPathRecursionError</code>
               </span>
             </td>
             <td class="doc-raises-details">
@@ -1836,7 +1836,7 @@ an incompatible way.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><span title="JSONPathRecursionError">JSONPathRecursionError</span></code>
+                  <code>JSONPathRecursionError</code>
               </span>
             </td>
             <td class="doc-raises-details">
@@ -2032,7 +2032,7 @@ an incompatible way.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><span title="JSONPathRecursionError">JSONPathRecursionError</span></code>
+                  <code>JSONPathRecursionError</code>
               </span>
             </td>
             <td class="doc-raises-details">
@@ -2228,7 +2228,7 @@ an incompatible way.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><span title="JSONPathRecursionError">JSONPathRecursionError</span></code>
+                  <code>JSONPathRecursionError</code>
               </span>
             </td>
             <td class="doc-raises-details">
@@ -2691,26 +2691,26 @@ match.</p>
 
         <p>Return a <code>Query</code> iterator over matches found by applying <em>path</em> to <em>data</em>.</p>
 <p><code>Query</code> objects are iterable.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>for match in jsonpath.query(&quot;$.foo..bar&quot;, data):
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    ...
+<div class="language-text highlight"><pre><span></span><code><span id="jsonpath.query--__span-0-1"><a id="jsonpath.query--__codelineno-0-1" name="jsonpath.query--__codelineno-0-1" href="#jsonpath.query--__codelineno-0-1"></a>for match in jsonpath.query("$.foo..bar", data):
+</span><span id="jsonpath.query--__span-0-2"><a id="jsonpath.query--__codelineno-0-2" name="jsonpath.query--__codelineno-0-2" href="#jsonpath.query--__codelineno-0-2"></a>    ...
 </span></code></pre></div>
 <p>You can skip and limit results with <code>Query.skip()</code> and <code>Query.limit()</code>.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>matches = (
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    jsonpath.query(&quot;$.foo..bar&quot;, data)
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    .skip(5)
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    .limit(10)
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>)
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>for match in matches
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    ...
+<div class="language-text highlight"><pre><span></span><code><span id="jsonpath.query--__span-1-1"><a id="jsonpath.query--__codelineno-1-1" name="jsonpath.query--__codelineno-1-1" href="#jsonpath.query--__codelineno-1-1"></a>matches = (
+</span><span id="jsonpath.query--__span-1-2"><a id="jsonpath.query--__codelineno-1-2" name="jsonpath.query--__codelineno-1-2" href="#jsonpath.query--__codelineno-1-2"></a>    jsonpath.query("$.foo..bar", data)
+</span><span id="jsonpath.query--__span-1-3"><a id="jsonpath.query--__codelineno-1-3" name="jsonpath.query--__codelineno-1-3" href="#jsonpath.query--__codelineno-1-3"></a>    .skip(5)
+</span><span id="jsonpath.query--__span-1-4"><a id="jsonpath.query--__codelineno-1-4" name="jsonpath.query--__codelineno-1-4" href="#jsonpath.query--__codelineno-1-4"></a>    .limit(10)
+</span><span id="jsonpath.query--__span-1-5"><a id="jsonpath.query--__codelineno-1-5" name="jsonpath.query--__codelineno-1-5" href="#jsonpath.query--__codelineno-1-5"></a>)
+</span><span id="jsonpath.query--__span-1-6"><a id="jsonpath.query--__codelineno-1-6" name="jsonpath.query--__codelineno-1-6" href="#jsonpath.query--__codelineno-1-6"></a>
+</span><span id="jsonpath.query--__span-1-7"><a id="jsonpath.query--__codelineno-1-7" name="jsonpath.query--__codelineno-1-7" href="#jsonpath.query--__codelineno-1-7"></a>for match in matches
+</span><span id="jsonpath.query--__span-1-8"><a id="jsonpath.query--__codelineno-1-8" name="jsonpath.query--__codelineno-1-8" href="#jsonpath.query--__codelineno-1-8"></a>    ...
 </span></code></pre></div>
 <p><code>Query.tail()</code> will get the last <em>n</em> results.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>for match in jsonpath.query(&quot;$.foo..bar&quot;, data).tail(5):
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    ...
+<div class="language-text highlight"><pre><span></span><code><span id="jsonpath.query--__span-2-1"><a id="jsonpath.query--__codelineno-2-1" name="jsonpath.query--__codelineno-2-1" href="#jsonpath.query--__codelineno-2-1"></a>for match in jsonpath.query("$.foo..bar", data).tail(5):
+</span><span id="jsonpath.query--__span-2-2"><a id="jsonpath.query--__codelineno-2-2" name="jsonpath.query--__codelineno-2-2" href="#jsonpath.query--__codelineno-2-2"></a>    ...
 </span></code></pre></div>
 <p>Get values for each match using <code>Query.values()</code>.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>for obj in jsonpath.query(&quot;$.foo..bar&quot;, data).limit(5).values():
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    ...
+<div class="language-text highlight"><pre><span></span><code><span id="jsonpath.query--__span-3-1"><a id="jsonpath.query--__codelineno-3-1" name="jsonpath.query--__codelineno-3-1" href="#jsonpath.query--__codelineno-3-1"></a>for obj in jsonpath.query("$.foo..bar", data).limit(5).values():
+</span><span id="jsonpath.query--__span-3-2"><a id="jsonpath.query--__codelineno-3-2" name="jsonpath.query--__codelineno-3-2" href="#jsonpath.query--__codelineno-3-2"></a>    ...
 </span></code></pre></div>
 
 
@@ -2861,7 +2861,7 @@ an incompatible way.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><span title="JSONPathRecursionError">JSONPathRecursionError</span></code>
+                  <code>JSONPathRecursionError</code>
               </span>
             </td>
             <td class="doc-raises-details">
@@ -2929,10 +2929,10 @@ recursion limit.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>

@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -31,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -1147,10 +1147,10 @@
 </tbody>
 </table>
 <p>For example :</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$.categories[?isinstance(@.length, &#39;number&#39;)]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$.categories[?isinstance(@.length, 'number')]
 </span></code></pre></div>
 <p>And <code>is()</code> is an alias for <code>isinstance()</code>:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$.categories[?is(@.length, &#39;number&#39;)]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$.categories[?is(@.length, 'number')]
 </span></code></pre></div>
 <h2 id="keys"><code>keys()</code></h2>
 <p><strong><em>New in version 2.0.0</em></strong></p>
@@ -1165,10 +1165,10 @@
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jsonpath</span><span class="w"> </span><span class="kn">import</span> <span class="n">function_extensions</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">env</span> <span class="o">=</span> <span class="n">JSONPathEnvironment</span><span class="p">()</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">env</span><span class="o">.</span><span class="n">function_extensions</span><span class="p">[</span><span class="s2">&quot;keys&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">function_extensions</span><span class="o">.</span><span class="n">Keys</span><span class="p">()</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">env</span><span class="o">.</span><span class="n">function_extensions</span><span class="p">[</span><span class="s2">"keys"</span><span class="p">]</span> <span class="o">=</span> <span class="n">function_extensions</span><span class="o">.</span><span class="n">Keys</span><span class="p">()</span>
 </span></code></pre></div>
 </div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$.some[?&#39;thing&#39; in keys(@)]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$.some[?'thing' in keys(@)]
 </span></code></pre></div>
 <h2 id="length"><code>length()</code></h2>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>length(obj: object) -&gt; Optional[int]
@@ -1180,7 +1180,7 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>match(obj: object, pattern: str) -&gt; bool
 </span></code></pre></div>
 <p>Return <code>True</code> if <em>obj</em> is a string and is a full match to the regex <em>pattern</em>.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$..products[?match(@.title, &quot;.+ainers.+&quot;)]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$..products[?match(@.title, ".+ainers.+")]
 </span></code></pre></div>
 <p>If <em>pattern</em> is a string literal, it will be compiled at compile time, and raise a <code>JSONPathTypeError</code> at compile time if it's invalid.</p>
 <p>If <em>pattern</em> is a query and the result is not a valid regex, <code>False</code> is returned.</p>
@@ -1188,7 +1188,7 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>search(obj: object, pattern: str) -&gt; bool
 </span></code></pre></div>
 <p>Return <code>True</code> if <em>obj</em> is a string and it contains the regexp <em>pattern</em>.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$..products[?search(@.title, &quot;ainers&quot;)]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$..products[?search(@.title, "ainers")]
 </span></code></pre></div>
 <p>If <em>pattern</em> is a string literal, it will be compiled at compile time, and raise a <code>JSONPathTypeError</code> at compile time if it's invalid.</p>
 <p>If <em>pattern</em> is a query and the result is not a valid regex, <code>False</code> is returned.</p>
@@ -1197,14 +1197,14 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>startswith(value: str, prefix: str) -&gt; bool
 </span></code></pre></div>
 <p>Return <code>True</code> if <code>value</code> starts with <code>prefix</code>. If <code>value</code> or <code>prefix</code> are not strings, <code>False</code> is returned.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$[?startswith(@, &#39;ab&#39;)]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$[?startswith(@, 'ab')]
 </span></code></pre></div>
 <h2 id="typeof"><code>typeof()</code></h2>
 <p><strong><em>New in version 0.6.0</em></strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>typeof(obj: object) -&gt; str
 </span></code></pre></div>
 <p>Return the type of <em>obj</em> as a string. The strings returned from this function use JavaScript/JSON terminology like "string", "array" and "object", much like the result of JavaScript's <code>typeof</code> operator.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$.categories[?typeof(@.length) == &#39;number&#39;]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$.categories[?typeof(@.length) == 'number']
 </span></code></pre></div>
 <p><code>type()</code> is and alias for <code>typeof()</code>.</p>
 <p><code>jsonpath.function_extensions.TypeOf</code> takes a <code>single_number_type</code> argument, which controls the behavior of <code>typeof()</code> when given and int or float. By default, <code>single_number_type</code> is <code>True</code> and <code>"number"</code> is returned. Register a new instance of <code>TypeOf</code> with a <code>JSONPathEnvironment</code> with <code>single_number_type</code> set to <code>False</code> and <code>"int"</code> and <code>"float"</code> will be returned when given integers and floats, respectively.</p>
@@ -1305,10 +1305,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>
